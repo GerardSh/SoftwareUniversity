@@ -1,0 +1,1 @@
+﻿Console.WriteLine($"Town {Console.ReadLine()} has population of {Console.ReadLine()} and area {Console.ReadLine()} square km. ");

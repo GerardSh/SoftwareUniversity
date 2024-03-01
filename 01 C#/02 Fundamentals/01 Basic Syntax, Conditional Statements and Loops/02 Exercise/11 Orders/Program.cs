@@ -1,14 +1,20 @@
-﻿int n = int.Parse(Console.ReadLine());
-int multiplier = int.Parse(Console.ReadLine());
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 
-if (multiplier > 10)
+int n = int.Parse(Console.ReadLine());
+
+double sum = 0;
+
+for (int i = 0; i < n; i++)
 {
-    Console.WriteLine($"{n} X {multiplier} = {n * multiplier}");
+    double pricePerCapsule = double.Parse(Console.ReadLine());
+    int days = int.Parse(Console.ReadLine());
+    int capsulesCount = int.Parse(Console.ReadLine());
+
+    sum += days * capsulesCount * pricePerCapsule;
+
+    Console.WriteLine($"The price for the coffee is: ${days * capsulesCount * pricePerCapsule:f2}");
 }
-else
-{
-    for (int i = multiplier; i <= 10; i++)
-    {
-        Console.WriteLine($"{n} X {i} = {n * i}");
-    }
-}
+
+Console.WriteLine($"Total: ${sum:f2}");
