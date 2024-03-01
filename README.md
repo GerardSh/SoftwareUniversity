@@ -1,2 +1,2 @@
 # [Software University](https://softuni.bg/)
-This repository tracks my progress during my studies at the Software University. It includes homework, exams, and other related materials.
+This repository tracks the progress of my studies at the Software University. It includes homework, exams, and other related exercises.
