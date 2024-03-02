@@ -1,8 +1,7 @@
 # General
+[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Associative%20Array)
 
-[Methods](01%20Methods.md#Associative%20Array)
-
-[Commands](02%20Commands.md#Dictionaries)
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Dictionaries)
 
 JSON е един от най-разпространените формати за обмяна на данни в web приложенията писани на различни езици и реално представлява асоциативен масив. Той съдържа колекция от KVP - key value pair стойности. Достъпа до елементите в този масив не става чрез индекси, а чрез ключове. Тези ключове обикновено са текст, но може да бъдат всичко, включително числа. Ако са числа, то реално си става нормален масив. Имаме свободата да избираме какви са индексите.
 
