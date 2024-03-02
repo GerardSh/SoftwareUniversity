@@ -52,7 +52,7 @@ Object initializer работи по същия начин и когато да�
 
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240209232304.png)
 
-Имаме и [Composition Properties](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/02%20Fundamentals/06%20Objects%20and%20Classes/README.md###composition%20properties)
+Имаме и [Composition Properties](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/02%20Fundamentals/06%20Objects%20and%20Classes/README.md#composition-properties)
 
 Пропъртитата са публични и достъпни отвънка и предоставя механизъм за достъп до полетата на класа.
 Полетата пазят вътрешното състояние на класа. Пропъртитата са просто механизма за достъп, до вътрешното състояние на класа.
