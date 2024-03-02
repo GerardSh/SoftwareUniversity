@@ -29,7 +29,7 @@ char[] test3 = test2.ToCharArray();
 
 Разликата между string.empty, "" и null е че null, няма референция към хийп-а, тотална липса на стойност. Нещо, която стойност е null не може да изпълнява каквито и да било действия и връща грешка `object reference not set..`
 
-## [StringBuilder](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#String#StringBuilder)
+## [StringBuilder](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#StringBuilder)
 
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240226130823.png)
 
