@@ -1,92 +1,24 @@
-﻿double n1 = double.Parse(Console.ReadLine());
-double n2 = double.Parse(Console.ReadLine());
-double n3 = double.Parse(Console.ReadLine());
+﻿List<int> numbers = Console.ReadLine()
+    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+    .Select(int.Parse)
+    .ToList();
 
-double biggest = 0;
-double medium = 0;
-double smallest = 0;
+double timeFirstRacer = 0;
+double timeSecondRacer = 0;
 
-if (n1 >= n2 && n1 >= n3)
+for (int i = 0; i < numbers.Count / 2; i++)
 {
-    biggest = n1;
-}
-else if (n2 >= n3 && n2 >= n1)
-{
-    biggest = n2;
-}
-else if (n3 >= n1 && n3 >= n2)
-{
-    biggest = n3;
-}
+    timeFirstRacer += numbers[i];
+    timeSecondRacer += numbers[numbers.Count - 1 - i];
 
-if (n1 <= n2 && n1 <= n3)
-{
-    smallest = n1;
-}
-else if (n2 <= n3 && n2 <= n1)
-{
-    smallest = n2;
-}
-else if (n3 <= n2 && n3 <= n1)
-{
-    smallest = n3;
+    if (numbers[i] == 0)
+    {
+        timeFirstRacer *= 0.8;
+    }
+    if (numbers[numbers.Count - 1 - i] == 0)
+    {
+        timeSecondRacer *= 0.8;
+    }
 }
 
-if (n1 < biggest && n1 > smallest)
-{
-    medium = n1;
-}
-else if (n2 < biggest && n2 > smallest)
-{
-    medium = n2;
-}
-else if (n3 < biggest && n3 > smallest)
-{
-    medium = n3;
-}
-else if (n1 == n2 && (n1 != n3))
-{
-    medium = n2;
-}
-else if (n1 == n3 && (n1 != n2))
-{
-    medium = n3;
-}
-else if (n2 == n3 && n2 != n1)
-{
-    medium = n2;
-}
-else
-{
-    medium = n1;
-}
-
-Console.WriteLine(biggest);
-Console.WriteLine(medium);
-Console.WriteLine(smallest);
-
-////Variant 2
-//// Find the smallest
-//int smallest = n1;
-//if (n2 < smallest)
-//{
-//    smallest = n2;
-//}
-//if (n3 < smallest)
-//{
-//    smallest = n3;
-//}
-
-//// Find the largest
-//int largest = n1;
-//if (n2 > largest)
-//{
-//    largest = n2;
-//}
-//if (n3 > largest)
-//{
-//    largest = n3;
-//}
-
-//// Find the medium
-//int medium = n1 + n2 + n3 - smallest - largest;
+Console.WriteLine($"The winner is {(timeFirstRacer < timeSecondRacer ? "left" : "right")} with total time: {Math.Round((timeFirstRacer < timeSecondRacer ? timeFirstRacer : timeSecondRacer), 1)}");
