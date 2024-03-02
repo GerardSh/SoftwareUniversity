@@ -65,7 +65,7 @@
 `Array.Sort(array)` - сортира елементите.
 `Array.IndexOf(arr, element)` - намира индекса в редицата.
 `Array.Find(arr, predicate)` - работи по същия начин като `FirstOrDefault` от систем LINQ.
-# Associative Array
+# Dictionary
 `Add(key,value)` - добавя елемент в масива. Ако съществува, ще върне exception.
 `Remove(key)` - изтрива елемент по ключ. Ако не съществува, ще върне exception.
 `ContainsKey(key)` - връща true/false.
