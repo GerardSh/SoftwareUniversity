@@ -89,7 +89,7 @@ static int IntManipulator(int x)
 }
 ```
 ## LINQ
-Обикновено връща колекция във вида [IEnumerable](https://github.com/GerardSh/SoftwareUniversity/tree/main/01%20C%23/02%20Fundamentals/07%20Associative%20Arrays/README.md##LINQ), което е колекция, върху която може да бъде изпълнен foreach, но не е ясно каква колекция точно. Реално единственото нещо което може да правим с такава колекция е да я foreach-ваме.
+Обикновено връща колекция във вида [IEnumerable](https://github.com/GerardSh/SoftwareUniversity/tree/main/01%20C%23/02%20Fundamentals/07%20Associative%20Arrays/README.md##IEnumerable), което е колекция, върху която може да бъде изпълнен foreach, но не е ясно каква колекция точно. Реално единственото нещо което може да правим с такава колекция е да я foreach-ваме.
 Ако ползваме примерно Where метод-а и няма нито един елемент който да отговаря на филтъра, то пак ще получим колекция от 0 елемента.
 # Misc
 Елементите на Dictionary масивите, са KeyValuePair и спокойно може да направим следното:
@@ -178,7 +178,7 @@ Both generic methods and type-specific methods have their use cases. Generic met
 The properties values and keys returns a collection and that's why we have to iterate over them to check the exact values?
 
 Exactly, the `Keys` and `Values` properties of a dictionary return collections (specifically, `KeyCollection` and `ValueCollection`), and if you want to work with the individual keys or values, you generally need to iterate over them using a loop, such as a `foreach` loop.
-## LINQ
+## IEnumerable
 `IEnumerable` is an interface in C# that represents a collection of objects that can be enumerated (iterated) one at a time. It is part of the `System.Collections` namespace.
 ## Using LINQ with for nested Dictionaries
 ```
