@@ -1,7 +1,7 @@
 # General
 
-[Methods](https://github.com/GerardSh/obsidian/edit/main/Gerard/01%20Programming/01%20CSharp/99%20Resources/01%20Methods.md#List)
-[Commands](02%20Commands.md#List)
+[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#List)
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#List)
 
 Всеки един списък е масив, който ни дава разширена функционалност.
 Данните на списъка, се пазят като масив в паметта на компютъра и трябва да се спазват всички правила. Списъка може да расте, за разлика от масива. 
