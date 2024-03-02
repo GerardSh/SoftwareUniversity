@@ -10,7 +10,7 @@ list[list.IndexOf(temp + "descriptor")] = temp;
 
 Console.WriteLine(string.Join(" ", list));
 ```
-# Dictionaries
+# Dictionary
 Сортираме елементите на речник, въз основа на средните стойности във вътрешния речник.
 ```
 var test = new Dictionary<string, Dictionary<string, int>>()
