@@ -89,7 +89,7 @@ static int IntManipulator(int x)
 }
 ```
 ## LINQ
-Обикновено връща колекция във вида [IEnumerable](https://github.com/GerardSh/SoftwareUniversity/tree/main/01%20C%23/02%20Fundamentals/07%20Associative%20Arrays/README.md##IEnumerable), което е колекция, върху която може да бъде изпълнен foreach, но не е ясно каква колекция точно. Реално единственото нещо което може да правим с такава колекция е да я foreach-ваме.
+Обикновено връща колекция във вида [IEnumerable](https://github.com/GerardSh/SoftwareUniversity/tree/main/01%20C%23/02%20Fundamentals/07%20Associative%20Arrays/README.md#IEnumerable), което е колекция, върху която може да бъде изпълнен foreach, но не е ясно каква колекция точно. Реално единственото нещо което може да правим с такава колекция е да я foreach-ваме.
 Ако ползваме примерно Where метод-а и няма нито един елемент който да отговаря на филтъра, то пак ще получим колекция от 0 елемента.
 # Misc
 Елементите на Dictionary масивите, са KeyValuePair и спокойно може да направим следното:
