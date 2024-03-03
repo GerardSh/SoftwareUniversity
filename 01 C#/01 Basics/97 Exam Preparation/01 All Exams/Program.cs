@@ -28,7 +28,6 @@ else
 
 
 
-
 //World Snooker Championship
 string championshipStage = Console.ReadLine();
 string ticketType = Console.ReadLine();
@@ -134,7 +133,6 @@ else
 
 
 
-
 //Renovation
 int wallHeight = int.Parse(Console.ReadLine());
 int wallLenght = int.Parse(Console.ReadLine());
@@ -171,8 +169,6 @@ else
 {
     Console.WriteLine($"All walls are painted! Great job, Pesho!");
 }
-
-
 
 
 
@@ -239,9 +235,6 @@ for (int i1 = firstDigit; i1 <= firstDigit2; i1++)
 
 
 
-
-
-
 //Cinema Voucher
 int vaucherValue = int.Parse(Console.ReadLine());
 
@@ -279,7 +272,6 @@ while (input != "End" && vaucherValue > 0)
 Console.WriteLine(countTicketsBought);
 Console.WriteLine(countOtherItems);
 Nested Loops - More Exercises
-
 
 
 
@@ -328,8 +320,6 @@ for (int i = 2; i <= number1; i++)
 
 
 
-
-
 //Letters Combinations
 char letter1 = char.Parse(Console.ReadLine());
 char letter2 = char.Parse(Console.ReadLine());
@@ -358,8 +348,6 @@ for (char i = letter1; i <= letter2; i++)
 
 
 
-
-
 //Lucky Numbers
 int n = int.Parse(Console.ReadLine());
 
@@ -379,8 +367,6 @@ for (int i = 1; i <= 9; i++)
         }
     }
 }
-
-
 
 
 
@@ -411,8 +397,6 @@ for (int i = n; i <= n2; i++)
 
 
 
-
-
 //Challenge the Wedding
 //men
 int n = int.Parse(Console.ReadLine());
@@ -434,8 +418,6 @@ for (int i = 1; i <= n; i++)
         }
     }
 }
-
-
 
 
 
@@ -479,40 +461,40 @@ for (char i = 'A'; i <= n; i++)
 
 Console.WriteLine(countAllRows);
 
-////last sector
-//char n = char.Parse(Console.ReadLine());
-////number of rows in the first sector
-//int n2 = int.Parse(Console.ReadLine());
-////number of rows on necheten rown
-//int n3 = int.Parse(Console.ReadLine());
-
-//int countAllRows = 0;
 
 
-//for (char i = 'A'; i <= n; i++)
-//{
-//    for (int i2 = 1; i2 <= n2; i2++)
-//    {
-//        for (char i3 = 'a'; i3 < (char)('a' + n3); i3++)
-//        {
-//            Console.WriteLine($"{i}{i2}{i3}");
-//            countAllRows++;
-//            if (i2 % 2 == 0 && i3 == 'a')
-//            {
-//                n3 += 2;
-//            }
-//            if (i2 % 2 == 0 && i3 == (char)('a' + n3 - 1) )
-//            {
-//                n3 -= 2;
-//            }
-//        }
-//    }
-//    n2++;
-//}
 
-//Console.WriteLine(countAllRows);
+//2
+char n = char.Parse(Console.ReadLine());
+//number of rows in the first sector
+int n2 = int.Parse(Console.ReadLine());
+//number of rows on necheten rown
+int n3 = int.Parse(Console.ReadLine());
 
+int countAllRows = 0;
 
+for (char i = 'A'; i <= n; i++)
+{
+    for (int i2 = 1; i2 <= n2; i2++)
+    {
+        for (char i3 = 'a'; i3 < (char)('a' + n3); i3++)
+        {
+            Console.WriteLine($"{i}{i2}{i3}");
+            countAllRows++;
+            if (i2 % 2 == 0 && i3 == 'a')
+            {
+                n3 += 2;
+            }
+            if (i2 % 2 == 0 && i3 == (char)('a' + n3 - 1))
+            {
+                n3 -= 2;
+            }
+        }
+    }
+    n2++;
+}
+
+Console.WriteLine(countAllRows);
 
 
 
@@ -550,7 +532,6 @@ for (int i = 1; i <= a; i++)
 
 
 
-
 //Secret Door's Lock
 int n = int.Parse(Console.ReadLine());
 int n2 = int.Parse(Console.ReadLine());
@@ -577,8 +558,6 @@ for (int i = 2; i <= n; i += 2)
         }
     }
 }
-
-
 
 
 
@@ -613,8 +592,6 @@ if (!isFound)
 
 
 
-
-
 //Profit
 int n = int.Parse(Console.ReadLine());
 int n2 = int.Parse(Console.ReadLine());
@@ -634,7 +611,6 @@ for (int i = 0; i <= n; i++)
         }
     }
 }
-
 
 
 
@@ -669,7 +645,6 @@ for (int i = 1; i <= days; i++)
 }
 
 Console.WriteLine($"Total: {totalPrice:f2} leva");
-
 
 
 
@@ -719,7 +694,6 @@ else
 
 
 
-
 //Prime Pairs
 int nStart = int.Parse(Console.ReadLine());
 int n2Start = int.Parse(Console.ReadLine());
@@ -763,8 +737,6 @@ for (int i = nStart; i <= nEnd; i++)
 
 
 
-
-
 //Password Generator
 int n = int.Parse(Console.ReadLine());
 int l = int.Parse(Console.ReadLine());
@@ -791,9 +763,7 @@ for (int i = 1; i < n; i++)
 
 
 
-
 //Juicing diet
-
 int respberries = int.Parse(Console.ReadLine());
 int strawberries = int.Parse(Console.ReadLine());
 int cherries = int.Parse(Console.ReadLine());
@@ -825,7 +795,6 @@ Programming Basics Online Exam - 18 and 19 July 2020
 
 
 
-
 //Agency Profit
 string airCompanyName = Console.ReadLine();
 int numberTicketsAdults = int.Parse(Console.ReadLine());
@@ -843,7 +812,6 @@ double sumAllTickets = numberTicketsAdults * ticketSumAdult + numberTicketsChild
 double profit = sumAllTickets * 0.20;
 
 Console.WriteLine($"The profit of your agency from {airCompanyName} tickets is {profit:f2} lv.");
-
 
 
 
@@ -883,7 +851,6 @@ else
 }
 
 Console.WriteLine($"The total price of bags is: {additionalLuggagePrice * luggageNumber:f2} lv.");
-
 
 
 
@@ -971,7 +938,6 @@ else
 
 
 
-
 //Balls
 int nBalls = int.Parse(Console.ReadLine());
 string colors = Console.ReadLine();
@@ -1029,7 +995,6 @@ Console.WriteLine($"Yellow balls: {yellow}");
 Console.WriteLine($"White balls: {white}");
 Console.WriteLine($"Other colors picked: {others}");
 Console.WriteLine($"Divides from black balls: {black}");
-
 
 
 
@@ -1098,7 +1063,6 @@ Console.WriteLine($"Price to be paid by sponsors {Math.Ceiling(sponsorsExpenses)
 
 
 
-
 //High Jump
 int neededHeight = int.Parse(Console.ReadLine());
 
@@ -1145,7 +1109,6 @@ else
 
 
 
-
 //2
 int targetHeight = int.Parse(Console.ReadLine());
 int currentHeight = targetHeight - 30;
@@ -1178,7 +1141,6 @@ while (currentHeight <= targetHeight)
 }
 
 Console.WriteLine($"Tihomir succeeded, he jumped over {targetHeight}cm after {allJumpsCounter} jumps.");
-
 
 
 
@@ -1326,7 +1288,6 @@ else
 
 
 
-
 //Game Number Wars
 string nameFirstPlayer = Console.ReadLine();
 string nameSecondPlayer = Console.ReadLine();
@@ -1415,11 +1376,8 @@ for (int i = a1; i <= a2 - 1; i++)
 
 
 
-
 //Favorite Movie
 string movieName;
-
-
 int bestMovieScore = 0;
 string bestMovie = "";
 int movieCounter = 0;
@@ -1460,11 +1418,8 @@ Console.WriteLine($"The best movie for you is {bestMovie} with {bestMovieScore} 
 
 
 
-
 //2
 string movieName = Console.ReadLine();
-
-
 int bestMovieScore = 0;
 string bestMovie = "";
 int movieCounter = 1;
@@ -1515,7 +1470,6 @@ Console.WriteLine($"The best movie for you is {bestMovie} with {bestMovieScore} 
 double budget = double.Parse(Console.ReadLine());
 int seriesNumber = int.Parse(Console.ReadLine());
 
-
 for (int i = 0; i < seriesNumber; i++)
 {
     string seriesName = Console.ReadLine();
@@ -1556,7 +1510,6 @@ else
 
 
 
-
 //Movie Stars
 double budget = double.Parse(Console.ReadLine());
 string actorsName;
@@ -1585,7 +1538,6 @@ else
 {
     Console.WriteLine($"We need {budget * -1:f2} leva for our actors.");
 }
-
 
 
 
@@ -1631,7 +1583,6 @@ else
 }
 
 Console.WriteLine("Cinema income - " + allTicketsPrice + " lv.");
-
 
 
 
@@ -1690,7 +1641,6 @@ else
 {
     Console.WriteLine($"The director needs {cost - budget:f2} leva more!");
 }
-
 
 
 
@@ -1820,7 +1770,6 @@ else
 
 
 
-
 //Programming Basics Online Exam - 6 and 7 April 2019
 //Movie Ratings
 int numberMovies = int.Parse(Console.ReadLine());
@@ -1937,7 +1886,6 @@ Console.WriteLine($"{bestBaker} won competition with {bestRating} points!");
 
 
 
-
 //Programming Basics Online Retake Exam - 2 and 3 May 2019
 //Division Without Remainder
 int numbers = int.Parse(Console.ReadLine());
@@ -2000,7 +1948,6 @@ if (budget >= allProductsPrice)
 {
     Console.WriteLine($"You bought {productCounter} products for {allProductsPrice:f2} leva.");
 }
-
 
 
 
@@ -2124,7 +2071,6 @@ else
 
 
 
-
 //PC Game Shop
 int soldGames = int.Parse(Console.ReadLine());
 
@@ -2194,7 +2140,6 @@ if (coctailName == "Party!")
     Console.WriteLine($"We need {targetProfit - totalPrice:f2} leva more.");
 }
 Console.WriteLine($"Club income - {totalPrice:f2} leva.");
-
 
 
 
