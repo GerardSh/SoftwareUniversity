@@ -8,6 +8,9 @@ foreach (var x in array)
     Console.WriteLine(x);
 }
 
+
+
+
 //2
 Console.ReadLine()
     .Split()

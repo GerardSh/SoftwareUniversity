@@ -23,6 +23,9 @@ else
     }
 }
 
+
+
+
 //2
 int n = int.Parse(Console.ReadLine());
 

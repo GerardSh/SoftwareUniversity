@@ -65,28 +65,31 @@ Console.WriteLine(biggest);
 Console.WriteLine(medium);
 Console.WriteLine(smallest);
 
-////Variant 2
-//// Find the smallest
-//int smallest = n1;
-//if (n2 < smallest)
-//{
-//    smallest = n2;
-//}
-//if (n3 < smallest)
-//{
-//    smallest = n3;
-//}
 
-//// Find the largest
-//int largest = n1;
-//if (n2 > largest)
-//{
-//    largest = n2;
-//}
-//if (n3 > largest)
-//{
-//    largest = n3;
-//}
 
-//// Find the medium
-//int medium = n1 + n2 + n3 - smallest - largest;
+
+//2
+// Find the smallest
+int smallest = n1;
+if (n2 < smallest)
+{
+    smallest = n2;
+}
+if (n3 < smallest)
+{
+    smallest = n3;
+}
+
+// Find the largest
+int largest = n1;
+if (n2 > largest)
+{
+    largest = n2;
+}
+if (n3 > largest)
+{
+    largest = n3;
+}
+
+// Find the medium
+int medium = n1 + n2 + n3 - smallest - largest;

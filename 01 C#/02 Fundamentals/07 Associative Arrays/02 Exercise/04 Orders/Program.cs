@@ -42,11 +42,6 @@ class MyClass
 
 
 
-
-
-
-
-
 //2
 var priceAndQuantityByProducts = new Dictionary<string, Dictionary<decimal, int>>();
 

@@ -52,11 +52,6 @@
 
 
 
-
-
-
-
-
 //2
 double[] array = Console.ReadLine()
     .Split(" ", StringSplitOptions.RemoveEmptyEntries)

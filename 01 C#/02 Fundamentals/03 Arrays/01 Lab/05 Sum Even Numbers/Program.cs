@@ -11,13 +11,16 @@ foreach (int number in arr.Select(int.Parse))
 
 Console.WriteLine(sum);
 
-//2
-//foreach (string s in arr)
-//{
-//if (int.Parse(s) % 2 == 0)
-//    {
-//        sum += int.Parse(s);
-//    }
-//}
 
-//Console.WriteLine(sum);
+
+
+//2
+foreach (string s in arr)
+{
+    if (int.Parse(s) % 2 == 0)
+    {
+        sum += int.Parse(s);
+    }
+}
+
+Console.WriteLine(sum);

@@ -44,10 +44,6 @@ foreach (var drawf in dwarfsByScore.OrderByDescending(kvp => kvp.Value).ThenByDe
 
 
 
-
-
-
-
 //2
 namespace ConsoleApp
 {
@@ -115,11 +111,6 @@ namespace ConsoleApp
         }
     }
 }
-
-
-
-
-
 
 
 
@@ -211,7 +202,6 @@ namespace ConsoleApp
         }
     }
 }
-
 
 
 
@@ -317,9 +307,6 @@ foreach (var outerDictionary in dwarfsByNumber)
         }
     }
 }
-
-
-
 
 
 

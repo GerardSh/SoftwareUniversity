@@ -43,53 +43,55 @@ Console.WriteLine($"{100.00 * student / totalTicket:f2}% student tickets.");
 Console.WriteLine($"{100.00 * standard / totalTicket:f2}% standard tickets.");
 Console.WriteLine($"{100.00 * kid / totalTicket:f2}% kids tickets.");
 
-//Variant 2
-
-//string movieName = Console.ReadLine();
-
-//int student = 0;
-//int standard = 0;
-//int kids = 0;
-//int totalTicketsBought = 0;
 
 
-//while (movieName != "Finish")
-//{
-//    int freeSpaces = int.Parse(Console.ReadLine());
-//    string ticketType = Console.ReadLine();
-//    int usedSpaces = 0;
 
-//    while (ticketType != "End")
-//    {
-//        if (ticketType == "student")
-//        {
-//            student++;
-//        }
-//        else if (ticketType == "standard")
-//        {
-//            standard++;
-//        }
-//        else if (ticketType == "kid")
-//        {
-//            kids++;
-//        }
-//        totalTicketsBought++;
-//        usedSpaces++;
+//2
+string movieName = Console.ReadLine();
 
-//        if (usedSpaces == freeSpaces)
-//        {
-//            break;
-//        }
+int student = 0;
+int standard = 0;
+int kids = 0;
+int totalTicketsBought = 0;
 
-//        ticketType = Console.ReadLine();
-//    }
 
-//    Console.WriteLine($"{movieName} - {100.00 * usedSpaces / freeSpaces:f2}% full.");
+while (movieName != "Finish")
+{
+    int freeSpaces = int.Parse(Console.ReadLine());
+    string ticketType = Console.ReadLine();
+    int usedSpaces = 0;
 
-//    movieName = Console.ReadLine();
-//}
+    while (ticketType != "End")
+    {
+        if (ticketType == "student")
+        {
+            student++;
+        }
+        else if (ticketType == "standard")
+        {
+            standard++;
+        }
+        else if (ticketType == "kid")
+        {
+            kids++;
+        }
+        totalTicketsBought++;
+        usedSpaces++;
 
-//Console.WriteLine($"Total tickets: {totalTicketsBought}");
-//Console.WriteLine($"{100.00 * student / totalTicketsBought:f2}% student tickets.");
-//Console.WriteLine($"{100.00 * standard / totalTicketsBought:f2}% standard tickets.");
-//Console.WriteLine($"{100.00 * kids / totalTicketsBought:f2}% kids tickets.");
+        if (usedSpaces == freeSpaces)
+        {
+            break;
+        }
+
+        ticketType = Console.ReadLine();
+    }
+
+    Console.WriteLine($"{movieName} - {100.00 * usedSpaces / freeSpaces:f2}% full.");
+
+    movieName = Console.ReadLine();
+}
+
+Console.WriteLine($"Total tickets: {totalTicketsBought}");
+Console.WriteLine($"{100.00 * student / totalTicketsBought:f2}% student tickets.");
+Console.WriteLine($"{100.00 * standard / totalTicketsBought:f2}% standard tickets.");
+Console.WriteLine($"{100.00 * kids / totalTicketsBought:f2}% kids tickets.");

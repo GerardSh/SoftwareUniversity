@@ -271,371 +271,377 @@ static void IndexExchange(int[] array, int index)
     }
 }
 
-////2
-//int[] numbers = Console.ReadLine().Split().Select(int.Parse).ToArray();
 
-//string[] input;
-//int[] elements;
 
-//while ((input = Console.ReadLine().Split())[0] != "end")
+
+//2
+int[] numbers = console.readline().split().select(int.parse).toarray();
+
+string[] input;
+int[] elements;
+
+while ((input = console.readline().split())[0] != "end")
+{
+    string command = input[0];
+
+    if (command == "exchange")
+    {
+        int index = int.parse(input[1]);
+
+        if (index < 0 || index >= numbers.length)
+        {
+            console.writeline("invalid index");
+        }
+        else
+        {
+            arrayindexexchange(numbers, index);
+        }
+    }
+    else if (command == "max")
+    {
+        string oddeven = input[1];
+
+        getmax(numbers, oddeven);
+
+    }
+    else if (command == "min")
+    {
+        string oddeven = input[1];
+
+        getmin(numbers, oddeven);
+    }
+    else if (command == "first")
+    {
+        int count = int.parse(input[1]);
+        string oddeven = input[2];
+
+        if (count > numbers.length)
+        {
+            console.writeline("invalid count");
+            continue;
+        }
+
+        elements = getfirstelements(numbers, count, oddeven);
+
+        printarray(elements);
+    }
+    else if (command == "last")
+    {
+        int count = int.parse(input[1]);
+        string oddeven = input[2];
+
+        if (count > numbers.length)
+        {
+            console.writeline("invalid count");
+            continue;
+        }
+
+        elements = getlastelements(numbers, count, oddeven);
+
+        printarray(elements);
+    }
+}
+
+console.writeline($"[{string.join(", ", numbers)}]");
+
+static void printarray(int[] array)
+{
+    console.write("[");
+
+    for (int i = 0; i < array.length; i++)
+    {
+        if (i == array.length - 1)
+        {
+            console.write($"{array[i]}");
+        }
+        else
+        {
+            console.write($"{array[i]}, ");
+        }
+    }
+    console.writeline("]");
+}
+
+//static void printarray(int[] array)
 //{
-//    string command = input[0];
-
-//    if (command == "exchange")
-//    {
-//        int index = int.Parse(input[1]);
-
-//        if (index < 0 || index >= numbers.Length)
-//        {
-//            Console.WriteLine("Invalid index");
-//        }
-//        else
-//        {
-//            ArrayIndexExchange(numbers, index);
-//        }
-//    }
-//    else if (command == "max")
-//    {
-//        string oddEven = input[1];
-
-//        GetMax(numbers, oddEven);
-
-//    }
-//    else if (command == "min")
-//    {
-//        string oddEven = input[1];
-
-//        GetMin(numbers, oddEven);
-//    }
-//    else if (command == "first")
-//    {
-//        int count = int.Parse(input[1]);
-//        string oddEven = input[2];
-
-//        if (count > numbers.Length)
-//        {
-//            Console.WriteLine("Invalid count");
-//            continue;
-//        }
-
-//        elements = GetFirstElements(numbers, count, oddEven);
-
-//        PrintArray(elements);
-//    }
-//    else if (command == "last")
-//    {
-//        int count = int.Parse(input[1]);
-//        string oddEven = input[2];
-
-//        if (count > numbers.Length)
-//        {
-//            Console.WriteLine("Invalid count");
-//            continue;
-//        }
-
-//        elements = GetLastElements(numbers, count, oddEven);
-
-//        PrintArray(elements);
-//    }
-//}
-
-//Console.WriteLine($"[{string.Join(", ", numbers)}]");
-
-//static void PrintArray(int[] array)
-//{
-//    Console.Write("[");
-
-//    for (int i = 0; i < array.Length; i++)
-//    {
-//        if (i == array.Length - 1)
-//        {
-//            Console.Write($"{array[i]}");
-//        }
-//        else
-//        {
-//            Console.Write($"{array[i]}, ");
-//        }
-//    }
-//    Console.WriteLine("]");
-//}
-
-////static void PrintArray(int[] array)
-////{
-////    Console.Write("[");
-////    bool isSecond = false;
-
-////    foreach (int element in array)
-////    {
-////        if (isSecond)
-////        {
-////            Console.Write($", {element}");
-////        }
-////        else
-////        {
-////            Console.Write($"{element}");
-////            isSecond = true;
-////        }
-////    }
-////    Console.WriteLine("]");
-////}
-
-////static void PrintArray(int[] array)
-////{
-////    Console.Write("[");
-
-////    for (int i = 0; i < array.Length; i++)
-////    {
-////        Console.Write(array[i]);
-
-////        if (i < array.Length - 1)
-////        {
-////            Console.Write(", ");
-////        }
-////    }
-
-////    Console.WriteLine("]");
-////}
-
-//static int[] GetLastElements(int[] array, int count, string oddEven)
-//{
-//    int[] lastElements = new int[count];
-//    int param = GetParam(oddEven);
-//    int index = 0;
-
-//    for (int i = array.Length - 1; i >= 0; i--)
-//    {
-//        if (array[i] % 2 == param && index < count)
-//        {
-//            lastElements[index] = array[i];
-//            index++;
-//        }
-//    }
-//    int[] lastElementsCount = new int[index];
-
-//    for (int i = 0; i < index; i++)
-//    {
-//        lastElementsCount[i] = lastElements[index - 1 - i];
-//    }
-
-//    return lastElementsCount;
-//}
-
-//static int[] GetFirstElements(int[] array, int count, string oddEven)
-//{
-//    int[] firstElements = new int[count];
-//    int param = GetParam(oddEven);
-//    int index = 0;
-
-//    foreach (var element in array)
-//    {
-//        if (element % 2 == param && index < count)
-//        {
-//            firstElements[index] = element;
-//            index++;
-//        }
-//    }
-
-//    int[] firstElementsCount = new int[index];
-
-//    for (int i = 0; i < firstElementsCount.Length; i++)
-//    {
-//        firstElementsCount[i] = firstElements[i];
-//    }
-
-//    return firstElementsCount;
-//}
-
-//static void GetMin(int[] array, string oddEven)
-//{
-//    int param = GetParam(oddEven);
-
-//    int minNumber = int.MaxValue;
-//    int minIndex = -1;
-//    int index = 0;
-
-//    foreach (int i in array)
-//    {
-//        if (i % 2 == param && i <= minNumber)
-//        {
-//            minNumber = i;
-//            minIndex = index;
-//        }
-
-//        index++;
-//    }
-
-//    if (minIndex == -1)
-//    {
-//        Console.WriteLine("No matches");
-//    }
-//    else
-//    {
-//        Console.WriteLine(minIndex);
-//    }
-//}
-
-//static void GetMax(int[] array, string oddEven)
-//{
-//    int param = GetParam(oddEven);
-
-//    int maxNumber = int.MinValue;
-//    int maxIndex = -1;
-//    int index = 0;
-
-//    foreach (int i in array)
-//    {
-//        if (i % 2 == param && i >= maxNumber)
-//        {
-//            maxNumber = i;
-//            maxIndex = index;
-//        }
-
-//        index++;
-//    }
-
-//    if (maxIndex != -1)
-//    {
-//        Console.WriteLine(maxIndex);
-//    }
-//    else
-//    {
-//        Console.WriteLine("No matches");
-//    }
-//}
-
-//static int GetParam(string oddEven)
-//{
-//    if (oddEven == "even")
-//    {
-//        return 0;
-//    }
-//    else
-//    {
-//        return 1;
-//    }
-//}
-
-//static void ArrayIndexExchange(int[] array, int index)
-//{
-//    for (int i = 0; i <= index; i++)
-//    {
-//        int temp = array[0];
-
-//        for (int j = 1; j < array.Length; j++)
-//        {
-//            array[j - 1] = array[j];
-//        }
-
-//        array[array.Length - 1] = temp;
-//    }
-//}
-
-////3
-//int[] array = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-
-//string[] input;
-
-//while ((input = Console.ReadLine().Split())[0] != "end")
-//{
-//    string command = input[0];
-//    int length = int.Parse(input[1]);
-//    string parameter = input[2];
-
-//    if (length > array.Length)
-//    {
-//        Console.WriteLine("Invalid count");
-//    }
-//    else
-//    {
-//        int[] elements = GetFirstElements(array, length, parameter);
-
-//        PrintElements(elements);
-//    }
-
-//}
-
-//static void PrintElements(int[] elements)
-//{
-//    bool isSecond = false;
-
-//    Console.Write("[");
-
-//    for (int i = 0; i < elements.Length; i++)
-//    {
-//        if (isSecond)
-//        {
-//            Console.Write($", {elements[i]}");
-//        }
-//        else
-//        {
-//            Console.Write($"{elements[i]}");
-//            isSecond = true;
-//        }
-//    }
-//    Console.WriteLine("]");
-//}
-
-//static int[] GetFirstElements(int[] array, int length, string parameter)
-//{
-//    int evenOrOdd = 0;
-
-//    if (parameter == "even")
-//    {
-//        evenOrOdd = 0;
-//    }
-//    else
-//    {
-//        evenOrOdd = 1;
-//    }
-
-//    int counter = 0;
+//    console.write("[");
+//    bool issecond = false;
 
 //    foreach (int element in array)
 //    {
-//        if (element % 2 == evenOrOdd)
+//        if (issecond)
 //        {
-//            counter++;
+//            console.write($", {element}");
+//        }
+//        else
+//        {
+//            console.write($"{element}");
+//            issecond = true;
 //        }
 //    }
-
-//    int[] firstElements;
-
-//    if (counter > length)
-//    {
-//        firstElements = new int[length];
-//    }
-//    else
-//    {
-//        firstElements = new int[counter];
-//    }
-
-
-//    int index = 0;
-
-//    if (firstElements.Length == 0)
-//    {
-//        return firstElements;
-//    }
-
-//    foreach (int element in array)
-//    {
-//        if (element % 2 == 0 && parameter == "even")
-//        {
-//            firstElements[index] = element;
-//            index++;
-//        }
-//        else if (element % 2 == 1 && parameter == "odd")
-//        {
-//            firstElements[index] = element;
-//            index++;
-//        }
-
-//        if (index == firstElements.Length)
-//        {
-//            break;
-//        }
-
-//    }
-
-//    return firstElements;
+//    console.writeline("]");
 //}
+
+//static void printarray(int[] array)
+//{
+//    console.write("[");
+
+//    for (int i = 0; i < array.length; i++)
+//    {
+//        console.write(array[i]);
+
+//        if (i < array.length - 1)
+//        {
+//            console.write(", ");
+//        }
+//    }
+
+//    console.writeline("]");
+//}
+
+static int[] getlastelements(int[] array, int count, string oddeven)
+{
+    int[] lastelements = new int[count];
+    int param = getparam(oddeven);
+    int index = 0;
+
+    for (int i = array.length - 1; i >= 0; i--)
+    {
+        if (array[i] % 2 == param && index < count)
+        {
+            lastelements[index] = array[i];
+            index++;
+        }
+    }
+    int[] lastelementscount = new int[index];
+
+    for (int i = 0; i < index; i++)
+    {
+        lastelementscount[i] = lastelements[index - 1 - i];
+    }
+
+    return lastelementscount;
+}
+
+static int[] getfirstelements(int[] array, int count, string oddeven)
+{
+    int[] firstelements = new int[count];
+    int param = getparam(oddeven);
+    int index = 0;
+
+    foreach (var element in array)
+    {
+        if (element % 2 == param && index < count)
+        {
+            firstelements[index] = element;
+            index++;
+        }
+    }
+
+    int[] firstelementscount = new int[index];
+
+    for (int i = 0; i < firstelementscount.length; i++)
+    {
+        firstelementscount[i] = firstelements[i];
+    }
+
+    return firstelementscount;
+}
+
+static void getmin(int[] array, string oddeven)
+{
+    int param = getparam(oddeven);
+
+    int minnumber = int.maxvalue;
+    int minindex = -1;
+    int index = 0;
+
+    foreach (int i in array)
+    {
+        if (i % 2 == param && i <= minnumber)
+        {
+            minnumber = i;
+            minindex = index;
+        }
+
+        index++;
+    }
+
+    if (minindex == -1)
+    {
+        console.writeline("no matches");
+    }
+    else
+    {
+        console.writeline(minindex);
+    }
+}
+
+static void getmax(int[] array, string oddeven)
+{
+    int param = getparam(oddeven);
+
+    int maxnumber = int.minvalue;
+    int maxindex = -1;
+    int index = 0;
+
+    foreach (int i in array)
+    {
+        if (i % 2 == param && i >= maxnumber)
+        {
+            maxnumber = i;
+            maxindex = index;
+        }
+
+        index++;
+    }
+
+    if (maxindex != -1)
+    {
+        console.writeline(maxindex);
+    }
+    else
+    {
+        console.writeline("no matches");
+    }
+}
+
+static int getparam(string oddeven)
+{
+    if (oddeven == "even")
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+static void arrayindexexchange(int[] array, int index)
+{
+    for (int i = 0; i <= index; i++)
+    {
+        int temp = array[0];
+
+        for (int j = 1; j < array.length; j++)
+        {
+            array[j - 1] = array[j];
+        }
+
+        array[array.length - 1] = temp;
+    }
+}
+
+
+
+
+//3
+int[] array = console.readline().split(" ", stringsplitoptions.removeemptyentries).select(int.parse).toarray();
+
+string[] input;
+
+while ((input = console.readline().split())[0] != "end")
+{
+    string command = input[0];
+    int length = int.parse(input[1]);
+    string parameter = input[2];
+
+    if (length > array.length)
+    {
+        console.writeline("invalid count");
+    }
+    else
+    {
+        int[] elements = getfirstelements(array, length, parameter);
+
+        printelements(elements);
+    }
+
+}
+
+static void printelements(int[] elements)
+{
+    bool issecond = false;
+
+    console.write("[");
+
+    for (int i = 0; i < elements.length; i++)
+    {
+        if (issecond)
+        {
+            console.write($", {elements[i]}");
+        }
+        else
+        {
+            console.write($"{elements[i]}");
+            issecond = true;
+        }
+    }
+    console.writeline("]");
+}
+
+static int[] getfirstelements(int[] array, int length, string parameter)
+{
+    int evenorodd = 0;
+
+    if (parameter == "even")
+    {
+        evenorodd = 0;
+    }
+    else
+    {
+        evenorodd = 1;
+    }
+
+    int counter = 0;
+
+    foreach (int element in array)
+    {
+        if (element % 2 == evenorodd)
+        {
+            counter++;
+        }
+    }
+
+    int[] firstelements;
+
+    if (counter > length)
+    {
+        firstelements = new int[length];
+    }
+    else
+    {
+        firstelements = new int[counter];
+    }
+
+
+    int index = 0;
+
+    if (firstelements.length == 0)
+    {
+        return firstelements;
+    }
+
+    foreach (int element in array)
+    {
+        if (element % 2 == 0 && parameter == "even")
+        {
+            firstelements[index] = element;
+            index++;
+        }
+        else if (element % 2 == 1 && parameter == "odd")
+        {
+            firstelements[index] = element;
+            index++;
+        }
+
+        if (index == firstelements.length)
+        {
+            break;
+        }
+
+    }
+
+    return firstelements;
+}

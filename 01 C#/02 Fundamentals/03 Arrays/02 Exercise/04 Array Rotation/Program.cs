@@ -28,22 +28,25 @@ else
 
 Console.WriteLine(string.Join(" ", rotatedArr));
 
-////2 
-//int[] numbersArr = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-//int rotations = int.Parse(Console.ReadLine());
 
-//for (int i = 0; i < rotations; i++)
-//{
-//    int firstNumber = numbersArr[0];
 
-//    for (int j = 0; j < numbersArr.Length - 1; j++)
-//    {
-//        int nextIndex = j + 1;
 
-//        numbersArr[j] = numbersArr[nextIndex];
-//    }
+//2 
+int[] numbersArr = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+int rotations = int.Parse(Console.ReadLine());
 
-//    numbersArr[numbersArr.Length - 1] = firstNumber;
-//}
+for (int i = 0; i < rotations; i++)
+{
+    int firstNumber = numbersArr[0];
 
-//Console.WriteLine(string.Join(" ", numbersArr));
+    for (int j = 0; j < numbersArr.Length - 1; j++)
+    {
+        int nextIndex = j + 1;
+
+        numbersArr[j] = numbersArr[nextIndex];
+    }
+
+    numbersArr[numbersArr.Length - 1] = firstNumber;
+}
+
+Console.WriteLine(string.Join(" ", numbersArr));

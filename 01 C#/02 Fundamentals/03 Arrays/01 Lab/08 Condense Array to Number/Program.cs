@@ -50,42 +50,48 @@ else
     }
 }
 
-////2
-//int[] arr = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-//int[] arr2 = new int[arr.Length - 1];
 
-//int i = 0;
 
-//while (arr.Length > 1)
-//{
-//    if (i == arr.Length - 1)
-//    {
-//        arr = arr2;
-//        arr2 = new int[arr.Length - 1];
-//        i = 0;
-//    }
-//    else
-//    {
-//        arr2[i] = arr[i] + arr[i + 1];
-//        i++;
-//    }
-//}
 
-//Console.WriteLine(arr[0]);
+//2
+int[] arr = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+int[] arr2 = new int[arr.Length - 1];
 
-////3
-//int[] numbers = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+int i = 0;
 
-//while (numbers.Length > 1)
-//{
-//    int[] condensedNumbers = new int[numbers.Length - 1];
+while (arr.Length > 1)
+{
+    if (i == arr.Length - 1)
+    {
+        arr = arr2;
+        arr2 = new int[arr.Length - 1];
+        i = 0;
+    }
+    else
+    {
+        arr2[i] = arr[i] + arr[i + 1];
+        i++;
+    }
+}
 
-//    for (int i = 0; i < condensedNumbers.Length; i++)
-//    {
-//        condensedNumbers[i] = numbers[i] + numbers[i + 1];
-//    }
+Console.WriteLine(arr[0]);
 
-//    numbers = condensedNumbers;
-//}
 
-//Console.WriteLine(numbers[0]);
+
+
+//3
+int[] numbers = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+
+while (numbers.Length > 1)
+{
+    int[] condensedNumbers = new int[numbers.Length - 1];
+
+    for (int i = 0; i < condensedNumbers.Length; i++)
+    {
+        condensedNumbers[i] = numbers[i] + numbers[i + 1];
+    }
+
+    numbers = condensedNumbers;
+}
+
+Console.WriteLine(numbers[0]);

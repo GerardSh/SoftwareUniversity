@@ -81,70 +81,73 @@ static void MergeElements(string[] commands, List<string> list)
     }
 }
 
-////2
-//List<string> list = Console.ReadLine()
-//    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-//    .ToList();
 
-//string input;
 
-//while ((input = Console.ReadLine()) != "3:1")
-//{
-//    string[] commands = input
-//        .Split(" ", StringSplitOptions.RemoveEmptyEntries);
-//    string command = commands[0];
 
-//    if (command == "merge")
-//    {
-//        int startIndex = int.Parse(commands[1]);
-//        int endIndex = int.Parse(commands[2]);
+//2
+List<string> list = Console.ReadLine()
+    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+    .ToList();
 
-//        if (startIndex < 0)
-//        {
-//            startIndex = 0;
-//        }
+string input;
 
-//        if (endIndex > list.Count - 1)
-//        {
-//            endIndex = list.Count - 1;
-//        }
+while ((input = Console.ReadLine()) != "3:1")
+{
+    string[] commands = input
+        .Split(" ", StringSplitOptions.RemoveEmptyEntries);
+    string command = commands[0];
 
-//        if (endIndex < startIndex)
-//        {
-//            continue;
-//        }
+    if (command == "merge")
+    {
+        int startIndex = int.Parse(commands[1]);
+        int endIndex = int.Parse(commands[2]);
 
-//        string mergedElemenets = "";
+        if (startIndex < 0)
+        {
+            startIndex = 0;
+        }
 
-//        for (int i = startIndex; i <= endIndex; i++)
-//        {
-//            mergedElemenets += list[i];
-//        }
+        if (endIndex > list.Count - 1)
+        {
+            endIndex = list.Count - 1;
+        }
 
-//        list.RemoveRange(startIndex, endIndex - startIndex + 1);
-//        list.Insert(startIndex, mergedElemenets);
-//    }
-//    else if (command == "divide")
-//    {
-//        int index = int.Parse(commands[1]);
-//        int partitions = int.Parse(commands[2]);
+        if (endIndex < startIndex)
+        {
+            continue;
+        }
 
-//        string element = list[index];
-//        list.RemoveAt(index);
+        string mergedElemenets = "";
 
-//        int partitionSize = element.Length / partitions;
+        for (int i = startIndex; i <= endIndex; i++)
+        {
+            mergedElemenets += list[i];
+        }
 
-//        string[] subElements = new string[partitions];
+        list.RemoveRange(startIndex, endIndex - startIndex + 1);
+        list.Insert(startIndex, mergedElemenets);
+    }
+    else if (command == "divide")
+    {
+        int index = int.Parse(commands[1]);
+        int partitions = int.Parse(commands[2]);
 
-//        for (int i = 0; i < partitions - 1; i++)
-//        {
-//            subElements[i] = element.Substring(partitionSize * i, partitionSize);
-//        }
+        string element = list[index];
+        list.RemoveAt(index);
 
-//        subElements[subElements.Length - 1] = element.Substring((partitions - 1) * partitionSize);
+        int partitionSize = element.Length / partitions;
 
-//        list.InsertRange(index, subElements);
-//    }
-//}
+        string[] subElements = new string[partitions];
 
-//Console.WriteLine(string.Join(" ", list));
+        for (int i = 0; i < partitions - 1; i++)
+        {
+            subElements[i] = element.Substring(partitionSize * i, partitionSize);
+        }
+
+        subElements[subElements.Length - 1] = element.Substring((partitions - 1) * partitionSize);
+
+        list.InsertRange(index, subElements);
+    }
+}
+
+Console.WriteLine(string.Join(" ", list));

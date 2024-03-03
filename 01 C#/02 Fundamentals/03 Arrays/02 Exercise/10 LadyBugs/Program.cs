@@ -59,71 +59,74 @@ while ((inputArr = Console.ReadLine().Split())[0] != "end")
 
 Console.WriteLine(string.Join(" ", fieldArr));
 
-////2
-//int fieldSize = int.Parse(Console.ReadLine());
-//int[] indexes = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
 
-//bool[] field = new bool[fieldSize];
 
-//foreach (int index in indexes)
-//{
-//    if (index >= 0 && index < field.Length)
-//    {
-//        field[index] = true;
-//    }
-//}
 
-//string input;
+//2
+int fieldSize = int.Parse(Console.ReadLine());
+int[] indexes = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
 
-//while ((input = Console.ReadLine()) != "end")
-//{
-//    string[] inputArr = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+bool[] field = new bool[fieldSize];
 
-//    int index = int.Parse(inputArr[0]);
-//    string command = inputArr[1];
-//    int movingLength = int.Parse(inputArr[2]);
+foreach (int index in indexes)
+{
+    if (index >= 0 && index < field.Length)
+    {
+        field[index] = true;
+    }
+}
 
-//    if (index >= 0 && index < field.Length && field[index])
-//    {
-//        bool hasFledOrLanded = false;
-//        field[index] = false;
+string input;
 
-//        while (!hasFledOrLanded)
-//        {
-//            if (command == "right")
-//            {
-//                index += movingLength;
-//            }
-//            else
-//            {
-//                index -= movingLength;
-//            }
+while ((input = Console.ReadLine()) != "end")
+{
+    string[] inputArr = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
-//            if (index < 0 || index >= field.Length)
-//            {
-//                hasFledOrLanded = true;
-//            }
-//            else if (field[index])
-//            {
-//                continue;
-//            }
-//            else
-//            {
-//                field[index] = true;
-//                hasFledOrLanded = true;
-//            }
-//        }
-//    }
-//}
+    int index = int.Parse(inputArr[0]);
+    string command = inputArr[1];
+    int movingLength = int.Parse(inputArr[2]);
 
-//foreach (var element in field)
-//{
-//    if (element)
-//    {
-//        Console.Write("1 ");
-//    }
-//    else
-//    {
-//        Console.Write("0 ");
-//    }
-//}
+    if (index >= 0 && index < field.Length && field[index])
+    {
+        bool hasFledOrLanded = false;
+        field[index] = false;
+
+        while (!hasFledOrLanded)
+        {
+            if (command == "right")
+            {
+                index += movingLength;
+            }
+            else
+            {
+                index -= movingLength;
+            }
+
+            if (index < 0 || index >= field.Length)
+            {
+                hasFledOrLanded = true;
+            }
+            else if (field[index])
+            {
+                continue;
+            }
+            else
+            {
+                field[index] = true;
+                hasFledOrLanded = true;
+            }
+        }
+    }
+}
+
+foreach (var element in field)
+{
+    if (element)
+    {
+        Console.Write("1 ");
+    }
+    else
+    {
+        Console.Write("0 ");
+    }
+}

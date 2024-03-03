@@ -35,12 +35,7 @@ foreach (var kvp in namesByCourses)
 
 
 
-
-
-
-
-
-//2 new variant
+//2
 var namesByCourses = new Dictionary<string, List<string>>();
 
 string input;

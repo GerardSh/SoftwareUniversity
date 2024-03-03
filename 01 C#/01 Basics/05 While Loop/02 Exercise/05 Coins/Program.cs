@@ -52,56 +52,58 @@ if ((int)change / 1 > 0)
 
 Console.WriteLine(coinCounter);
 
-// Second variant
-
-//double change = double.Parse(Console.ReadLine());
-
-//int coins = 0;
-//int changeInCoins = (int)(change * 100);
 
 
-//while (changeInCoins > 0)
-//{
-//    if (changeInCoins / 200 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 200;
-//    }
-//    else if (changeInCoins / 100 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 100;
-//    }
-//    else if (changeInCoins / 50 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 50;
-//    }
-//    else if (changeInCoins / 20 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 20;
-//    }
-//    else if (changeInCoins / 10 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 10;
-//    }
-//    else if (changeInCoins / 5 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 5;
-//    }
-//    else if (changeInCoins / 2 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 2;
-//    }
-//    else if (changeInCoins / 1 > 0)
-//    {
-//        coins++;
-//        changeInCoins -= 1;
-//    }
-//}
 
-//Console.WriteLine(coins);
+2
+double change = double.Parse(Console.ReadLine());
+
+int coins = 0;
+int changeInCoins = (int)(change * 100);
+
+
+while (changeInCoins > 0)
+{
+    if (changeInCoins / 200 > 0)
+    {
+        coins++;
+        changeInCoins -= 200;
+    }
+    else if (changeInCoins / 100 > 0)
+    {
+        coins++;
+        changeInCoins -= 100;
+    }
+    else if (changeInCoins / 50 > 0)
+    {
+        coins++;
+        changeInCoins -= 50;
+    }
+    else if (changeInCoins / 20 > 0)
+    {
+        coins++;
+        changeInCoins -= 20;
+    }
+    else if (changeInCoins / 10 > 0)
+    {
+        coins++;
+        changeInCoins -= 10;
+    }
+    else if (changeInCoins / 5 > 0)
+    {
+        coins++;
+        changeInCoins -= 5;
+    }
+    else if (changeInCoins / 2 > 0)
+    {
+        coins++;
+        changeInCoins -= 2;
+    }
+    else if (changeInCoins / 1 > 0)
+    {
+        coins++;
+        changeInCoins -= 1;
+    }
+}
+
+Console.WriteLine(coins);

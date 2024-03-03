@@ -106,14 +106,6 @@ namespace ConsoleApp
 
 
 
-
-
-
-
-
-
-
-
 //2
 public static void Main()
 {
@@ -208,11 +200,6 @@ static void AddResources(Dictionary<string, int> quantityByResource, string reso
 
     quantityByResource[resource] += int.Parse(quantity);
 }
-
-
-
-
-
 
 
 

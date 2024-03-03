@@ -124,8 +124,6 @@ Console.WriteLine(decodedTransmission);
 
 
 
-
-
 //2
 using System.Text;
 

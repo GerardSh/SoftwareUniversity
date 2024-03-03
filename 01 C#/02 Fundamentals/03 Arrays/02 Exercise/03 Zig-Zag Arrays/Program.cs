@@ -26,48 +26,51 @@ for (int i = 0; i < n; i++)
 Console.WriteLine(string.Join(" ", firstArr));
 Console.WriteLine(string.Join(" ", secondArr));
 
-////2
-//int n = int.Parse(Console.ReadLine());
-//string digitsA = "";
-//string digitsB = "";
-//string arrayA = "";
-//string arrayB = "";
 
-//for (int i = 0; i < n; i++)
-//{
-//    string input = Console.ReadLine();
 
-//    string currentDigit = "";
 
-//    for (int j = 0; j < input.Length; j++)
-//    {
-//        if (input[j] != ' ')
-//        {
-//            currentDigit += input[j];
-//        }
-//        else if (input[j] == ' ')
-//        {
-//            digitsA = currentDigit;
-//            currentDigit = "";
-//        }
+//2
+int n = int.Parse(Console.ReadLine());
+string digitsA = "";
+string digitsB = "";
+string arrayA = "";
+string arrayB = "";
 
-//        if (j == input.Length - 1)
-//        {
-//            digitsB = currentDigit;
-//        }
-//    }
+for (int i = 0; i < n; i++)
+{
+    string input = Console.ReadLine();
 
-//    if (i % 2 == 0)
-//    {
-//        arrayA += digitsA + " ";
-//        arrayB += digitsB + " ";
-//    }
-//    else
-//    {
-//        arrayA += digitsB + " ";
-//        arrayB += digitsA + " ";
-//    }
-//}
+    string currentDigit = "";
 
-//Console.WriteLine(arrayA);
-//Console.WriteLine(arrayB);
+    for (int j = 0; j < input.Length; j++)
+    {
+        if (input[j] != ' ')
+        {
+            currentDigit += input[j];
+        }
+        else if (input[j] == ' ')
+        {
+            digitsA = currentDigit;
+            currentDigit = "";
+        }
+
+        if (j == input.Length - 1)
+        {
+            digitsB = currentDigit;
+        }
+    }
+
+    if (i % 2 == 0)
+    {
+        arrayA += digitsA + " ";
+        arrayB += digitsB + " ";
+    }
+    else
+    {
+        arrayA += digitsB + " ";
+        arrayB += digitsA + " ";
+    }
+}
+
+Console.WriteLine(arrayA);
+Console.WriteLine(arrayB);

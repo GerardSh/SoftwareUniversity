@@ -22,22 +22,25 @@ static void CheckPalindrome(string number)
     Console.WriteLine(isValid);
 }
 
-////2
-//string input;
 
-//while ((input = Console.ReadLine()) != "END")
-//{
-//    CheckPalindrome(input);
-//}
 
-//static void CheckPalindrome(string number)
-//{
-//    bool isValid = false;
 
-//    if (number == string.Concat(number.Reverse()))
-//    {
-//        isValid = true;
-//    }
+//2
+string input;
 
-//    Console.WriteLine(isValid);
-//}
+while ((input = Console.ReadLine()) != "END")
+{
+    CheckPalindrome(input);
+}
+
+static void CheckPalindrome(string number)
+{
+    bool isValid = false;
+
+    if (number == string.Concat(number.Reverse()))
+    {
+        isValid = true;
+    }
+
+    Console.WriteLine(isValid);
+}

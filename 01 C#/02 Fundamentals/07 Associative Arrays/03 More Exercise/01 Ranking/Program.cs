@@ -77,9 +77,6 @@ foreach (var kvp in usersByContests)
 
 
 
-
-
-
 //2
 var passwordsByContests = new Dictionary<string, string>();
 

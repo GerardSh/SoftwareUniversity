@@ -19,29 +19,33 @@ while (n3 <= n)
     Console.WriteLine();
     n2++;
 }
-//second variant
-//int n = int.Parse(Console.ReadLine());
 
-//int digits = 1;
 
-//bool stop = false;
 
-//for (int rows = 1; rows <= n; rows++)
-//{
-//    for (int col = 1; col <= rows; col++)
-//    {
-//        if (digits > n)
-//        {
-//            stop = true;
-//            break;
-//        }
-//        Console.Write(digits + " ");
-//        digits++;
 
-//    }
-//    if (stop)
-//    {
-//        break;
-//    }
-//    Console.WriteLine();
-//}
+//2
+int n = int.Parse(Console.ReadLine());
+
+int digits = 1;
+
+bool stop = false;
+
+for (int rows = 1; rows <= n; rows++)
+{
+    for (int col = 1; col <= rows; col++)
+    {
+        if (digits > n)
+        {
+            stop = true;
+            break;
+        }
+        Console.Write(digits + " ");
+        digits++;
+
+    }
+    if (stop)
+    {
+        break;
+    }
+    Console.WriteLine();
+}

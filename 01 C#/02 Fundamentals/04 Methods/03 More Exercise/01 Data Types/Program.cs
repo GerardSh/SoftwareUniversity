@@ -50,60 +50,63 @@
     }
 }
 
-////Other approach
-//class MyClass
-//{
-//    static void Main()
-//    {
-//        string value = Console.ReadLine();
-//        string dataType = Console.ReadLine();
 
 
-//        if (int.TryParse(dataType, out int valueInt))
-//        {
-//            valueInt = DataTypeManipulator(valueInt);
-//            Console.WriteLine(valueInt);
 
-//        }
-//        else if (double.TryParse(dataType, out double valueDouble))
-//        {
-//            valueDouble = DataTypeManipulator(valueDouble);
-//            Console.WriteLine($"{valueDouble:f2}");
-//        }
-//        else
-//        {
-//            dataType = DataTypeManipulator(dataType);
-//            Console.WriteLine($"{dataType:f2}");
-//        }
-//    }
+//2
+class MyClass
+{
+    static void Main()
+    {
+        string value = Console.ReadLine();
+        string dataType = Console.ReadLine();
 
-//    /// <summary>
-//    /// Manipulates the value according to the data type.
-//    /// </summary>
-//    /// <param name="dataType"></param>
-//    /// <returns></returns>
-//    static string DataTypeManipulator(string dataType)
-//    {
-//        return $"${dataType:f2}$";
-//    }
 
-//    /// <summary>
-//    /// Manipulates the value according to the data type.
-//    /// </summary>
-//    /// <param name="dataType"></param>
-//    /// <returns></returns>
-//    static int DataTypeManipulator(int dataType)
-//    {
-//        return dataType * 2;
-//    }
+        if (int.TryParse(dataType, out int valueInt))
+        {
+            valueInt = DataTypeManipulator(valueInt);
+            Console.WriteLine(valueInt);
 
-//    /// <summary>
-//    /// Manipulates the value according to the data type.
-//    /// </summary>
-//    /// <param name="dataType"></param>
-//    /// <returns></returns>
-//    static double DataTypeManipulator(double dataType)
-//    {
-//        return dataType * 1.5;
-//    }
-//}
+        }
+        else if (double.TryParse(dataType, out double valueDouble))
+        {
+            valueDouble = DataTypeManipulator(valueDouble);
+            Console.WriteLine($"{valueDouble:f2}");
+        }
+        else
+        {
+            dataType = DataTypeManipulator(dataType);
+            Console.WriteLine($"{dataType:f2}");
+        }
+    }
+
+    /// <summary>
+    /// Manipulates the value according to the data type.
+    /// </summary>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    static string DataTypeManipulator(string dataType)
+    {
+        return $"${dataType:f2}$";
+    }
+
+    /// <summary>
+    /// Manipulates the value according to the data type.
+    /// </summary>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    static int DataTypeManipulator(int dataType)
+    {
+        return dataType * 2;
+    }
+
+    /// <summary>
+    /// Manipulates the value according to the data type.
+    /// </summary>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    static double DataTypeManipulator(double dataType)
+    {
+        return dataType * 1.5;
+    }
+}

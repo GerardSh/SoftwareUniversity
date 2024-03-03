@@ -52,18 +52,21 @@ newList.Reverse();
 
 Console.WriteLine(string.Join(" ", newList));
 
-////2
-//List<string> arrays = Console.ReadLine()
-//    .Split("|", StringSplitOptions.RemoveEmptyEntries)
-//    .ToList();
 
-//List<string> mergedArrays = new List<string>();
 
-//for (int i = arrays.Count - 1; i >= 0; i--)
-//{
-//    mergedArrays.AddRange(arrays[i]
-//        .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-//        .ToList());
-//}
 
-//Console.WriteLine(string.Join(" ", mergedArrays));
+//2
+List<string> arrays = Console.ReadLine()
+    .Split("|", StringSplitOptions.RemoveEmptyEntries)
+    .ToList();
+
+List<string> mergedArrays = new List<string>();
+
+for (int i = arrays.Count - 1; i >= 0; i--)
+{
+    mergedArrays.AddRange(arrays[i]
+        .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+        .ToList());
+}
+
+Console.WriteLine(string.Join(" ", mergedArrays));

@@ -129,11 +129,6 @@ namespace ConsoleApp
 
 
 
-
-
-
-
-
 //2
 using System;
 using System.Collections.Generic;
