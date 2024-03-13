@@ -14,11 +14,11 @@
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303193156.png)
 
 `[^abc]` - с ^ дефинираме множество от символи, които не трябва да се съдържат.
-## [Predefined Classes](03%20Regex.md#PredefinedClasses)
+## [Predefined Classes](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#PredefinedClasses)
 Това са шаблони които се ползват много често. Работят само с латинската азбука. Голямата буква е тяхното отрицание. 
-## [Quantifiers](03%20Regex.md#Quantifiers)
+## [Quantifiers](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Quantifiers)
 Стоят след символ и определят колко пъти въпросния символ трябва да се повтаря. Понеже са специални символи, ако искаме да търсим по тях, трябва да се escape-нат с `\`
-## [Grouping Constructs](03%20Regex.md#GroupingConstructs)
+## [Grouping Constructs](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#GroupingConstructs)
 `(subexpression)` - Capture group - ползват се за две неща:
 1. Да се промени приоритета на операциите. Ако имаме | оператор и всички възможности са верни, то взима най-лявата.
 2. Позволяват да вземем части от текста и да извършим действия върху тях. Тогава всяка такава група има индекс, който може да използваме за да вземем информацията, която ни трябва.
