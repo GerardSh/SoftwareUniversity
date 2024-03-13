@@ -65,5 +65,8 @@
 `Replace(text, replacment)` - връща текста с направените промени.
 
 `Split(text, pattern)` - split-ва даден текст по зададения шаблон и връща масив. В pattern-а не трябва да има capture groups защото те развалят сплита.
+
 # Properties
 `Success` - връща bool при успешно намиране на match.
+
+# Commands
