@@ -1,8 +1,9 @@
 # General
-[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#String)
+[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Methods)
 
-[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#String)
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md)
 
+[Regex](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md)
 
 Последователност от символи, които ни позволяват да открием съвпадения в даден текст. Използват се само и единствено за обработка на текст.
 Това което прави регекс-а е да търси съвпадения по определен pattern (шаблон), който се дефинира със специален синтаксис.
@@ -10,7 +11,7 @@
 `[abxz]` - квадратните скоби дефинират възможно множество в рамките на един символ, в търсения текст. Може да бъде и интервал `[0-9]+`, който се определя по кодовата таблица с която работим. Задаваме символ от който започваме и символ в който свършва интервала, като и двата крайни символа също влизат. Интервалите може и да се групират `[a-co-x]`
 Когато имаме `[A-Z][a-z]*` това са интервали за два символа, звездичката означава, че може да имаме много символи от втория интервал.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/Pasted%20image%2020240303193156.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303193156.png)
 
 `[^abc]` - с ^ дефинираме множество от символи, които не трябва да се съдържат.
 ## [Predefined Classes](03%20Regex.md#PredefinedClasses)
@@ -26,30 +27,35 @@
 Всеки `Match` по default има като първа група с индекс 0 целия намерен резултат.
 Можем да достъпим стойността на даден capture group по името или индекса - `match.Groups["FirstName"]`
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/Pasted%20image%2020240303220142.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303220142.png)
+
 ## Backreferences
 Позволява ни ако сме extract-нали някаква част от текста, да я използваме по нататък в самия регулярен израз.
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/Pasted%20image%2020240304224131.png)
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240304224131.png)
+
 Мач-ваме второто b по референцията от първото което сме открили в скобите. На мястото на символа, може да е всичко и точно това е идеята, да открием какво има и после да го ползваме обратно напред в expression-a. Най често се ползва с числа `\number`. Ползват се числата от capture групите.
 ## CSharp
 Имаме Regex клас, който може да ползваме. Желателно е като си дефинираме pattern-a да ползваме string verbatim @, за да няма нужда да escape-ваме чарове.
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/Pasted%20image%2020240304225829.png)
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240304225829.png)
 
 Използваме класа `Match` с метода `Match(text)` за вземане на резултата от търсенето, което ще бъде първия намерен резултат. За да получим всички резултати, използваме класа `MatchCollection` с метода `Matches(text)` Намерените резултати, ще бъдат вкарани в масив, където всеки един от елементите ще бъде от типа `Match`
 
 Полезни сайтове:
 [RegExr: Learn, Build, & Test RegEx](https://regexr.com/)
+
 [regex101: build, test, and debug regex](https://regex101.com/)
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/Pasted%20image%2020240303191609.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303191609.png)
 
-Тук може да изберем кой engine да ползваме, дали вградения в нашия browser или на самия сървър.
+Тук може да изберем кой engine да ползваме, дали вградения в browser-а или на самия сървър.
 Флаговете отдясно примерно global, означава че търсим не просто едно съвпадение, а всички съвпадения в текста.
 В tools долу в сайта, имаме обяснения какво се случва, като групира нещата в expression-a и елементите в tools по цветове.
-В таба List на tools, ще даде всички мачнати елементи.
+В таба List на tools, ще даде всички match-нати елементи.
 В менюто имаме characters set с примери, имаме и cheatsheet и много друга полезна информация.
 
-Regex се използва първо за откриване на дадена информация - дали нещо което отговаря на шаблона съществува в нашия текст. Също може да извадим това което е мачнато в capture група.
+Regex се използва първо за откриване на дадена информация - дали нещо което отговаря на шаблона, съществува в нашия текст. Също може да извадим това което е match-нато в capture група.
 Може нещото което е намерено, да бъде заменено, а също може и да split-нем данните
 # Misc
 Когато работим с regex реално въпроса е колко пъти дадения шаблон, се съдържа в текста където търсим.
