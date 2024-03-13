@@ -1,7 +1,7 @@
 # General
 [Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Methods)
 
-[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md)
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Commands)
 
 [Regex](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md)
 
@@ -91,6 +91,7 @@ The placement of the alternation operator affects the grouping and the scope of 
 In regular expressions, a "word character" is typically defined as any alphanumeric character (a-z, A-Z, 0-9) or an underscore (_). A "non-word character" is any character that is not a word character.
 # Bookmarks 
 [RegExr: Learn, Build, & Test RegEx](https://regexr.com/)
+
 [regex101: build, test, and debug regex](https://regex101.com/)
 
 Course completion: 13.03.2024
