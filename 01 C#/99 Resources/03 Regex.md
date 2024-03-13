@@ -31,6 +31,7 @@
 
 `\b` - отляво и отдясно, символите трябва да са word и non word, ползва се когато искаме да хванем думи или символи, които нямат преди или след тях други word символи.
 ```
+\bTest\b
 - Before the first `\b`, there should be a position where the preceding character is a non-word character or the start of the string.
 - After the second `\b`, there should be a position where the following character is a non-word character or the end of the string.
 ```
