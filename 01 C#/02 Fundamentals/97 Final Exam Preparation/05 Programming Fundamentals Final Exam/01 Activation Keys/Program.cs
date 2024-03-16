@@ -24,25 +24,15 @@ while ((input = Console.ReadLine()) != "Generate")
     }
     else if (command == "Flip")
     {
-        string lowerUpper = commands[1];
+        string casing = commands[1];
         int startIndx = int.Parse(commands[2]);
         int endIndx = int.Parse(commands[3]);
         int count = endIndx - startIndx;
 
-        if (lowerUpper == "Lower")
-        {
-            string temp = rawActivationKey.Substring(0, startIndx);
-            temp += rawActivationKey.Substring(startIndx, count).ToLower();
-            temp += rawActivationKey.Substring(endIndx);
-            rawActivationKey = temp;
-        }
-        else
-        {
-            string temp = rawActivationKey.Substring(0, startIndx);
-            temp += rawActivationKey.Substring(startIndx, count).ToUpper();
-            temp += rawActivationKey.Substring(endIndx);
-            rawActivationKey = temp;
-        }
+        string temp = rawActivationKey.Substring(0, startIndx);
+        temp += casing == "Lower" ? rawActivationKey.Substring(startIndx, count).ToLower() : rawActivationKey.Substring(startIndx, count).ToUpper();
+        temp += rawActivationKey.Substring(endIndx);
+        rawActivationKey = temp;
 
         Console.WriteLine(rawActivationKey);
     }
