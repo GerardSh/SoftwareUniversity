@@ -1,1 +1,1 @@
-Containing usefull information orginized in categories.
+Containing usefull C# information orginized in categories.
