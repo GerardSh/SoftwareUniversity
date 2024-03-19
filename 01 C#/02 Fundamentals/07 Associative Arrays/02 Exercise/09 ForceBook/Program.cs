@@ -227,3 +227,94 @@ namespace ConsoleApp
         }
     }
 }
+
+
+
+
+//3
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace ConsoleApp
+{
+    class Test
+    {
+        static void Main()
+        {
+            Dictionary<string, List<string>> usersBySide = new Dictionary<string, List<string>>();
+            string input;
+
+            while ((input = Console.ReadLine()) != "Lumpawaroo")
+            {
+                if (input.Contains("|"))
+                {
+                    string[] firstCommand = input
+                  .Split(" | ", StringSplitOptions.RemoveEmptyEntries);
+
+                    string forceSide = firstCommand[0];
+                    string forceUser = firstCommand[1];
+
+                    bool doesExist = false;
+
+                    foreach (var users in usersBySide.Values)
+                    {
+                        if (users.Contains(forceUser))
+                        {
+                            doesExist = true;
+                            break;
+                        }
+                    }
+
+                    if (!usersBySide.ContainsKey(forceSide))
+                    {
+                        usersBySide.Add(forceSide, new List<string>());
+                    }
+
+                    if (!doesExist)
+                    {
+                        usersBySide[forceSide].Add(forceUser);
+                    }
+                }
+                else
+                {
+                    string[] secondCommand = input
+            .Split(" -> ", StringSplitOptions.RemoveEmptyEntries);
+
+                    string forceSide = secondCommand[1];
+                    string forceUser = secondCommand[0];
+
+                    foreach (var users in usersBySide.Values)
+                    {
+                        users.Remove(forceUser);
+                    }
+
+                    if (!usersBySide.ContainsKey(forceSide))
+                    {
+                        usersBySide.Add(forceSide, new List<string>());
+                    }
+
+                    usersBySide[forceSide].Add(forceUser);
+
+                    Console.WriteLine($"{forceUser} joins the {forceSide} side!");
+                }
+            }
+
+            usersBySide = usersBySide.OrderByDescending(x => x.Value.Count).ThenBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+
+            foreach (var kvp in usersBySide)
+            {
+                if (kvp.Value.Count > 0)
+                {
+                    Console.WriteLine($"Side: {kvp.Key}, Members: {kvp.Value.Count}");
+
+                    foreach (var user in kvp.Value.OrderBy(x => x))
+                    {
+                        Console.WriteLine($"! {user}");
+                    }
+                }
+            }
+        }
+    }
+}
