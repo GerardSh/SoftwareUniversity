@@ -104,3 +104,48 @@ while (numbers.IndexOf(specialNumber) != -1)
 }
 
 Console.WriteLine(numbers.Sum());
+
+
+
+
+//3
+List<int> numbers = Console.ReadLine().Split(" ").Select(int.Parse).ToList();
+
+int[] bombData = Console.ReadLine().Split(" ").Select(int.Parse).ToArray();
+
+int bomb = bombData[0];
+int power = bombData[1];
+
+for (int i = 0; i < numbers.Count; i++)
+{
+    int startIndex = 0;
+    int endIndex = 0;
+
+    if (numbers[i] == bomb)
+    {
+        if (i - power < 0)
+        {
+            startIndex = 0;
+        }
+        else
+        {
+            startIndex = i - power;
+        }
+
+        if (i + power >= numbers.Count)
+        {
+            endIndex = numbers.Count - 1;
+        }
+        else
+        {
+            endIndex = i + power;
+        }
+
+        int count = endIndex - startIndex + 1;
+
+        numbers.RemoveRange(startIndex, count);
+        i = -1;
+    }
+}
+
+Console.WriteLine(numbers.Sum());
