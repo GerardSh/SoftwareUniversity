@@ -24,7 +24,7 @@ while ((input = Console.ReadLine().ToLower()) != "end")
     {
         int number = int.Parse(commands[1]);
 
-        if (stack.Count > number)
+        if (stack.Count >= number)
         {
             while (number > 0)
             {
