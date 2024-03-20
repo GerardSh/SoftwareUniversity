@@ -318,3 +318,86 @@ namespace ConsoleApp
         }
     }
 }
+
+
+
+
+//4
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace ConsoleApp
+{
+    class Test
+    {
+        static void Main()
+        {
+            Dictionary<string, string> sideByUsers = new Dictionary<string, string>();
+
+            string input;
+
+            while ((input = Console.ReadLine()) != "Lumpawaroo")
+            {
+                if (input.Contains("|"))
+                {
+                    string[] firstCommand = input
+                  .Split(" | ", StringSplitOptions.RemoveEmptyEntries);
+
+                    string forceSide = firstCommand[0];
+                    string forceUser = firstCommand[1];
+
+                    if (!sideByUsers.ContainsKey(forceUser))
+                    {
+                        sideByUsers.Add(forceUser, forceSide);
+                    }
+                }
+                else
+                {
+                    string[] secondCommand = input
+            .Split(" -> ", StringSplitOptions.RemoveEmptyEntries);
+
+                    string forceSide = secondCommand[1];
+                    string forceUser = secondCommand[0];
+
+                    sideByUsers[forceUser] = forceSide;
+
+                    Console.WriteLine($"{forceUser} joins the {forceSide} side!");
+                }
+            }
+
+            Dictionary<string, List<string>> usersBySide = new Dictionary<string, List<string>>();
+
+            SwitchingDictionaries(sideByUsers, usersBySide);
+
+            usersBySide = usersBySide.OrderByDescending(x => x.Value.Count).ThenBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+
+            foreach (var kvp in usersBySide)
+            {
+                if (kvp.Value.Count > 0)
+                {
+                    Console.WriteLine($"Side: {kvp.Key}, Members: {kvp.Value.Count}");
+
+                    foreach (var user in kvp.Value.OrderBy(x => x))
+                    {
+                        Console.WriteLine($"! {user}");
+                    }
+                }
+            }
+        }
+
+        private static void SwitchingDictionaries(Dictionary<string, string> sideByUsers, Dictionary<string, List<string>> usersBySide)
+        {
+            foreach (var kvp in sideByUsers)
+            {
+                if (!usersBySide.ContainsKey(kvp.Value))
+                {
+                    usersBySide.Add(kvp.Value, new List<string>());
+                }
+
+                usersBySide[kvp.Value].Add(kvp.Key);
+            }
+        }
+    }
+}
