@@ -61,3 +61,71 @@ for (int i = 0; i < n; i++)
 }
 
 Console.WriteLine(index);
+
+
+
+
+//2
+public class PetrolPump
+{
+    public PetrolPump(int fuel, int distance)
+    {
+        this.Fuel = fuel;
+        this.Distance = distance;
+    }
+
+    public int Fuel { get; set; }
+    public int Distance { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+
+        int n = int.Parse(Console.ReadLine());
+
+        Queue<PetrolPump> pumps = new Queue<PetrolPump>();
+
+        for (int i = 0; i < n; i++)
+        {
+            int[] elements = Console.ReadLine()
+                .Split()
+                .Select(int.Parse)
+                .ToArray();
+
+            pumps.Enqueue(new PetrolPump(elements[0], elements[1]));
+        }
+
+        int index = 0;
+
+        for (int i = 0; i <= n; i++)
+        {
+            int fuel = 0;
+
+            foreach (PetrolPump pump in pumps)
+            {
+                fuel += pump.Fuel - pump.Distance;
+
+                if (fuel < 0)
+                {
+                    pumps.Enqueue(pumps.Dequeue());
+                    break;
+                }
+            }
+
+            if (fuel >= 0)
+            {
+                index = i;
+                break;
+            }
+            else if (i == pumps.Count - 1)
+            {
+                index = -1;
+                break;
+            }
+        }
+
+        Console.WriteLine(index);
+    }
+}
