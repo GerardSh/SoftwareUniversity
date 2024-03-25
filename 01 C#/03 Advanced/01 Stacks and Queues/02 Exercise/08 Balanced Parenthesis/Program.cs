@@ -8,9 +8,9 @@ if (input.Length % 2 != 0 || input.Length == 0)
 
 Stack<char> stack = new Stack<char>();
 
-bool isEqual = true;
+bool isBalanced = true;
 
-for (int i = 0; i < input.Length && isEqual; i++)
+for (int i = 0; i < input.Length && isBalanced; i++)
 {
     if (input[i] == '(' || input[i] == '[' || input[i] == '{')
     {
@@ -19,17 +19,17 @@ for (int i = 0; i < input.Length && isEqual; i++)
     else
     {
         if (stack.Count == 0
-            || (input[i] == ')' && stack.Pop() != '('
+            || input[i] == ')' && stack.Pop() != '('
             || input[i] == ']' && stack.Pop() != '['
-            || input[i] == '}' && stack.Pop() != '{'))
+            || input[i] == '}' && stack.Pop() != '{')
         {
-            isEqual = false;
+            isBalanced = false;
             break;
         }
     }
 }
 
-if (isEqual)
+if (isBalanced)
 {
     Console.WriteLine("YES");
 }
