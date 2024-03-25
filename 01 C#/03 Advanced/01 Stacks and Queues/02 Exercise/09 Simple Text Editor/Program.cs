@@ -25,6 +25,12 @@ for (int i = 0; i < numberOfOperations; i++)
 
         textVersions.Push(text.ToString());
         text.Remove(text.Length - elementsToDelete, elementsToDelete);
+
+        //sec variant
+        //while (elementsToDelete-- > 0)
+        //{
+        //    text.Remove(text.Length - 1, 1);
+        //}
     }
     else if (command == 3)
     {
