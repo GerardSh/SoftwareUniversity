@@ -1,30 +1,33 @@
 ﻿string input = Console.ReadLine();
 
-Stack<char> stack = new Stack<char>(input);
-Queue<char> queue = new Queue<char>(input);
-
-bool isEqual = true;
-
-if (input.Length % 2 != 0)
+if (input.Length % 2 != 0 || input.Length == 0)
 {
     Console.WriteLine("NO");
     return;
 }
 
-for (int i = 0; i < input.Length / 2; i++)
-{
-    char firstChar = queue.Dequeue();
-    char secondChar = stack.Pop();
+Stack<char> stack = new Stack<char>();
 
-    if (firstChar == '{' && secondChar != '}'
-        || firstChar == '[' && secondChar != ']'
-        || firstChar == '(' && secondChar != ')')
+bool isEqual = true;
+
+for (int i = 0; i < input.Length && isEqual; i++)
+{
+    if (input[i] == '(' || input[i] == '[' || input[i] == '{')
     {
-        isEqual = false;
-        break;
+        stack.Push(input[i]);
+    }
+    else
+    {
+        if (stack.Count == 0
+            || (input[i] == ')' && stack.Pop() != '('
+            || input[i] == ']' && stack.Pop() != '['
+            || input[i] == '}' && stack.Pop() != '{'))
+        {
+            isEqual = false;
+            break;
+        }
     }
 }
-
 
 if (isEqual)
 {
