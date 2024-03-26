@@ -23,10 +23,17 @@ while ((input = Console.ReadLine()) != "END")
             remainingSeconds -= passingCar.Length;
             passedCars++;
 
+            //needed for variant 2
+            //int remainingSecondsOriginal = remainingSeconds;
+
             if (remainingSeconds + freeWindow < 0)
             {
                 Console.WriteLine("A crash happened!");
                 Console.WriteLine($"{passingCar} was hit at {passingCar[passingCar.Length - (remainingSeconds + freeWindow) * -1]}.");
+
+                //variant 2
+                //Console.WriteLine($"{passingCar} was hit at {passingCar[remainingSecondsOriginal + freeWindow]}.");
+
                 return;
             }
         }
