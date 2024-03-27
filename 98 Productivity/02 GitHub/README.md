@@ -72,7 +72,7 @@ When you're working with pull requests, these terms are often used in the contex
 
 - **Base Branch:** The branch you want to merge changes into.
 - **Compare Branch:** The branch that contains the changes you want to merge.
-## Remotename
+## Remote name
 Yes, the remote name is a local configuration in your Git repository. When you rename a remote, such as changing from "origin" to "personal" as in the example, this change is only reflected locally in your specific clone of the repository.
 
 The remote name is used as a convenient alias for the URL of the remote repository. It helps you refer to the remote repository using a short and memorable name rather than the full URL. Other collaborators may have different names for the same remote.
