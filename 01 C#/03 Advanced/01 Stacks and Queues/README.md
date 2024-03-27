@@ -1,11 +1,11 @@
 # General
-[Methods Stack](01%20Methods.md#Stack)
+[Methods Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Stack)
 
-[Methods Queue](01%20Methods.md#Queue)
+[Methods Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Queue)
 
-[Commands Stack](02%20Commands.md#Stack)
+[Commands Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Stack)
 
-[Commands Queue](02%20Commands.md#Queue)
+[Commands Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Queue)
 
 При линейните структури от данни каквито са списъците и масивът, елементите са разположени последователно, като всеки елемент при тях е и индексиран/номериран. 
 
@@ -53,15 +53,25 @@ ChatGPT
 In C#, `T[]` represents a generic array type where `T` is a placeholder for any valid C# data type. This notation allows you to define arrays that can hold elements of a specific type, which can be specified when declaring or creating the array.
 # Bookmarks 
 Два много основополагащи курса на Николай Костов:
+
 [High-Quality Code - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwJO9dE-XR9-iKbp_kw3_ZQy)
+
 [Data Structures and Algorithms - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwLwDCbpFtQLj1_587a3asv5)
+
 Web Basics курс:
+
 [C# Web Basics - Workshop - Web Application. Advanced CSS - Bootstrap - май 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=iG2UBr2fAqg&list=PLg6sCysjxHi2V49e08g5UPLTME8MOzRsc&index=1)
+
 Полезна лекция как работи интернет, пак на Николай Костов:
+
 [Internet Explained - YouTube](https://www.youtube.com/watch?v=1pSsIlU3T-s)
+
 Бонус задача от текущата лекция:
+
 [Бонус: Решаване на математически изрази със стекове - Софтуерен университет](https://softuni.bg/trainings/resources/video/64613/bonus-evaluate-math-expressions-using-stacks-csharp-advanced-september-2021/3483)
+
 [Решаване на математически изрази със C# - YouTube](https://www.youtube.com/watch?v=3QOM0HJmakE&t=2s)
+
 # Home work
 ### Lab
 1. Reverse a String
