@@ -51,7 +51,7 @@ Forking - ако копираме чуждо repository. Това се прав�
 
 Когато има промяна в сървъра и дадем fetch в клиента, ни показва че има commit който трябва да Pull-нем, но не ни показва точната промяна. За да видим промяната във файла, трябва да отворим терминала и от там да дадем въведем командата `git fetch` и после `git diff main origin/main` - може да заместим имената на branch-a. origin/main e repository-то на сървъра, докато main branch-a е локалното repo. 
 
-При клониране на repository му се дава име, което е [origin](04%20GitHub.md##Remotename) по default. Ако имаме повече от едно локално repository, трябва да сменим името, за да не стават конфликти. 
+При клониране на repository му се дава име, което е [origin](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md04%20GitHub.md##Remote%20name) по default. Ако имаме повече от едно локално repository, трябва да сменим името, за да не стават конфликти. 
 
 Когато commit-ваме през конзолата, реално всеки commit е пълно копие на това как е изглеждала директорията и може да я възстановим в този й вид, ако имаме hash номера на HEAD-а.
 
@@ -71,7 +71,7 @@ When you're working with pull requests, these terms are often used in the contex
 
 - **Base Branch:** The branch you want to merge changes into.
 - **Compare Branch:** The branch that contains the changes you want to merge.
-## Remotename
+## Remote name
 Yes, the remote name is a local configuration in your Git repository. When you rename a remote, such as changing from "origin" to "personal" as in the example, this change is only reflected locally in your specific clone of the repository.
 
 The remote name is used as a convenient alias for the URL of the remote repository. It helps you refer to the remote repository using a short and memorable name rather than the full URL. Other collaborators may have different names for the same remote.
