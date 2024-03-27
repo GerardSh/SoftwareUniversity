@@ -51,7 +51,7 @@ double test = double.Parse("123test123".Split("test", StringSplitOptions.RemoveE
 ```
 След като това този масив може да го трансформираме, ползвайки select метода, примерно да парснем всеки елемент в double, но върнатия резултат вече не е масив и трябва да ползваме `ToArray()` метода. Select минава през всеки един елемент от колекцията и изпълнява действие върху него. Ако имаме Select(Double.Parse) double.parse , тоест подаваме метод към друг метод, това се нарича делегат.. Той е отговорен да извика метода върху всеки един елемент от колекцията, когато му потрябва. Ако сложим скобата на метода, то това означава че го извикваме на момента.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240109224417.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240109224417.png)
 
 Проблема е че метода селект връща Enumerable, което означава просто колекция, нищо повече. Тази колекция, трябва да я превърнем в масив и да я запишем там. Това става чрез ToArray() метода.
 
@@ -69,7 +69,7 @@ So, `Split` creates an array, and `Select` transforms each element of that array
 Функционалното програмиране се задава какъв резултат искаме и то се случва. Води се по скоро декларативно и ние казваме какво искаме да постигнем, а не как това да се случи.
 Systemlink е функционално програмиране вътре в C# и работи единствено с колекции, от които масивите са част.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240109214356.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240109214356.png)
 
 ключето означава пропърти на обекта.
 кубчето е метод, тоест действие което въпросния обект може да изпълнява.
