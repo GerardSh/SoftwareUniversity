@@ -10,7 +10,7 @@
 - Конкатенация - долепяне на текстове
 - Интерполация:
   
- ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%202023113.png)
+ ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%202023113.png)
 
   - Регрешън промени - наричаме тези промени които са направени след като кода е работил добре, но след направените промени се държи по друг начин.
 

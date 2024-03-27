@@ -34,21 +34,21 @@ Console.WriteLine(add(4, 5));
 ```
 В първата част чрез "Func" казваме че искаме функция, която връща резултат int(третия инт в поредицата), и има две променливи от тип int и се казва add. След знака за = я инициализираме и казваме как да се казват двете променливи, във скобите а след знака => казваме какво се случва с подадените променливи:
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240131104402.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240131104402.png)
 
 Истинската сила на тези функции идва че могат да се декларират като параметър в стандартен метод и реално всеки път когато извикваме стандартната функция, ние инициализираме lambda функцията, това дава голяма гъвкавост и означава, че може да променяме имената на променливите и тяхната логика:
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240131110320.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240131110320.png)
 
 Това е и принципа, на който работи Where() метода в LINQ.
 
 Също можем като стандартна променлива, да даваме нова стойност на създадената функция:
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240131110637.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240131110637.png)
 
 Гъвкавостта особено много се вижда в примера долу, където само с една функция, ние променяме логиката при инициализирането, а иначе имаме нужда от два метода:
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240131112648.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240131112648.png)
 
 ```
 List<int> list = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };

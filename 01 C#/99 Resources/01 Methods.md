@@ -7,7 +7,7 @@
 
 `First(optional predicate)` - връща първия елемент в колекцията, ако няма такъв дава грешка, ако се ползва без predicate, връща първия елемент.
 
-`Any(predicate)` - връща true или false.
+`Any(optional predicate)` - връща true или false.
 
 `OrderBy(key selector function)` - връща нова колекция подредена и сортирана по посочените критерии, полезно когато искаме да подредим обекти по дадено пропърти. След него може да се ползва `ThenBy(key selector function)` за допълнително сортиране. The key selector function is used to extract a key from each element in the sequence, and the elements are then sorted based on these keys.
 
@@ -28,12 +28,10 @@
 
 `SelectMany(Selector)` - обединява няколко nested collections, в примера долу values са няколко вътрешни речника:
 	`test.Values.SelectMany(innerDictionary => innerDictionary).ToDictionary(x => x.Key, x => x.Value);`
-# List + Array
-`Contains(element)` - проверява дали даден елемент се съдържа, връща bool резултат.
-
-`Sort()` - подрежда елементите в нарастващ ред.
 # List
 `Add(element);` - добавяме като последен елемент.
+
+`Contains(element)` - проверява дали даден елемент се съдържа, връща bool резултат.
 
 `AddRange(array);` - добавя колекция след края на елементите.
 
@@ -41,6 +39,8 @@
 `newList = list.Skip(2).ToList();`
 
 `listName.TrimExcess();` - изравнява капацитета и count-a.
+
+`Sort()` - подрежда елементите в нарастващ ред.
 
 `Remove(element)` - изтрива първият посочен елемент, като връща true or false дали е успял. А също и пренарежда останалите елементи, защото не оставя дупка.
 
@@ -67,6 +67,8 @@
 `Array.IndexOf(arr, element)` - намира индекса в редицата.
 
 `Array.Find(arr, predicate)` - работи по същия начин като `FirstOrDefault` от систем LINQ.
+
+`Contains(element)` - проверява дали даден елемент се съдържа, връща bool резултат.
 # Dictionary
 `Add(key,value)` - добавя елемент в масива. Ако съществува, ще върне exception.
 
@@ -78,6 +80,30 @@
 `FirstOrDeffault(optional predicate)` - може да намерим, кой е дадения key на определена стойност.
 
 `ToDictionary(x => x.Key, x => x.Value)` - взима елементите от друго dictionary, може да разменим местата на key и value и ще имаме обърнато dictionary.
+# Stack
+`Push(value)` - вкарва елемент в масива.
+
+`Pop()` - маха последния елемент от масива и го връща като стойност.
+
+`Peek()` - показва последния елемент в масива.
+
+`Clear()` - маха всички елементи.
+
+`ToArray()` - вкарва елементите в масив.
+
+`Contains(value)` - проверява дали даден елемент се съдържа.
+# Queue
+`Enqueue(value)` - вкарва елемент в масива.
+
+`Dequeue()` - маха последния елемент от масива и го връща като стойност.
+
+`Peek()` - показва последния елемент в масива.
+
+`Clear()` - маха всички елементи.
+
+`ToArray()` - вкарва елементите в масив.
+
+`Contains(value)` - проверява дали даден елемент се съдържа.
 # Math
 `Math.Round()` - закръгля от .5 нагорe, останалите стойности надолу
 
@@ -124,7 +150,9 @@ string[] test2 = test
 `Trim('optionalCharToDelete')`- изтрива началните и крайните посочени символи, без параметър, изтрива празните пространства.
 
 `Insert(index, textToInsert)` - вкарва текст започващ от даден индекс.
-## StringBuilder
+
+`Distinct()` - взима само първите уникални елементи в даден стринг и ги вкарва в колекция от чарове, другите биват изтрити.
+# StringBuilder
 Повечето от методите за стринг ги има и тук.
 
 `Append()` - добавя нов стринг.

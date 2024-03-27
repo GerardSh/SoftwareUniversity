@@ -1,98 +1,75 @@
 # General
-[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Methods)
+[Methods Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Stack)
 
-[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Commands)
+[Methods Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Queue)
 
-[Regex](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md)
+[Commands Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Stack)
 
-Последователност от символи, които ни позволяват да открием съвпадения в даден текст. Използват се само и единствено за обработка на текст.
-Това което прави регекс-а е да търси съвпадения по определен pattern (шаблон), който се дефинира със специален синтаксис.
+[Commands Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Queue)
 
-`[abxz]` - квадратните скоби дефинират възможно множество в рамките на един символ, в търсения текст. Може да бъде и интервал `[0-9]+`, който се определя по кодовата таблица с която работим. Задаваме символ от който започваме и символ в който свършва интервала, като и двата крайни символа също влизат. Интервалите може и да се групират `[a-co-x]`
-Когато имаме `[A-Z][a-z]*` това са интервали за два символа, звездичката означава, че може да имаме много символи от втория интервал.
+При линейните структури от данни каквито са списъците и масивът, елементите са разположени последователно, като всеки елемент при тях е и индексиран/номериран. 
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303193156.png)
+Новите линейни структури от данни в тази лекция са:
+`Stack<t>` - (LIFO - last in, first out) - аналогията е на купчина чинии една върху друга, когато започнем да ги махаме, почваме от последната.
+`Queue<t>` - (FIFO - first in, first out) - който дойде първи на опашката, първи ще бъде обслужен и ще си тръгне.
 
-`[^abc]` - с ^ дефинираме множество от символи, които не трябва да се съдържат.
-## [Predefined Classes](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#PredefinedClasses)
-Това са шаблони които се ползват много често. Работят само с латинската азбука. Голямата буква е тяхното отрицание. 
-## [Quantifiers](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#Quantifiers)
-Стоят след символ и определят колко пъти въпросния символ трябва да се повтаря. Понеже са специални символи, ако искаме да търсим по тях, трябва да се escape-нат с `\`
-## [Grouping Constructs](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/03%20Regex.md#GroupingConstructs)
-`(subexpression)` - Capture group - ползват се за две неща:
-1. Да се промени приоритета на операциите. Ако имаме | оператор и всички възможности са верни, то взима най-лявата.
-2. Позволяват да вземем части от текста и да извършим действия върху тях. Тогава всяка такава група има индекс, който може да използваме за да вземем информацията, която ни трябва.
-`(?:subexpression)` Когато искаме да ги ползваме само за приоритет, ползваме non-capturing group.
-`(?<name>subexpression)` - Именувана capture group, върнатата информация може да я търсим освен по индекс, но и по името което сме сложили.
-Всеки `Match` по default има като първа група с индекс 0 целия намерен резултат.
-Можем да достъпим стойността на даден capture group по името или индекса - `match.Groups["FirstName"]`
+При стековете и опашките последователността на елементите не е толкова важна, там е важно кой елемент е влезнал последен и кой първи.
+При тях пак добавяме елементите най-отзад, но при стековете нямаме достъп до предишните елементи, а само до последните, при опашките имаме достъп само до първия елемент, но не и следващите.
+Това е и основната разлика със списъците, като реално стековете и опашките имат по-малко операции, но пък се извършват бързо Добавянето и махането на елементи е в точно определен ред, но е много бързо.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303220142.png)
+Вкарване на елемент при стека се нарича Push, махането е Pop, при опашката се нарича Enqueue, махането Dequeue.
 
-## Backreferences
-Позволява ни ако сме extract-нали някаква част от текста, да я използваме по нататък в самия регулярен израз.
+Компютърната памет, също е разположена линейно, като един огромен масив и си има последователност и номерация, точно както масива, като част от него, се заделя за нашата програма.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240304224131.png)
-
-Мач-ваме второто b по референцията от първото което сме открили в скобите. На мястото на символа, може да е всичко и точно това е идеята, да открием какво има и после да го ползваме обратно напред в expression-a. Най често се ползва с числа `\number`. Ползват се числата от capture групите.
-## CSharp
-Имаме Regex клас, който може да ползваме. Желателно е като си дефинираме pattern-a да ползваме string verbatim @, за да няма нужда да escape-ваме чарове.
-
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240304225829.png)
-
-Използваме класа `Match` с метода `Match(text)` за вземане на резултата от търсенето, което ще бъде първия намерен резултат. За да получим всички резултати, използваме класа `MatchCollection` с метода `Matches(text)` Намерените резултати, ще бъдат вкарани в масив, където всеки един от елементите ще бъде от типа `Match`
-
-Полезни сайтове:
-
-[RegExr: Learn, Build, & Test RegEx](https://regexr.com/)
-
-[regex101: build, test, and debug regex](https://regex101.com/)
-
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240303191609.png)
-
-Тук може да изберем кой engine да ползваме, дали вградения в browser-а или на самия сървър.
-Флаговете отдясно примерно global, означава че търсим не просто едно съвпадение, а всички съвпадения в текста.
-В tools долу в сайта, имаме обяснения какво се случва, като групира нещата в expression-a и елементите в tools по цветове.
-В таба List на tools, ще даде всички match-нати елементи.
-В менюто имаме characters set с примери, имаме и cheatsheet и много друга полезна информация.
-
-Regex се използва първо за откриване на дадена информация - дали нещо което отговаря на шаблона, съществува в нашия текст. Също може да извадим това което е match-нато в capture група.
-Може нещото което е намерено, да бъде заменено, а също може и да split-нем данните
+Идемпотентна операция е тези която колкото и пъти да направим, не променя резултата си. Нещата отдолу имат логика която ползваме, те извикват друга логика и така до най-ниско ниво. Примерно ако ползваме open file което е специален метов в C#, а той извиква специален метод от операционната система Win32, който извиква специален метод от драйвера за файловата система, който на ниско ниво слиза и казва на хард диска какво да направи. Затова се нарича абстракция, пишейки на C# работим на почти най-високото ниво и нещата отдолу са вече готови, написани и проверени. Ако трябва да напишем от нула отварянето на файл, ще стане с хиляди редове, а не с един.
 # Misc
-Когато работим с regex реално въпроса е колко пъти дадения шаблон, се съдържа в текста където търсим.
+Всяко нещо което може да бъде направено чрез рекурсия, може да бъде постигнато и чрез стек.
 
-Ако искаме да вложим променливи в pattern-а, може да ползваме string interpolation. Aко тази променлива е част от quantifier, се escape-ва с двойни `{{{}}}`,  където вътрешните скоби са част от string interpolation-а, а външните съставят quantifier-a:
-```
-string symbol = "[A]";
-int number = 4;
-Match match = Regex.Match("AAAA", @$"{symbol}{{{number}}}");
+Кода който пишем в C# е на високо ниво, тоест стъпваме на готов код, който вече е написан.
 
-//The above pattern is the same as:
-Match match2 = Regex.Match("AAAA", @"[A]{4}");
-```
+C# е стек-ов език. 
 
-Най-сигурния начин да намерим дадена дума независимо от какви символи е съставена, само ако е разделена от space-ове или е в началото/края на текста - `(?<=\s|^)[^\s]+(?=\s|$)` 
+Масива е базова структура, която представлява последователност от адреси в паметта на компютъра.
+
+IEnumerable е интерфейс - който ни казва, какво може да прави дадената колекция. В дадения случай, означава че може да бъде foreach-ната. Можем да проверим дадена колекция, какви интерфейси имплементира в документацията, примерно Stack - [Stack Class (System.Collections.Generic) | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-8.0)
+
+foreach е най-лесния начин да проверим стойностите на елементите в даден стек или опашка.
+
+Разликата между Generic collection  като `Stack<T>` и просто `Stack` е че в Generic ние определяме типа на колекцията на мястото на `<T>` , докато Non-Generic е от тип object. Всички типове в C# наследяват object, но това не е удобно за работа когато ползваме колекция. Компилатора, не може да проверява грешките, които може да допуснем и доста други усложнения. MS препоръчват да се ползват само generic collections.
 # ChatGPT
-## Capture Groups
-`(\d|\d{2})-Dec-1994` here we first check which is true d or d2 and then we check for the other text if its there, but here without the capture group - `\d|\d{2}-Dec-1994` the check is if we have d OR d2-Dec-1994, the whole expression after the or operator
+## Stack indexing
+Isn't it more logical and natural that the last added element in the stack is residing on the last index in the internal array not the first 0?
 
 ChatGPT
-Yes, you've correctly identified the difference in behavior between the two regular expressions.
+Yes, you're correct in the logical sense. Placing the most recently added element at the end of the internal array for a stack would align more with the natural flow of adding elements to a stack. Similarly, for a queue, it would make sense to have the first element added at the beginning of the internal array and subsequent elements placed further towards the end.
 
-In the regular expression `(\d|\d{2})-Dec-1994`, the parentheses create a capturing group, and the alternation (`|`) operator applies to either a single digit (`\d`) or two consecutive digits (`\d{2}`). After that, the rest of the pattern (`-Dec-1994`) must match.
+However, the choice of implementation details, including the arrangement of elements within the internal array, can vary based on factors such as performance considerations, memory management, and ease of implementation. In some implementations, it may be more efficient to manage the internal array in a way that the most recently added element is at index 0 for a stack or at the end for a queue.
 
-So, the logic is: "Match either a single digit or two consecutive digits, followed by '-Dec-1994'."
+While it might seem more intuitive to have the last added element at the end of the array, the choice of internal representation doesn't affect the external behavior of the stack or queue as long as the required operations (`Push`, `Pop` for `Stack`; `Enqueue`, `Dequeue` for `Queue`) are provided and work as expected.
+## T[] array
+what is t[] array in C#
 
-In the regular expression `\d|\d{2}-Dec-1994`, the alternation (`|`) applies directly to the whole pattern on both sides of it. This means it's saying: "Match either a single digit (`\d`) or the pattern `\d{2}-Dec-1994`."
-
-So, the logic is: "Match either a single digit or the entire pattern '\d{2}-Dec-1994'."
-
-The placement of the alternation operator affects the grouping and the scope of what is being alternated. This distinction is important for constructing regex patterns that accurately reflect the intended logic and pattern matching criteria.
-## Word and non word chars
-In regular expressions, a "word character" is typically defined as any alphanumeric character (a-z, A-Z, 0-9) or an underscore (_). A "non-word character" is any character that is not a word character.
+ChatGPT
+In C#, `T[]` represents a generic array type where `T` is a placeholder for any valid C# data type. This notation allows you to define arrays that can hold elements of a specific type, which can be specified when declaring or creating the array.
 # Bookmarks 
-[RegExr: Learn, Build, & Test RegEx](https://regexr.com/)
+Два много основополагащи курса на Николай Костов:
 
-[regex101: build, test, and debug regex](https://regex101.com/)
+[High-Quality Code - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwJO9dE-XR9-iKbp_kw3_ZQy)
 
-Course completion: 13.03.2024
+[Data Structures and Algorithms - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwLwDCbpFtQLj1_587a3asv5)
+
+Web Basics курс:
+
+[C# Web Basics - Workshop - Web Application. Advanced CSS - Bootstrap - май 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=iG2UBr2fAqg&list=PLg6sCysjxHi2V49e08g5UPLTME8MOzRsc&index=1)
+
+Полезна лекция как работи интернет, пак на Николай Костов:
+
+[Internet Explained - YouTube](https://www.youtube.com/watch?v=1pSsIlU3T-s)
+
+Бонус задача от текущата лекция:
+
+[Бонус: Решаване на математически изрази със стекове - Софтуерен университет](https://softuni.bg/trainings/resources/video/64613/bonus-evaluate-math-expressions-using-stacks-csharp-advanced-september-2021/3483)
+
+[Решаване на математически изрази със C# - YouTube](https://www.youtube.com/watch?v=3QOM0HJmakE&t=2s)
+
+Course completion: 26.03.2024

@@ -31,7 +31,7 @@ char[] test3 = test2.ToCharArray();
 
 ## [StringBuilder](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#StringBuilder)
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240226130823.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240226130823.png)
 
 String builder-a има капацитет където добавя стринговете. Нарича се буфер и затова работи по-бързо от конкатенацията.
 Създава се като се направи нова инстанция на класа - `StringBuilder test = new StringBuilder();` в конструктора може да се зададе началния капацитет.

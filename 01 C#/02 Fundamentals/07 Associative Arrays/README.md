@@ -5,7 +5,7 @@
 
 JSON е един от най-разпространените формати за обмяна на данни в web приложенията писани на различни езици и реално представлява асоциативен масив. Той съдържа колекция от KVP - key value pair стойности. Достъпа до елементите в този масив не става чрез индекси, а чрез ключове. Тези ключове обикновено са текст, но може да бъдат всичко, включително числа. Ако са числа, то реално си става нормален масив. Имаме свободата да избираме какви са индексите.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240214142906.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240214142906.png)
 
 В едно dictionary ключовете трябва да са от еднакъв тип, стойностите може да са друг тип но пак трябва да са еднакви.
 Всички ключове трябва да са уникални и техният ред във вътрешния масив, следва реда в който са добавени. 
@@ -25,7 +25,7 @@ test.Add("test4", "test4");
 
 Използва се hash-table + list за да се намират бързо елементи.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240214143729.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240214143729.png)
 
 Имаме и SortedDictionary което пази елементите не в реда който сме ги вкарали, но сортирани по ключове.
 Използва балансирано дърво за търсене за да подрежда ключовете.
@@ -154,7 +154,7 @@ static int IntManipulator(int x)
 ```
 
 С курсора на мишката върху даден елемент може да видим с какво value и key е:
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020240220171053.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240220171053.png)
 
 Можем да ползваме като Key - KeyValuePair, това е много подходящо, когато имаме проблем със сортирането, както в задача 04. Snowwhite, където решение 5 е с такъв подход.
 `var dwarfs = new Dictionary<KeyValuePair<string, string>, int>();`
