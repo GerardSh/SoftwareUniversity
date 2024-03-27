@@ -9,11 +9,11 @@ Scope - where you can access a variable (global, local).
 Lifetime - how long a variable stays in memory.
 Span - колко време преди да ползваме променливата сме я декларирали. Желателно е да се декларира максимално близо до блока от код където се ползва, с цел четимост.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020231228201450.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020231228201450.png)
 
 Eдин бит се губи за знак, когато има отрицателни стойности.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020231228202938.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020231228202938.png)
 
 Literal-и наричаме стойностите които даваме в началото на променливите. Литерала може да е от всеки тип - double, integer, bool.. 
 
