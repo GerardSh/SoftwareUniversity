@@ -2,7 +2,7 @@
 
 ### Оператори
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%202023114.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%202023114.png)
 
 Операторите в C# могат да бъдат разделени в няколко различни категории: 	
 - Аритметични – също както в математиката, служат за извършване на прости математически операции. 	
@@ -12,12 +12,12 @@
 - Побитови оператори – използват се за извършване на операции върху двоичното представяне на числови данни. 	
 - Оператори за преобразуване на типовете – позволяват преобразу-ването на данни от един тип в друг. 	
 	
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%202023117.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%202023117.png)
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%202023116.png)
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%2020231123161621.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%202023116.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020231123161621.png)
 ### Променливи
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/a/Pasted%20image%202023115.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%202023115.png)
 
 # Misc
 
