@@ -56,6 +56,10 @@ foreach (var outerKvp in test)
     }
 }
 ```
+# Stack
+`stack = new Stack<int>(stack.Reverse());` - бърз начин да обърнем елементите в стака.
+# Queue
+`queue = new Queue<int>(queue.Reverse());` - бърз начин да обърнем елементите в кю-то.
 # String
 # Misc
 `Console.WriteLine((50 % 60 < 10 ? "0" : "1"));` - Проверява дали нещо е изпълнено и връща резултат.
