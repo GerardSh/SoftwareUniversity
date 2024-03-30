@@ -124,3 +124,131 @@ static void AddHeroes(Dictionary<string, int> hpByHero, Dictionary<string, int> 
         }
     }
 }
+
+
+
+
+//2
+class Hero
+{
+    public int HP { get; set; }
+    public int MP { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        int n = int.Parse(Console.ReadLine());
+
+        Dictionary<string, Hero> heroes = new Dictionary<string, Hero>();
+
+        for (int i = 0; i < n; i++)
+        {
+            string[] elements = Console.ReadLine().Split();
+
+            string heroName = elements[0];
+            int hP = int.Parse(elements[1]);
+            int mP = int.Parse(elements[2]);
+
+            if (hP > 100)
+            {
+                hP = 100;
+            }
+
+            if (mP > 200)
+            {
+                mP = 200;
+            }
+
+            heroes.Add(heroName, new Hero()
+            {
+                HP = hP,
+                MP = mP
+            });
+        }
+
+        string input;
+
+        while ((input = Console.ReadLine()) != "End")
+        {
+            string[] elements = input
+                .Split(" - ", StringSplitOptions.RemoveEmptyEntries);
+
+            string command = elements[0];
+            string heroName = elements[1];
+
+            if (!heroes.ContainsKey(heroName))
+            {
+                continue;
+            }
+
+            if (command == "CastSpell")
+            {
+                int mpNeeded = int.Parse(elements[2]);
+                string spellName = elements[3];
+
+                if (heroes[heroName].MP >= mpNeeded)
+                {
+                    heroes[heroName].MP -= mpNeeded;
+                    Console.WriteLine($"{heroName} has successfully cast {spellName} and now has {heroes[heroName].MP} MP!");
+                }
+                else
+                {
+                    Console.WriteLine($"{heroName} does not have enough MP to cast {spellName}!");
+                }
+            }
+            else if (command == "TakeDamage")
+            {
+                int damage = int.Parse(elements[2]);
+                string attacker = elements[3];
+
+                if (heroes[heroName].HP > damage)
+                {
+                    heroes[heroName].HP -= damage;
+
+                    Console.WriteLine($"{heroName} was hit for {damage} HP by {attacker} and now has {heroes[heroName].HP} HP left!");
+                }
+                else
+                {
+                    Console.WriteLine($"{heroName} has been killed by {attacker}!");
+
+                    heroes.Remove(heroName);
+                }
+            }
+            else if (command == "Recharge")
+            {
+                int amountRecovered = int.Parse(elements[2]);
+
+                if (amountRecovered + heroes[heroName].MP > 200)
+                {
+                    amountRecovered -= heroes[heroName].MP + amountRecovered - 200;
+                }
+
+                heroes[heroName].MP += amountRecovered;
+
+                Console.WriteLine($"{heroName} recharged for {amountRecovered} MP!");
+            }
+            else
+            {
+                int amountRecovered = int.Parse(elements[2]);
+
+                if (amountRecovered + heroes[heroName].HP > 100)
+                {
+                    amountRecovered -= heroes[heroName].HP + amountRecovered - 100;
+                }
+
+                heroes[heroName].HP += amountRecovered;
+
+                Console.WriteLine($"{heroName} healed for {amountRecovered} HP!");
+            }
+        }
+
+        foreach (var hero in heroes)
+        {
+            Console.WriteLine($"{hero.Key}");
+            Console.WriteLine($"  HP: {hero.Value.HP}");
+            Console.WriteLine($"  MP: {hero.Value.MP}");
+        }
+    }
+}
