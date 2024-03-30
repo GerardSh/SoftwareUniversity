@@ -32,3 +32,26 @@ foreach (Match match in matches)
 {
     Console.WriteLine($"Item: {match.Groups["name"]}, Best before: {match.Groups["expiration"]}, Nutrition: {match.Groups["nutrition"].Value}");
 }
+
+
+
+
+//3
+using System.Text.RegularExpressions;
+
+string text = Console.ReadLine();
+
+MatchCollection matches = Regex.Matches(text, @"(#|\|)([a-zA-Z\s]+)\1(\d\d\/\d\d\/\d\d)\1([0-99999]{1,5}|100000)\1");
+
+int calories = matches.Sum(x => int.Parse(x.Groups[4].Value));
+
+Console.WriteLine($"You have food to last you for: {calories / 2000} days!");
+
+foreach (Match match in matches)
+{
+    string item = match.Groups[2].Value;
+    string date = match.Groups[3].Value;
+    int nutrition = int.Parse(match.Groups[4].Value);
+
+    Console.WriteLine($"Item: {item}, Best before: {date}, Nutrition: {nutrition}");
+}
