@@ -60,3 +60,64 @@ while ((input = Console.ReadLine()) != "Done")
 }
 
 Console.WriteLine($"Your password is: {password}");
+
+
+
+
+//2
+string password = Console.ReadLine();
+
+string input;
+
+while ((input = Console.ReadLine()) != "Done")
+{
+    string[] elements = input
+        .Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+    string command = elements[0];
+
+    if (command == "TakeOdd")
+    {
+        string editedPassword = "";
+
+        for (int i = 0; i < password.Length; i++)
+        {
+            if (i % 2 == 1)
+            {
+                editedPassword += password[i];
+            }
+        }
+
+        password = editedPassword;
+    }
+    else if (command == "Cut")
+    {
+        int index = int.Parse(elements[1]);
+        int length = int.Parse(elements[2]);
+
+        string substring = password.Substring(index, length);
+        password = password.Remove(password.IndexOf(substring), length);
+    }
+    else
+    {
+        string substring = elements[1];
+        string substitute = elements[2];
+
+        if (password.Contains(substring))
+        {
+            while (password.Contains(substring))
+            {
+                password = password.Replace(substring, substitute);
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Nothing to replace!");
+            continue;
+        }
+    }
+
+    Console.WriteLine(password);
+}
+
+Console.WriteLine($"Your password is: {password}");
