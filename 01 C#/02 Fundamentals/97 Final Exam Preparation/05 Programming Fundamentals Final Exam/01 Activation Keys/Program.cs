@@ -49,3 +49,67 @@ while ((input = Console.ReadLine()) != "Generate")
 }
 
 Console.WriteLine($"Your activation key is: {rawActivationKey}");
+
+
+
+
+//2
+using System;
+using System.Text;
+
+StringBuilder activationKey = new StringBuilder(Console.ReadLine());
+
+string input;
+
+while ((input = Console.ReadLine()) != "Generate")
+{
+    string[] elements = input
+        .Split(">>>", StringSplitOptions.RemoveEmptyEntries);
+
+    string command = elements[0];
+
+    if (command == "Contains")
+    {
+        string substring = elements[1];
+
+        if (activationKey.ToString().Contains(substring))
+        {
+            Console.WriteLine($"{activationKey} contains {substring}");
+        }
+        else
+        {
+            Console.WriteLine("Substring not found!");
+        }
+    }
+    else if (command == "Flip")
+    {
+        string upperLower = elements[1];
+        int startIndex = int.Parse(elements[2]);
+        int endIndex = int.Parse(elements[3]);
+        int count = endIndex - startIndex;
+
+        string substring = activationKey.ToString().Substring(startIndex, count).ToLower();
+
+        if (upperLower == "Upper")
+        {
+            substring = substring.ToUpper();
+        }
+
+        activationKey.Remove(startIndex, count);
+        activationKey.Insert(startIndex, substring);
+
+        Console.WriteLine(activationKey);
+    }
+    else
+    {
+        int startIndex = int.Parse(elements[1]);
+        int endIndex = int.Parse(elements[2]);
+        int count = endIndex - startIndex;
+
+        activationKey.Remove(startIndex, count);
+
+        Console.WriteLine(activationKey);
+    }
+}
+
+Console.WriteLine($"Your activation key is: {activationKey}");
