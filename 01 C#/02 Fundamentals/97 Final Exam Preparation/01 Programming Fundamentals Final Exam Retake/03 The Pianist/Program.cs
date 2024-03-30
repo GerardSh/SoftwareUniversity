@@ -90,3 +90,101 @@ foreach (var piece in orderOfPieces)
 {
     Console.WriteLine($"{piece} -> Composer: {composersByPieces[piece]}, Key: {keysByPieces[piece]}");
 }
+
+
+
+
+//2
+class Piece
+{
+    public string Composer { get; set; }
+    public string Key { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        int n = int.Parse(Console.ReadLine());
+
+        Dictionary<string, Piece> pieces = new Dictionary<string, Piece>();
+
+        for (int i = 0; i < n; i++)
+        {
+            string[] elements = Console.ReadLine().Split("|");
+
+            Piece piece = new Piece()
+            {
+                Composer = elements[1],
+                Key = elements[2]
+            };
+
+            pieces.Add(elements[0], piece);
+        }
+
+        string input;
+
+        while ((input = Console.ReadLine()) != "Stop")
+        {
+            string[] elements = input
+                .Split("|", StringSplitOptions.RemoveEmptyEntries);
+
+            string command = elements[0];
+            string piece = elements[1];
+
+            if (command == "Add")
+            {
+                string composer = elements[2];
+                string key = elements[3];
+
+                if (pieces.ContainsKey(piece))
+                {
+                    Console.WriteLine($"{piece} is already in the collection!");
+                }
+                else
+                {
+                    pieces.Add(piece, new Piece()
+                    {
+                        Composer = composer,
+                        Key = key
+                    });
+
+                    Console.WriteLine($"{piece} by {composer} in {key} added to the collection!");
+                }
+            }
+            else if (command == "Remove")
+            {
+                if (pieces.ContainsKey(piece))
+                {
+                    pieces.Remove(piece);
+
+                    Console.WriteLine($"Successfully removed {piece}!");
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid operation! {piece} does not exist in the collection.");
+                }
+            }
+            else
+            {
+                string newKey = elements[2];
+
+                if (pieces.ContainsKey(piece))
+                {
+                    pieces[piece].Key = newKey;
+
+                    Console.WriteLine($"Changed the key of {piece} to {newKey}!");
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid operation! {piece} does not exist in the collection.");
+                }
+            }
+        }
+
+        foreach (var piece in pieces)
+        {
+            Console.WriteLine($"{piece.Key} -> Composer: {piece.Value.Composer}, Key: {piece.Value.Key}");
+        }
+    }
+}
