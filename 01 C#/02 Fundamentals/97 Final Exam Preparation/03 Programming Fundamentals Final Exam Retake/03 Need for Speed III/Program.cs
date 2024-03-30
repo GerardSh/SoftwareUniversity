@@ -90,3 +90,107 @@ static void AddCars(Dictionary<string, int[]> cars, int n)
         cars.Add(carName, new int[] { carDistance, carFuel });
     }
 }
+
+
+
+
+//2
+class Car
+{
+    public int Milage { get; set; }
+    public int Fuel { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        int n = int.Parse(Console.ReadLine());
+
+        Dictionary<string, Car> cars = new Dictionary<string, Car>();
+
+        for (int i = 0; i < n; i++)
+        {
+            string[] elements = Console.ReadLine().Split("|");
+
+            Car car = new Car()
+            {
+                Milage = int.Parse(elements[1]),
+                Fuel = int.Parse(elements[2]),
+            };
+
+            cars.Add(elements[0], car);
+        }
+
+        string input;
+
+        while ((input = Console.ReadLine()) != "Stop")
+        {
+            string[] elements = input
+                .Split(" : ", StringSplitOptions.RemoveEmptyEntries);
+
+            string command = elements[0];
+            string car = elements[1];
+
+            if (command == "Drive")
+            {
+                int distance = int.Parse(elements[2]);
+                int fuel = int.Parse(elements[3]);
+
+                if (cars[car].Fuel < fuel)
+                {
+                    Console.WriteLine("Not enough fuel to make that ride");
+                    continue;
+                }
+                else
+                {
+                    cars[car].Fuel -= fuel;
+                    cars[car].Milage += distance;
+                }
+
+                Console.WriteLine($"{car} driven for {distance} kilometers. {fuel} liters of fuel consumed.");
+
+                if (cars[car].Milage >= 100000)
+                {
+                    Console.WriteLine($"Time to sell the {car}!");
+                    cars.Remove(car);
+                }
+            }
+            else if (command == "Refuel")
+            {
+                int fuel = int.Parse(elements[2]);
+
+                if (cars[car].Fuel + fuel > 75)
+                {
+                    fuel -= cars[car].Fuel + fuel - 75;
+                    cars[car].Fuel = 75;
+                }
+                else
+                {
+                    cars[car].Fuel += fuel;
+                }
+
+                Console.WriteLine($"{car} refueled with {fuel} liters");
+            }
+            else if (command == "Revert")
+            {
+                int kilometers = int.Parse(elements[2]);
+
+                if (cars[car].Milage - kilometers < 10000)
+                {
+                    cars[car].Milage = 10000;
+                }
+                else
+                {
+                    cars[car].Milage -= kilometers;
+                    Console.WriteLine($"{car} mileage decreased by {kilometers} kilometers");
+                }
+            }
+        }
+
+        foreach (var kvp in cars)
+        {
+            Console.WriteLine($"{kvp.Key} -> Mileage: {kvp.Value.Milage} kms, Fuel in the tank: {kvp.Value.Fuel} lt.");
+        }
+    }
+}
