@@ -50,3 +50,59 @@ while ((input = Console.ReadLine()) != "Reveal")
 }
 
 Console.WriteLine($"You have a new text message: {message}");
+
+
+
+
+//2
+using System.Text;
+
+StringBuilder message = new StringBuilder(Console.ReadLine());
+
+string input;
+
+while ((input = Console.ReadLine()) != "Reveal")
+{
+    string[] elements = input
+        .Split(":|:", StringSplitOptions.RemoveEmptyEntries);
+
+    string command = elements[0];
+
+    if (command == "InsertSpace")
+    {
+        int index = int.Parse(elements[1]);
+
+        message.Insert(index, " ");
+    }
+    else if (command == "Reverse")
+    {
+        string textToReverse = elements[1];
+
+        int index = message.ToString().IndexOf(textToReverse);
+
+        if (index != -1)
+        {
+            message.Remove(index, textToReverse.Length);
+            message.Append(string.Concat(textToReverse.Reverse()));
+        }
+        else
+        {
+            Console.WriteLine("error");
+            continue;
+        }
+    }
+    else if (command == "ChangeAll")
+    {
+        string oldValue = elements[1];
+        string newValue = elements[2];
+
+        while (message.ToString().Contains(oldValue))
+        {
+            message.Replace(oldValue, newValue);
+        }
+    }
+
+    Console.WriteLine(message);
+}
+
+Console.WriteLine($"You have a new text message: {message}");
