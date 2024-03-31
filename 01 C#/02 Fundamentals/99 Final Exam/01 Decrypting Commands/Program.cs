@@ -85,3 +85,4 @@ while ((input = Console.ReadLine()) != "Finish")
         Console.WriteLine(sum);
     }
 }
+//09:20:07 31.03.2024

@@ -1,20 +1,97 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection.Metadata.Ecma335;
 
-int n = int.Parse(Console.ReadLine());
-
-for (int i = 0; i < n; i++)
+class User
 {
-    string password = Console.ReadLine();
+    public int SentMessage { get; set; }
 
-    Match match = Regex.Match(password, @"^(.+)>(\d{3})\|([a-z]{3})\|([A-Z]{3})\|([^<>]{3})<\1$");
+    public int ReceivedMessage { get; set; }
 
-    if (!match.Success)
-    {
-        Console.WriteLine("Try another password!");
-        continue;
-    }
-
-    password = match.Groups[2].Value + match.Groups[3].Value + match.Groups[4].Value + match.Groups[5].Value;
-
-    Console.WriteLine($"Password: {password}");
+    public int NumberID { get; set; }
 }
+
+class Program
+{
+    static void Main()
+    {
+        int capacity = int.Parse(Console.ReadLine());
+
+        string input;
+
+        int numberID = 0;
+
+        var users = new Dictionary<string, User>();
+
+        while ((input = Console.ReadLine()) != "Statistics")
+        {
+            string[] elements = input
+                .Split("=", StringSplitOptions.RemoveEmptyEntries);
+
+            string command = elements[0];
+
+            if (command == "Add")
+            {
+                string username = elements[1];
+                int sent = int.Parse(elements[2]);
+                int received = int.Parse(elements[3]);
+
+                if (!users.ContainsKey(username))
+                {
+                    users.Add(username, new User()
+                    {
+                        SentMessage = sent,
+                        ReceivedMessage = received,
+                        NumberID = numberID++
+                    });
+                }
+            }
+            else if (command == "Message")
+            {
+                string sender = elements[1];
+                string receiver = elements[2];
+
+                if (users.ContainsKey(sender) && users.ContainsKey(receiver))
+                {
+                    users[sender].SentMessage++;
+                    users[receiver].ReceivedMessage++;
+                }
+
+                if (users[sender].SentMessage + users[sender].ReceivedMessage >= capacity)
+                {
+                    Console.WriteLine($"{sender} reached the capacity!");
+                    users.Remove(sender);
+                }
+
+                if (users.ContainsKey(receiver))
+                {
+                    if (users[receiver].ReceivedMessage + users[receiver].SentMessage >= capacity)
+                    {
+                        Console.WriteLine($"{receiver} reached the capacity!");
+                        users.Remove(receiver);
+                    }
+                }
+            }
+            else if (command == "Empty")
+            {
+                string username = elements[1];
+
+                if (username == "All")
+                {
+                    users.Clear();
+                }
+
+                if (users.ContainsKey(username))
+                {
+                    users.Remove(username);
+                }
+            }
+        }
+
+        Console.WriteLine($"Users count: {users.Count}");
+
+        foreach (var user in users.OrderBy(x => x.Value.NumberID))
+        {
+            Console.WriteLine($"{user.Key} - {user.Value.SentMessage + user.Value.ReceivedMessage}");
+        }
+    }
+}
+//10:11:32 31.03.2024

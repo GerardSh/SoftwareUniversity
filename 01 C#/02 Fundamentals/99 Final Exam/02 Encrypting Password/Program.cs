@@ -18,3 +18,4 @@ for (int i = 0; i < n; i++)
 
     Console.WriteLine($"Password: {password}");
 }
+//09:42:29 31.03.2024
