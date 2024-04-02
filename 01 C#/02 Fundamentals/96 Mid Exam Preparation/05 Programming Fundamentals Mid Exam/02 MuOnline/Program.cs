@@ -61,3 +61,63 @@ if (alive)
     Console.WriteLine($"Bitcoins: {bitcoins}");
     Console.WriteLine($"Health: {health}");
 }
+
+
+
+
+//2
+int health = 100;
+int bitcoins = 0;
+int bestRoom = 1;
+
+string[] dungeonRooms = Console.ReadLine().Split("|");
+
+for (int i = 0; i < dungeonRooms.Length; i++)
+{
+    string[] room = dungeonRooms[i].Split(" ");
+
+    string command = room[0];
+    int number = int.Parse(room[1]);
+
+    if (command == "potion")
+    {
+
+        if (number + health <= 100)
+        {
+            health += number;
+        }
+        else
+        {
+            number -= health + number - 100;
+            health = 100;
+        }
+
+        Console.WriteLine($"You healed for {number} hp.");
+        Console.WriteLine($"Current health: {health} hp.");
+    }
+    else if (command == "chest")
+    {
+        bitcoins += number;
+        Console.WriteLine($"You found {number} bitcoins.");
+    }
+    else
+    {
+        if (number >= health)
+        {
+            Console.WriteLine($"You died! Killed by {command}.");
+            Console.WriteLine($"Best room: {bestRoom}");
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"You slayed {command}.");
+            health -= number;
+        }
+    }
+
+    bestRoom++;
+}
+
+Console.WriteLine($"You've made it!");
+Console.WriteLine($"Bitcoins: {bitcoins}");
+Console.WriteLine($"Health: {health}");
