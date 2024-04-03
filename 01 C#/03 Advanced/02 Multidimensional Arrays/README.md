@@ -1,75 +1,58 @@
 # General
-[Methods Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Stack)
+[Methods](01%20Methods.md#Multidimensional%20Arrays)
+[Commands](02%20Commands.md#Multidimensional%20Arrays.)
+## Multidimensional arrays
+Многомерните масиви, са всъщност таблица от редове и колони или иначе казано, масив от масиви.
+Дефинират се както обикновен масив, с разликата че се добавя запетая в квадратните скоби `[,]` където от лявата страна са броя на редовете, а от дясната е тяхната дължина, тоест колоните. Примерно, многомерен масив `[5,5]` може да бъде репликиран с 5 обикновени масива от по 5 елемента.
 
-[Methods Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Queue)
+Всички принципи и правила за работа с обикновените масиви, важат и при многомерните. За да достъпим даден елемент, трябва да посочим на кой ред и колона се намира. Първия елемент е винаги `[0,0]` а последните при масив с 5 реда и 5 колони е `[4,4]`, защото и при редовете и при колоните, броенето започва от 0.
 
-[Commands Stack](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Stack)
+Ако искаме да добавим трето измерение или повече, трябва да сложим още една запетайка в скобите. Примерно, ако имаме книга от 1000 страници, с 40 реда всяка и 20 колони и искаме да намерим къде се намира дадена буква в нея, то трябва да знаем на коя страница се намира, на кой ред и на коя колона. Което представено в масив би изглеждало така - `new book char[1000,40,20]`. Ако ни трябва втората буква, която се намира на трета страница, трети ред, то трябва да достъпим индекс `book[2,2,1]`
 
-[Commands Queue](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#Queue)
+Веднага след като инициализираме даден многомерен масив, както и при обикновения, всичките му елементи биват достъпни и напълнени с default стойности, ако не сме им задали такива.
 
-При линейните структури от данни каквито са списъците и масивът, елементите са разположени последователно, като всеки елемент при тях е и индексиран/номериран. 
+Когато имаме една променлива, имаме 0 измерения, когато имаме масив, едно измерение, двумерен масив - две измерения и тн. При обикновен масив, това в геометрията е все едно да имаме една черта и дадена точка, която може да бъде разположена навсякъде по чертата. При многомерен масив от две измерения, това е все едно да имаме една равнина, където точката може да се движи във всички посоки. А при триизмерен масив, все едно имаме равнина но и с дълбочина.
 
-Новите линейни структури от данни в тази лекция са:
-`Stack<t>` - (LIFO - last in, first out) - аналогията е на купчина чинии една върху друга, когато започнем да ги махаме, почваме от последната.
-`Queue<t>` - (FIFO - first in, first out) - който дойде първи на опашката, първи ще бъде обслужен и ще си тръгне.
+В математиката матрица е многомерен масив, а вектор е едномерен.
 
-При стековете и опашките последователността на елементите не е толкова важна, там е важно кой елемент е влезнал последен и кой първи.
-При тях пак добавяме елементите най-отзад, но при стековете нямаме достъп до предишните елементи, а само до последните, при опашките имаме достъп само до първия елемент, но не и следващите.
-Това е и основната разлика със списъците, като реално стековете и опашките имат по-малко операции, но пък се извършват бързо Добавянето и махането на елементи е в точно определен ред, но е много бързо.
+Инициализиране:
+```
+int[,] table = {
+    {1, 2, 3, 4}, // row 0 values
+    {5, 6, 7, 8}  // row 1 values
+};
+```
 
-Вкарване на елемент при стека се нарича Push, махането е Pop, при опашката се нарича Enqueue, махането Dequeue.
+Rank - означава да вземем броя на измеренията, има го като property.
 
-Компютърната памет, също е разположена линейно, като един огромен масив и си има последователност и номерация, точно както масива, като част от него, се заделя за нашата програма.
+Записването на информация в многомерния масив, става само с for цикли - колкото измерения имаме, толкова for-a.
+## Jagged arrays
+Назъбените масиви, са масиви от масиви и се декларират с допълнителни квадратни скоби. Всеки от вътрешните масиви, трябва да се инициализира, преди да може да се ползва.
+Достъпването и присвояването на елементите става с две последователни квадратни скоби, където първо посочваме индекса на масива и после индекса на елемента в него:
+```
+string[][] jaggedArray = new string[10][];
+jaggedArray[0] = new string[4];
+jaggedArray[1] = new string[5];
+jaggedArray[2] = new string[3];
 
-Идемпотентна операция е тези която колкото и пъти да направим, не променя резултата си. Нещата отдолу имат логика която ползваме, те извикват друга логика и така до най-ниско ниво. Примерно ако ползваме open file което е специален метов в C#, а той извиква специален метод от операционната система Win32, който извиква специален метод от драйвера за файловата система, който на ниско ниво слиза и казва на хард диска какво да направи. Затова се нарича абстракция, пишейки на C# работим на почти най-високото ниво и нещата отдолу са вече готови, написани и проверени. Ако трябва да напишем от нула отварянето на файл, ще стане с хиляди редове, а не с един.
+jaggedArray[1][2] = "test";
+
+Console.WriteLine(jaggedArray[1][2]);
+```
+
+foreach връща масив като елемент
 # Misc
-Всяко нещо което може да бъде направено чрез рекурсия, може да бъде постигнато и чрез стек.
+Когато инициализираме масив/матрица в C#, то паметта която се отделя в РАМ-а е занулена, тоест цялата останала информация на този блок памет се изтрива и се заменя с default стойностите на типа масив, който създаваме. Ако е целочислен това е 0, string и обекти е null. Примерно в C++, след като сме ползвали дадена променлива и повече няма да ни трябва, то трябва да я занулим сами.
 
-Кода който пишем в C# е на високо ниво, тоест стъпваме на готов код, който вече е написан.
-
-C# е стек-ов език. 
-
-Масива е базова структура, която представлява последователност от адреси в паметта на компютъра.
-
-IEnumerable е интерфейс - който ни казва, какво може да прави дадената колекция. В дадения случай, означава че може да бъде foreach-ната. Можем да проверим дадена колекция, какви интерфейси имплементира в документацията, примерно Stack - [Stack Class (System.Collections.Generic) | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-8.0)
-
-foreach е най-лесния начин да проверим стойностите на елементите в даден стек или опашка.
-
-Разликата между Generic collection  като `Stack<T>` и просто `Stack` е че в Generic ние определяме типа на колекцията на мястото на `<T>` , докато Non-Generic е от тип object. Всички типове в C# наследяват object, но това не е удобно за работа когато ползваме колекция. Компилатора, не може да проверява грешките, които може да допуснем и доста други усложнения. MS препоръчват да се ползват само generic collections.
+В assembly цялата РАМ се явява масив и имаме достъп до паметта, по индекс. Ръчно трябва да си заделяме и следим пространство за масив, къде започва и къде свършва и тн.
 # ChatGPT
-## Stack indexing
-Isn't it more logical and natural that the last added element in the stack is residing on the last index in the internal array not the first 0?
 
-ChatGPT
-Yes, you're correct in the logical sense. Placing the most recently added element at the end of the internal array for a stack would align more with the natural flow of adding elements to a stack. Similarly, for a queue, it would make sense to have the first element added at the beginning of the internal array and subsequent elements placed further towards the end.
-
-However, the choice of implementation details, including the arrangement of elements within the internal array, can vary based on factors such as performance considerations, memory management, and ease of implementation. In some implementations, it may be more efficient to manage the internal array in a way that the most recently added element is at index 0 for a stack or at the end for a queue.
-
-While it might seem more intuitive to have the last added element at the end of the array, the choice of internal representation doesn't affect the external behavior of the stack or queue as long as the required operations (`Push`, `Pop` for `Stack`; `Enqueue`, `Dequeue` for `Queue`) are provided and work as expected.
-## T[] array
-what is t[] array in C#
-
-ChatGPT
-In C#, `T[]` represents a generic array type where `T` is a placeholder for any valid C# data type. This notation allows you to define arrays that can hold elements of a specific type, which can be specified when declaring or creating the array.
 # Bookmarks 
-Два много основополагащи курса на Николай Костов:
+- Creating Tetris part 1 - [https://youtu.be/_-JyqwaLjVM](https://youtu.be/_-JyqwaLjVM)
+- Creating Tetris part 2 - [https://youtu.be/lWsm3ZTSnt0](https://youtu.be/lWsm3ZTSnt0)
+- Creating Tetris part 3 - [https://youtu.be/VBxFekjsGPc](https://youtu.be/VBxFekjsGPc)
+- Refactoring Tetris with OOP part 1 - [https://youtu.be/SmDNHr3uL-E](https://youtu.be/SmDNHr3uL-E)
+- Refactoring Tetris with OOP part 2 - [https://youtu.be/v2mEpgxSB6A](https://youtu.be/v2mEpgxSB6A)
+- Refactoring Tetris with OOP part 3 - [https://youtu.be/IjO38LeZuHY](https://youtu.be/IjO38LeZuHY)
 
-[High-Quality Code - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwJO9dE-XR9-iKbp_kw3_ZQy)
-
-[Data Structures and Algorithms - YouTube](https://www.youtube.com/playlist?list=PLf5IBVXYNTwLwDCbpFtQLj1_587a3asv5)
-
-Web Basics курс:
-
-[C# Web Basics - Workshop - Web Application. Advanced CSS - Bootstrap - май 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=iG2UBr2fAqg&list=PLg6sCysjxHi2V49e08g5UPLTME8MOzRsc&index=1)
-
-Полезна лекция как работи интернет, пак на Николай Костов:
-
-[Internet Explained - YouTube](https://www.youtube.com/watch?v=1pSsIlU3T-s)
-
-Бонус задача от текущата лекция:
-
-[Бонус: Решаване на математически изрази със стекове - Софтуерен университет](https://softuni.bg/trainings/resources/video/64613/bonus-evaluate-math-expressions-using-stacks-csharp-advanced-september-2021/3483)
-
-[Решаване на математически изрази със C# - YouTube](https://www.youtube.com/watch?v=3QOM0HJmakE&t=2s)
-
-Course completion: 26.03.2024
+Course completion: 01.01.2024
