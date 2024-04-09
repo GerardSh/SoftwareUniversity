@@ -5,7 +5,6 @@
 
 string[,] matrix = new string[matrixDimensions[0], matrixDimensions[1]];
 
-
 for (int row = 0; row < matrix.GetLength(0); row++)
 {
     string[] elements = Console.ReadLine()
@@ -16,7 +15,6 @@ for (int row = 0; row < matrix.GetLength(0); row++)
         matrix[row, col] = elements[col];
     }
 }
-
 
 string input;
 
@@ -64,7 +62,6 @@ static bool ValidCommand(string[] indexes, string[,] matrix)
     {
         return false;
     }
-
 
     if (!ValidIndex(int.Parse(indexes[1]), matrix.GetLength(0))
     || !ValidIndex(int.Parse(indexes[2]), matrix.GetLength(1))
