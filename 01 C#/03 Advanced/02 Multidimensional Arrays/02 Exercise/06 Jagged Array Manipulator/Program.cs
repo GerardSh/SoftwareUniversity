@@ -9,12 +9,7 @@ for (int i = 0; i < n; i++)
         .Select(int.Parse)
         .ToArray();
 
-    jaggedArray[i] = new int[elements.Length];
-
-    for (int j = 0; j < elements.Length; j++)
-    {
-        jaggedArray[i][j] = elements[j];
-    }
+    jaggedArray[i] = elements;
 }
 
 for (int i = 0; i < jaggedArray.Length - 1; i++)
@@ -92,4 +87,4 @@ void ModifyArray(int[][] jaggedArray, int startIndex, string modifier)
             }
         }
     }
-};
+}
