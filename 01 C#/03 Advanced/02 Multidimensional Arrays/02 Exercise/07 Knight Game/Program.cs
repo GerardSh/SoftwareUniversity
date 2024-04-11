@@ -29,8 +29,6 @@ class Program
             knights = GetKnights(chess);
         }
 
-        removedKnightsSum += knights.Count / 2;
-
         Console.WriteLine(removedKnightsSum);
     }
 
@@ -142,5 +140,109 @@ class Program
                     chess[i, j] = false;
                 }
         }
+    }
+}
+
+
+
+
+//2
+int n = int.Parse(Console.ReadLine());
+
+bool[,] chess = new bool[n, n];
+int removedKnightsSum = 0;
+
+CreatingTable(chess);
+
+while (true)
+{
+    int knightMaxRange = 0;
+    int knightMaxRangeRow = 0;
+    int knightMaxRangeCol = 0;
+
+    for (int row = 0; row < n; row++)
+    {
+        for (int col = 0; col < n; col++)
+        {
+            int currentKnightRange = 0;
+
+            if (chess[row, col] == true)
+            {
+                if (ValidMove(chess, row - 2, col - 1) && chess[row - 2, col - 1] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row - 2, col + 1) && chess[row - 2, col + 1] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row - 1, col - 2) && chess[row - 1, col - 2] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row - 1, col + 2) && chess[row - 1, col + 2] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row + 2, col + 1) && chess[row + 2, col + 1] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row + 2, col - 1) && chess[row + 2, col - 1] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row + 1, col + 2) && chess[row + 1, col + 2] == true)
+                {
+                    currentKnightRange++;
+                }
+                if (ValidMove(chess, row + 1, col - 2) && chess[row + 1, col - 2] == true)
+                {
+                    currentKnightRange++;
+                }
+
+                if (currentKnightRange > knightMaxRange)
+                {
+                    knightMaxRange = currentKnightRange;
+                    knightMaxRangeCol = col;
+                    knightMaxRangeRow = row;
+                }
+            }
+        }
+    }
+
+    if (knightMaxRange > 0)
+    {
+        chess[knightMaxRangeRow, knightMaxRangeCol] = false;
+        removedKnightsSum++;
+        continue;
+    }
+
+    break;
+}
+
+Console.WriteLine(removedKnightsSum);
+
+bool ValidMove(bool[,] chess, int row, int col)
+{
+    return row >= 0 && row < chess.GetLength(0) && col >= 0 && col < chess.GetLength(1);
+}
+
+static void CreatingTable(bool[,] chess)
+{
+    for (int i = 0; i < chess.GetLength(0); i++)
+    {
+        string line = Console.ReadLine();
+
+        for (int j = 0; j < chess.GetLength(1); j++)
+
+            if (line[j] == 'K')
+            {
+                chess[i, j] = true;
+            }
+            else
+            {
+                chess[i, j] = false;
+            }
     }
 }
