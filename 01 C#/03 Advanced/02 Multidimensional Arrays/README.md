@@ -54,11 +54,18 @@ Interoperability - през interop, програми написани на ра
 # ChatGPT
 
 # Bookmarks 
-- Creating Tetris part 1 - [https://youtu.be/_-JyqwaLjVM](https://youtu.be/_-JyqwaLjVM)
-- Creating Tetris part 2 - [https://youtu.be/lWsm3ZTSnt0](https://youtu.be/lWsm3ZTSnt0)
-- Creating Tetris part 3 - [https://youtu.be/VBxFekjsGPc](https://youtu.be/VBxFekjsGPc)
-- Refactoring Tetris with OOP part 1 - [https://youtu.be/SmDNHr3uL-E](https://youtu.be/SmDNHr3uL-E)
-- Refactoring Tetris with OOP part 2 - [https://youtu.be/v2mEpgxSB6A](https://youtu.be/v2mEpgxSB6A)
-- Refactoring Tetris with OOP part 3 - [https://youtu.be/IjO38LeZuHY](https://youtu.be/IjO38LeZuHY)
+[Console Game Live Demo - Tetris Part 1 - Николай Костов - YouTube](https://www.youtube.com/watch?v=_-JyqwaLjVM)
+
+[Console Game Live Demo - Tetris Part 2 - Николай Костов - YouTube](https://www.youtube.com/watch?v=lWsm3ZTSnt0)
+
+[Console Game Live Demo - Tetris Part 3 (Final) - Николай Костов - YouTube](https://www.youtube.com/watch?v=VBxFekjsGPc)
+
+[C# OOP - Tetris with OOP - Part 1 - октомври 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=SmDNHr3uL-E)
+
+[C# OOP - Tetris with OOP - Part 2 - октомври 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=v2mEpgxSB6A)
+
+[C# OOP - C# Tetris with OOP - Part 3 - октомври 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=IjO38LeZuHY)
+
+[Бонус: Игра Тетрис - част 1](https://softuni.bg/trainings/resources/video/64702/bonus-creating-tetris-part-1-csharp-advanced-september-2021/3483)
 
 Course completion: 12.04.2024
