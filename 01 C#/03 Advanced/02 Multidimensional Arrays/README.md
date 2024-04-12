@@ -1,7 +1,7 @@
 # General
-[Methods](01%20Methods.md#Multidimensional%20Arrays)
+[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Multidimensional%20Arrays)
 
-[Commands](02%20Commands.md#Multidimensional%20Arrays.)
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#Multidimensional%20Arrays.)
 
 ## Multidimensional arrays
 Многомерните масиви, са всъщност таблица от редове и колони или иначе казано, масив от масиви.
