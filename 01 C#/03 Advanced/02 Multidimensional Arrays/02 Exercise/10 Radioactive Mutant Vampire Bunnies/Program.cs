@@ -1,12 +1,9 @@
-﻿using System.ComponentModel;
-
-string[] matrixDimensions = Console.ReadLine().Split();
+﻿string[] matrixDimensions = Console.ReadLine().Split();
 
 char[,] matrix = new char[int.Parse(matrixDimensions[0]), int.Parse(matrixDimensions[1])];
 
 int playerRow = 0;
 int playerCol = 0;
-int bunniesCount = 0;
 
 for (int row = 0; row < int.Parse(matrixDimensions[0]); row++)
 {
@@ -21,11 +18,6 @@ for (int row = 0; row < int.Parse(matrixDimensions[0]); row++)
             playerRow = row;
             playerCol = col;
             matrix[row, col] = '.';
-        }
-
-        if (input[col] == 'B')
-        {
-            bunniesCount++;
         }
     }
 }
@@ -42,7 +34,7 @@ foreach (var direction in directions)
     }
     else if (direction == 'D' && playerRow + 1 < matrix.GetLength(0))
     {
-        playerRow--;
+        playerRow++;
     }
     else if (direction == 'L' && playerCol > 0)
     {
@@ -59,25 +51,38 @@ foreach (var direction in directions)
 
     matrix = BunniesSpread(matrix);
 
-    if (matrix[playerRow, playerCol] == 'B')
+    if (matrix[playerRow, playerCol] == 'B' && !hasWon)
     {
         hasDied = true;
     }
 
-    //    if (hasWon || hasDied)
-    //    {
-    //        break;
-    //    }
+    if (hasWon || hasDied)
+    {
+        break;
+    }
 }
 
-for (int row = 0; row < matrix.GetLength(0); row++)
-{
-    for (int col = 0; col < matrix.GetLength(1); col++)
-    {
-        Console.Write(matrix[row, col] + " ");
-    }
+PrintMatrix(matrix);
 
-    Console.WriteLine();
+if (hasWon)
+{
+    Console.WriteLine($"won: {playerRow} {playerCol}");
+}
+else
+{
+    Console.WriteLine($"dead: {playerRow} {playerCol}");
+}
+void PrintMatrix(char[,] matrix)
+{
+    for (int row = 0; row < matrix.GetLength(0); row++)
+    {
+        for (int col = 0; col < matrix.GetLength(1); col++)
+        {
+            Console.Write(matrix[row, col]);
+        }
+
+        Console.WriteLine();
+    }
 }
 
 static char[,] BunniesSpread(char[,] matrix)
@@ -90,39 +95,28 @@ static char[,] BunniesSpread(char[,] matrix)
         {
             if (matrix[row, col] == 'B')
             {
-                for (int i = row - 1; i <= row + 1; i++)
+                if (row - 1 >= 0)
                 {
-                    for (int j = col - 1; j <= col + 1; j++)
-                    {
-                        if (i >= 0 && i < matrix.GetLength(0) && j >= 0 && j < matrix.GetLength(1))
-                        {
-                            newMatrix[i, j] = 'B';
-                        }
-                    }
+                    newMatrix[row - 1, col] = 'B';
                 }
-                //Second option
-                //if (row - 1 >= 0)
-                //{
-                //    matrix[row - 1, col] = 'B';
-                //}
 
-                //if (row + 1 < matrix.GetLength(0))
-                //{
-                //    matrix[row + 1, col] = 'B';
-                //}
+                if (row + 1 < matrix.GetLength(0))
+                {
+                    newMatrix[row + 1, col] = 'B';
+                }
 
-                //if (col - 1 >= 0)
-                //{
-                //    matrix[row, col - 1] = 'B';
-                //}
+                if (col - 1 >= 0)
+                {
+                    newMatrix[row, col - 1] = 'B';
+                }
 
-                //if (col + 1 < matrix.GetLength(1))
-                //{
-                //    matrix[row, col + 1] = 'B';
-                //}
+                if (col + 1 < matrix.GetLength(1))
+                {
+                    newMatrix[row, col + 1] = 'B';
+                }
             }
         }
     }
-;
+
     return newMatrix;
 }
