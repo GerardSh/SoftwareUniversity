@@ -2,14 +2,26 @@
 Console.WriteLine("Escape from the island of the zombie bunnies! Each move you make spawns more in all directions! Many have failed to survive...");
 Console.WriteLine();
 Console.WriteLine("Press any key to continue if you dare!");
-Console.ReadLine();
+Console.ReadKey();
 Console.Beep();
 PrintTitle();
 
 char[,] matrix = null;
 
-Console.WriteLine("Choose field size - press 's' + Enter for small, 'm' + Enter for medium, 'l' + Enter for large and 'r' + Enter for large field with random spawn location");
-string fieldSize = Console.ReadLine();
+Console.WriteLine("Choose field size - press 's' for small, 'm' for medium, 'l' for large and 'r' for large field with random spawn locations");
+
+string fieldSize = Console.ReadKey().KeyChar.ToString();
+
+while (fieldSize != "s" && fieldSize != "m" && fieldSize != "l" && fieldSize != "r")
+{
+    Console.Beep();
+    Console.Clear();
+    PrintTitle();
+    Console.WriteLine("Wrong field size, choose again!");
+    Console.WriteLine("Press 's' for small, 'm' for medium, 'l' for large and 'r' for large field with random spawn locations");
+    fieldSize = Console.ReadKey().KeyChar.ToString();
+}
+
 string field = null;
 
 if (fieldSize == "s")
@@ -30,9 +42,23 @@ else if (fieldSize == "l")
 else if (fieldSize == "r")
 {
     Random random = new Random();
-    field = ".......B..............................B.....................................................................................................................................................................................................................................................................................................................................................................................................................................................................B.....................................................B.....................B...............................................................B.....";
-    field = field.Insert(random.Next(0, field.Count() - 1), "P");
+    field = "..............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................";
+    int playerPosition = random.Next(0, field.Count() - 100);
+    field = field.Insert(playerPosition, "P");
     matrix = new char[15, 50];
+
+    for (int i = 0; i < 10; i++)
+    {
+        int randomPosition = 0;
+
+        do
+        {
+            randomPosition = random.Next(0, field.Count() - 1);
+        }
+        while (field[randomPosition] != '.');
+
+        field = field.Insert(randomPosition, "B");
+    }
 }
 
 Console.Beep();
@@ -43,20 +69,20 @@ int playerRow = 0;
 int playerCol = 0;
 
 PrintTitle();
-Console.WriteLine("Choose your character outlook and press Enter, it should be one symbol!");
+Console.WriteLine("Choose your character outlook, it should be one symbol!");
 
-char character = char.Parse(Console.ReadLine());
+char character = Console.ReadKey().KeyChar;
 
 Console.Beep();
 
 PrintTitle();
-Console.WriteLine("To move up - press 'w' + Enter");
-Console.WriteLine("To move down - press 's' + Enter");
-Console.WriteLine("To move right - press 'd' + Enter");
-Console.WriteLine("To move left - press 'a' + Enter");
+Console.WriteLine("To move up - press 'w'");
+Console.WriteLine("To move down - press 's'");
+Console.WriteLine("To move right - press 'd'");
+Console.WriteLine("To move left - press 'a'");
 Console.WriteLine();
 Console.WriteLine("Press any key to start the game!");
-Console.ReadLine();
+Console.ReadKey();
 Console.Beep();
 Console.Clear();
 
@@ -97,7 +123,16 @@ bool hasDied = false;
 
 while (true)
 {
-    char direction = char.Parse(Console.ReadLine());
+    char direction = Console.ReadKey().KeyChar;
+
+    if (direction != 'w' && direction != 's' && direction != 'a' && direction != 'd')
+    {
+        Console.Beep();
+        Console.Clear();
+        PrintMatrix(matrix);
+        Console.WriteLine("Wrong move, try again!");
+        continue;
+    }
 
     if (direction == 'w' && playerRow > 0)
     {
@@ -147,6 +182,7 @@ while (true)
         break;
     }
 }
+
 if (fieldSize != "s" || fieldSize == "s" && !hasWon)
 {
     Console.Clear();
