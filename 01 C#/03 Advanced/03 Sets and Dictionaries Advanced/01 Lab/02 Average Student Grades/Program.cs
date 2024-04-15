@@ -19,12 +19,18 @@ for (int i = 0; i < n; i++)
 
 foreach (var student in students)
 {
-    Console.Write($"{student.Key} -> ");
+    Console.WriteLine($"{student.Key} -> {string.Join(" ", student.Value.Select(x => x.ToString("f2")))} (avg: {student.Value.Average():f2})");
 
-    foreach (var grade in student.Value)
-    {
-        Console.Write($"{grade:f2} ");
-    }
-
-    Console.WriteLine($"(avg: {student.Value.Average():f2})");
 }
+
+//foreach (var student in students)
+//{
+//    Console.Write($"{student.Key} -> ");
+
+//    foreach (var grade in student.Value)
+//    {
+//        Console.Write($"{grade:f2} ");
+//    }
+
+//    Console.WriteLine($"(avg: {student.Value.Average():f2})");
+//}
