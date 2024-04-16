@@ -28,15 +28,15 @@ for (int i = 0; i < n; i++)
 
 string[] searchedItem = Console.ReadLine().Split();
 
-foreach (var colors in wardrobe)
+foreach (var color in wardrobe)
 {
-    Console.WriteLine($"{colors.Key} clothes:");
+    Console.WriteLine($"{color.Key} clothes:");
 
-    foreach (var dresses in colors.Value)
+    foreach (var dress in color.Value)
     {
-        Console.Write($"* {dresses.Key} - {dresses.Value}");
+        Console.Write($"* {dress.Key} - {dress.Value}");
 
-        if (searchedItem[0] == colors.Key && searchedItem[1] == dresses.Key)
+        if (searchedItem[0] == color.Key && searchedItem[1] == dress.Key)
         {
             Console.Write(" (found!)");
         }
