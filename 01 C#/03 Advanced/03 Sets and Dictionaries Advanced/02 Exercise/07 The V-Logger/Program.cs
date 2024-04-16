@@ -56,3 +56,68 @@ foreach (var kvp in sortedFollowersList)
         }
     }
 }
+
+
+
+
+//2
+string input;
+
+var vloggers = new Dictionary<string, KeyValuePair<HashSet<string>, SortedSet<string>>>();
+
+while ((input = Console.ReadLine()) != "Statistics")
+{
+    string[] elements = input
+        .Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+    if (elements.Contains("joined"))
+    {
+        string vlogger = elements[0];
+
+        if (!vloggers.ContainsKey(vlogger))
+        {
+            vloggers[vlogger] = new KeyValuePair<HashSet<string>, SortedSet<string>>
+            (
+                new HashSet<string>(),
+                new SortedSet<string>()
+            );
+        }
+    }
+    else
+    {
+        string vloggerOne = elements[0];
+        string vloggerTwo = elements[2];
+
+        if (vloggerOne == vloggerTwo
+            || !vloggers.ContainsKey(vloggerOne)
+            || !vloggers.ContainsKey(vloggerTwo))
+        {
+            continue;
+        }
+
+        vloggers[vloggerOne].Key.Add(vloggerTwo);
+        vloggers[vloggerTwo].Value.Add(vloggerOne);
+    }
+}
+
+var sortedVloggers = vloggers
+    .OrderByDescending(x => x.Value.Value.Count)
+    .ThenBy(x => x.Value.Key.Count)
+    .ToDictionary(x => x.Key, x => x.Value);
+
+Console.WriteLine($"The V-Logger has a total of {vloggers.Count} vloggers in its logs.");
+
+int count = 1;
+
+foreach (var kvp in sortedVloggers)
+{
+    Console.WriteLine($"{count}. {kvp.Key} : {kvp.Value.Value.Count} followers, {kvp.Value.Key.Count} following");
+
+    if (count++ == 1 && kvp.Value.Value.Count > 0)
+    {
+        foreach (var follower in kvp.Value.Value)
+        {
+            Console.WriteLine($"*  {follower}");
+        }
+    }
+}
