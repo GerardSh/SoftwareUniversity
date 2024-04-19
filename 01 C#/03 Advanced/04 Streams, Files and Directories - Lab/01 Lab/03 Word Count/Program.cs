@@ -26,7 +26,7 @@
             while (!sr.EndOfStream)
             {
                 string[] line = sr.ReadLine().Split();
-                
+
                 foreach (string word in line)
                 {
                     words.Add(word);
@@ -46,7 +46,7 @@
 
                 foreach (string word in line)
                 {
-                  foreach (var kvp in countByWords)
+                    foreach (var kvp in countByWords)
                     {
                         if (kvp.Key.ToLower() == word.ToLower())
                         {
@@ -59,7 +59,7 @@
 
             using StreamWriter sw = new StreamWriter(outputFilePath);
 
-            foreach (var kvp in countByWords.OrderByDescending(x=>x.Value))
+            foreach (var kvp in countByWords.OrderByDescending(x => x.Value))
             {
                 sw.WriteLine($"{kvp.Key} - {kvp.Value}");
             }
