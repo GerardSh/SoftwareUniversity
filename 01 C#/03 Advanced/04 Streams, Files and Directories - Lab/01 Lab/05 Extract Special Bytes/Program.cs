@@ -23,13 +23,13 @@
                 bytesToCheck.Add(byte.Parse(sr.ReadLine()));
             }
 
-            using FileStream fileStreamReader = new FileStream(binaryFilePath, FileMode.OpenOrCreate);
+            using FileStream fileStreamReader = new FileStream(binaryFilePath, FileMode.Open);
 
             byte[] buffer = new byte[fileStreamReader.Length];
 
             fileStreamReader.Read(buffer);
 
-            using FileStream fileStreamWriter = new FileStream(outputPath, FileMode.OpenOrCreate);
+            using FileStream fileStreamWriter = new FileStream(outputPath, FileMode.Create);
 
             List<byte> bufferForWrite = new List<byte>(buffer.Length);
 
@@ -42,14 +42,12 @@
                     if (byteToCheck == byteInBuffer)
                     {
                         bufferForWrite.Add(byteToCheck);
+                        break;
                     }
                 }
             }
 
-            fileStreamWriter.Write(bufferForWrite.ToArray()); 
-            byte[] test = new byte[bufferForWrite.Count];
-            fileStreamWriter.Seek(0, SeekOrigin.Begin);
-            fileStreamWriter.Read(test);
+            fileStreamWriter.Write(bufferForWrite.ToArray());
         }
     }
 }
