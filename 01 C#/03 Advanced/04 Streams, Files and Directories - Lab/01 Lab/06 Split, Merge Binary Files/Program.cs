@@ -80,7 +80,7 @@ namespace SplitMergeBinaryFile
             string partTwoPath = @"temp\part-2.bin";
 
             SplitBinaryFile(sourceFilePath, partOnePath, partTwoPath);
-            MergeBinaryFiles(sourceFilePath, partOnePath, partTwoPath, joinedFilePath);
+            MergeBinaryFiles(partOnePath, partTwoPath, joinedFilePath);
         }
 
         public static void SplitBinaryFile(string sourceFilePath, string partOneFilePath, string partTwoFilePath)
