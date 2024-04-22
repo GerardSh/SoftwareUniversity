@@ -20,7 +20,7 @@
 
         public static void ZipFileToArchive(string inputFilePath, string zipArchiveFilePath)
         {
-            var tempDirectory = Directory.CreateDirectory("temp\\" + Path.GetFileNameWithoutExtension(zipArchiveFilePath));
+            var tempDirectory = Directory.CreateDirectory($"{Path.GetDirectoryName(inputFilePath)}\\" + Path.GetFileNameWithoutExtension(zipArchiveFilePath));
 
             File.Copy(inputFilePath, Path.Combine(tempDirectory.FullName, $"file{Path.GetExtension(inputFilePath)}"), true);
 
