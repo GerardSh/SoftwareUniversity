@@ -56,14 +56,7 @@ namespace CopyBinaryFile
 
             while ((currentBytesRead = fileReader.Read(buffer)) != 0)
             {
-                if (currentBytesRead < buffer.Length)
-                {
-                    fileWriter.Write(buffer, 0, currentBytesRead);
-                }
-                else
-                {
-                    fileWriter.Write(buffer);
-                }
+                fileWriter.Write(buffer, 0, currentBytesRead);
             }
         }
     }

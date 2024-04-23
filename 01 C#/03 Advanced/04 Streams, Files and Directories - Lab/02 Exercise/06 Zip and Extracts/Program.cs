@@ -39,3 +39,42 @@
         }
     }
 }
+
+
+
+
+//2
+namespace ZipAndExtract
+{
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+
+    public class ZipAndExtract
+    {
+        static void Main(string[] args)
+        {
+            string inputFile = @"temp\copyMe.png";
+            string zipArchiveFile = @"temp\archive.zip";
+            string extractedFile = @"temp\extracted.png";
+
+            ZipFileToArchive(inputFile, zipArchiveFile);
+
+            var fileNameOnly = Path.GetFileName(inputFile);
+            ExtractFileFromArchive(zipArchiveFile, fileNameOnly, extractedFile);
+        }
+
+        public static void ZipFileToArchive(string inputFilePath, string zipArchiveFilePath)
+        {
+            using ZipArchive archive = ZipFile.Open(zipArchiveFilePath, ZipArchiveMode.Create);
+            archive.CreateEntryFromFile(inputFilePath, Path.GetFileName(inputFilePath));
+        }
+
+        public static void ExtractFileFromArchive(string zipArchiveFilePath, string fileName, string outputFilePath)
+        {
+            using ZipArchive archive = ZipFile.Open(zipArchiveFilePath, ZipArchiveMode.Read);
+            var entry = archive.GetEntry(fileName);
+            entry.ExtractToFile(outputFilePath);
+        }
+    }
+}
