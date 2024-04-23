@@ -26,8 +26,12 @@
 
 `Distinct()` - взима само първите уникални елементи в дадена редица, другите биват изтрити.
 
+ `arr1.Intersect(arr2)` - връща общите елементи между две колекции.
+
 `SelectMany(Selector)` - обединява няколко nested collections, в примера долу values са няколко вътрешни речника:
 	`test.Values.SelectMany(innerDictionary => innerDictionary).ToDictionary(x => x.Key, x => x.Value);`
+
+`Count(optional predicate)` - връща броя на елементите в дадена колекция или тези които отговарят на дадено условие, ако има предикат.
 # List
 `Add(element);` - добавяме като последен елемент.
 
@@ -69,6 +73,14 @@
 `Array.Find(arr, predicate)` - работи по същия начин като `FirstOrDefault` от систем LINQ.
 
 `Contains(element)` - проверява дали даден елемент се съдържа, връща bool резултат.
+
+# Multidimensional Arrays
+
+`GetLength(dimension index)` - взима дължината на посоченото измерение.
+
+`.Length` - дава броя на всички елементи в масива.
+
+`.Rank` - връща колко измерения има.
 # Dictionary
 `Add(key,value)` - добавя елемент в масива. Ако съществува, ще върне exception.
 
@@ -165,9 +177,65 @@ string[] test2 = test
 
 `char.IsLetter(char)` - проверява дали е буква.
 
-`char.IsLetterOrDigit` - проверява и двете.
+`char.IsLetterOrDigit(char)` - проверява и двете.
+
+`char.IsPunctuation(char)` - проверява дали е пунктуационен символ.
 
 `'\0'` - това е еквивалента на null, означава празен char.
+# Stream
+## StreamWriter
+`WriteLine()` - вкарва текста в текстови файл.
+
+`Flush()` - всичко което е записано до момента в буфера, се изпраща директно във файла. 
+
+`AutoFlush = true` - пропърти, което изключва буфера.
+## StreamReader
+`ReadLine()` - чете ред от текстови файл.
+## FileStream
+`Seek(count, SeekOrigin.Begin)` - посочва колко елемента да пропусне, от началото на данните във файла.
+
+`Seek(count, SeekOrigin.Current)` - посочва колко елемента да пропусне, от елемента в който се намира в момента.
+
+`Seek(-count, SeekOrigin.End)` - посочва колко елемента да се върне назад, спрямо края на файла.
+
+`Flush()` - след като байтовете биват прочетени от байт буфера, който сме направили, те се пращат във вътрешен масив и не се записват веднага на файла във хард диска. С този метод биват записани веднага.
+
+`Read(buffer, optional startPosition, count)` - записва байтовете от даден файл в масив, като имаме възможност да посочим стартовата позиция в масива където да записва и колко байта да вземе от файла. Може да посочим повече байтове от наличните във файла, просто ще стигне до края на масива и position property-то ще показва позицията до която е стигнала главата. Връща броя на байтовете, които са вкарани в масива.
+
+`Write(buffer, optional startPosition, count)` - записва байтовете от даден масив във файл. Може да посочим от коя позиция в масива и колко байта да запише.
+### Info
+Ако ползваме `FileMode.Append` - тогава ако пишем във файла и той съществува, главата винаги е разположена в края му и всичко което пишем, се записва накрая. Ако не съществува, бива създаден нов файл. Създаване на stream в този режим, не позволява използването на Seek() метода.
+# File - Static
+`File.ReadAllText(pathToFile)` - прочита целия текст в даден файл и го записва в стринг.
+
+`File.ReadAllLines(pathToFile)` - прочита всички редове в даден файл и ги записва като елементи в масив от стрингове.
+
+`File.WriteAllText(pathToFile, string)` - записва стринга в даден файл.
+
+`File.WriteAllLines(pathToFile, arr)` - записва всички елементи от масива като отделни редове в даден файл.
+
+`File.AppendAllText(pathToFile, string)` - добавя стринга в края на файла.
+
+`File.Delete\Move\Copy\Create(pathToFile)` - различни действия върху файловe.
+
+`File.Get(pathToFile)` - взимане на мета информация - в коя папка се намира, как се казва, дата на създаване, размер, собственик и тн.
+# FileInfo 
+Instance class with all information about a file.
+# Directory - Static
+`Directory.CreateDirectory(pathToDirectory)` - създаване на директория.
+
+`Directory.Delete\Exists\Get(pathToDirectory)` - различни действия върху папките.
+
+`Directory.Move(oldName, newName)` - преименуване на директория.
+
+`Directory.GetFiles(pathToDirectory, "*.*", SearchOption.AllDirectories)` - връща string масив с имената на файловете с техния път в папката.  Втория параметър е search pattern, където може да заместим първия wildcard отговарящ за името на файла, втория за file extension-a. В третия параметър, може да посочим дали да търси във всички под директории или само в текущата.
+
+`Directory.GetDirectories(pathToDirectory, "*.*", SearchOption.AllDirectories)` - връща масив от имената на под директориите в папката. Има същите допълнителни параметри, като `GetFiles()`.
+# DirectoryInfo
+`GetFiles()` - връща масив тип `FileInfo` с пълната мета информация за файловете в папката.  Параметър `"."` - връща имената в текущата директория.
+# Path - Static
+`Path.GetDirectoryName(pathToFile)` - взима името на директорията.
+
 # Misc
 ## Stopwatch
 `Start()` - стартира броенето на времето за което се изпълняват дадени операции.
@@ -175,5 +243,5 @@ string[] test2 = test
 `Stop()` - спира броенето.
 
 `Reset()` - занулява броенето.
-# Information
+# General Info
 Extension методите са допълнително направени методи, към даден клас в допълнение към вградените.
