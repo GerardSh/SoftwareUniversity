@@ -227,6 +227,7 @@ If the file already exists, the new data will be appended to the end of the file
 It's important to note that `FileMode.Append` does not allow you to seek to arbitrary positions within the file; it always writes data to the end. If you need to perform random access or seek operations, you would typically use `FileMode.Open` or `FileMode.Create` with `FileStream`, along with the appropriate seeking operations.
 # Bookmarks 
 [Представяне на текст в компютрите (eee.bg) - YouTube](https://www.youtube.com/watch?v=KklC0gqhBk8&t=3s) - Бонус видео, Николай Костов
+
 [Как успешно да преминем интервю за работа в IT сектора (2012) - YouTube](https://www.youtube.com/watch?v=NLoQJamzL8M) - Николай Костов
 
 Course completion: 22.04.2024
