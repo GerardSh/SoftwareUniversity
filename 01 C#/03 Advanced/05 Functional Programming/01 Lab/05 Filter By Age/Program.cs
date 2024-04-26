@@ -189,3 +189,55 @@ class Program
             .ForEach(printAction);
     }
 }
+
+
+
+
+//4
+int n = int.Parse(Console.ReadLine());
+
+var people = new Dictionary<string, int>();
+
+for (int i = 0; i < n; i++)
+{
+    string[] elements = Console.ReadLine().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+
+    string name = elements[0];
+    int age = int.Parse(elements[1]);
+
+    people[name] = age;
+}
+
+string commandFilter = Console.ReadLine();
+int ageFilter = int.Parse(Console.ReadLine());
+string[] filter = Console.ReadLine().Split();
+
+Func<KeyValuePair<string, int>, bool> ageFilterFunc = null;
+
+if (commandFilter == "older")
+{
+    ageFilterFunc = x => x.Value >= ageFilter;
+}
+else
+{
+    ageFilterFunc = x => x.Value < ageFilter;
+}
+
+Action<KeyValuePair<string, int>> printAction = null;
+
+if (filter.Length > 1)
+{
+    printAction = kvp => Console.WriteLine($"{kvp.Key} - {kvp.Value}");
+}
+else if (filter[0] == "name")
+{
+    printAction = kvp => Console.WriteLine($"{kvp.Key}");
+}
+else
+{
+    printAction = kvp => Console.WriteLine($"{kvp.Value}");
+}
+
+people.Where(ageFilterFunc)
+    .ToList()
+    .ForEach(printAction);
