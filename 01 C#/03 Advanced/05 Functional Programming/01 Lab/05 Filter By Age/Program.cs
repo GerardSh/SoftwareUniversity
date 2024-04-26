@@ -116,3 +116,76 @@ class Program
         }
     }
 }
+
+
+
+
+//3
+using System;
+
+class Person
+{
+    public string Name { get; set; }
+
+    public int Age { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        int n = int.Parse(Console.ReadLine());
+
+        List<Person> people = new List<Person>(n);
+
+        for (int i = 0; i < n; i++)
+        {
+            string[] elements = Console.ReadLine().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+
+            string name = elements[0];
+            int age = int.Parse(elements[1]);
+
+            people.Add(new Person()
+            {
+                Name = name,
+                Age = age
+            });
+        }
+
+        string commandFilter = Console.ReadLine();
+        int ageFilter = int.Parse(Console.ReadLine());
+        string[] filter = Console.ReadLine().Split();
+
+        Func<Person, bool> ageFilterFunc = null;
+
+        if (commandFilter == "older")
+        {
+            ageFilterFunc = x => x.Age >= ageFilter;
+        }
+        else
+        {
+            ageFilterFunc = x => x.Age < ageFilter;
+        }
+
+        Action<Person> printAction = null;
+
+        if (filter.Length > 1)
+        {
+
+            printAction = person => Console.WriteLine($"{person.Name} - {person.Age}");
+
+        }
+        else if (filter[0] == "name")
+        {
+            printAction = person => Console.WriteLine($"{person.Name}");
+        }
+        else
+        {
+            printAction = person => Console.WriteLine($"{person.Age}");
+        }
+
+        people.Where(ageFilterFunc)
+            .ToList()
+            .ForEach(printAction);
+    }
+}
