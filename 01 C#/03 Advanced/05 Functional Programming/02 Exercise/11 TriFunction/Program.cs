@@ -24,7 +24,7 @@ Func<string[], Func<int, string, bool>, string> func2 = (names, predicate) =>
         }
     }
 
-    return "no name found";
+    return "No name found";
 };
 
 Console.WriteLine(func2(names, func));
