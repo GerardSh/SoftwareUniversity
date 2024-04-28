@@ -2,23 +2,23 @@
 
 string[] names = Console.ReadLine().Split();
 
-Func<int, string, bool> func = (number, name) =>
+Func<string, int, bool> calculateNameSum = (name, number) =>
 {
     int sum = 0;
 
     foreach (var c in name)
     {
-        sum += (int)c;
+        sum += c;
     }
 
     return sum >= number;
 };
 
-Func<string[], Func<int, string, bool>, string> func2 = (names, predicate) =>
+Func<string[], Func<string, int, bool>, string> getFirstNameGreaterThanFilterNumber = (names, calculateNameSum) =>
 {
     foreach (var name in names)
     {
-        if (predicate(number, name))
+        if (calculateNameSum(name, number))
         {
             return name;
         }
@@ -27,7 +27,7 @@ Func<string[], Func<int, string, bool>, string> func2 = (names, predicate) =>
     return "No name found";
 };
 
-Console.WriteLine(func2(names, func));
+Console.WriteLine(getFirstNameGreaterThanFilterNumber(names, calculateNameSum));
 
 
 
@@ -37,8 +37,8 @@ int filterNumber = int.Parse(Console.ReadLine());
 
 string[] names = Console.ReadLine().Split();
 
-Func<string, int, bool> calculateNameSum = (name, filterNumber) => name.ToCharArray().Sum(c => (int)c) >= filterNumber;
+Func<string, int, bool> calculateNameSum = (name, filterNumber) => name.Sum(c => c) >= filterNumber;
 
-Func<string[], int, Func<string, int, bool>, string> getFirstNameGreaterThanFilterNumber = (names, number, predicate) => names.FirstOrDefault(name => predicate(name, number));
+Func<string[], int, Func<string, int, bool>, string> getFirstNameGreaterThanFilterNumber = (names, number, calculateNameSum) => names.FirstOrDefault(name => calculateNameSum(name, number));
 
 Console.WriteLine(getFirstNameGreaterThanFilterNumber(names, filterNumber, calculateNameSum));
