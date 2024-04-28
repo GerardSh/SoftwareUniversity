@@ -167,6 +167,8 @@ class Program
 
 # ChatGPT
 ## Delegates
+You
+
 Може вместо да пишем lambda израз, да подадем друг метод, който има същия signature, като `Func<>` в метода. Примерно: 
 
 ```
@@ -178,14 +180,17 @@ class Program
 Може да видим че `Select()` метода очаква метод със signature приемащ string стойност и връщащ int стойност. Точно такъв метод е `int.Parse()` и затова може да го подадем на функцията която е параметър с името selector в метода `Select()`.
 
 ChatGPT
+
 Да, точно така! Вашето наблюдение е правилно. В C# може да подадете метод като параметър на друг метод, ако той има същия сигнатурен тип (т.е. приема същите типове аргументи и връща същия тип). Това се нарича "предаване на метод по референция" или "делегиране на метод".
 
 Във вашия пример, `Select()` методът очаква метод, който приема `string` и връща `int`. `int.Parse()` има същата сигнатура, поради което може да бъде подаден като параметър на `Select()`. Това е един от начините, по които можем да използваме гъвкавостта на делегатите в C# за подаване на методи като аргументи. Такива сценарии правят кода по-четим и удобен за поддръжка.
 
 You
+
 Tова е все едно да кажем `Func<int,string> func = int.Parse;` ?
 
 ChatGPT
+
 Да, точно така! Когато използвате `int.Parse` в контекста на `Func<int, string>`, това е същото като да кажете:
 
 `Func<string, int> func = int.Parse;`
@@ -195,9 +200,11 @@ ChatGPT
 Това е прекрасен пример за използване на делегати за предаване на методи като параметри, което води до по-гъвкав и четим код.
 
 You
+
 Declaring delegates in C# is like declaring classes?
 
 ChatGPT
+
 In C#, declaring delegates is similar to declaring a class, but delegates are used to define method signatures rather than defining data and behavior like classes do.
 
 When you declare a delegate in C#, you're essentially defining a type that can reference methods with a specific signature. This allows you to treat methods as first-class citizens, passing them around as parameters, storing them in variables, and invoking them dynamically.
@@ -232,9 +239,11 @@ In this example, `MyDelegate` is declared similar to how you would declare a cla
 So, while delegates are defined in a similar syntax to classes, they serve a different purpose: to define method signatures that can be referenced and invoked dynamically.
 
 You
+
 If we have to mimic how `Func<>` works with creating our own delegate signatures, we have to create many such delegates for various inputs and outputs?
 
 ChatGPT
+
 Yes, if you want to mimic the behavior of `Func<>` with your own delegate signatures, you would need to define multiple delegate types for various combinations of input parameters and return types. This could lead to a lot of repetitive code, especially if you have many different method signatures.
 
 For example, if you have methods with signatures like:
