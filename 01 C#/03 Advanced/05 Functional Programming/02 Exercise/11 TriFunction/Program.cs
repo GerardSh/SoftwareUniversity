@@ -28,3 +28,17 @@ Func<string[], Func<int, string, bool>, string> func2 = (names, predicate) =>
 };
 
 Console.WriteLine(func2(names, func));
+
+
+
+
+//2
+int filterNumber = int.Parse(Console.ReadLine());
+
+string[] names = Console.ReadLine().Split();
+
+Func<string, int, bool> calculateNameSum = (name, filterNumber) => name.ToCharArray().Sum(c => (int)c) >= filterNumber;
+
+Func<string[], int, Func<string, int, bool>, string> getFirstNameGreaterThanFilterNumber = (names, number, predicate) => names.FirstOrDefault(name => predicate(name, number));
+
+Console.WriteLine(getFirstNameGreaterThanFilterNumber(names, filterNumber, calculateNameSum));
