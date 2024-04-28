@@ -101,6 +101,7 @@ while ((input = Console.ReadLine()) != "Print")
     }
 }
 
+//Option 1
 foreach (string filter in filters)
 {
     string[] filterElements = filter.Split();
@@ -124,7 +125,23 @@ foreach (string filter in filters)
         predicate = new Predicate<string>(name => name.Contains(filterElements[1]));
     }
 
-    partyGuests = partyGuests.Where(x => !predicate(x)).ToList();
+    partyGuests = partyGuests.Where(name => !predicate(name)).ToList();
 }
+
+//Option 2
+//foreach (string filter in filters)
+//{
+//    var filterComponents = filter.Split(' ');
+
+//    string command = filterComponents[0];
+
+//    Predicate<string> predicate = name =>
+//    command == "Starts" ? name.StartsWith(filterComponents[2]) :
+//    command == "Ends" ? name.EndsWith(filterComponents[2]) :
+//    command == "Contains" ? name.Contains(filterComponents[1]) :
+//    name.Length == int.Parse(filterComponents[1]);
+
+//    partyGuests = partyGuests.Where(name => !predicate(name)).ToList();
+//}
 
 Console.WriteLine(string.Join(" ", partyGuests));
