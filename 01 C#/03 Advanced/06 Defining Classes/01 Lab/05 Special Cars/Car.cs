@@ -43,16 +43,16 @@
 
         public double FuelConsumption { get; set; }
 
-        public Engine Engine { get; set; }
+        public Engine? Engine { get; set; }
 
-        public Tire[] Tires { get; set; }
+        public Tire[]? Tires { get; set; }
 
 
         public void Drive(double distance)
         {
-            if (FuelQuantity - distance * FuelConsumption > 0)
+            if (FuelQuantity - distance * (FuelConsumption / 100) > 0)
             {
-                FuelQuantity -= distance * FuelConsumption;
+                FuelQuantity -= distance * (FuelConsumption / 100);
             }
             else
             {

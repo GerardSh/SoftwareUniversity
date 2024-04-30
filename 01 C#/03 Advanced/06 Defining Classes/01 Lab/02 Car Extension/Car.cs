@@ -1,6 +1,6 @@
 ﻿namespace CarManufacturer
 {
-    internal class Car
+    public class Car
     {
         public string Make { get; set; }
 

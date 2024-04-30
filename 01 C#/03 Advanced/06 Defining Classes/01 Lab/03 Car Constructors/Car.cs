@@ -1,9 +1,9 @@
 ﻿namespace CarManufacturer
 {
-    internal class Car
+    public class Car
     {
 
-        public Car() 
+        public Car()
         {
             Make = "VW";
             Model = "Golf";
