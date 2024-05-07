@@ -3,8 +3,6 @@
 
 [Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#)
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240425171446.png)
-
 Класът е тип данни в .Net и е концепция в повечето големи програмни езици с изключение на функционалните и JavaScript. 
 
 Клас се дефинира с ключовата дума class и име на класа с PascalCase, което задължително трябва да е съществително и да описва много добре какво точно се съхранява вътре в класа. 
@@ -432,6 +430,7 @@ Kои типове по подразбиране да са nullable и non nulla
 - Nullable value types occupy slightly more memory than their non-nullable counterparts because of the additional nullness indicator.
 
 You
+
 ```
 string text = null; 
 int? length = text?.Length;
@@ -440,6 +439,7 @@ int? length = text?.Length;
  why do we need the second `?`?
 
 ChatGPT
+
 The `?` in `int?` is commonly referred to as the "nullable type modifier", indicating that the variable can hold null in addition to the specified type.
 The `?.` is called the "null-conditional operator", used for accessing members of an object while guarding against null references.
 
@@ -478,9 +478,11 @@ Combining these two, `int? length = text?.Length;` ensures that if `text` is nul
     - Static methods don't operate on specific object data and are often used for general-purpose operations or utility functions.
 ## Field initialization
 You
+
 Fields are not fully initialized before the constructor is executed?
 
 ChatGPT
+
 Yes, that's correct. In C#, fields are initialized before the constructor is executed, but the order of field initialization is determined by their declaration within the class.
 
 When an object is created, memory is allocated for all fields of the class, and each field is initialized to its default value (e.g., 0 for numeric types, null for reference types) before the constructor is executed. Then, the constructor is called to perform additional initialization logic.
@@ -498,9 +500,11 @@ The error you're encountering, "A field initializer cannot reference the non-sta
 In your example, `field2` attempts to initialize itself using the value of `field`. While there's no circular dependency between `field` and `field2`, the compiler still enforces this rule to maintain consistency and prevent possible pitfalls.
 ## Properties
 You
+
 In a way, properties are like methods which have two inside methods - getter and setter?
 
 ChatGPT
+
 That's a great way to think about it! In object-oriented programming, properties can indeed be seen as special methods that provide controlled access to the internal state of an object. They encapsulate the logic for getting and setting the value of a particular piece of data (the property) within an object.
 
 Here's a breakdown of how properties are similar to methods:
@@ -529,7 +533,7 @@ In the context of your question, the difference in behavior between `string name
 1. **Development Phase**: This includes everything from conceptualizing your program to writing, editing, and refining your code. It encompasses the entire process of creating your software solution.
 2. **Compile Time**: When you've finished writing your code and you hit the compile or build button, this is the compile time. Here, your code is translated into machine-readable instructions by the compiler. The compiler checks for syntax errors, type mismatches, and other issues, providing feedback to help you correct any mistakes.
 3. **Runtime**: Once your code has been successfully compiled and you execute the program, it enters the runtime phase. This is when your code is actually running, and you can observe its behavior and output as it performs tasks or calculations.
-# Constants
+## Constants
 A constant value, in programming, refers to a value that remains unchanged throughout the execution of a program. Constants are used to represent fixed values that are known at compile time and are not expected to change during the execution of the program.
 
 Here are some key characteristics of constant values:
@@ -562,4 +566,7 @@ int x = MaxValue;
 This optimization not only improves the performance of the compiled code but also ensures that the behavior of the program remains consistent with the constant values defined in the source code.
 # Bookmarks 
 [C# Masterclass - C# Tips and Tricks - октомври 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=KrTMzYhpo3E&t=4s)
+
 [Recursion (2013) Bulgarian - Рекурсия - YouTube - Николай Костов](https://www.youtube.com/watch?v=ax1hJOe7dO0)
+
+Course completion: 05.05.2024
