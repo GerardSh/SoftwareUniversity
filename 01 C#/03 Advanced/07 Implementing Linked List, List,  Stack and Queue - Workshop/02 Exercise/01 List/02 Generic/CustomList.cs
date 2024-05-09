@@ -32,7 +32,7 @@ namespace ImplementingCustomList
             }
         }
 
-        private int capacity => items.Length;
+        private int Capacity => items.Length;
 
         private T[] items = new T[DefaultCapacity];
 
@@ -40,7 +40,7 @@ namespace ImplementingCustomList
 
         public void Add(T element)
         {
-            if (Count == capacity)
+            if (Count == Capacity)
             {
                 Resize();
             }
@@ -113,7 +113,7 @@ namespace ImplementingCustomList
                 throw new IndexOutOfRangeException();
             }
 
-            if (capacity == Count)
+            if (Capacity == Count)
             {
                 Resize();
             }
@@ -163,9 +163,9 @@ namespace ImplementingCustomList
 
         private void Resize()
         {
-            T[] tempArr = new T[capacity * 2];
+            T[] tempArr = new T[Capacity * 2];
 
-            for (int i = 0; i < capacity; i++)
+            for (int i = 0; i < Capacity; i++)
             {
                 tempArr[i] = items[i];
             }
@@ -175,7 +175,7 @@ namespace ImplementingCustomList
 
         private void Shrink()
         {
-            T[] tempArr = new T[capacity / 2];
+            T[] tempArr = new T[Capacity / 2];
 
             for (int i = 0; i < Count; i++)
             {
