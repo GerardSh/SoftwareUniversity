@@ -66,9 +66,13 @@ Test driven development - разработка на код, при която с
 
 GC се занимава само с динамичната памет, статичната сама се менажира и самопочиства.
 Разделя обектите на четири категории:
+
 LOH - large object heap, големи обекти които са над определен размер.
+
 L0 / gen0 - Oldest
+
 L1 / gen1 - Medium
+
 L2 / gen2 - Newest
 
 Нещата в L2 са най-динамични и на-бързо влизат и излизат. Когато даден обект се задържи повече време, се измества в предишното ниво. Когато нещо се задържи по-дълго време, има по малка вероятност да бъде изчистено. GC работи най-много в L2 и най-малко в LOH.
@@ -82,6 +86,7 @@ An indexer in C# is a feature that allows instances of a class to be accessed as
 Indexers provide a way to access elements of a class based on an index or key, allowing you to encapsulate the logic for accessing elements within the class itself. They can be used to provide indexed access to collections, data structures, or other types of data within a class, enabling more intuitive and readable code.
 
 ChatGPT
+
 Sure! Here's a summary of our conversation about indexers:
 1. **Introduction to Indexers**: We discussed that indexers in C# are special properties that allow instances of a class to be accessed as if they were arrays, using square brackets `[ ]`.
 2. **Defining an Indexer**: I explained how to define an indexer within a class using the `this` keyword followed by the index parameters in square brackets `[ ]`.
@@ -101,12 +106,14 @@ You
 Here `this[int i]` is taking the place of the name when its a standard property?
 
 ChatGPT
+
 Yes, precisely. In C#, `this[int i]` is the syntax used to define an indexer property. Instead of a standard property name, indexers use this syntax followed by the index parameters in square brackets `[ ]` to allow indexed access to elements of the class. This allows instances of the class to be accessed using square brackets `[ ]`, just like arrays, providing a convenient way to interact with elements within the class.
 ## Class Properties
 You
 The property just contains methods that retrieves and sets the value of a private field, it does not contain any value on its own right? when we change the private field, we can notice during debugging that the property also changes value, its because its always in sync with the private field, so whatever value the private field has it is immediately syncing with what the property shows?
 
 ChatGPT
+
 Yes, you're correct. In C#, properties are syntactic sugar over methods. When you define a property, you're essentially defining two methods, a getter and/or a setter, that allow you to retrieve and modify the value of a private field.
 
 So, when you observe that a property's value changes when you modify the private field it corresponds to, it's because the property's getter method is returning the current value of that private field. This means that the property and the private field are always in sync, as you described.
@@ -135,17 +142,21 @@ In this example, `MyProperty` is a property with a private field `myField` as it
 So, as you modify `myField`, the changes are reflected in the property because the getter method always returns the current value of `myField`. This ensures that the property and the private field are always synchronized.
 
 You
+
 By showing the property in the debugging window, it executes the getter on every step of the code to return the value of the field?
 
 ChatGPT
+
 Yes, that's correct. When you view a property in the debugging window, the debugger is executing the getter method associated with that property. This means that it's retrieving the current value of the private field associated with the property.
 
 So, during debugging, whenever you see the value of a property displayed, it's actually the result of executing the getter method, which returns the current value of the private field. This allows you to observe the state of your object, including the values of its properties, as your code executes.
 
 You
+
 The getter execution happens in the background, without calling the get method explicitly?
 
 ChatGPT
+
 Yes, that's correct. During debugging, when you view the value of a property, the debugger automatically executes the getter method associated with that property in the background, without you needing to explicitly call the getter method in your code.
 
 This is part of the functionality provided by the debugger to help you inspect the state of your program. The debugger retrieves the value of the property by executing its getter method and displays the result in the debugging window, allowing you to observe the current state of your object.
