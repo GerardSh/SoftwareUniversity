@@ -5,17 +5,17 @@
     {
         public EqualityScale(T left, T right)
         {
-            Left = left;
-            Right = right;
+            this.left = left;
+            this.right = right;
         }
 
-        internal T Left { get; set; }
+        T left;
 
-        internal T Right { get; set; }
+        T right;
 
         public bool AreEqual()
         {
-            return Left.Equals(Right);
+            return left.Equals(right);
         }
     }
 }
