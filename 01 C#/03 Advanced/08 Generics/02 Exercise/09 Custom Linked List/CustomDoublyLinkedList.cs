@@ -130,7 +130,7 @@ namespace ImplementDoublyLinkedList
             if (first == last)
             {
                 first = null;
-                last = null;     
+                last = null;  
 
                 return value;
             }
