@@ -122,6 +122,8 @@
 
             int value = first.Value;
 
+            Count--;
+
             if (first == last)
             {
                 first = null;
@@ -132,8 +134,6 @@
 
             first = first.Next;
             first.Previous = null;
-
-            Count--;
 
             return value;
         }
@@ -148,6 +148,8 @@
 
             int value = last.Value;
 
+            Count--;
+
             if (first == last)
             {
                 first = null;
@@ -158,8 +160,6 @@
 
             last = last.Previous;
             last.Next = null;
-
-            Count--;
 
             return value;
         }

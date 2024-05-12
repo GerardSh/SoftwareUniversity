@@ -63,7 +63,7 @@ namespace ImplementDoublyLinkedList
         //    }
         //}
 
-        //int GetCount(LinkedListItem item)
+        //int GetCount(LinkedListItem<T> item)
         //{
         //    if (item == null)
         //    {
@@ -125,18 +125,18 @@ namespace ImplementDoublyLinkedList
 
             T value = first.Value;
 
+            Count--;
+
             if (first == last)
             {
                 first = null;
-                last = null;
+                last = null;             
 
                 return value;
             }
 
             first = first.Next;
             first.Previous = null;
-
-            Count--;
 
             return value;
         }
@@ -151,6 +151,8 @@ namespace ImplementDoublyLinkedList
 
             T value = last.Value;
 
+            Count--;
+
             if (first == last)
             {
                 first = null;
@@ -161,8 +163,6 @@ namespace ImplementDoublyLinkedList
 
             last = last.Previous;
             last.Next = null;
-
-            Count--;
 
             return value;
         }
