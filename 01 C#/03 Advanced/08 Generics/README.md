@@ -1,6 +1,7 @@
 # General
-[Methods](01%20Methods.md#)
-[Commands](02%20Commands.md#)
+[Methods](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/01%20Methods.md#)
+
+[Commands](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/99%20Resources/02%20Commands.md#)
 
 Силата на generics е когато правим структура от данни, клас и тн, да може да му разрешим да работи с типове данни, които потребителите на нашия код избират. С други думи, да може потребителите на нашия клас да избират типа данни с който класа да работи. Идеята е да се преизползва един и същи клас с единствената разлика типа данни, които приема, като се направи един само един темплейтен клас, който може да приема различни типове данни.
 Както класа е шаблон за обекти, така и generics са шаблон за класове.
@@ -192,9 +193,11 @@ Regarding "types that are part of them," each of these constructs can include va
 Understanding the distinctions between these constructs and their respective member types is essential for effectively designing and implementing software in C#. If you have specific questions or examples you'd like to discuss further, feel free to ask!
 
 You
+
 So class is a data type, but string for example is also a data type which is part of the class data type?
 
 ChatGPT
+
 Yes, that's correct! In C#, a class is indeed a data type, but it's a more general construct that defines the blueprint for creating objects. Within a class, you can define various members, including fields, properties, methods, constructors, and events.
 
 Now, when we talk about the `string` data type, it's a specific type that is part of the .NET Framework's base class library. `string` represents a sequence of characters and is used to store text data. It's implemented as a class (`System.String`), but it's treated as a special case in the C# language, with its syntax and features optimized for common string manipulation tasks.
@@ -206,9 +209,11 @@ So, in essence:
 In summary, while `string` is implemented as a class, it represents a specific data type for handling text data, distinct from the broader concept of a class.
 
 You
+
 Class is the broader data type while string is a narrowed class data type?
 
 ChatGPT
+
 Yes, that's a good way to put it!
 - **Class**: It's a broad concept in object-oriented programming that defines a blueprint for creating objects. Classes can contain various members such as fields, properties, methods, constructors, and events. They serve as templates for creating objects with specific behaviors and attributes.
 - **String**: It's a specific data type in C# that represents sequences of characters (text data). In C#, `string` is implemented as a class (`System.String`), but it represents a specialized case of a class, optimized for working with text data. While it's implemented as a class, it's often treated as a fundamental data type due to its importance and ubiquity in programming.
@@ -227,9 +232,11 @@ The distinction between broader data types and more specialized data types is no
 Each of these types serves a particular purpose and provides a level of abstraction appropriate for different scenarios. Understanding the distinctions between broader and specialized data types is crucial for effective programming and designing robust software systems.
 ## Generic resolution
 You
+
 Thinking about compile time and runtime i have a question - when the user have a choice to pick the data type for a particular class to use, but we know that generics are resolved during compile time, what is happening in those situations where the exact type is determined during the runtime?
 
 ChatGPT
+
 In languages like C#, where generics are resolved at compile time, situations where the exact type is determined during runtime can be handled using techniques such as reflection, dynamic typing, or polymorphism.
 
 Here's how each of these techniques can be used to handle runtime type determination:
