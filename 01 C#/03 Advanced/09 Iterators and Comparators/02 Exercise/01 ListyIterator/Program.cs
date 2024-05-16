@@ -6,9 +6,9 @@
         {
             ListyIterator<string> iterator;
 
-            string[] input = Console.ReadLine().Split();
+            List<string> list = Console.ReadLine().Split().Skip(1).ToList();
 
-            iterator = new ListyIterator<string>(input.Skip(1).ToList());
+            iterator = new ListyIterator<string>(list);
 
             string command;
 
