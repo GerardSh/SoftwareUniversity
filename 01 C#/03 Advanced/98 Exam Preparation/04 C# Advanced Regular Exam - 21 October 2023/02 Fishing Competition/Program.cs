@@ -31,11 +31,9 @@ namespace ConsoleApp
                 }
             }
 
-            bool gameOver = false;
-
             string command = null;
 
-            while ((command = Console.ReadLine()) != "collect the nets" && !gameOver)
+            while ((command = Console.ReadLine()) != "collect the nets")
             {
                 string direction = command;
 
@@ -59,7 +57,7 @@ namespace ConsoleApp
                     shipCol++;
                 }
 
-                var cordinates = GetCordinates(fishingArea, shipRow, shipCol);
+                var cordinates = AdjustCordinates(fishingArea, shipRow, shipCol);
 
                 shipRow = cordinates[0];
                 shipCol = cordinates[1];
@@ -107,7 +105,7 @@ namespace ConsoleApp
             }
         }
 
-        private static int[] GetCordinates(char[,] fishingArea, int row, int col)
+        private static int[] AdjustCordinates(char[,] fishingArea, int row, int col)
         {
             int[] arr = { row, col };
 
