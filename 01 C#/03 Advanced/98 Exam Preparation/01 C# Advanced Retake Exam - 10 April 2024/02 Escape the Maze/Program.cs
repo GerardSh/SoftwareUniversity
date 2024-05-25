@@ -12,9 +12,9 @@ namespace ConsoleApp
 
             maze = new char[n, n];
 
-            int playersRow = 0;
-            int playersCol = 0;
-            int playersHealth = 100;
+            int playerRow = 0;
+            int playerCol = 0;
+            int playerHealth = 100;
 
             for (int row = 0; row < n; row++)
             {
@@ -26,8 +26,8 @@ namespace ConsoleApp
 
                     if (currentRow[col] == 'P')
                     {
-                        playersRow = row;
-                        playersCol = col;
+                        playerRow = row;
+                        playerCol = col;
                     }
                 }
             }
@@ -40,59 +40,59 @@ namespace ConsoleApp
 
                 if (direction == "up")
                 {
-                    if (!ValidIndex(playersRow - 1, playersCol))
+                    if (!ValidIndex(playerRow - 1, playerCol))
                     {
                         continue;
                     }
 
-                    maze[playersRow--, playersCol] = '-';
+                    maze[playerRow--, playerCol] = '-';
                 }
                 else if (direction == "down")
                 {
-                    if (!ValidIndex(playersRow + 1, playersCol))
+                    if (!ValidIndex(playerRow + 1, playerCol))
                     {
                         continue;
                     }
 
-                    maze[playersRow++, playersCol] = '-';
+                    maze[playerRow++, playerCol] = '-';
                 }
                 else if (direction == "left")
                 {
-                    if (!ValidIndex(playersRow, playersCol - 1))
+                    if (!ValidIndex(playerRow, playerCol - 1))
                     {
                         continue;
                     }
 
-                    maze[playersRow, playersCol--] = '-';
+                    maze[playerRow, playerCol--] = '-';
                 }
                 else if (direction == "right")
                 {
-                    if (!ValidIndex(playersRow, playersCol + 1))
+                    if (!ValidIndex(playerRow, playerCol + 1))
                     {
                         continue;
                     }
 
-                    maze[playersRow, playersCol++] = '-';
+                    maze[playerRow, playerCol++] = '-';
                 }
 
-                char currentChar = maze[playersRow, playersCol];
+                char currentChar = maze[playerRow, playerCol];
 
                 if (currentChar == 'M')
                 {
-                    playersHealth -= 40;
+                    playerHealth -= 40;
 
-                    if (playersHealth <= 0)
+                    if (playerHealth <= 0)
                     {
                         gameOver = true;
                     }
                 }
                 else if (currentChar == 'H')
                 {
-                    playersHealth += 15;
+                    playerHealth += 15;
 
-                    if (playersHealth > 100)
+                    if (playerHealth > 100)
                     {
-                        playersHealth = 100;
+                        playerHealth = 100;
                     }        
                 }
                 else if (currentChar == 'X')
@@ -100,10 +100,10 @@ namespace ConsoleApp
                     gameOver = true;
                 }
 
-                maze[playersRow, playersCol] = 'P';
+                maze[playerRow, playerCol] = 'P';
             }
 
-            if (playersHealth > 0)
+            if (playerHealth > 0)
             {
                 Console.WriteLine("Player escaped the maze. Danger passed!");               
             }
@@ -111,10 +111,10 @@ namespace ConsoleApp
             {
                 Console.WriteLine("Player is dead. Maze over!");
 
-                playersHealth = 0;
+                playerHealth = 0;
             }
 
-            Console.WriteLine($"Player's health: {playersHealth} units");
+            Console.WriteLine($"Player's health: {playerHealth} units");
 
             for (int row = 0; row < n; row++)
             {
