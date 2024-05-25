@@ -4,8 +4,6 @@ namespace ConsoleApp
 {
     public class Program
     {
-        static char[,] maze;
-
         static void Main()
         {
             var money = new Stack<int>(Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray());

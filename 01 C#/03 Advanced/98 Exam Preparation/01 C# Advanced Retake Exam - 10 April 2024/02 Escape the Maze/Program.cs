@@ -36,9 +36,9 @@ namespace ConsoleApp
 
             while (!gameOver)
             {
-                string command = Console.ReadLine();
+                string direction = Console.ReadLine();
 
-                if (command == "up")
+                if (direction == "up")
                 {
                     if (!ValidIndex(playersRow - 1, playersCol))
                     {
@@ -47,7 +47,7 @@ namespace ConsoleApp
 
                     maze[playersRow--, playersCol] = '-';
                 }
-                else if (command == "down")
+                else if (direction == "down")
                 {
                     if (!ValidIndex(playersRow + 1, playersCol))
                     {
@@ -56,7 +56,7 @@ namespace ConsoleApp
 
                     maze[playersRow++, playersCol] = '-';
                 }
-                else if (command == "left")
+                else if (direction == "left")
                 {
                     if (!ValidIndex(playersRow, playersCol - 1))
                     {
@@ -65,7 +65,7 @@ namespace ConsoleApp
 
                     maze[playersRow, playersCol--] = '-';
                 }
-                else if (command == "right")
+                else if (direction == "right")
                 {
                     if (!ValidIndex(playersRow, playersCol + 1))
                     {
