@@ -44,7 +44,7 @@ namespace ConsoleApp
             }
             else if ( foodCount == 1)
             {
-                Console.WriteLine($"Henry ate: {foodCount} food");
+                Console.WriteLine($"Henry ate: {foodCount} food.");
             }
             else
             {
