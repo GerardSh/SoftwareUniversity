@@ -53,7 +53,7 @@ namespace ConsoleApp
 
             if (chalanges.Any())
             {
-                Console.WriteLine("Chalanges: " + string.Join(", ", chalanges));
+                Console.WriteLine("Challenges: " + string.Join(", ", chalanges));
             }
         }
     }
