@@ -4,9 +4,9 @@
     {
         public bool IsEmpty() => Count == 0;
 
-        public void AddRange(Stack<string> stack)
+        public void AddRange(IEnumerable<string> items)
         {
-            foreach (var item in stack)
+            foreach (var item in items)
             {
                 Push(item);
             }
