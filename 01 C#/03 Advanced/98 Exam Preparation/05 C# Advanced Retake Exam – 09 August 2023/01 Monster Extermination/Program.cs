@@ -27,13 +27,17 @@ namespace ConsoleApp
                     int temp = soldiers.Pop();
                     soldiers.Push(temp + result);
                 }
+                else if (result > 0 && soldiers.Count == 0)
+                {
+                    soldiers.Push(result);
+                }
                 else if (result < 0)
                 {
                     monsters.Enqueue(Math.Abs(result));
                 }
             }
 
-            if (monsters.Count == 0) 
+            if (monsters.Count == 0)
             {
                 Console.WriteLine("All monsters have been killed!");
             }
