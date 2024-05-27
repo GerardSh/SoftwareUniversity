@@ -621,6 +621,7 @@ For hash-based collections like `HashSet<T>` and `Dictionary<K, V>`, `GetHashCod
 On the other hand, `SortedSet<T>` uses the `CompareTo()` method (via `IComparable<T>` or `IComparer<T>`) to maintain a sorted order of elements. It doesn't rely on hash codes for storage or retrieval. Instead, it directly compares elements using `CompareTo()` to maintain sorting order.
 # Bookmarks 
 [Sorting and Searching Algorithms (2013) Bulgarian - Алгоритми за сортиране и търсене - YouTube](https://www.youtube.com/watch?v=EHXcrswy6lo) - Николай Костов
+
 [softuni.bg/downloads/svn/csharp-web/trunk/May-2021/ASP-NET-Core-June-2021/HomeworkAfterWeb.txt](https://softuni.bg/downloads/svn/csharp-web/trunk/May-2021/ASP-NET-Core-June-2021/HomeworkAfterWeb.txt) - Николай Костов
 
 Course completion: 17.05.2024
