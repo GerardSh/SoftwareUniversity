@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp
+﻿namespace CustomRandomList
 {
     public class RandomList : List<string>
     {

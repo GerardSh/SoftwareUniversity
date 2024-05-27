@@ -1,4 +1,4 @@
-﻿namespace CustomRandomList
+﻿namespace CustomStack
 {
     public class StartUp
     {
