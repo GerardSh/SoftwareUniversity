@@ -8,7 +8,7 @@
             HorsePower = horsePower;
         }
 
-        public double DefaultFuelConsumption { get; set; }
+        public double DefaultFuelConsumption { get; set; } = 1.25;
 
         public virtual double FuelConsumption { get; set; }
 
@@ -18,8 +18,7 @@
 
         public virtual void Drive(double kilometers)
         {
-            double fuelConsumption = 1.25;
-            Fuel -= kilometers * fuelConsumption;
+            Fuel -= kilometers * DefaultFuelConsumption;
         }
     }
 }
