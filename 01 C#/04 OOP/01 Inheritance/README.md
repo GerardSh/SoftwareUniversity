@@ -45,7 +45,7 @@ private protected - достъпно в рамките на същия клас 
 https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
 https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
  [Composition Properties](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/02%20Fundamentals/06%20Objects%20and%20Classes/README.md#composition-properties)
-Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [base / this](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#Misc##base%20/%20this) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
+Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [base / this](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#Misc) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
 ## Virtual Method
 Ако направим даден метод или property виртуални в базовия клас, тогава може да бъдат override-нати в наследяващите класове. Това означава, че взимаме всичко от базовия клас, а метода или property-то които сме override-нали са с променено поведение. С други думи, базовия клас дава съгласието си, те да бъдат променяни.
 ## Sealed
