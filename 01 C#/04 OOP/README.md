@@ -42,8 +42,9 @@ private protected - достъпно в рамките на същия клас 
 Когато името на променливата, съвпада с името на дадено поле, трябва да използваме `this.` за да стане ясно че посочваме полето.
 
 Друг вид shadowing е ако на даден метод му сложим ключовата дума `new` вместо `override` . Когато възможността за overriding на метод от базовия клас не е налична, може да се използва ключовата дума `new`. Това не е препоръчително, особено когато става дума за наследяване и полиморфизъм, защото новият метод няма да бъде достъпен, когато обектът се използва като инстанция от базовия клас.
-
-Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [this / base](01%20Inheritance.md#Misc##base%20/%20this) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
+https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
+https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
+Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [this / base](https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP/01%20Inheritance.md#Misc##base%20/%20this) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
 ## Virtual Method
 Ако направим даден метод или property виртуални в базовия клас, тогава може да бъдат override-нати в наследяващите класове. Това означава, че взимаме всичко от базовия клас, а метода или property-то които сме override-нали са с променено поведение. С други думи, базовия клас дава съгласието си, те да бъдат променяни.
 ## Sealed
@@ -242,6 +243,7 @@ Here's a clearer breakdown:
     - Even if you don't use the newest language features immediately, using a newer C# version can be beneficial for future-proofing your code. It allows you to gradually adopt newer language features when needed without having to upgrade your entire codebase all at once.
 
 In summary, as long as you avoid using new language features introduced in newer C# versions, your code will maintain compatibility with older .NET framework versions. This approach allows you to benefit from the stability and familiarity of older frameworks while having the flexibility to leverage newer language features when required.
-# Bookmarks 
+# Bookmarks
+[C# OOP - Working with Abstraction - октомври 2019 - Николай Костов - YouTube](https://www.youtube.com/watch?v=Fcj2tyRk-8w)
 
 Course completion: 28.05.2024
