@@ -42,6 +42,7 @@ private protected - достъпно в рамките на същия клас 
 Когато името на променливата, съвпада с името на дадено поле, трябва да използваме `this.` за да стане ясно че посочваме полето.
 
 Друг вид shadowing е ако на даден метод му сложим ключовата дума `new` вместо `override` . Когато възможността за overriding на метод от базовия клас не е налична, може да се използва ключовата дума `new`. Това не е препоръчително, особено когато става дума за наследяване и полиморфизъм, защото новият метод няма да бъде достъпен, когато обектът се използва като инстанция от базовия клас.
+
 Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [base / this](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#base--this) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
 ## Virtual Method
 Ако направим даден метод или property виртуални в базовия клас, тогава може да бъдат override-нати в наследяващите класове. Това означава, че взимаме всичко от базовия клас, а метода или property-то които сме override-нали са с променено поведение. С други думи, базовия клас дава съгласието си, те да бъдат променяни.
@@ -133,9 +134,11 @@ Here's a simplified breakdown:
 In essence, the compiler translates your C# source code into a form (IL) that can be executed by the .NET runtime (CLR) provided by the .NET framework/platform. The framework not only executes your code but also provides essential libraries and services that your application relies on.
 ### Compatibility Scenarios
 You
+
 The issue if lets say the version has changed and new syntaxes rules are created or old rules are edited is that it will no longer work with the old libraries provided by the older .NET Framework? Likewise the new libraries will not work correctly with older rules defined in the previous C# versions?
 
 ChatGPT
+
 Yes, you've captured the essence of potential compatibility issues between different versions of the C# language and the .NET framework/platform. Let's break it down:
  1. New C# Language Features
 - **New Syntax and Rules**: Newer versions of C# may introduce new syntax, language features, or modify existing rules.
