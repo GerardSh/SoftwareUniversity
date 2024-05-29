@@ -45,7 +45,7 @@ private protected - достъпно в рамките на същия клас 
 https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
 https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe8715760c54fbb658ea/01%20C%23/04%20OOP
  [Composition Properties](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/02%20Fundamentals/06%20Objects%20and%20Classes/README.md#composition-properties)
-Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [base / this](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#Misc) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
+Вид shadowing е и ако имаме в наследяващия клас поле със същото име като в базовия клас. Чрез [base / this](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#Misc##base%20/%20this) може да правим разлика между двете, но е добра практика да се избягват еднаквите имена.
 ## Virtual Method
 Ако направим даден метод или property виртуални в базовия клас, тогава може да бъдат override-нати в наследяващите класове. Това означава, че взимаме всичко от базовия клас, а метода или property-то които сме override-нали са с променено поведение. С други думи, базовия клас дава съгласието си, те да бъдат променяни.
 ## Sealed
@@ -66,7 +66,7 @@ https://github.com/GerardSh/SoftwareUniversity/tree/a1b18ddec273ed4ee9fafe871576
 ## base / this
 Когато ползваме `this.` пред някое пропърти или поле в даден клас, това винаги означава членовете в този клас.
 Ползвайки `base.` получаваме достъп само до нещата в базовия клас. Много рядко се налага да го ползваме. Примерно ако сме override-нали определен базов метод в нашия клас и искаме да ползваме базовия му вариант, трябва да сложим `base.` 
-Друг вариант да се наложи да го ползваме е ако има [shadowing](01%20Inheritance.md#General##Shadowing).
+Друг вариант да се наложи да го ползваме е ако има [shadowing](https://github.com/GerardSh/SoftwareUniversity/blob/main/01%20C%23/04%20OOP/01%20Inheritance/README.md#General##Shadowing).
 ## Polymorphism
 Полиморфизмът позволява на обект от производен клас да бъде използван като обект от базовия клас. 
 Може да направим обект от тип базов клас присвоявайки му наследник клас. В такъв случай обектът ще има само членовете (методи и свойства), дефинирани в базовия клас, но ще използва тези, които са предефинирани (overridden) в наследника, ако съществуват.
