@@ -2,6 +2,7 @@
 {
     public class Person
     {
+        private const int SalaryIncreaseAge = 30;
 
         public Person(string firstName, string lastName, int age, decimal salary)
         {
@@ -20,7 +21,7 @@
 
         public void IncreaseSalary(decimal percentage)
         {         
-            if (Age < 30)
+            if (Age < SalaryIncreaseAge)
             {
                 percentage /= 2;
             }
@@ -30,7 +31,6 @@
 
             Salary *= percentage;
         }
-
 
         public override string ToString()
         {
