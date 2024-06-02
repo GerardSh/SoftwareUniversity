@@ -2,7 +2,9 @@
 {
     public class Player
     {
-        double skill;
+        const int MinSkill = 0;
+        const int MaxSkill = 100;
+
         private string name;
         private int endurance;
         private int spring;
@@ -18,15 +20,18 @@
             Dribbel = dribble;
             Passing = passing;
             Shooting = shooting;
-
-            skill = (Endurance + Spring + Dribbel + Passing + Shooting) / 5.0 ;
         }
 
         public string Name
         {
             get => name;
             set
-            {  
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("A name should not be empty.");
+                }
+
                 name = value;
             }
         }
@@ -35,11 +40,7 @@
         {
             get => endurance; set
             {
-                if (value < 0 || value > 100)
-                {
-                    throw new ArgumentException($"Endurance should be between 0 and 100.");
-                }
-
+                ValidateValue(value, nameof(Endurance));
                 endurance = value;
             }
         }
@@ -48,11 +49,8 @@
         {
             get => spring; set
             {
-                if (value < 0 || value > 100)
-                {
-                    throw new ArgumentException($"Spring should be between 0 and 100.");
-                }
 
+                ValidateValue(value, nameof(Spring));
                 spring = value;
             }
         }
@@ -61,11 +59,7 @@
         {
             get => dribbel; set
             {
-                if (value < 0 || value > 100)
-                {
-                    throw new ArgumentException($"Dribbel should be between 0 and 100.");
-                }
-
+                ValidateValue(value, nameof(Dribbel));
                 dribbel = value;
             }
         }
@@ -74,11 +68,7 @@
         {
             get => passing; set
             {
-                if (value < 0 || value > 100)
-                {
-                    throw new ArgumentException($"Passing should be between 0 and 100.");
-                }
-
+                ValidateValue(value, nameof(Passing));
                 passing = value;
             }
         }
@@ -87,12 +77,18 @@
         {
             get => shooting; set
             {
-                if (value < 0 || value > 100)
-                {
-                    throw new ArgumentException($"Shooting should be between 0 and 100.");
-                }
-
+                ValidateValue(value, nameof(Shooting));
                 shooting = value;
+            }
+        }
+
+        public double Skill => (Endurance + Spring + Dribbel + Passing + Shooting) / 5.0;
+
+        void ValidateValue(int value, string skillName)
+        {
+            if (value < MinSkill || value > MaxSkill)
+            {
+                throw new ArgumentException($"{skillName} should be between {MinSkill} and {MaxSkill}.");
             }
         }
     }
