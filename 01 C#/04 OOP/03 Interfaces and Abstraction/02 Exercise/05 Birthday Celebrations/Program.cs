@@ -13,15 +13,15 @@
                 string[] elements = input
                     .Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
-                string entity = elements[0];
+                string type = elements[0];
 
                 string name = elements[1];
 
-                if (entity == "Citizen")
+                if (type == "Citizen")
                 {
                     petsAndCitizens.Add(new Citizen(name, int.Parse(elements[2]), elements[3], elements[4]));
                 }
-                else if (entity == "Pet")
+                else if (type == "Pet")
                 {
                     petsAndCitizens.Add(new Pet(name, elements[2]));
                 }
