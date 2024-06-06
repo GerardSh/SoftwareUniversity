@@ -4,7 +4,7 @@
     {
         public static void Main()
         {
-            List<IIdentifiable> citizens = new List<IIdentifiable>();
+            List<IIdentifiable> citizensAndRobots = new List<IIdentifiable>();
 
             string input;
 
@@ -15,28 +15,28 @@
 
                 if (elements.Length == 2)
                 {
-                    citizens.Add(new Robot(elements[0], elements[1]));
+                    citizensAndRobots.Add(new Robot(elements[0], elements[1]));
                 }
                 else
                 {
-                    citizens.Add(new Human(elements[0], int.Parse(elements[1]), elements[2]));
+                    citizensAndRobots.Add(new Citizen(elements[0], int.Parse(elements[1]), elements[2]));
                 }
             }
 
             string fakeIdNumber = Console.ReadLine();
 
-            foreach (IIdentifiable citizen in citizens)
+            foreach (IIdentifiable citizenOrRobot in citizensAndRobots)
             {
                 //Option 1
-                //if (citizen.Id.Substring(citizen.Id.Length - fakeIdNumber.Length) == fakeIdNumber)
+                //if (citizenOrRobot.Id.Substring(citizenOrRobot.Id.Length - fakeIdNumber.Length) == fakeIdNumber)
                 //{
-                //    Console.WriteLine(citizen.Id);
+                //    Console.WriteLine(citizenOrRobot.Id);
                 //}
 
                 //Option 2
-                if (citizen.Id.EndsWith(fakeIdNumber))
+                if (citizenOrRobot.Id.EndsWith(fakeIdNumber))
                 {
-                    Console.WriteLine(citizen.Id);
+                    Console.WriteLine(citizenOrRobot.Id);
                 }
             }
         }

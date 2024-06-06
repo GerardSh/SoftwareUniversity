@@ -1,8 +1,8 @@
 ﻿namespace BorderControl
 {
-    public class Human : IIdentifiable
+    public class Citizen : IIdentifiable
     {
-        public Human(string name, int age, string iD)
+        public Citizen(string name, int age, string iD)
         {
             Id = iD;
             Name = name;
@@ -14,10 +14,5 @@
         public string Name { get; set; }
 
         public int Age { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Id}{Name}{Age}";
-        }
     }
 }
