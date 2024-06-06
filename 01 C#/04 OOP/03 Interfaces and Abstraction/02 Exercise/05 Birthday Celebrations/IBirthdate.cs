@@ -1,6 +1,6 @@
 ﻿namespace BirthdayCelebrations
 {
-    public interface IBirthdateable
+    public interface IBirthdate
     {
         string Name { get; set; }
 

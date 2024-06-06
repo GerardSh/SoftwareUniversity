@@ -4,7 +4,7 @@
     {
         public static void Main()
         {
-            List<IBirthdateable> petsAndCitizens = new List<IBirthdateable>();
+            List<IBirthdate> petsAndCitizens = new List<IBirthdate>();
 
             string input;
 

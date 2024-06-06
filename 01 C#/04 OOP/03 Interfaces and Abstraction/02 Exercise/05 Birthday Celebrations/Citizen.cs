@@ -1,6 +1,6 @@
 ﻿namespace BirthdayCelebrations
 {
-    public class Citizen : IBirthdateable
+    public class Citizen : IBirthdate
     {
         public Citizen(string name, int age, string iD, string birthdate)
         {
