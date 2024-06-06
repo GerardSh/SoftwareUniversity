@@ -8,9 +8,9 @@
             HoursWorked = hoursWorked;
         }
 
-        public string PartName { get; set; }
+        public string PartName { get; private set; }
 
-        public int HoursWorked { get; set; }
+        public int HoursWorked { get; private set; }
 
         public override string ToString()
         {

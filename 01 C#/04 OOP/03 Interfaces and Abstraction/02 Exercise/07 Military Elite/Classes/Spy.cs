@@ -8,7 +8,7 @@
             CodeNumber = codeNumber;
         }
 
-        public int CodeNumber { get; set; }
+        public int CodeNumber { get; private set; }
 
         public override string ToString()
         {

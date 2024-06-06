@@ -5,9 +5,8 @@ namespace MilitaryElite
     public class Engineer : SpecialisedSoldier, IEngineer, IPrivate, ISpecialisedSoldier
     {
         public Engineer(string id, string firstName, string lastName, decimal salary, string corps)
-               : base(id, firstName, lastName, corps)
+               : base(id, firstName, lastName, corps, salary)
         {
-            Salary = salary;
             Repairs = new List<Repair>();
         }
 
@@ -19,7 +18,7 @@ namespace MilitaryElite
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"{base.ToString()} Salary: {Salary:f2}");
+            sb.AppendLine($"{base.ToString()}");
             sb.AppendLine($"Corps: {Corps}");
             sb.AppendLine("Repairs:");
 
