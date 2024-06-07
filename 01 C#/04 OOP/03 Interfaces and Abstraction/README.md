@@ -326,7 +326,7 @@ You cannot have a private setter in an interface in C#. In an interface, all mem
 
 1. **Purpose of Interfaces**: Interfaces are designed to define a public contract. They specify what members a class must implement, ensuring a consistent interface for consumers of the class. Private members are implementation details and thus are not included in the interface definition.
 2. **Access Modifiers**: Interfaces in C# do not allow explicit access modifiers on their members. All members of an interface are implicitly public.
-## Abstract Keyword
+## Interface Members are Abstract
 You
 In the context of interfaces, all members in the interface are implicitly abstract by default, but even if we explicitly use the `abstract` keyword for lets say a method, we have to only create this method in the class that implements the interface. If we have abstract method in a abstract class then the derived class have to override the method, not only create it?
 
@@ -387,6 +387,114 @@ Summary
     - Derived classes must provide implementations using `override`.
 
 This distinction is important because interfaces allow for multiple inheritance of behavior, whereas abstract classes provide a way to define a base class that can be extended by subclasses, forcing them to provide specific implementations.
+## Difference between Overriding and Shadowing
+
+```
+public abstract class AbstractClass
+{
+    public virtual void AbstractMethod()
+    {
+        Console.WriteLine("From Abstract class");
+    }
+
+    public void AbstractMethod2()
+    {
+        Console.WriteLine("From Abstract class");
+    }
+}
+
+public class Class : AbstractClass
+{
+    public override void AbstractMethod()
+    {
+        Console.WriteLine("From class");
+    }
+
+    public new void AbstractMethod2()
+    {
+        Console.WriteLine("From class");
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        Class myClass = new Class();
+        AbstractClass abstractClass = new Class();
+
+        myClass.AbstractMethod();     // Output: From class
+        myClass.AbstractMethod2();    // Output: From class
+        abstractClass.AbstractMethod();   // Output: From class
+        abstractClass.AbstractMethod2();  // Output: From Abstract class
+    }
+}
+```
+
+ChatGPT
+
+Summary of the Code:
+
+This code demonstrates the difference between overriding a method and shadowing (hiding) a method in C#.
+
+Classes:
+
+1. **AbstractClass**:
+- `AbstractMethod`: A virtual method that can be overridden by derived classes.
+- `AbstractMethod2`: A regular method that can be hidden (shadowed) by derived classes.
+2. **Class**:
+- Inherits from `AbstractClass`.
+- `AbstractMethod`: Overrides the base class's virtual method using the `override` keyword.
+- `AbstractMethod2`: Hides the base class's method using the `new` keyword.
+
+Program:
+
+- **Main Method**:
+- Creates instances of `Class` and assigns one of them to a variable of type `AbstractClass`.
+- Calls the methods `AbstractMethod` and `AbstractMethod2` on both instances and observes the behavior.
+
+ Key Differences:
+
+1. **Override**:
+- When `Class` overrides `AbstractMethod`, it provides a new implementation for the method defined in `AbstractClass`.
+- Regardless of the reference type (`Class` or `AbstractClass`), the overridden method in `Class` is called.
+2. **Shadow (Hide)**:
+- When `Class` hides `AbstractMethod2`, it provides a new implementation that is independent of the base class's method.
+- The hidden method in `Class` is called only when the reference type is `Class`.
+- When the reference type is `AbstractClass`, the base class's version of `AbstractMethod2` is called.
+
+Code Execution:
+
+```
+public class Program
+{
+    public static void Main()
+    {
+        Class myClass = new Class();
+        AbstractClass abstractClass = new Class();
+
+        myClass.AbstractMethod();     // Output: From class
+        myClass.AbstractMethod2();    // Output: From class
+
+        abstractClass.AbstractMethod();   // Output: From class
+        abstractClass.AbstractMethod2();  // Output: From Abstract class
+    }
+}
+```
+
+- `myClass.AbstractMethod()`: Calls the overridden method in `Class`.
+- `myClass.AbstractMethod2()`: Calls the hidden method in `Class`.
+- `abstractClass.AbstractMethod()`: Calls the overridden method in `Class` (due to polymorphism).
+- `abstractClass.AbstractMethod2()`: Calls the base class's method in `AbstractClass` (due to method hiding and the reference type being `AbstractClass`).
+
+Highlighting the Difference:
+
+- **Overridden Method**:
+- `AbstractMethod` in `Class` is an override of the `AbstractMethod` in `AbstractClass`. This means it uses the same method signature and memory location, providing a new implementation that is accessible regardless of whether the reference type is `Class` or `AbstractClass`.
+- **Hidden (Shadowed) Method**:
+- `AbstractMethod2` in `Class` is a completely different method from `AbstractMethod2` in `AbstractClass`, residing in a different location in memory. When `Class` hides `AbstractMethod2` using the `new` keyword, the derived class's version of the method is only accessible when the reference type is `Class`. If the reference type is `AbstractClass`, it uses the base class's `AbstractMethod2` implementation.
+
+This distinction clarifies that hiding creates a separate method in the derived class, while overriding modifies the existing method in the base class.
 # Bookmarks 
 
 Course completion: 07.06.2024
