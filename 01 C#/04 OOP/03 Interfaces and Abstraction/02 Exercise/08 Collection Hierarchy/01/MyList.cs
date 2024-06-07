@@ -2,9 +2,9 @@
 
 namespace CollectionHierarchy
 {
-    public class MyList : AddRemoveCollection, IUseable
+    public class MyList : AddRemoveCollection
     {
-        public IReadOnlyCollection<string> Used => list;
+        public int Used => list.Count;
 
         public override string Remove()
         {
