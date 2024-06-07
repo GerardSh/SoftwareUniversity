@@ -21,7 +21,6 @@ namespace CollectionHierarchy
 
             RemoveElements(elementsToRemoveCount, addRemoveCollection);
             RemoveElements(elementsToRemoveCount, myList);
-
         }
 
         static void AddElements(string[] elementsToAdd, IAddable collection)
