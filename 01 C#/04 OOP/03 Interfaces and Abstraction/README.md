@@ -296,7 +296,97 @@ C# е език, който ни позволява да пишем върху .N
 ## Class
 По дефиниция, класа е описание върху даден език за програмиране на обект съществуващ в реалния свят. Класа проектира част от възможностите на този обект в езика за програмиране.
 # ChatGPT
+## Properties
+You
 
+If we have an interface with property that has only getter then when we implement it on a class, why we are allowed to set a setter as well
+
+ChatGPT
+
+When you implement an interface in C#, the property in the interface specifies the minimum contract that the implementing class must adhere to. If the interface specifies a property with only a getter, it means that any class implementing this interface must have at least a getter for that property. However, the implementing class is allowed to provide more functionality than the interface specifies, such as adding a setter.
+
+ Why It Is Allowed
+
+1. **Extended Functionality**: The class can extend the functionality of the interface by adding a setter. The interface only defines what must be present (a getter in this case), but the class can choose to provide more functionality.
+2. **Encapsulation and Implementation Details**: The interface defines the public API that consumers of the interface will use. The implementing class can encapsulate additional behavior and implementation details, such as internal or private setters, without violating the interface contract.
+3. **Flexibility**: Allowing the setter provides flexibility for the class to manage its state internally while exposing a read-only property through the interface.
+
+ Summary
+
+When you implement an interface with a property that only has a getter, you are required to provide at least a getter in the implementing class. However, you can also provide a setter (public, private, or protected) if needed. This allows for greater flexibility and enables the class to manage its internal state while fulfilling the interface contract.
+
+You
+
+Why we cannot have a private setter in the interface?
+
+ChatGPT
+You cannot have a private setter in an interface in C#. In an interface, all members are implicitly public because an interface is meant to define a contract for classes to implement. The interface should only specify what needs to be done (the methods and properties that need to be implemented), not how it is done. Here’s a summary of why this is the case and how you can manage property access:
+
+ Why Interfaces Can't Have Private Setters
+
+1. **Purpose of Interfaces**: Interfaces are designed to define a public contract. They specify what members a class must implement, ensuring a consistent interface for consumers of the class. Private members are implementation details and thus are not included in the interface definition.
+2. **Access Modifiers**: Interfaces in C# do not allow explicit access modifiers on their members. All members of an interface are implicitly public.
+## Abstract Keyword
+You
+In the context of interfaces, all members in the interface are implicitly abstract by default, but even if we explicitly use the `abstract` keyword for lets say a method, we have to only create this method in the class that implements the interface. If we have abstract method in a abstract class then the derived class have to override the method, not only create it?
+
+ChatGPT
+
+Exactly! You've summarized it perfectly.
+
+ Interfaces
+
+- **Abstract Methods**: In interfaces, all methods are abstract by default, meaning they have no implementation. When a class implements an interface, it must provide implementations for all interface methods.
+
+```
+public interface IExample
+{
+    void Method1();  // Abstract method, must be implemented by any implementing class
+}
+
+public class MyClass : IExample
+{
+    public void Method1()
+    {
+        // Implementation of Method1
+    }
+}
+```
+
+Abstract Classes
+
+- **Abstract Methods**: In abstract classes, abstract methods are declared using the `abstract` keyword, and they do not have implementations. Any derived class that inherits from an abstract class must provide implementations for all abstract methods by using the `override` keyword.
+
+```
+public abstract class AbstractClass
+{
+    public abstract void Method1();  // Abstract method, must be overridden by derived classes
+}
+
+public class DerivedClass : AbstractClass
+{
+    public override void Method1()
+    {
+        // Implementation of Method1
+    }
+}
+```
+
+Key Differences
+
+- **Interfaces**: All methods are implicitly abstract, and any class implementing the interface must provide implementations for these methods.   
+- **Abstract Classes**: Abstract methods are explicitly marked with the `abstract` keyword, and derived classes must override these methods.
+
+Summary
+
+- **Interfaces**:
+    - Methods are implicitly abstract.
+    - Implementing classes must provide implementations (`override` is not used).
+- **Abstract Classes**:
+    - Abstract methods are explicitly marked with `abstract`.
+    - Derived classes must provide implementations using `override`.
+
+This distinction is important because interfaces allow for multiple inheritance of behavior, whereas abstract classes provide a way to define a base class that can be extended by subclasses, forcing them to provide specific implementations.
 # Bookmarks 
 
-Course completion: 05.06.2024
+Course completion: 07.06.2024
