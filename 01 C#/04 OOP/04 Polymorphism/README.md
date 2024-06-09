@@ -1,11 +1,119 @@
 # General
+Полиморфизма е четвъртия важен стълб / принцип на ОПП, след абстракция, наследяване и енкапсулация:
+При наследяването правим нещо, което другите класове разширяват и преизползват. 
+Енкапсулацията има за цел да скрие данните с за да ги валидира и контролира, за да сме сигурни че нашия клас винаги получава и работи с правилна информация. 
+Абстракцията скрива цялата ненужна за външния свят информация, с цел да намали сложността на класа, също така класовете ни да имат интерфейси, които да описват основните методи и идея на класа. Така може да имплементираме този интерфейс към различни класове, които да стават взаимно заменяеми.
 
+Благодарение на факта че може да заменяме и да не се интересуваме от точната конкретика на обекта, който записваме в дадена променлива, а да използваме негов метод, където конкретната имплементация на метода зависи от записания обект, това е полиморфизма - много форми.
+
+Полиморфизма се занимава основно с методи и тяхното поведение и това кой точно метод да бъде извикан.
+
+Когато базовия клас дефинира даден метод като virtual и след това даден клас промени поведението му, а трети клас който наследява втория клас също промени поведението му, се получава по-сложна йерархия от класове и когато извикаме метода, става объркване какво ще е точното поведение на метода. Полиморфизма дава различни възможности за извикване на методи по назад в йерархията. Друг сценарии е когато примерно имаме клас `Аnimal` с метод `MakeSound()` то този метод има различно поведение спрямо това, какъв вид животно е наследяващия клас. Когато извикаме даден метод примерно `MakeSound()`, той може да е някой от всичките наследници на `Аnimal`, кой точно зависи от конкретния тип данни записани в променливата от тип `Animal`. Извиква се онзи метод от многото възможности на `MakeSound()`, в зависимост от това дали в променливата от тип `Animal` се намира котка, куче и тн. Това е полиморфизма - поведението на извикания метод, да има поведението на текущата форма / обект, на данните записани в променливата.
+
+![](Pasted%20image%2020240609104437.png)
+## Variable Type and Data Type
+![](Pasted%20image%2020240609133436.png)
+
+Трябва да се прави разлика между декларирането на една променлива и записването на първоначалната й стойност.
+Първото нещо е типа на променливата - нещото което пишем при декларирането на променливата преди нейното име, без значение какво пишем в дясно от равното.
+Примерно `IAnimal animal = new Person()` - са два различни типа данни - типа на променливата и типа на данните записани в променливата.
+Разликата не може да е произволна, има правила с които трябва да се съобразяваме - типа на променливата трябва или да съвпада с типа на подадените данни или да е по базов тип от типа на подадените данни. Това правило важи и при параметрите на методите. 
+Това е плюса, че в базовите променливи, може да запишем всичко нагоре по йерархията. 
+Минуса на това да използваме базов тип на променливата е, че имаме достъп само до онези неща, описани в базовия тип, тоест не може да използваме пълните възможности на наследяващия клас, който се избрали като тип данни.
+
+Много важен принцип е че когато избираме типа данни на променливата или на метода или дори какъв да е типа данни на дадена колекция, винаги избираме най-базовия възможен тип данни, който ни върши работа. Примерно ако имаме метод, който приема като параметър `IEnumerable` може да го извикаме с всички колекции, които го имплементират и които искаме просто да foreach-нем. Или когато имаме метод `MakeSound()` в интерфейса `IAnimal` и направим променлива от тип `IAnimal`, и я инициализираме с тип данни `Cat` при изпълнение на метода `MakeSound()` ще се изпълни поведението на `MakeSound()` записано в класа `Cat`. Това е полиморфизма - извикваме един метод, а от многото възможности на този метод, ще се извика онзи, който е записан в типа данни подадени по време изпълнение на програмата.
+
+**Variable type** - е това което определяме преди името на променливата и никога не се променя. Това се случва compile time, тоест докато пишем кода, типа данни на променливата е известен.
+**Data type** - е типа който записваме в променливата и който може да се променя по време на изпълнение (runtime) на програмата ни. Примерно на `IAnimal animal` може да зададем първоначално `new Cat()` и по надолу в програмата да кажем `animal = new Dog()`. Когато извикваме даден метод, се гледа типа на данните записани в променливата, неговото поведение зависи от тях.
+
+Когато ползваме `var` вместо типа данни на променливата, това което се случва е че `var` бива заменен с типа на данните, които сме посочили. С други думи, направи типа на променливата в ляво, същия като типа на данните в дясно.
+
+Езици като JS не разполагат с тип данни на променливата, наричат я `let` или `var`.
+## Operator - is
+Когато искаме да разберем какъв е типа данни записан в определена променлива, ползваме оператора `is`
+
+```
+if (animal is Dog)
+{
+    Console.WriteLine("Yes, it is dog!");
+}
+```
+
+Тази проверка ще връща true и за всички класове, от които класа Dog е наследил.
+
+Трябва да се избягва да се ползва подобна проверка, защото не е добра практика. Ако нещо ни трябва да е конкретен тип, трябва да направим променливата му този тип, а не да правим проверки, освен в много редки случаи. 
+Вместо да се правят такива проверки за да се изпълнят дадени методи, това трябва да се решава от конкретния тип. С други думи, не проверяваме дали даден обект е куче за да извикаме метода `Bark()` или да проверяваме дали е котка за да извикаме метода `Meow()`, но трябва да имаме метод `MakeSound()`, който когато имаме куче да лая, а когато е котка да мяука.
+### Casting / Converting
+
+Ако искаме да достъпим всички методи в типа данни, които не се виждат заради по базовия тип на променливата, може да ползваме casting:
+
+```
+((Dog)animal).Bark();
+```
+
+Така се игнорира типа на променливата и се прави опит да се преобразува в `Dog`. Ако данните в `Animal` съвпадат с данните в `Dog`, вече може да ползваме пълната функционалност на `Dog`. Ако данните не съвпадат, ще хвърли exception.
+#### as
+Чрез оператора `as` се пробва да се преобразува типа, където при неуспешен опит, връща нулева стойност, а не exception. В примера долу са показани двата варианта за преобразуване, като в комбинация с оператора `as` ползваме и nullable оператора `?.` за да предотвратим null reference exception, ако резултата е null:
+
+```
+Animal animal = new Dog();
+
+// Using ?. operator with as
+(animal as Dog)?.Bark(); // This will call Bark() if animal is Dog, otherwise do nothing
+
+// Direct cast without null check
+((Dog)animal).Bark(); // This will throw an exception if animal is not actually a Dog
+```
+### is Type Pattern
+Може да проверим в един ред дали даден обект е определен тип данни и да се преобразува в него, директно създавайки променлива:`
+
+```
+if (animal is Dog dog)
+{
+    dog.Bark();
+}
+```
+### is Constant Pattern
+По-бърз начин да използваме или оператора:
+
+```
+int a = 6;
+
+if (a is 4 or 5 or 6)
+{
+    Console.WriteLine("test");
+}
+
+//The same as
+int a = 6;
+
+if (a == 4 || a == 5 || a == 6)
+{
+    Console.WriteLine("test");
+}
+```
+### is var Pattern
+Записва даден израз в променлива, която е валидна само в рамките на проверката и която може да се използва в дясно от създаването й:
+
+```
+        List<int> numbers = new List<int> { 1, 2, 3, 4 };
+        // Using is var pattern matching
+        numbers.Where(x => x % 10 is var r && r >= 1 && r <= 3)
+            .ToList()
+            .ForEach(x => Console.WriteLine(x));
+
+        // Performing the same check without is var pattern matching
+        numbers.Where(x => x % 10 >= 1 && x % 10 <= 3)
+        .ToList()
+        .ForEach(x => Console.WriteLine(x));
+```
+
+В примера `x % 10 is var r` е равносилно на `r = x % 10`. 
 # Misc
 
 # ChatGPT
 ## Shadowing member is private
 You
-
 What happens when the shadowing member is private in the derived class, like in the example in the code below:
 
 ```
@@ -96,8 +204,6 @@ Yes, in C#, the memory layout for a derived class follows a specific order that 
  Memory Layout of Derived Classes
 
 When you create a derived class from a base class in C#, the memory for an object of the derived class is allocated in a way that maintains the layout of the base class first, followed by any additional members introduced by the derived class. This is important for ensuring that polymorphism and type compatibility work as expected.
-
- Example
 
 Let's consider a scenario with a base class and a derived class:
 
@@ -235,11 +341,9 @@ Explanation:
 This mechanism ensures that base class references are type-safe and that the correct members are accessed, maintaining the principles of encapsulation and inheritance in object-oriented programming.
 
 You
-
 Is having a variable of the interface type and assigning it an instance of the class that implements the interface similar to the concept of base and derived class inheritance? When we create an instance of the class, all the members defined by the interface are initialized along with the class-specific members. When the variable is of the interface type, only the interface members are accessible. Are the interface members allocated first in memory followed by the class-specific members, similar to how memory allocation works with base and derived classes?
 
 ChatGPT
-
 Yes, the concept of having a variable of the interface type and assigning it an instance of a class that implements the interface is very similar to the concept of base and derived class inheritance. Here’s a detailed explanation of this similarity and how memory allocation works in both cases:
 
 Similarity to Inheritance
@@ -310,13 +414,90 @@ Summary
 - When you use a variable of the interface type, it can only access the members defined by the interface, similar to how a base class variable can only access base class members.
 - The actual memory layout ensures that all members are accessible, but the type of the reference (interface or base class) dictates which members are visible and accessible.
 - The runtime manages method dispatch to ensure the correct implementations are called, whether the reference is of the interface type or the base class type.
+### Memory size
+You
+Is it correct to say that in C#, the memory allocation size for a variable is determined by the data type, not the variable type, and that the variable type dictates the level of visibility we have over the underlying data type?
+
+ChatGPT
+In C#, the memory allocation and the way data is stored indeed depend on the data type, not the variable type. The variable type determines how much visibility and control we have over the data stored in memory. Here's a detailed explanation of these concepts:
+
+Data Type and Memory Allocation
+
+The data type (e.g., `int`, `double`, `string`, `CustomClass`) dictates how much memory is allocated for a variable and how that memory is structured. Each data type has a predefined size and layout in memory:
+
+- **Value Types** (e.g., `int`, `double`, `struct`): These types store the actual data directly in the memory allocated for the variable.
+- **Reference Types** (e.g., `string`, `class`): These types store a reference (or pointer) to the actual data, which is stored on the heap.
+
+Variable Type and Visibility
+
+The variable type determines how we can interact with the data and which members (properties, methods, fields) are visible to us. This is crucial for polymorphism and encapsulation:
+
+- **Base Class Reference to Derived Class Object**: If a variable is declared as a base class type but assigned an instance of a derived class, the variable can only access the members defined in the base class. However, if a method in the base class is overridden by the derived class, the overridden method in the derived class will be called.
+- **Interface Reference to Implementing Class Object**: If a variable is declared as an interface type but assigned an instance of a class implementing that interface, the variable can only access the members defined in the interface.
+
+Let's consider an example to illustrate these concepts:
+
+```
+public class BaseClass
+{
+    public virtual void MyMethod()
+    {
+        Console.WriteLine("From base");
+    }
+}
+
+public class DerivedClass : BaseClass
+{
+    public override void MyMethod()
+    {
+        Console.WriteLine("From derived");
+    }
+}
+
+public interface IMyInterface
+{
+    void InterfaceMethod();
+}
+
+public class ImplementingClass : IMyInterface
+{
+    public void InterfaceMethod()
+    {
+        Console.WriteLine("From interface implementation");
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        // Base class reference, derived class object
+        BaseClass baseRef = new DerivedClass();
+        baseRef.MyMethod(); // Outputs: "From derived"
+
+        // Interface reference, implementing class object
+        IMyInterface interfaceRef = new ImplementingClass();
+        interfaceRef.InterfaceMethod(); // Outputs: "From interface implementation"
+
+        // Trying to access members not defined in the variable type
+        // baseRef.DerivedClassMethod(); // Error: BaseClass does not contain a definition for 'DerivedClassMethod'
+        // interfaceRef.ImplementingClassMethod(); // Error: IMyInterface does not contain a definition for 'ImplementingClassMethod'
+    }
+}
+```
+
+Summary
+
+- **Memory Allocation**: Determined by the data type. Value types store data directly, while reference types store a reference to the data on the heap.
+- **Variable Type**: Determines visibility and access. When a variable is declared as a base class or interface type, it only has access to the members defined in that base class or interface, even if the actual object is of a derived or implementing type.
+- **Polymorphism**: Allows methods to be overridden in derived classes and ensures that the correct method is called at runtime based on the actual object type.
+
+This separation of memory allocation and visibility allows for powerful features like polymorphism and encapsulation in C#.
 ## Casting
 You
-
 Why Casting is Necessary?
 
 ChatGPT
-
 The need for casting arises because of how C# handles type safety and polymorphism:
 
 - **Interface Type**: The `example` variable is of type `IExample`, so the compiler only knows about the members defined in the `IExample` interface.
