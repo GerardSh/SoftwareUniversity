@@ -8,22 +8,12 @@ namespace Shapes
 
         public Circle(double radius)
         {
-            Radius = radius;
-        }
+            this.radius = radius;
+        }  
 
-        public double Radius
-        {
-            get => radius;
+        public override double CalculateArea() => Math.PI * Math.Pow(radius, 2);
 
-            private set
-            {
-                radius = value;
-            }
-        }
-
-        public override double CalculateArea() => (Math.PI * Radius * Radius);
-
-        public override double CalculatePerimeter() => 2 * Math.PI * Radius;
+        public override double CalculatePerimeter() => 2 * Math.PI * radius;
 
         public override string Draw()
         {

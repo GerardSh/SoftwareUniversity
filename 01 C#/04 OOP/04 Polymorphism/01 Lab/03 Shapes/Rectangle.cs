@@ -9,28 +9,8 @@ namespace Shapes
 
         public Rectangle(double height, double width)
         {
-            Height = height;
-            Width = width;
-        }
-
-        public double Height
-        {
-            get => height;
-
-            private set
-            {
-                height = value;
-            }
-        }
-
-        public double Width
-        {
-            get => width;
-
-            private set
-            {
-                width = value;
-            }
+            this.height = height;
+            this.width = width;
         }
 
         public override double CalculateArea() => height * width;
