@@ -4,15 +4,9 @@
     {
         public static void Main()
         {
-            string[] carData = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-            double fuelQuantityCar = double.Parse(carData[1]);
-            double fuelConsumptionCar = double.Parse(carData[2]);
-            Vehicle car = new Car(fuelQuantityCar, fuelConsumptionCar);
 
-            string[] truckData = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-            double fuelQuantityTruck = double.Parse(truckData[1]);
-            double fuelConsumptionTruck = double.Parse(truckData[2]);
-            Vehicle truck = new Truck(fuelQuantityTruck, fuelConsumptionTruck);
+            Vehicle car = GetVehicle();
+            Vehicle truck = GetVehicle();
 
             int n = int.Parse(Console.ReadLine());
 
@@ -53,6 +47,26 @@
 
             Console.WriteLine($"Car: {car.FuelQuantity:f2}");
             Console.WriteLine($"Truck: {truck.FuelQuantity:f2}");
+        }
+
+        private static Vehicle GetVehicle()
+        {
+            string[] vehicleData = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+            string vehicleType = vehicleData[0];
+            double fuelQuantity = double.Parse(vehicleData[1]);
+            double fuelConsumption = double.Parse(vehicleData[2]);
+
+            Vehicle vehicle = null;
+
+            if (vehicleType == "Car")
+            {
+                return new Car(fuelQuantity, fuelConsumption);
+            }
+            else
+            {
+                return new Truck(fuelQuantity, fuelConsumption);
+            }
         }
     }
 }

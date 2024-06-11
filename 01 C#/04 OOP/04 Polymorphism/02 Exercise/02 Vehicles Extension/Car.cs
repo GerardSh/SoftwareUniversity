@@ -4,8 +4,8 @@
     {
         private double fuelConsumption;
 
-        public Car(double fuelQuantity, double fuelConsumption) 
-            : base(fuelQuantity)
+        public Car(double fuelQuantity, double fuelConsumption, double tankCapacity) 
+            : base(fuelQuantity, tankCapacity)
         {
             FuelConsumption = fuelConsumption;
         }
