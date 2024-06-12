@@ -2,11 +2,11 @@
 {
     public class Program
     {
+        const int DruidAndRoguePower = 80;
+        const int PaladinAndWarriorPower = 100;
+
         public static void Main()
         {
-            const int DruidAndRoguePower = 80;
-            const int PaladinAndWarriorPower = 100;
-
             int n = int.Parse(Console.ReadLine());
 
             var raidGroup = new List<BaseHero>(n);
@@ -16,25 +16,9 @@
                 string heroName = Console.ReadLine();
                 string heroType = Console.ReadLine();
 
-                BaseHero hero = null;
+                BaseHero hero = CreateHero(heroType, heroName);
 
-                if (heroType == "Druid")
-                {
-                    hero = new Druid(heroName, DruidAndRoguePower);
-                }
-                else if (heroType == "Paladin")
-                {
-                    hero = new Paladin(heroName, PaladinAndWarriorPower);
-                }
-                else if (heroType == "Rogue")
-                {
-                    hero = new Rogue(heroName, DruidAndRoguePower);
-                }
-                else if (heroType == "Warrior")
-                {
-                    hero = new Warrior(heroName, PaladinAndWarriorPower);
-                }
-                else
+                if (hero == null)
                 {
                     Console.WriteLine("Invalid hero!");
                     continue;
@@ -58,6 +42,30 @@
             {
                 Console.WriteLine("Defeat...");
             }
+        }
+
+        public static BaseHero CreateHero(string heroType, string heroName)
+        {
+            BaseHero hero = null;
+
+            if (heroType == "Druid")
+            {
+                hero = new Druid(heroName, DruidAndRoguePower);
+            }
+            else if (heroType == "Paladin")
+            {
+                hero = new Paladin(heroName, PaladinAndWarriorPower);
+            }
+            else if (heroType == "Rogue")
+            {
+                hero = new Rogue(heroName, DruidAndRoguePower);
+            }
+            else if (heroType == "Warrior")
+            {
+                hero = new Warrior(heroName, PaladinAndWarriorPower);
+            }
+
+            return hero;
         }
     }
 }
