@@ -4,12 +4,12 @@
     {
         public static void Main()
         {
-            var foodMap = new Dictionary<string, SortedSet<string>>()
+            var foodMap = new Dictionary<string, HashSet<string>>()
             {
-                {"Vegetable", new SortedSet<string>(){"Hen", "Mice", "Cat" }},
-                {"Fruit", new SortedSet<string>(){"Hen", "Mouse"}},
-                {"Meat", new SortedSet<string>(){"Hen", "Cat", "Tiger", "Dog", "Owl"}},
-                {"Seeds", new SortedSet<string>(){"Hen"}},
+                {"Vegetable", new HashSet<string>(){"Hen", "Mice", "Cat" }},
+                {"Fruit", new HashSet<string>(){"Hen", "Mouse"}},
+                {"Meat", new HashSet<string>(){"Hen", "Cat", "Tiger", "Dog", "Owl"}},
+                {"Seeds", new HashSet<string>(){"Hen"}},
             };
 
             var animals = new List<Animal>();
