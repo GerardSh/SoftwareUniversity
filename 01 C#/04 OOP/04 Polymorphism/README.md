@@ -226,6 +226,8 @@ public class Program
 }
 ```
 
+ChatGPT
+
 - When accessing `Property` on an instance of **BaseClass**, it prints "Base".
 - When accessing `Property` on an instance of **DerivedClass**, it prints "Base" because the `DerivedClass.Property` is private and not visible externally.
 - When calling `MyMethod` on an instance of **BaseClass**, it prints "From base".
