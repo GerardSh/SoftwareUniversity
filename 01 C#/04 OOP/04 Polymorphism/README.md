@@ -10,9 +10,9 @@
 
 Когато базовия клас дефинира даден метод като virtual и след това даден клас промени поведението му, а трети клас който наследява втория клас също промени поведението му, се получава по-сложна йерархия от класове и когато извикаме метода, става объркване какво ще е точното поведение на метода. Полиморфизма дава различни възможности за извикване на методи по назад в йерархията. Друг сценарии е когато примерно имаме клас `Аnimal` с метод `MakeSound()` то този метод има различно поведение спрямо това, какъв вид животно е наследяващия клас. Когато извикаме даден метод примерно `MakeSound()`, той може да е някой от всичките наследници на `Аnimal`, кой точно зависи от конкретния тип данни записани в променливата от тип `Animal`. Извиква се онзи метод от многото възможности на `MakeSound()`, в зависимост от това дали в променливата от тип `Animal` се намира котка, куче и тн. Това е полиморфизма - поведението на извикания метод, да има поведението на текущата форма / обект, на данните записани в променливата.
 
-![](Pasted%20image%2020240609104437.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240609104437.png)
 ## Variable Type and Data Type
-![](Pasted%20image%2020240609133436.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240609133436.png)
 
 Трябва да се прави разлика между декларирането на една променлива и записването на първоначалната й стойност.
 Първото нещо е типа на променливата - нещото което пишем при декларирането на променливата преди нейното име, без значение какво пишем в дясно от равното.
@@ -29,6 +29,10 @@
 Когато ползваме `var` вместо типа данни на променливата, това което се случва е че `var` бива заменен с типа на данните, които сме посочили. С други думи, направи типа на променливата в ляво, същия като типа на данните в дясно.
 
 Езици като JS не разполагат с тип данни на променливата, наричат я `let` или `var`.
+### CommonLanguageRuntime
+Това са все едно ръцете на .NET.
+CLR е нещото, което изпълнява програмата стъпка по стъпка.
+Той определя кой от всичките методи да бъде извикан, спрямо типа на данните записани в променливата.
 ## Operator - is
 Когато искаме да разберем какъв е типа данни записан в определена променлива, ползваме оператора `is`
 
@@ -41,8 +45,9 @@ if (animal is Dog)
 
 Тази проверка ще връща true и за всички класове, от които класа Dog е наследил.
 
-Трябва да се избягва да се ползва подобна проверка, защото не е добра практика. Ако нещо ни трябва да е конкретен тип, трябва да направим променливата му този тип, а не да правим проверки, освен в много редки случаи. 
-Вместо да се правят такива проверки за да се изпълнят дадени методи, това трябва да се решава от конкретния тип. С други думи, не проверяваме дали даден обект е куче за да извикаме метода `Bark()` или да проверяваме дали е котка за да извикаме метода `Meow()`, но трябва да имаме метод `MakeSound()`, който когато имаме куче да лая, а когато е котка да мяука.
+Трябва да се избягва да се ползва подобна проверка, защото не е добра практика. Ако нещо ни трябва да е конкретен тип, трябва да направим променливата му този тип, а не да правим проверки, освен в много редки случаи. Това е от нещата които учим за да знаем че ги има, но не и да използваме.
+Вместо да се правят такива проверки за да се изпълнят дадени методи, това трябва да се решава от конкретния тип. С други думи - не проверяваме дали даден обект е куче за да извикаме метода `Bark()` или да проверяваме дали е котка за да извикаме метода `Meow()`, но трябва да имаме метод `MakeSound()`, който когато имаме куче да лая, а когато е котка да мяука. 
+Преобразуването и проверките за типа на данните се водят - code smell. Показват че нещо не е наред с кода.
 ### Casting / Converting
 
 Ако искаме да достъпим всички методи в типа данни, които не се виждат заради по базовия тип на променливата, може да ползваме casting:
@@ -53,7 +58,7 @@ if (animal is Dog)
 
 Така се игнорира типа на променливата и се прави опит да се преобразува в `Dog`. Ако данните в `Animal` съвпадат с данните в `Dog`, вече може да ползваме пълната функционалност на `Dog`. Ако данните не съвпадат, ще хвърли exception.
 #### as
-Чрез оператора `as` се пробва да се преобразува типа, където при неуспешен опит, връща нулева стойност, а не exception. В примера долу са показани двата варианта за преобразуване, като в комбинация с оператора `as` ползваме и nullable оператора `?.` за да предотвратим null reference exception, ако резултата е null:
+Чрез оператора `as` се пробва да се преобразува типа, където при неуспешен опит, връща null стойност, а не exception. В примера долу са показани двата варианта за преобразуване, като в комбинация с оператора `as` ползваме и nullable оператора `?.` за да предотвратим null reference exception, ако резултата е null:
 
 ```
 Animal animal = new Dog();
@@ -109,11 +114,73 @@ if (a == 4 || a == 5 || a == 6)
 ```
 
 В примера `x % 10 is var r` е равносилно на `r = x % 10`. 
-# Misc
+## Types of Polymorphism
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240609225617.png)
+### Runtime
+Когато имаме променлива от базов тип, на която може да запишем тип данни на клас наследник, ако извикаме даден метод, решението кой точно метод да се изпълни е по време на изпълнение на програмата. 
+С други думи, да имаме йерархия от класове и методи, които са виртуални или абстрактни, на които се гради полиморфизма, защото това позволява един и същи метод, да има различно поведение, в различните класове в йерархията. Кой точно метод да бъде извикан се случва runtime на базата какъв тип данни сме подали в променливата. Примерно, ако имаме променлива тип животно и изпълним метода `MakeSound()`, компилатора не знае точно какво животно ще получи за да изпълни неговата конкретна имплементация на метода `MakeSound()`. Runtime се взима решение, коя имплементация на метода ще се ползва, спрямо какво конкретно животно ще бъде записано на променливата от тип животно. Типа на променливата ни е необходима compile time, а точната стойност която бива подадена ни трябва runtime. Compile time прави проверки, затова му трябва тип а на runtime му трябват истински стойности, ще извиква методи и ще свърши работа, по време изпълнение на програмата.
+### Compile-time / Overloading
+Нарича се още и overloading на методи и се получава, когато имаме методи с еднакво име, но различна сигнатура.
+Води се compile-time защото не е необходимо да се изпълни кода, за да се разбере кой метод точно се извиква.
+#### Method Signature
+Това е името на метода в комбинация с типа, бройката и подредбата на очакваните параметри.
+### Summary:
+- **По време на компилация:** Компилаторът проверява типовете и съществуването на методите, но не знае точно кой клас ще бъде използван при изпълнение.
+- **По време на изпълнение:** Runtime системата използва действителните обекти, за да извика правилната имплементация на методите.
+## Override
+Когато метода е виртуален или абстрактен, в класовете наследници за да сменим поведението му, трябва да използваме ключовата дума `override`. Ако просто създадем метода, без да използваме тази ключова дума, ние създаваме нов метод със същото име, който скрива оригиналния метод. Това не е полиморфизъм, защото ако създадем променлива от базов тип и запишем тип данни на наследяващия клас където създали новия скриващ метод без да го overridе-нем, то ще се изпълни базовата имплементация на метода:
 
+```
+public class BaseClass
+{
+    public virtual void MyMethod()
+    {
+        Console.WriteLine("From base");
+    }
+}
+
+public class DerivedClass : BaseClass
+{
+    public void MyMethod()
+    {
+        Console.WriteLine("From derived");
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        BaseClass myClass = new DerivedClass();
+        myClass.MyMethod(); // Output: From base
+    }
+}
+```
+# Misc
+Целта ни е така да пишем класовете си, че ако някой реши да добавя функционалност, това да става чрез наследяване и полиморфизъм, без да се налага промяна в съществуващия код.
+
+JS се е наложил толкова много, защото няма алтернатива при клиентското програмиране. Като цяло browser-ите не разбират от друго освен от JS. Преди е имало flash, flex и silverlight, които са изисквали допълнителна инсталация, а flash-а е бил зле със security.
+## Class Structure
+```
+const
+fields
+ctors
+prop
+    public
+    protected
+    internal
+    private
+methods
+```
+
+Методите и пропъртитата може да се сортират заедно спрямо модификатора за достъп - публични пропъртита, след това публичните методи, после protected пропъртита и методи и след това internal и private. Статичните методи са преди инстанционните. 
+Много зависи конкретния екип каква структура се е разбрал да ползва.
+Често има инструменти които проверяват кода и съобщават, ако нещо не е на място или директно го подреждат.
 # ChatGPT
+
 ## Shadowing member is private
 You
+
 What happens when the shadowing member is private in the derived class, like in the example in the code below:
 
 ```
@@ -193,8 +260,158 @@ This behavior highlights the difference between method overriding and method hid
 Additional Note on Properties:
 
 - **DerivedClass.Property** is private and hides the public property in **BaseClass** only within the scope of **DerivedClass**. External calls to `Property` on an instance of **DerivedClass** will access the public property in **BaseClass**.
+## this / base
+In the context of C# classes, `this` and `base` can point to the same member if there is no shadowing or change in behavior through overriding.
+Without Overriding/Shadowing this` and `base` refer to the same member in the base class.
+With Overriding/Shadowing `this` refers to the member in the derived class (if it exists), while `base` refers to the member in the base class.
+
+You
+
+We cannot access the original method in the base class from an instance of the derived class, unless there is a method in the derived class which access the base method, is this correct?
+
+ChatGPT
+
+Yes, that's correct. If a method in the derived class overrides a method in the base class, you cannot directly access the original base class method from an instance of the derived class. However, you can call the original base class method from within the derived class using the `base` keyword. This is often done by creating a method in the derived class that explicitly calls the base class method.
+
+Example with Overriding
+
+Let's look at an example where the derived class overrides a method from the base class and provides a way to call the original base class method:
+
+```
+public class BaseClass
+{
+    public virtual void ShowMessage()
+    {
+        Console.WriteLine("Message from BaseClass");
+    }
+}
+
+public class DerivedClass : BaseClass
+{
+    public override void ShowMessage()
+    {
+        Console.WriteLine("Message from DerivedClass");
+    }
+
+    // Method to call the base class version of ShowMessage
+    public void CallBaseShowMessage()
+    {
+        base.ShowMessage();
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        DerivedClass obj = new DerivedClass();
+        
+        // Calls the overridden method in DerivedClass
+        obj.ShowMessage(); // Output: Message from DerivedClass
+
+        // Calls the method in DerivedClass that accesses the base class method
+        obj.CallBaseShowMessage(); // Output: Message from BaseClass
+    }
+}
+```
+
+Explanation
+
+1. **Base Class (`BaseClass`)**:
+    - Defines a virtual method `ShowMessage`.
+2. **Derived Class (`DerivedClass`)**:
+    - Overrides the `ShowMessage` method.
+    - Defines a new method `CallBaseShowMessage` that calls the original `ShowMessage` method from `BaseClass` using the `base` keyword.
+3. **Main Program**:
+    - Creates an instance of `DerivedClass` and demonstrates both calling the overridden method and accessing the base class method through the `CallBaseShowMessage` method.
+
+Output
+
+```
+Message from DerivedClass
+Message from BaseClass
+```
+
+Summary
+
+- **Direct Access**: From an object of the derived class, you directly call the overridden method in the derived class.
+- **Accessing Base Method**: To access the original method from the base class, you need to provide a method in the derived class that calls the base class method using the `base` keyword.
+
+By doing this, you provide a mechanism to access the base class implementation from an instance of the derived class, allowing both the overridden behavior and the original behavior to be available.
+### this
+You
+
+When we type `this` inside a class, is actually the same as when we type the variable name when we create an object of a class inside a method?
+
+ChatGPT
+
+Yes, your understanding is correct. When you use `this` inside a class, it refers to the current instance of that class. This is functionally the same as using the variable name of the object instance when you create an object of that class in a method.
+
+Explanation
+
+1. **Inside the Class (`this`)**:
+- Refers to the current instance of the class.
+- Used to access instance members (fields, properties, methods) of the class.
+- Clarifies that you are referring to instance members and can resolve naming conflicts.
+2. **Outside the Class (object variable)**:
+- Refers to the specific instance of the class you created.
+- Used to call methods and access properties of that instance.
+
+Example
+
+```
+public class MyClass
+{
+    private int number;
+
+    public MyClass(int number)
+    {
+        // 'this' refers to the current instance of MyClass
+        this.number = number;
+    }
+
+    public void DisplayNumber()
+    {
+        // Using 'this' to access the member variable 'number'
+        Console.WriteLine(this.number);
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        // Creating an instance of MyClass
+        MyClass obj = new MyClass(42);
+
+        // Calling the method on the object 'obj'
+        obj.DisplayNumber(); // Output: 42
+    }
+}
+```
+
+Explanation
+
+1. **Inside the Class (`MyClass`)**:
+- The constructor `MyClass(int number)` assigns the parameter `number` to the instance variable `number` using `this.number = number;`.
+- The method `DisplayNumber` uses `this.number` to refer to the instance variable `number`.
+2. **Outside the Class (`Program`)**:
+- An instance of `MyClass` is created with `MyClass obj = new MyClass(42);`.
+- The method `DisplayNumber` is called on the object `obj` using `obj.DisplayNumber();`.
+
+ Summary
+
+- Inside the class, `this` is used to refer to the current instance of the class, allowing you to access instance members and is used within instance methods and constructors.
+- Outside the class, the object variable (e.g., `obj`) is used to refer to a specific instance of the class, allowing you to call its methods and access its properties.
+
+In both cases, you are referencing the same instance of the class. Therefore, using `this` inside the class is conceptually the same as using the object variable name outside the class.
+## Changing Accessibility
+While you cannot change the access modifier of an overridden method or property, you can hide the base class member using the `new` keyword and change its access modifier. However, this approach does not override the base member; it creates a new member in the derived class that hides the base class member.
+
+While you cannot change the access modifier of an overridden method or property, you can hide the base class member using the `new` keyword and change its access modifier. However, this approach does not override the base member; it creates a new member in the derived class that hides the base class member.
 ## Memory Allocation
 You
+
 When you have a derived class, does the memory allocation follow the same order of the base class and after the base class members are written in the memory, then the new members of the derived class are added after that?
 
 ChatGPT
@@ -275,6 +492,7 @@ derivedVar.DerivedField = 40; // Accessing DerivedClass member
 This memory layout ensures that polymorphism and inheritance work seamlessly, allowing derived class objects to be treated as base class objects when needed, while also providing access to their specific members when appropriately casted.
 
 You
+
 So that's why the base class type can only access its members, because it has visibility only to the initial portion of the allocated memory (which corresponds to the size needed for the base class) of the derived class.
 
 ChatGPT
@@ -341,9 +559,11 @@ Explanation:
 This mechanism ensures that base class references are type-safe and that the correct members are accessed, maintaining the principles of encapsulation and inheritance in object-oriented programming.
 
 You
+
 Is having a variable of the interface type and assigning it an instance of the class that implements the interface similar to the concept of base and derived class inheritance? When we create an instance of the class, all the members defined by the interface are initialized along with the class-specific members. When the variable is of the interface type, only the interface members are accessible. Are the interface members allocated first in memory followed by the class-specific members, similar to how memory allocation works with base and derived classes?
 
 ChatGPT
+
 Yes, the concept of having a variable of the interface type and assigning it an instance of a class that implements the interface is very similar to the concept of base and derived class inheritance. Here’s a detailed explanation of this similarity and how memory allocation works in both cases:
 
 Similarity to Inheritance
@@ -416,9 +636,11 @@ Summary
 - The runtime manages method dispatch to ensure the correct implementations are called, whether the reference is of the interface type or the base class type.
 ### Memory size
 You
+
 Is it correct to say that in C#, the memory allocation size for a variable is determined by the data type, not the variable type, and that the variable type dictates the level of visibility we have over the underlying data type?
 
 ChatGPT
+
 In C#, the memory allocation and the way data is stored indeed depend on the data type, not the variable type. The variable type determines how much visibility and control we have over the data stored in memory. Here's a detailed explanation of these concepts:
 
 Data Type and Memory Allocation
@@ -494,52 +716,116 @@ Summary
 
 This separation of memory allocation and visibility allows for powerful features like polymorphism and encapsulation in C#.
 ## Casting
-You
-Why Casting is Necessary?
-
-ChatGPT
 The need for casting arises because of how C# handles type safety and polymorphism:
 
 - **Interface Type**: The `example` variable is of type `IExample`, so the compiler only knows about the members defined in the `IExample` interface.
 - **Class Type**: The `specificExample` variable is of type `ExampleClass`, so it can access all members of `ExampleClass`.
-### Safe Casting
+### Upcasting / Downcasting
+There are two types of casting (type conversion) in object-oriented programming: upcasting and downcasting.
 
-You can use the `as` keyword for safe casting, which returns `null` if the cast fails, or the `is` keyword to check the type before casting. Here are examples of both:
-
-Using `as` for Safe Casting:
-
-```
-ExampleClass specificExample = example as ExampleClass;
-if (specificExample != null)
-{
-    specificExample.ClassMethod();  // Safe to access
-    specificExample.ClassMember = 42;
-    Console.WriteLine($"ClassMember value: {specificExample.ClassMember}");
-}
-else
-{
-    Console.WriteLine("Casting failed");
-}
-```
-
-Using `is` for Type Checking:
+**Upcasting** refers to converting an object from a derived class to its base class. This conversion is always safe and does not require explicit casting since the derived class inherits all the characteristics of the base class.
 
 ```
-if (example is ExampleClass specificExample)
+public class Animal
 {
-    specificExample.ClassMethod();  // Safe to access
-    specificExample.ClassMember = 42;
-    Console.WriteLine($"ClassMember value: {specificExample.ClassMember}");
+    public void MakeSound()
+    {
+        Console.WriteLine("Some generic animal sound");
+    }
 }
-else
+
+public class Dog : Animal
 {
-    Console.WriteLine("Casting failed");
+    public void Bark()
+    {
+        Console.WriteLine("Bark");
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Dog myDog = new Dog();
+        Animal myAnimal = myDog;  // Upcasting
+        myAnimal.MakeSound();  // Outputs "Some generic animal sound"
+        // myAnimal.Bark();  // Error: Animal does not have method Bark
+    }
 }
 ```
 
-Summary
+In this example, the object `myDog` of type `Dog` is converted (upcast) to type `Animal`.
 
-- **Direct Assignment**: `ExampleClass specificExample = example` is not allowed without casting because `example` is of type `IExample`.
-- **Casting**: Use explicit casting `(ExampleClass)example`, or safe casting using `as` or `is` to access members specific to `ExampleClass`.
-- **Type Safety**: The compiler ensures type safety by requiring casts when assigning a more general type (interface) to a more specific type (class).
+**Downcasting** refers to converting an object from a base class to a derived class. This conversion must be explicitly declared and may not be safe if the object is not of the corresponding derived class. To avoid runtime errors, the `as` operator or type checking with `is` is commonly used.
+
+```
+public class Animal
+{
+    public void MakeSound()
+    {
+        Console.WriteLine("Some generic animal sound");
+    }
+}
+
+public class Dog : Animal
+{
+    public void Bark()
+    {
+        Console.WriteLine("Bark");
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Animal myAnimal = new Dog();  // Upcasting
+        if (myAnimal is Dog)
+        {
+            Dog myDog = (Dog)myAnimal;  // Downcasting
+            myDog.Bark();  // Outputs "Bark"
+        }
+    }
+}
+```
+
+In this example, the object `myAnimal` is of type `Animal`, but in reality, it is an instance of `Dog`. Before performing downcasting, we check if `myAnimal` is of type `Dog` to avoid a runtime error.
+#### The `as` operator for safe downcasting
+
+The `as` operator can be used for safe downcasting, which returns `null` if the conversion is not possible.
+
+```
+public class Animal
+{
+    public void MakeSound()
+    {
+        Console.WriteLine("Some generic animal sound");
+    }
+}
+
+public class Dog : Animal
+{
+    public void Bark()
+    {
+        Console.WriteLine("Bark");
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Animal myAnimal = new Dog();  // Upcasting
+        Dog myDog = myAnimal as Dog;  // Safe downcasting
+        if (myDog != null)
+        {
+            myDog.Bark();  // Outputs "Bark"
+        }
+    }
+}
+```
+
+Using `as` makes the code safer, as it checks whether the conversion was successful before trying to use the converted object.
 # Bookmarks 
+
+Course completion: 12.06.2024
