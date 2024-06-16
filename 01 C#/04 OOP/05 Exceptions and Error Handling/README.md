@@ -77,11 +77,11 @@ catch (Exception ex)
 }
 ```
 ### throw
-![](Pasted%20image%2020240616115735.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240616115735.png)
 
 Оператора throw се използва в catch конструкцията, където след като е извършено някакво действие, грешката продължава пътя си нагоре, където може да бъде хваната от друга try-catch конструкция, ако има такава. Идеята е че след като грешката е регистрирана, използвайки throw, ние решаваме че не искаме да я скрием, това позволява да бъде обработена на друго място в стека на извикванията, ако има подходяща try-catch конструкция. 
 
-![](Pasted%20image%2020240616125147.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240616125147.png)
 
 Това е един вариант да качим грешката нагоре:
 
@@ -216,7 +216,7 @@ Console.WriteLine("Please enter number less than " + int.MaxValue);
 throw new OverflowException("The number should be less than Int32 max value");
 ```
 
-![](Pasted%20image%2020240616154920.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240616154920.png)
 
 Ексепшъните трябва да се ползват с мярка, когато очакваме нещо да се счупи и само когато метода е в безизходица и не знае как да продължи. Принципа е че ако знаем какво да направи метода или какво да върне в дадена ситуация, не се ползват ексепшъни. Ако метода не може да си свърши работата поради независеща от него причина и не може да оправи данните, тогава се хвърля ексепшън.
 # Misc
