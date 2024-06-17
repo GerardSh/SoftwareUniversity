@@ -1,11 +1,11 @@
 ﻿public class Program
 {
-    static List<int> numbers = new List<int>();
-
     public static void Main()
     {
         int start = 1;
         int end = 100;
+
+        List<int> numbers = new List<int>();
 
         while (numbers.Count < 10)
         {
