@@ -5,7 +5,7 @@
         var textiles = new Queue<int>(Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
         var medicaments = new Stack<int>(Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
 
-        var countByHealingItems = new Dictionary<string, int>();
+        var countByHealingItems = new SortedDictionary<string, int>();
 
         var healingItemsMap = new Dictionary<int, string>()
         {
@@ -74,7 +74,7 @@
             Console.WriteLine("Medicaments are empty.");
         }
 
-        foreach (var kvp in countByHealingItems.OrderByDescending(x => x.Value).ThenBy(x => x.Key))
+        foreach (var kvp in countByHealingItems.OrderByDescending(x => x.Value))
         {
             Console.WriteLine($"{kvp.Key} - {kvp.Value}");
         }
