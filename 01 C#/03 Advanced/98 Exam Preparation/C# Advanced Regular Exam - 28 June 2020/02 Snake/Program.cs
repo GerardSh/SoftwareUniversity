@@ -4,10 +4,6 @@
     {
         static int snakeRow = -1;
         static int snakeCol = -1;
-        static int firstBurrowRow = -1;
-        static int firstBurrowCol = -1;
-        static int secondBurrowRow = -1;
-        static int secondBurrowCol = -1;
 
         static void Main()
         {
@@ -27,19 +23,6 @@
                     {
                         snakeRow = row;
                         snakeCol = col;
-                    }
-                    else if (currentRow[col] == 'B')
-                    {
-                        if (firstBurrowCol == -1)
-                        {
-                            firstBurrowRow = row;
-                            firstBurrowCol = col;
-                        }
-                        else
-                        {
-                            secondBurrowRow = row;
-                            secondBurrowCol = col;
-                        }
                     }
                 }
             }
@@ -67,15 +50,25 @@
                 {
                     territory[snakeRow, snakeCol] = '.';
 
-                    if (snakeRow == firstBurrowRow && snakeCol == firstBurrowCol)
+                    for (int row = 0; row < territory.GetLength(0); row++)
                     {
-                        snakeRow = secondBurrowRow;
-                        snakeCol = secondBurrowCol;
-                    }
-                    else
-                    {
-                        snakeRow = firstBurrowRow;
-                        snakeCol = firstBurrowCol;
+                        var secondBurrowFound = false;
+
+                        for (int col = 0; col < territory.GetLength(1); col++)
+                        {
+                            if (territory[row, col] == 'B')
+                            {
+                                snakeRow = row;
+                                snakeCol = col;
+                                secondBurrowFound = true;
+                                break;
+                            }
+                        }
+
+                        if (secondBurrowFound)
+                        {
+                            break;
+                        }
                     }
                 }
 
