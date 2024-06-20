@@ -85,7 +85,6 @@
 
         private static void ChangePosition(char[,] matrix, string command)
         {
-
             if (command == "up")
             {
                 playerRow--;
