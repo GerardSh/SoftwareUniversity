@@ -51,7 +51,7 @@ namespace ConsoleApp
 
             if (ingredients.Count > 0)
             {
-            Console.WriteLine($"Ingredients left: {ingredients.Sum()}");
+                Console.WriteLine($"Ingredients left: {ingredients.Sum()}");
             }
 
             foreach (var kvp in createdProducts)
