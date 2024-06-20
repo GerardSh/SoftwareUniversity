@@ -12,8 +12,6 @@ namespace VetClinic
             data = new List<Pet>();
         }
 
-        public IReadOnlyCollection<Pet> Data => data;
-
         public int Capacity { get; private set; }
 
         public int Count => data.Count;
@@ -38,7 +36,7 @@ namespace VetClinic
 
             sb.AppendLine("The clinic has the following patients:");
 
-            foreach (var pet in Data)
+            foreach (var pet in data)
             {
                 sb.AppendLine($"Pet {pet.Name} with owner: {pet.Owner}");
             }
