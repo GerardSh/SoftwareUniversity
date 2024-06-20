@@ -40,7 +40,7 @@
                     break;
                 }
 
-                ChangePosition(territory, command);
+                ChangePosition(command);
 
                 if (territory[snakeRow, snakeCol] == '*')
                 {
@@ -98,9 +98,8 @@
             }
         }
 
-        private static void ChangePosition(char[,] territory, string command)
+        private static void ChangePosition(string command)
         {
-
             if (command == "up")
             {
                 snakeRow--;
