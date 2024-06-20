@@ -1,6 +1,4 @@
-﻿
-
-namespace ConsoleApp
+﻿namespace ConsoleApp
 {
     public class Program
     {
