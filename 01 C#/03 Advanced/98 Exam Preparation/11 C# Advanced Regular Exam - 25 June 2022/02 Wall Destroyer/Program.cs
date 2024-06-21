@@ -42,7 +42,7 @@
                 wall[vankoRow, vankoCol] = '*';
 
                 int previousRow = vankoRow;
-                int previousCOl = vankoCol;
+                int previousCol = vankoCol;
 
                 ChangePosition(command);
 
@@ -51,7 +51,7 @@
                     Console.WriteLine("Vanko hit a rod!");
 
                     vankoRow = previousRow;
-                    vankoCol = previousCOl;
+                    vankoCol = previousCol;
 
                     countOfRods++;
                 }
