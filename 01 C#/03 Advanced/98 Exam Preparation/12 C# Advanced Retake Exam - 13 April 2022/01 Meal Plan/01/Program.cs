@@ -16,8 +16,6 @@
             };
 
             int mealsEaten = 0;
-            var countByTiles = new SortedDictionary<string, int>();
-            int reaminingMealCal = 0;
 
             while (meals.Any() && calories.Any())
             {
@@ -64,7 +62,6 @@
 
                 if (dailyMeal > 0)
                 {
-                    reaminingMealCal = dailyMeal;
                     mealsEaten++;
                     break;
                 }
