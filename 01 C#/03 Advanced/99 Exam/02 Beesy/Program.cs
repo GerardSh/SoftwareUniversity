@@ -5,6 +5,7 @@ namespace ConsoleApp
     {
         static int beeRow = -1;
         static int beeCol = -1;
+
         static void Main()
         {
             int n = int.Parse(Console.ReadLine());
