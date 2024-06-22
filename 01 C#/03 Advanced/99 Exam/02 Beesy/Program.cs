@@ -28,7 +28,7 @@ namespace ConsoleApp
             }
 
             int energy = 15;
-            int unitsOfNecktar = 0;
+            int unitsOfNectar = 0;
             bool restoreEnergy = true;
             bool hiveReached = false;
 
@@ -85,7 +85,7 @@ namespace ConsoleApp
 
                 if (char.IsDigit(field[beeRow, beeCol]))
                 {
-                    unitsOfNecktar += field[beeRow, beeCol] - 48;
+                    unitsOfNectar += field[beeRow, beeCol] - 48;
                 }
                 else if (field[beeRow, beeCol] == 'H')
                 {
@@ -98,10 +98,10 @@ namespace ConsoleApp
 
                 if (energy == 0)
                 {
-                    if (restoreEnergy && unitsOfNecktar >= 30)
+                    if (restoreEnergy && unitsOfNectar >= 30)
                     {
                         restoreEnergy = false;
-                        energy = unitsOfNecktar - 30;
+                        energy = unitsOfNectar - 30;
                     }
 
                     if (energy == 0)
@@ -112,11 +112,11 @@ namespace ConsoleApp
                 }
             }
 
-            if (hiveReached && unitsOfNecktar >= 30)
+            if (hiveReached && unitsOfNectar >= 30)
             {
                 Console.WriteLine($"Great job, Beesy! The hive is full. Energy left: {energy}");
             }
-            else if (hiveReached && unitsOfNecktar < 30)
+            else if (hiveReached && unitsOfNectar < 30)
             {
                 Console.WriteLine("Beesy did not manage to collect enough nectar.");
             }
