@@ -125,13 +125,13 @@ namespace ConsoleApp
             PrintMatrix(field);
         }
 
-        private static void PrintMatrix(char[,] wall)
+        private static void PrintMatrix(char[,] field)
         {
-            for (int row = 0; row < wall.GetLength(0); row++)
+            for (int row = 0; row < field.GetLength(0); row++)
             {
-                for (int col = 0; col < wall.GetLength(1); col++)
+                for (int col = 0; col < field.GetLength(1); col++)
                 {
-                    Console.Write(wall[row, col]);
+                    Console.Write(field[row, col]);
                 }
 
                 Console.WriteLine();
