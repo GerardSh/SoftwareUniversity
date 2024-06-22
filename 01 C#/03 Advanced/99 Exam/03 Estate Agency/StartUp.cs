@@ -1,4 +1,5 @@
-﻿namespace EstateAgency
+﻿//09:34
+namespace EstateAgency
 {
     public class StartUp
     {
@@ -58,3 +59,4 @@
         }
     }
 }
+//09:49:04 22.06.2024
