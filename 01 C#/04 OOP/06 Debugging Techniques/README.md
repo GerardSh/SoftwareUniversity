@@ -42,3 +42,5 @@ Debug -> Windows -> Registers - показва регистрите в комп�
 # ChatGPT
 
 # Bookmarks 
+
+Course completion: 30.06.2024
