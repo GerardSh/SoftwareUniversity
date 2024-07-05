@@ -2,6 +2,7 @@
 using SOLID.Layouts;
 using SOLID.Loggers;
 using SOLID.ReportLevel;
+using SOLID.LogFiles;
 
 namespace SOLID
 {

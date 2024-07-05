@@ -4,7 +4,7 @@ namespace SOLID.Loggers
 {
     public interface ILogger
     {
-        public IAppender Appender { get; }
+        public List<IAppender> Appenders { get; }
 
         void Info(string dateTime, string message);
 
