@@ -1,5 +1,5 @@
 ﻿using SOLID.Layouts;
-using SOLID.ReportLevel;
+using SOLID.ReportLevels;
 
 namespace SOLID.Appenders
 {
@@ -10,8 +10,10 @@ namespace SOLID.Appenders
             Layout = layout;
         }
 
+        public ReportLevel ReportLevel { get; set; }
+
         public ILayout Layout { get; }
 
-        public abstract void Append(string datetime, ReportLevel.ReportLevel reportLevel, string message);
+        public abstract void Append(string datetime, ReportLevel reportLevel, string message);
     }
 }

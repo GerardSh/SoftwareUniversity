@@ -1,5 +1,5 @@
 ﻿using SOLID.Layouts;
-using SOLID.ReportLevel;
+using SOLID.ReportLevels;
 
 namespace SOLID.Appenders
 {
@@ -10,7 +10,7 @@ namespace SOLID.Appenders
         {
         }
 
-        public override void Append(string datetime, ReportLevel.ReportLevel reportLevel, string message)
+        public override void Append(string datetime, ReportLevel reportLevel, string message)
         {
             Console.WriteLine(string.Format(Layout.Format, datetime, reportLevel, message));
         }

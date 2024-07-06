@@ -1,6 +1,6 @@
 ﻿using SOLID.Layouts;
 using SOLID.LogFiles;
-using SOLID.ReportLevel;
+using SOLID.ReportLevels;
 
 namespace SOLID.Appenders
 {
@@ -16,11 +16,11 @@ namespace SOLID.Appenders
 
         public ILogFile LogFile { get; }
 
-        public override void Append(string datetime, ReportLevel.ReportLevel reportLevel, string message)
+        public override void Append(string datetime, ReportLevel reportLevel, string message)
         {
-            string appendMessage = string.Format(Layout.Format, datetime, reportLevel, message);
+            string appendMessage = string.Format(Layout.Format, datetime, reportLevel.ToString().ToUpper(), message);
 
-            File.AppendAllText(FilePath, appendMessage);
+            File.AppendAllText(FilePath, appendMessage + Environment.NewLine);
 
             LogFile.Write(appendMessage);
         }
