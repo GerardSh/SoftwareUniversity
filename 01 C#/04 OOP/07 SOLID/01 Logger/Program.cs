@@ -56,17 +56,20 @@ namespace SOLID
                     logger.Fatal(currentDate, currentMessage);
                 }
             }
+
+            Console.WriteLine("Logger info");
+
+            foreach (var appender in logger.Appenders)
+            {
+                Console.WriteLine(appender);
+            }
         }
+
         private static IAppender MakeAppender(string[] input)
         {
             string currentType = input[0];
             string currentLayout = input[1];
             string currentLevel = null;
-
-            if (input.Length > 2)
-            {
-                currentLevel = input[2];
-            }
 
             ILayout layout = new SimpleLayout();
 
@@ -90,24 +93,38 @@ namespace SOLID
                 appender = new FileAppender(layout, new LogFile());
             }
 
-            if (currentLevel != null)
+            if (input.Length > 2)
             {
-                if (currentLevel == "INFO")
+                currentLevel = input[2];
+
+                //1
+                bool isValidLogLevel = Enum.TryParse(currentLevel, true, out ReportLevel reportLevel);
+
+                if (isValidLogLevel)
                 {
-                    appender.ReportLevel = ReportLevel.Info;
+                    appender.ReportLevel = reportLevel;
                 }
-                else if (currentLevel == "WARNING")
-                {
-                    appender.ReportLevel = ReportLevel.Warning;
-                }
-                else if (currentLevel == "CRITICAL")
-                {
-                    appender.ReportLevel = ReportLevel.Critical;
-                }
-                else
-                {
-                    appender.ReportLevel = ReportLevel.Fatal;
-                }
+
+                //2
+                //if (currentLevel != null)
+                //{
+                //    if (currentLevel == "INFO")
+                //    {
+                //        appender.ReportLevel = ReportLevel.Info;
+                //    }
+                //    else if (currentLevel == "WARNING")
+                //    {
+                //        appender.ReportLevel = ReportLevel.Warning;
+                //    }
+                //    else if (currentLevel == "CRITICAL")
+                //    {
+                //        appender.ReportLevel = ReportLevel.Critical;
+                //    }
+                //    else
+                //    {
+                //        appender.ReportLevel = ReportLevel.Fatal;
+                //    }
+                //}
             }
 
             return appender;

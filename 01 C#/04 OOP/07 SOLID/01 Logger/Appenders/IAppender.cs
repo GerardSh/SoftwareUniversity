@@ -9,6 +9,8 @@ namespace SOLID.Appenders
 
         public ReportLevel ReportLevel { get; set; }
 
+        public int MessagesCounter { get; protected set; }
+
         void Append(string datetime, ReportLevel reportLevel, string message);
     }
 }

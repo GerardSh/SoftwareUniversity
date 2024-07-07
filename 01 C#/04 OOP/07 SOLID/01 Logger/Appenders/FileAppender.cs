@@ -23,6 +23,14 @@ namespace SOLID.Appenders
             File.AppendAllText(FilePath, appendMessage + Environment.NewLine);
 
             LogFile.Write(appendMessage);
+
+            MessagesCounter++;
+
+
+        }
+        public override string ToString()
+        {
+            return base.ToString() + $", File size: {LogFile.Size}";
         }
     }
 }

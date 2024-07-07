@@ -5,12 +5,14 @@ namespace SOLID.Loggers
 {
     public class Logger : ILogger
     {
+        List<IAppender> appenders;
+
         public Logger(params IAppender[] appenders)
         {
-            Appenders = new List<IAppender>(appenders);
+            this.appenders = appenders.ToList();
         }
 
-        public List<IAppender> Appenders { get; }
+        public IReadOnlyCollection<IAppender> Appenders => appenders;
 
         public void Critical(string dateTime, string message)
         {
