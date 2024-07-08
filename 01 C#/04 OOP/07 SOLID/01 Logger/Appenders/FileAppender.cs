@@ -25,8 +25,6 @@ namespace SOLID.Appenders
             LogFile.Write(appendMessage);
 
             MessagesCounter++;
-
-
         }
         public override string ToString()
         {

@@ -1,8 +1,7 @@
 ﻿using SOLID.Appenders;
 using SOLID.Layouts;
 using SOLID.Loggers;
-using SOLID.LogFiles;
-using SOLID.ReportLevels;
+using SOLID.Factory;
 
 namespace SOLID
 {
@@ -12,13 +11,22 @@ namespace SOLID
         {
             int n = int.Parse(Console.ReadLine());
 
+            LayoutFactory layoutFactory = new LayoutFactory();
+            AppenderFactory appenderFactory = new AppenderFactory();
+
             List<IAppender> appenders = new List<IAppender>();
 
             for (int i = 0; i < n; i++)
             {
                 string[] input = Console.ReadLine().Split();
 
-                IAppender appender = MakeAppender(input);
+                string currentType = input[0];
+                string currentLayout = input[1];
+                string currentLevel = null;
+
+                ILayout layout = layoutFactory.Create(currentLayout);
+
+                IAppender appender = appenderFactory.Create(layout, currentType, currentLevel);
 
                 appenders.Add(appender);
             }
@@ -63,71 +71,6 @@ namespace SOLID
             {
                 Console.WriteLine(appender);
             }
-        }
-
-        private static IAppender MakeAppender(string[] input)
-        {
-            string currentType = input[0];
-            string currentLayout = input[1];
-            string currentLevel = null;
-
-            ILayout layout = new SimpleLayout();
-
-            if (currentLayout == "SimpleLayout")
-            {
-                layout = new SimpleLayout();
-            }
-            else
-            {
-                layout = new XmlLayout();
-            }
-
-            IAppender appender = null;
-
-            if (currentType == "ConsoleAppender")
-            {
-                appender = new ConsoleAppender(layout);
-            }
-            else
-            {
-                appender = new FileAppender(layout, new LogFile());
-            }
-
-            if (input.Length > 2)
-            {
-                currentLevel = input[2];
-
-                //1
-                bool isValidLogLevel = Enum.TryParse(currentLevel, true, out ReportLevel reportLevel);
-
-                if (isValidLogLevel)
-                {
-                    appender.ReportLevel = reportLevel;
-                }
-
-                //2
-                //if (currentLevel != null)
-                //{
-                //    if (currentLevel == "INFO")
-                //    {
-                //        appender.ReportLevel = ReportLevel.Info;
-                //    }
-                //    else if (currentLevel == "WARNING")
-                //    {
-                //        appender.ReportLevel = ReportLevel.Warning;
-                //    }
-                //    else if (currentLevel == "CRITICAL")
-                //    {
-                //        appender.ReportLevel = ReportLevel.Critical;
-                //    }
-                //    else
-                //    {
-                //        appender.ReportLevel = ReportLevel.Fatal;
-                //    }
-                //}
-            }
-
-            return appender;
         }
     }
 }
