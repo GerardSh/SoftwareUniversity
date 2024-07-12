@@ -10,7 +10,7 @@ namespace Stealer
             var sb = new StringBuilder();
 
             Type type = Type.GetType(classToInvestigate);
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Instance);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 
             var classInstance = Activator.CreateInstance(type);
 
