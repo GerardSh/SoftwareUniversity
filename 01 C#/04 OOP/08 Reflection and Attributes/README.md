@@ -115,14 +115,13 @@ Assembly assembly = Assembly.GetExecutingAssembly();
 Console.WriteLine($"Current project is {assembly.GetName().Name} and has {assembly.GetTypes().Count()} classes");
 ```
 ## Creating New Instances Dynamically
-Може да създаваме инстанции от променлива тип Type. Ползва се статичния метод `Activator.CreateInstance()` който връща object. Ако искаме обекта ни да е от различен тип, трябва да го кастнем. Дори типа да остане object, може да извикваме методите на конкретния тип и без cast към другия тип.
+Може да създаваме инстанции от променлива тип Type. Ползва се статичния метод `Activator.CreateInstance()` който връща object. Ако искаме обекта ни да е от различен тип, да имаме видимост до всичките му клас членове, трябва да го кастнем, което ни дава допълнителното удобство на compile-time проверка и IntelliSense в IDE-то. Дори типа на променливата да остане object, може да извикваме с рефлекшън методите на конкретния тип и без cast към другия тип. Рефлекшън се интересува само от типа на данните и не го интересува типа на променливата в която са записани.
 
 ```
 Type type = typeof(Person);
 var person = Activator.CreateInstance(type);
 ```
 
-Трябва да го кастнем към правилния тип данни, за да може да ползваме пълната функционалност на дадения тип.
 Ако типа Person в примера, няма празен конструктор, кода ще гръмне по време на runtime. Трябва да му дадем списък с аргументи: 
 
 ` var person = Activator.CreateInstance(type, 5);`
