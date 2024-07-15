@@ -1,4 +1,5 @@
 ﻿using CommandPattern.Core.Contracts;
+using System;
 
 namespace CommandPattern
 {
@@ -13,7 +14,20 @@ namespace CommandPattern
 
         public void Run()
         {
+            while (true)
+            {
+                string input = Console.ReadLine();
 
+                try
+                {
+                    string result = commandInterpreter.Read(input);
+                    Console.WriteLine(result);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }

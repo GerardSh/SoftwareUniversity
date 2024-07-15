@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommandPattern.Core.Contracts;
 
 namespace CommandPattern.Commands
 {
-    internal class Hello
+    public class HelloCommand : ICommand
     {
+        public string Execute(string[] args)
+        {
+            return $"Hello, {args[0]}";
+        }
     }
 }
