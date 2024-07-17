@@ -155,6 +155,45 @@ public static void ValidateShouldReturn(int a)
 ## Private methods
 Препоръката е така да се направят тестовете и кода, че да не се налага да тестваме private методите. Private методите по правило, се тестват през публичния метод, защото той рано или късно ги вика. За нас е важно публичните методи да си вършат работата и да не се прескачат при тестването. Все пак има начини да се тестват и private методите, един от тях е да се ползва `PrivateObject` class.
 Друга възможност е да се ползват атрибута `[InternalVisibleTo("ProjectName")]` - всички членове от този клас, са видими за посочения проект в конструктора. Може да се ползва и reflection.
+## Class members
+Когато стартираме тестовете, ако направим промяна на някое поле в класа или в друг клас, то тази промяна ще е отразена и в другите тестове. Примерно ако в тест класа има int поле и в един от тестовете сменим стойността му, то и в другите тестове след него промяната ще е отразена. Ако искаме всеки тест да е като отделна инстанция, трябва да ползваме метод с атрибут `[SetUp]` и в него да слагаме нужната стойност. Преди всеки тест, `[SetUp]` метода ще се извиква и ще слага еднаква стойност на полето.
+
+```
+public class Tests
+{
+    private int test;
+    private int test2;
+
+    [SetUp]
+    public void Start()
+    {
+        test2 = 0;
+    }
+
+    [Test]
+    public void Test1()
+    {
+        Console.WriteLine(test);
+        Console.WriteLine(test2);
+    }
+
+    [Test]
+    public void Test2()
+    {
+        test--;
+        test2--;
+        Console.WriteLine(test);
+        Console.WriteLine(test2);
+    }
+
+    [Test]
+    public void Test3()
+    {
+        Console.WriteLine(test);
+        Console.WriteLine(test2);
+    }
+}
+```
 # Misc
 
 # ChatGPT
