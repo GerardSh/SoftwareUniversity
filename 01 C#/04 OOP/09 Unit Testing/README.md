@@ -167,14 +167,16 @@ public class Tests
     [SetUp]
     public void Start()
     {
-        test2 = 0;
+        test2 = 0; // This field is reset before each test
     }
 
     [Test]
     public void Test1()
     {
-        Console.WriteLine(test);
-        Console.WriteLine(test2);
+        Console.WriteLine($"Test1 - test: {test}, test2: {test2}");
+        // Expected output:
+        // test: 0 (default value for uninitialized int)
+        // test2: 0 (set in [SetUp] method)
     }
 
     [Test]
@@ -182,15 +184,19 @@ public class Tests
     {
         test--;
         test2--;
-        Console.WriteLine(test);
-        Console.WriteLine(test2);
+        Console.WriteLine($"Test2 - test: {test}, test2: {test2}");
+        // Expected output:
+        // test: -1 (decremented from default value 0)
+        // test2: -1 (decremented from value set in [SetUp])
     }
 
     [Test]
     public void Test3()
     {
-        Console.WriteLine(test);
-        Console.WriteLine(test2);
+        Console.WriteLine($"Test3 - test: {test}, test2: {test2}");
+        // Expected output:
+        // test: -1 (carried over from Test2)
+        // test2: 0 (reset in [SetUp] method)
     }
 }
 ```
