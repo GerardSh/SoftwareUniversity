@@ -55,14 +55,155 @@ A/B - тестване където примерно бутона купи се 
 Безплатен, с отворен код и работи перфектно.
 ## xUnit
 Същото като NUnit.
-## How to use
-Създаваме нов проект и търсим примерно NUnit Test Project. Кръщаваме го с името на проекта, който искаме да тестваме и слагаме `.Tests` накрая. Това не е задължително условие, но така се прави за да се отрази че в този проект, се съдържат тестове. Създава се във версията на която е проекта, който тестваме. NUnit е библиотека, която се инсталира автоматично в проекта.
+## How to use NUnit
+Създаваме нов проект и търсим примерно NUnit Test Project. Кръщаваме го с името на проекта, който искаме да тестваме и слагаме `.Tests` накрая. Това не е задължително условие, но така се прави за да се отрази че в този проект, се съдържат тестове. Създава се във версията на която е проекта, който тестваме. NUnit е библиотека, която се инсталира автоматично в проекта, за да може да се изпълняват тестовете. 
 
+Тестовете са обикновени C# класове, които имат някои атрибути върху тях. Иконката на unit test проекта има колба и по това се отличава. Имената на класовете са като името на класа, който тестваме с добавено `.Tests` накрая. Вътре в тест класа, слагаме тест методи. Методите които напишем в класа ги маркираме с атрибут, ще бъдат маркирани като тестове, които VS ще изпълнява. 
+
+Важен прозорец, който трябва да отворим е  Test -> Test Explorer.
+
+Когато даден клас ще съдържа тестове, класа трябва да се маркира с атрибута `[TestFixture]`. В NUnit 3x and later, това вече не е задължително условие. В xUnit атрибута е `[TextClass]`. Това е необходими, за да може тестовата библиотека NUnit да разбере, кои класове ще имат тестове.
+
+Тестовия метод е обикновен статичен void метод. Може да се направи и да не е void, но тогава трябва в `[Test]` атрибута, да се посочи какво ще връща. Метода се кръщава на метода, който ще тества и след това се описва, какво ще провери в метода.
+
+Добрата практика за наименуване е след името на метода да се добави `Should` и какво очакваме метода да провери че е коректно. Не трябва да пестим от към големина името на метода, може да съдържа и десет и повече думи. Описателното име бързо ни ориентира в test explorer-a кой точно тест не сработва.
+
+Тест метода се маркира с атрибута `[Test]` и веднага ще се появи в Test Explorer-a. От там може да го стартираме и в рамките на секунди, ще видим дали е минал успешно или не.
+
+Ако изпишем нещо на конзолата вътре в тестовете, ще се изпише в Test Explorer-a.
+### AAA Pattern
+Вътре в теста слагаме това, което искаме да проверим. Трябва да следваме pattern-a ААА, който описва какво трябва да има в метода, това са - Arrange, Act & Assert. Всяка от тези стъпки, обикновено е няколко реда.
+
+Arrange - инициализираме това което ще тестваме.
+
+Act - извикваме unit-a който ще тестваме, примерно даден метод с входни данни, които преценим че са важни и записваме резултата в променлива.
+
+Assert - проверяваме дали result-a от метода е равен на това което очакваме. Ако тази фаза е неуспешна, теста ще се отбележи като failed.
+За да направим тази проверка, може да ползваме if конструкция и да хвърлим грешка, ако има разминаване между очаквания и реалния резултат. Тази проверка е улеснена в unit testing frameworks защото има вграден статичен клас Assert с много готови методи, които проверяват резултата и хвърлят грешка при разминаване.
+Когато сравняваме резултатите с Assert, трябва да поставяме очаквания и изчисления резултат на правилните им места, защото ако има разминаване да получим коректна информация в Test Explorer-a. Може да имаме много Assert проверки в един тест, но е препоръчително да не са повече от една, освен ако проверките не са свързани.
+
+`CollectionAssert` - клас за работа с колекции.
+
+За да може да инициализираме класа, който ще тестваме, трябва в Dependencies на тестовия проект да добавим проекта на класа, който ще тестваме. Програмата ще се стартира и за нея Main метода ще бъде избрания тестови метод и ще работи само за него.
+### Assertion Messages
+Assert ни позволява освен да проверим нещо, то като аргумент да дадем съобщение какво се е счупило, за да имаме повече яснота, при проблем. Това съобщение ще се изпише, ако теста е неуспешен. Ползва се рядко, защото в повечето случаи, самата грешка дава достатъчно информация - какво е получила и какво е очаквала.
+### Debug
+Ако искаме да дебъгнем даден тест метод, трябва да му сложим breakpoint и с дясно копче върху него да натиснем debug.
+### Check Exceptions
+Ако очаквания резултат е хвърлена грешка, трябва да ползваме отново `Assert.Throws<T>()` - където `T` е очаквания exception, а като параметър е ламбда израз, който би трябвало да предизвика грешката. Ако не изхвърли грешка или е някаква от очакваната, теста е невалиден.
+
+```
+using UnitTesting;
+
+namespace UnitTesting.Tests
+{
+    public class ValidatorTests
+    {
+        [Test]
+        public static void ValidateShouldThrowAnError()
+        {
+            Validator validator = new Validator();
+            Assert.Throws<ArgumentException>(() => validator.Validate(0));
+        }
+    }
+}
+
+namespace UnitTesting
+{
+    public class Validator
+    {
+        public bool Validate(int a)
+        {
+            if (a == 0)
+            {
+                throw new ArgumentException("Not valid");
+            }
+
+            return true;
+        }
+    }
+}
+```
+### `[SetUp]`
+Методът с атрибут `[SetUp]` се изпълнява преди всеки тестови метод в тестовия клас. Това е полезно за настройване на общи ресурси или състояния, които се използват в множество тестове.
+### `[TearDown]`
+Методът с атрибут `[TearDown]` се изпълнява след всеки тестови метод в тестовия клас. Това е полезно за почистване на ресурси или възстановяване на състоянието след изпълнението на теста.
+## Parameterized Test
+Ако искаме да имаме параметри в тест метода, може да ползваме атрибута `[TestCase()]`, където да подадем параметрите сложени в метода:
+
+```
+[TestCase(1)]
+[TestCase(-1)]
+public static void ValidateShouldReturn(int a)
+{
+    Validator validator = new Validator();
+
+    bool result = validator.Validate(a);
+
+    Assert.That(result, Is.EqualTo(true));
+}
+
+ public class Validator
+{
+    public bool Validate(int a) => a != 0;
+}
+```
+
+По този начин избягваме повторението на код, където единствената разлика в тестовете са входните данни.
+## Test names
+Имената може да са всякакви, стига да описват добре какво прави теста. Може да се ползва терминология от проекта, който ползваме. Важно е да се разбере от името на теста, какво точно е гръмнало.
+## Private methods
+Препоръката е така да се направят тестовете и кода, че да не се налага да тестваме private методите. Private методите по правило, се тестват през публичния метод, защото той рано или късно ги вика. За нас е важно публичните методи да си вършат работата и да не се прескачат при тестването. Все пак има начини да се тестват и private методите, един от тях е да се ползва `PrivateObject` class.
+Друга възможност е да се ползват атрибута `[InternalVisibleTo("ProjectName")]` - всички членове от този клас, са видими за посочения проект в конструктора. Може да се ползва и reflection.
 # Misc
 
 # ChatGPT
+## NUnit 4.0
+It seems there have been significant changes in NUnit 4.0 that affect how certain features and namespaces are handled. Here’s a summary based on the breaking changes you mentioned:
 
+1. **Classic Asserts**: In NUnit 4.0, the classic assert methods have been moved to a separate library and their namespace and class names have been renamed to `NUnit.Framework.Legacy.ClassicAssert`. This means if you want to use the classic assert methods like `ClassicAssert.AreEqual`, you need to explicitly reference this namespace.
+```
+using NUnit.Framework.Legacy; // Usage of ClassicAssert ClassicAssert.AreEqual(expected, result);
+```
+2. **Standalone Assert Classes**: Classes like `CollectionAssert`, `StringAssert`, `DirectoryAssert`, and `FileAssert` have also been moved to the `NUnit.Framework.Legacy` namespace.
+```
+using NUnit.Framework.Legacy; // Example usage of CollectionAssert CollectionAssert.AreEqual(expectedCollection, actualCollection);
+```
+3. **Assert.That Overloads**: Some overloads of `Assert.That` with format specification and params have been removed in favor of an overload using `FormattableString`.
+4. **Minimum Framework Version**: NUnit 4.0 now requires a minimum framework version of 4.6.2 and supports .NET 6.0.
+### Example Using Classic Asserts in NUnit 4.0
+Here’s how you can modify your test to use the classic assert methods in NUnit 4.0:
+
+```
+using NUnit.Framework.Legacy; // Note the usage of Legacy namespace
+
+namespace UnitTesting.Tests
+{
+    [TestFixture]
+    public class SummatorTests
+    {
+        [Test]
+        public void SumOfDigitsShouldWorkWith()
+        {
+            Summator summator = new Summator();
+            long input = 12345;
+            int expected = 15;
+            int result = summator.SumOfDigits(input);
+
+            // Classic Assert
+            ClassicAssert.AreEqual(expected, result);
+        }
+    }
+}
+```
+### Additional Notes
+- Make sure to update your NUnit package to version 4.0 or later to utilize these changes.
+- If you prefer using the newer assertion syntax (`Assert.That`), you can explore and adapt to the changes according to NUnit’s migration guide and documentation.
+For more detailed information and further guidance on migrating your tests from NUnit 3.x to 4.0, refer to the NUnit Migration Guide and the official NUnit documentation. This will help ensure smooth transition and compatibility with the latest NUnit framework versions.
 # Bookmarks 
-Списък който показва колко много гранични случаи може да имаме и то само при работата със стрингове:
 
-[big-list-of-naughty-strings/blns.txt at master · minimaxir/big-list-of-naughty-strings](https://github.com/minimaxir/big-list-of-naughty-strings/blob/master/blns.txt)
+[big-list-of-naughty-strings/blns.txt at master · minimaxir/big-list-of-naughty-strings](https://github.com/minimaxir/big-list-of-naughty-strings/blob/master/blns.txt) - Списък който показва колко много гранични случаи може да имаме и то само при работата със стрингове:
+
+[Custom Testing Framework in C# (English) - YouTube](https://www.youtube.com/watch?v=saKCqoBwUTg) - Николай Костов
+
+Course completion: 17.07.2024
