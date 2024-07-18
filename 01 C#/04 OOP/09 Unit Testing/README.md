@@ -159,7 +159,7 @@ public static void ValidateShouldReturn(int a)
 Когато стартираме тестовете, ако направим промяна на някое поле в класа или в друг клас, то тази промяна ще е отразена и в другите тестове. Примерно ако в тест класа има int поле и в един от тестовете сменим стойността му, то и в другите тестове след него промяната ще е отразена. Ако искаме всеки тест да е като отделна инстанция, трябва да ползваме метод с атрибут `[SetUp]` и в него да слагаме нужната стойност. Преди всеки тест, `[SetUp]` метода ще се извиква и ще слага еднаква стойност на полето.
 
 ```
-public class Tests
+   public class Tests
 {
     private int test;
     private int test2;
@@ -200,6 +200,14 @@ public class Tests
     }
 }
 ```
+## Live Unit Testing
+Опция, която се активира от Test -> Live Unit Testing -> Start
+Стартира тестовете непрекъснато, докато пишем кода.
+## Analyze Code Coverage
+Опция, която се активира от Test -> Analyze Code Coverage for All Tests
+Минава през всички тестове, стартира ги, минава по кода и гледа кои парчета от кода са били тествани и кои не са.
+Показва в проценти кои парчета и колко са били тествани и оцветява в червено тези, които са били пропуснати.
+Тази опция е много полезна.
 # Misc
 
 # ChatGPT
@@ -251,4 +259,4 @@ For more detailed information and further guidance on migrating your tests from 
 
 [Custom Testing Framework in C# (English) - YouTube](https://www.youtube.com/watch?v=saKCqoBwUTg) - Николай Костов
 
-Course completion: 17.07.2024
+Course completion: 18.07.2024
