@@ -25,7 +25,6 @@ namespace FightingArena.Tests
         public void PropertiesShouldThrowArgumentExceptionWhenInvalidValueIsGiven(string name, int damage, int hP)
         {
             Assert.That(() => new Warrior(name, damage, hP), Throws.ArgumentException);
-            Assert.That(() => new Warrior(name, damage, hP), Throws.ArgumentException);
         }
 
         public void ConstructorShouldCreateWarriorAndSetAllPropertyValuesCorrectly(string name, int damage, int hP)
