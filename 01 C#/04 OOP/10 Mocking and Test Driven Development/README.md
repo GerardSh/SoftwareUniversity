@@ -1,4 +1,5 @@
 # General
+## Dependency Inversion
 Спазването на dependency inversion - петия принцип от SOLID, освен че ни дава възможност да разширяваме много кода, получаваме възможност да го тестваме много лесно и да му контролираме поведението, докато го тестваме. Като вторична полза от този принцип е че тестовете могат да бъдат много по всестранни и могат да бъдат много по лесно контролирани неговите dependency-та. Dependency e и ключовата думичка `new` - това е все едно да оженим един клас за друг и нямат разкачане. 
 
 Ако имаме следния код:
@@ -49,7 +50,7 @@ namespace MockingAndTestDrivenDevelopment
     }
 }
 
-//TestProject
+//Tests Project
 
 namespace MockingAndTestDrivenDevelopment.Tests
 {
@@ -110,9 +111,13 @@ namespace MockingAndTestDrivenDevelopment
 Може да си направим и `PrettyConsoleWriter` клас, който да имплементира `IWriter`, като в този клас, пак ще изписваме текста на конзолата, но с добавени тирета. 
 Направихме си различни writers, които може да бъдат използвани в комбинация с нашия `GreetingWriter`, при създаването му. Това ще определя къде той ще пише, тоест даваме му това депендънси - за писане. Може да си направим и празен конструктор, който да подава `ConsoleWriter` към другия конструктор. Старото поведение си остава, но даваме възможност, от вън да ни вкарат друг writer.
 
+Сега вече, може да си направим наш специален `MemoryWriter`, който да използваме за unit test. Неговата единствена цел ще е да събира в string builder това което write метода изписва.  Може да override-нем метода `ToString()` и да връщаме съдържанието на string builder-а. Така спазваме и open close принципа - без да пипаме `GreetingWriter` му направихме нов writer. Сега вече имаме какво да assert-нем, може да направим променлива от тип `MemoryWriter` и да я подадем като аргумент на `GreetingWriter` в unit test-a. След като изпълним метода `WriteGreeting`, може да извикаме в assert-a `ToString()` метода на memory writer променливата и да проверим дали съдържа очаквания резултат.
+
 Кода ни след промените изглежда така:
 
 ```
+using System.Text;
+
 namespace MockingAndTestDrivenDevelopment
 {
     public interface IWriter
@@ -135,6 +140,21 @@ namespace MockingAndTestDrivenDevelopment
             Console.WriteLine(new string('-', 60));
             Console.WriteLine('-' + text + new string(' ', 60 - 2 - text.Length) + '-');
             Console.WriteLine(new string('-', 60));
+        }
+    }
+
+    public class MemoryWriter : IWriter
+    {
+        private StringBuilder sb = new StringBuilder();
+
+        public void Write(string text)
+        {
+            sb.AppendLine(text);
+        }
+
+        public override string ToString()
+        {
+            return sb.ToString();
         }
     }
 
@@ -186,9 +206,29 @@ namespace MockingAndTestDrivenDevelopment
         }
     }
 }
+
+//Tests Project
+
+namespace MockingAndTestDrivenDevelopment.Tests
+{
+    public class Tests
+    {
+        [Test]
+        public void WritGreetingShouldWorkCorrectlyInTheMorning()
+        {
+            var memoryWriter = new MemoryWriter();
+            var writer = new GreetingWriter(memoryWriter);
+
+            writer.WriteGreeting(new DateTime(2021, 1, 1, 8, 0, 0));
+
+            Assert.True(memoryWriter.ToString().Contains("Good morning!"));
+        }
+    }
+}
 ```
 
-Сега вече, може да си направим наш специален unit test writer
+Това е цялата идея на използването на dependency inversion и как той помага при писането на тестове.
+
 
 
 
@@ -197,5 +237,3 @@ namespace MockingAndTestDrivenDevelopment
 # ChatGPT
 
 # Bookmarks 
-
-Course completion: 01.01.2024
