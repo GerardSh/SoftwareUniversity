@@ -350,7 +350,7 @@ Runtime е когато стартираме кода, докато програ
 
 https://fontawesome.com/ - всякакви иконки за web проекти, препоръчан от Николай Костов.
 
-[ML.NET - YouTube](https://www.youtube.com/watch?v=dluB5VE1m1k) - какво е AI, Machine Learning, Deep Learning и тн. Хубави дема написани на C# - Николай Костов
+[ML.NET - YouTube](https://www.youtube.com/watch?v=dluB5VE1m1k) - какво е AI, Machine Learning, Deep Learning и тн. Хубави дема написани на C# - Николай Костов.
 
 [Николай Костов - ML.NET - Machine Learning за .NET | .NETworking Conference 2023 - YouTube](https://www.youtube.com/watch?v=_1ZMd4vBdmI)
 
