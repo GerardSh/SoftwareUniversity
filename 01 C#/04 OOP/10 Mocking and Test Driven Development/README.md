@@ -343,11 +343,8 @@ PHP е много стар език и е много популярен зара
 ## Compile time / Runtime
 Compile time е всичко което се случва, преди да стартираме кода. Компилатора чете кода и създава от него друг код. 
 Runtime е когато стартираме кода, докато програмата работи - от влизането в `Main()` до излизането от него.
-
 # ChatGPT
-
 # Bookmarks
-
 https://fontawesome.com/ - всякакви иконки за web проекти, препоръчан от Николай Костов.
 
 [ML.NET - YouTube](https://www.youtube.com/watch?v=dluB5VE1m1k) - какво е AI, Machine Learning, Deep Learning и тн. Хубави дема написани на C# - Николай Костов.
