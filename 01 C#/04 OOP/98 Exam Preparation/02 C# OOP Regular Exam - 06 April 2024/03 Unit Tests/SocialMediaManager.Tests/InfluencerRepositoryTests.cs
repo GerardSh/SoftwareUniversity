@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SocialMediaManager.Tests
 {
-    public class Tests
+    public class InfluencerRepositoryTests
     {
         Influencer influencer;
         InfluencerRepository influencers;
