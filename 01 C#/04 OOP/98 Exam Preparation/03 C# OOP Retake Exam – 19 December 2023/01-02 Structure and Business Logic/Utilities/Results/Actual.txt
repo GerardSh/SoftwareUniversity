@@ -1,0 +1,15 @@
+Everest is allowed for international climbing. See details in PeakRepository.
+Kangchenjunga is allowed for international climbing. See details in PeakRepository.
+Lhotse is allowed for international climbing. See details in PeakRepository.
+Makalu is allowed for international climbing. See details in PeakRepository.
+ChoOyu is allowed for international climbing. See details in PeakRepository.
+Dhaulagiri is allowed for international climbing. See details in PeakRepository.
+Manaslu is allowed for international climbing. See details in PeakRepository.
+NangaParbat is allowed for international climbing. See details in PeakRepository.
+Annapurna is allowed for international climbing. See details in PeakRepository.
+ShishaPangma is allowed for international climbing. See details in PeakRepository.
+LiamSmith has arrived at the BaseCamp and will wait for the best conditions.
+EthanLee has arrived at the BaseCamp and will wait for the best conditions.
+MasonKim has arrived at the BaseCamp and will wait for the best conditions.
+JacobMartinez has arrived at the BaseCamp and will wait for the best conditions.
+JacobMartinez is a participant in ClimberRepository and cannot be duplicated.
