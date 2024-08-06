@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BookigApp.Tests
 {
-    public class Tests
+    public class HotelTests
     {
         Room room;
         Booking booking;
