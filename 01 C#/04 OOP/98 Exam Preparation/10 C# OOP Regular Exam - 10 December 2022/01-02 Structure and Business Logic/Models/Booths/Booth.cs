@@ -3,6 +3,7 @@ using ChristmasPastryShop.Models.Cocktails.Contracts;
 using ChristmasPastryShop.Models.Delicacies.Contracts;
 using ChristmasPastryShop.Repositories;
 using ChristmasPastryShop.Repositories.Contracts;
+using ChristmasPastryShop.Repositories;
 using ChristmasPastryShop.Utilities.Messages;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace ChristmasPastryShop.Models.Booths
     {
         private int capacity;
 
-        public Booth(int capacity, int boothId)
+        public Booth(int boothId, int capacity)
         {
-            this.capacity = capacity;
+            Capacity = capacity;
             BoothId = boothId;
 
             DelicacyMenu = new DelicacyRepository();

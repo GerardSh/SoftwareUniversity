@@ -24,7 +24,7 @@ namespace ChristmasPastryShop.Core
 
         public string AddBooth(int capacity)
         {
-            IBooth booth = new Booth(capacity, booths.Models.Count + 1);
+            IBooth booth = new Booth(booths.Models.Count + 1, capacity);
 
             booths.AddModel(booth);
 
@@ -143,83 +143,58 @@ namespace ChristmasPastryShop.Core
             int countOfOrderedPieces = int.Parse(orderInfo[2]);
             string size = null;
 
+            IBooth booth = booths.Models.FirstOrDefault(x => x.BoothId == boothId);
+
+
+
+            if (itemTypeName != nameof(MulledWine) && itemTypeName != nameof(Hibernation) && itemTypeName != nameof(Stolen) && itemTypeName != nameof(Gingerbread))
+            {
+                return string.Format(OutputMessages.NotRecognizedType, itemTypeName);
+            }
+
             if (itemTypeName == nameof(MulledWine) || itemTypeName == nameof(Hibernation))
             {
                 size = orderInfo[3];
             }
 
-            IBooth booth = booths.Models.FirstOrDefault(x => x.BoothId == boothId);
-
             double price = 0;
 
-            if (itemTypeName == nameof(Hibernation))
+            if (size != null)
             {
                 if (!booth.CocktailMenu.Models.Any(x => x.Name == itemName))
                 {
-                    return string.Format(OutputMessages.NotRecognizedItemName,itemTypeName, itemName);
+                    return string.Format(OutputMessages.CocktailStillNotAdded, itemTypeName, itemName);
                 }
 
-                if (!booth.CocktailMenu.Models.Any(x => x.Name == itemName && x.Size == size))
-                {
-                    return string.Format(OutputMessages.CocktailStillNotAdded,size,itemName);
-                }
+                ICocktail cocktail = booth.CocktailMenu.Models.FirstOrDefault(x => x.GetType().Name == itemTypeName && x.Name == itemName && x.Size == size);
 
-                price = booth.CocktailMenu.Models.FirstOrDefault(x=>x.Name == itemName && x.Size == size).Price;
-
-
-            }
-            else if (itemTypeName == nameof(MulledWine))
-            {
-                if (!booth.CocktailMenu.Models.Any(x => x.Name == itemName))
-                {
-                    return string.Format(OutputMessages.NotRecognizedItemName, itemTypeName, itemName);
-                }
-
-                if (!booth.CocktailMenu.Models.Any(x => x.Name == itemName && x.Size == size))
+                if (cocktail == null)
                 {
                     return string.Format(OutputMessages.CocktailStillNotAdded, size, itemName);
                 }
 
-                price = booth.CocktailMenu.Models.FirstOrDefault(x => x.Name == itemName && x.Size == size).Price;
-
-            }
-            else if (itemTypeName == nameof(Gingerbread))
-            {
-                if (!booth.DelicacyMenu.Models.Any(x => x.Name == itemName))
-                {
-                    return string.Format(OutputMessages.NotRecognizedItemName, itemTypeName, itemName);
-                }
-
-                if (!booth.DelicacyMenu.Models.Any(x => x.Name == itemName && x.GetType().Name == nameof(Gingerbread)))
-                {
-                    return string.Format(OutputMessages.NotRecognizedItemName, itemTypeName, itemName);
-                }
-
-                price = booth.DelicacyMenu.Models.FirstOrDefault(x => x.Name == itemName && x.GetType().Name == nameof(Gingerbread)).Price;
-
-            }
-            else if (itemTypeName == nameof(Stolen))
-            {
-                if (!booth.DelicacyMenu.Models.Any(x => x.Name == itemName))
-                {
-                    return string.Format(OutputMessages.NotRecognizedItemName, itemTypeName, itemName);
-                }
-
-                if (!booth.DelicacyMenu.Models.Any(x => x.Name == itemName && x.GetType().Name == nameof(Stolen)))
-                {
-                    return string.Format(OutputMessages.NotRecognizedItemName, itemTypeName, itemName);
-                }
-
-                price = booth.CocktailMenu.Models.FirstOrDefault(x => x.Name == itemName && x.GetType().Name == nameof(Stolen)).Price;
+                price = cocktail.Price;
             }
             else
             {
-                return string.Format(OutputMessages.NotRecognizedType, itemTypeName);
+                if (!booth.DelicacyMenu.Models.Any(x => x.Name == itemName))
+                {
+                    return string.Format(OutputMessages.DelicacyStillNotAdded, itemTypeName, itemName);
+                }
+
+                IDelicacy delicacy = booth.DelicacyMenu.Models.FirstOrDefault(x => x.GetType().Name == itemTypeName && x.Name == itemName);
+
+                if (delicacy == null)
+                {
+                    return string.Format(OutputMessages.DelicacyStillNotAdded, itemTypeName, itemName);
+                }
+
+                price = delicacy.Price;
             }
 
             booth.UpdateCurrentBill(price * countOfOrderedPieces);
 
-            return string.Format(OutputMessages.SuccessfullyOrdered, booth.BoothId, countOfOrderedPieces, itemName);
+            return string.Format(OutputMessages.SuccessfullyOrdered, boothId, countOfOrderedPieces, itemName);
         }
     }
 }
