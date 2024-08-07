@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Heroes.Models.Heroes
+namespace Heroes.Models.Weapons
 {
-    public class Claymore : Weapon
+    public class Mace : Weapon
     {
-        const int Damage = 20;
+        const int Damage = 25;
 
-        public Claymore(string name, int durability) : base(name, durability)
+        public Mace(string name, int durability)
+            : base(name, durability)
         {
         }
 

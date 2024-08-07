@@ -1,6 +1,8 @@
 ﻿using Heroes.Core.Contracts;
 using Heroes.Models.Contracts;
 using Heroes.Models.Heroes;
+using Heroes.Models.Map;
+using Heroes.Models.Weapons;
 using Heroes.Repositories;
 using Heroes.Repositories.Contracts;
 using Heroes.Utilities.Messages;

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Heroes.Models.Heroes
+namespace Heroes.Models.Weapons
 {
     public abstract class Weapon : IWeapon
     {

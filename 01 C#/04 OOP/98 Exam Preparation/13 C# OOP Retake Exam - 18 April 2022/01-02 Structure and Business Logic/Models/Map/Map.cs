@@ -1,4 +1,5 @@
 ﻿using Heroes.Models.Contracts;
+using Heroes.Models.Heroes;
 using Heroes.Utilities.Messages;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Heroes.Models.Heroes
+namespace Heroes.Models.Map
 {
     public class Map : IMap
     {
@@ -41,7 +42,7 @@ namespace Heroes.Models.Heroes
                     }
                 }
 
-                barbarians = barbarians.Where(x=>x.IsAlive).ToList();
+                barbarians = barbarians.Where(x => x.IsAlive).ToList();
 
                 foreach (var barbarian in barbarians)
                 {
