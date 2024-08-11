@@ -1,5 +1,5 @@
 # C# Web Developer - Softuni Professional Modules Curriculum
-This repository is a comprehensive collection of exercises and notes from the Softuni Professional C# Web Developer program. It is designed to provide a detailed reference and learning aid based on the academy’s curriculum.
+This repository is a comprehensive collection of exercises, exams and notes from the Softuni Professional C# Web Developer program. It is designed to provide a detailed reference and learning aid based on the academy’s curriculum.
 
 ## Repository Contents
 README Files: These files contain detailed notes, summaries, and personal observations from each module, along with practical exercises and solutions.
