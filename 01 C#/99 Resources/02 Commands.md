@@ -11,7 +11,7 @@ list[list.IndexOf(temp + "descriptor")] = temp;
 Console.WriteLine(string.Join(" ", list));
 ```
 # Dictionary
-Сортираме елементите на речник, въз основа на средните стойности във вътрешния речник.
+Сортираме елементите на речник, въз основа на средните стойности във вътрешния речник:
 ```
 var test = new Dictionary<string, Dictionary<string, int>>()
 {
@@ -61,5 +61,16 @@ foreach (var outerKvp in test)
 # Queue
 `queue = new Queue<int>(queue.Reverse());` - бърз начин да обърнем елементите в кю-то.
 # String
+Обхождане на даден стринг, докато е нужно, без да излизаме от индекса:
+```
+string text = "test ";
+int index = 0;
+
+for (int j = 0; j < 12; j++)
+{
+    Console.Write(text[index % text.Length]);
+    index++;
+}
+```
 # Misc
 `Console.WriteLine((50 % 60 < 10 ? "0" : "1"));` - Проверява дали нещо е изпълнено и връща резултат.
