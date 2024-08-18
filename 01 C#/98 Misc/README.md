@@ -65,6 +65,41 @@ Collections of Delegates: Delegate variables can be stored in collections such a
 List<MyDelegate> delegatesList = new List<MyDelegate>();
 delegatesList.Add((x, y) => x * y);  // Adding method references to a list
 ```
+
+Example usage:
+
+```
+public delegate int MyDelegate(int a);  // Define a delegate with a specific method signature
+
+public class Program
+{
+    public static void Main()
+    {
+        // Assign a lambda expression to the delegate
+        MyDelegate myMethod = (a) => a + 1;
+
+        // Create a second delegate variable using the first delegate's method
+        MyDelegate myMethod2 = new MyDelegate(myMethod);
+
+        // Third option
+        MyDelegate myMethod3 = myMethod;  
+
+        // Create a list to store delegates
+        List<MyDelegate> myList = new List<MyDelegate>();
+
+        // Add delegates to the list
+        myList.Add(myMethod);
+        myList.Add(myMethod2);
+        myList.Add(myMethod3);
+
+        // Call the delegate directly
+        int n = myMethod(5);  // Calls (a) => a + 1 with a = 5, so n = 6
+
+        // Call the delegate from the list
+        int n2 = myList[1](5);  // Calls myMethod2, which is the same as myMethod, so n2 = 6       
+    }
+}
+```
 ## Key Points:
 
 - Delegates define a method signature.
