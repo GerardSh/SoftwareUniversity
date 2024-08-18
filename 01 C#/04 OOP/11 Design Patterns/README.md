@@ -292,4 +292,6 @@ Visitor патърнът е полезен, когато имате сложна
 
 [Gang of Four Design Patterns - Spring Framework Guru](https://springframework.guru/gang-of-four-design-patterns/) - препоръчана от Николай Костов, с уточнението че не е най-добре написаната.
 
+[Design Patterns](https://refactoring.guru/design-patterns) - добро нагледно обяснение на патърните.
+
 Course completion: 18.08.2024
