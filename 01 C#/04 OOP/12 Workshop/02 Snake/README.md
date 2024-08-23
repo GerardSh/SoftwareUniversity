@@ -1,0 +1,1 @@
+Creating a snake game from scratch, following good OOP practices.

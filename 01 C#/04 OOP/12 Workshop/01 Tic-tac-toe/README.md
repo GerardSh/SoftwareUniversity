@@ -1,1 +1,1 @@
-Creating the tic-tac-toe game from scratch, following good OOP practices.
+Creating a tic-tac-toe game from scratch, following good OOP practices.
