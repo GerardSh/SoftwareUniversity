@@ -1,0 +1,22 @@
+
+body {
+    background-color: rgb(20, 17, 17);
+    font-family:'Courier New', Courier, monospace
+}
+
+h1, h2 {
+    color: red;
+}
+
+.header {  
+    text-decoration: underline;
+}
+
+#my-id {
+    color: blue;
+}
+
+ol {
+    color: red;
+    font-size: x-large;
+}
