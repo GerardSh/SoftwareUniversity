@@ -314,18 +314,6 @@ h1 {
  **Summary**:
 CSS selectors are generally preferred for their efficiency, consistency, and maintainability in styling web pages. Inline styles are useful for quick, single-element changes but are less ideal for large-scale or consistent styling. When both are used, inline styles will override CSS selectors due to their higher specificity.
 ## **Selector Types**
-**Simple Selector**: Targets elements based on a single criterion (e.g., class, ID, tag name).
-**Example**:
-- `.box` targets elements with the class `box`.
-- `.shadow` targets elements with the class `shadow`.
-**Combined Class Selector**: Targets elements that match all of the specified classes.
-**Example**:
-- `.box.shadow` targets elements that have both the `box` and `shadow` classes.
-- This is a **combined class selector** where multiple classes are combined using no space or combinators.
-**Compound Selector**: Combines multiple simple selectors (like classes, IDs, and tags) with combinators to target elements based on complex relationships.
-**Example**:
-- `header h1` targets all `<h1>` elements that are descendants of `<header>`.
-- `.box > .shadow` targets `.shadow` elements that are direct children of `.box` elements.
 
 ```
 .box.shadow {
@@ -333,6 +321,15 @@ CSS selectors are generally preferred for their efficiency, consistency, and mai
 }
 ```
 
+**Simple Selector**: Targets elements based on a single criterion (e.g., class, ID, tag name).
+- `.box` targets elements with the class `box`.
+- `.shadow` targets elements with the class `shadow`.
+**Combined Class Selector**: Targets elements that match all of the specified classes.
+- `.box.shadow` targets elements that have both the `box` and `shadow` classes.
+- This is a **combined class selector** where multiple classes are combined using no space or combinators.
+**Compound Selector**: Combines multiple simple selectors (like classes, IDs, and tags) with combinators to target elements based on complex relationships.
+- `header h1` targets all `<h1>` elements that are descendants of `<header>`.
+- `.box > .shadow` targets `.shadow` elements that are direct children of `.box` elements.
 - **`.box.shadow`**: This selector targets elements that have both `box` and `shadow` classes. It’s a way to apply styles to elements that match multiple class names.
 - **CSS Rule**: The `box-shadow` property applies a shadow effect to these elements.
 
