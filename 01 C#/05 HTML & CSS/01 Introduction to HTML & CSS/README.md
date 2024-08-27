@@ -314,6 +314,7 @@ h1 {
  **Summary**:
 CSS selectors are generally preferred for their efficiency, consistency, and maintainability in styling web pages. Inline styles are useful for quick, single-element changes but are less ideal for large-scale or consistent styling. When both are used, inline styles will override CSS selectors due to their higher specificity.
 ## **Selector Types**
+Example:
 
 ```
 .box.shadow {
