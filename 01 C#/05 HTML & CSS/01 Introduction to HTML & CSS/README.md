@@ -318,7 +318,7 @@ CSS selectors are generally preferred for their efficiency, consistency, and mai
 **Example**:
 - `.box` targets elements with the class `box`.
 - `.shadow` targets elements with the class `shadow`.
- **Combined Class Selector**: Targets elements that match all of the specified classes.
+**Combined Class Selector**: Targets elements that match all of the specified classes.
 **Example**:
 - `.box.shadow` targets elements that have both the `box` and `shadow` classes.
 - This is a **combined class selector** where multiple classes are combined using no space or combinators.
