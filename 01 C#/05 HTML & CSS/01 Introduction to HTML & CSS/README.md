@@ -8,7 +8,7 @@ HTML има тагове, чрез които описваме съдържан�
 
 Browser-a е софтуер, който си говори със сървъра чрез HTTP протокол - казва искам този адрес и сървъра връща информацията под формата на HTML, след което браузъра го разчита и ни го презентира.
 ### HTML Tags
-![](Pasted%20image%2020240823185250.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823185250.png)
 
 Таговете са ключови думи, обградени със скоби, като един таг има начало и край. Имаме отварящ и затварящ таг, като има и самостоятелни тагове, без затварящ.
 Може да имаме и вградени тагове:
@@ -19,77 +19,77 @@ Browser-a е софтуер, който си говори със сървъра 
 </header>   
 ```
 #### `<main></main>`
-![](Pasted%20image%2020240823190451.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823190451.png)
 
 Трябва да имаме само един main tag и той държи основния content на нашата страница.
 #### `<aside></aside>`
-![](Pasted%20image%2020240823190540.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823190540.png)
 
 Използва се когато имаме sidebar, който може да съдържа линкове или друга допълнителна информация.
 #### `<footer></footer>`
-![](Pasted%20image%2020240823191655.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823191655.png)
 
 Може да е footer за целия сайт или нещо друго.
 #### `<section></section>`
-![](Pasted%20image%2020240823191821.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823191821.png)
 
 Ползва се, ако искаме да отделим част от съдържанието
 #### `<article></article>`
-![](Pasted%20image%2020240823191957.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823191957.png)
 
 Ползва се, ако искаме да опишем дадена статия.
 #### `<figure></figure>`
-![](Pasted%20image%2020240823192512.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823192512.png)
 
 Специален таг, който описва допълнителна информация за картинки.
 ### Sections and Articles
-![](Pasted%20image%2020240823192111.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823192111.png)
 ### HTML Versions
 В началото на всеки документ, трябва да слагаме `<!DOCTYPE html>`. Това казва на браузъра че версията на HTML е 5 и че ние поемаме ангажимент за валидността на този код. Ако го махнем браузъра работи в quirks / compatibility режим в който ни чете HTML-a и се опитва да го оправи. Това е от преди много време, когато HTML е бил пълен с грешки и браузърите са опитвали да ги оправят.
 ### Common HTML Tags
 #### Headings and Paragraphs
-![](Pasted%20image%2020240823194830.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823194830.png)
 #### Hyperlinks
-![](Pasted%20image%2020240823194857.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823194857.png)
 #### Images
-![](Pasted%20image%2020240823195012.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823195012.png)
 #### Ordered Lists
-![](Pasted%20image%2020240823195126.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823195126.png)
 #### Unordered Lists
-![](Pasted%20image%2020240823195503.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823195503.png)
 #### Definition Lists
-![](Pasted%20image%2020240823195615.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823195615.png)
 ### HTML Tag Attributes
-![](Pasted%20image%2020240823211619.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823211619.png)
 
 Чрез атрибутите, имаме възможност да добавяме допълнителна информация към определен таг.
 Имаме име на атрибута и неговата стойност - key value pair. Името е ключа, който ни позволява да стигнем до информацията. 
 Има универсални атрибути, които може да се сложат навсякъде, но има и атрибути, които работят само на определени тагове.
 Винаги се пишат с малки букви, а техните стойности са в двойни или единични кавички. Кавичките трябва да са еднакви при отварянето и затварянето.
 ### HTML Metadata Section
-![](Pasted%20image%2020240823212213.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823212213.png)
 ### Metadata Section
-![](Pasted%20image%2020240823212946.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240823212946.png)
 ### Indentation & Code formatting
 Indentation-a е много важен, за да знаем бързо и лесно, къде се намираме в кода. Ползва се предимно Tab който е равен на 4 space-a.
 Всеки екип работи по различен стандарт, някои предпочитат да ползват само spaces, докато други използват Tab за да изместят с един таб навътре, всеки вложен tag.
 ## What is CSS?
-![](Pasted%20image%2020240824105816.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240824105816.png)
 
-![](Pasted%20image%2020240824111231.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240824111231.png)
 
 Друг описателен език, който използваме за да дефинираме визуално как да изглеждат HTML елементите. HTML не е бил мислен с идеята да добавя тагове за форматиране, които да казват как да изглежда HTML. Целта на HTML е да държи съдържание и неговото описание. CSS е създаден за да държи форматирането отделно, и се ползва за да описва как да изглежда съдържанието. Това ни позволява да разделим съдържанието, от това как да изглежда. Можем да направим един и същи HTML код, да изглежда по различен начин в два отделни сайта, чрез CSS.
 CSS документите са набор от правила, където ги имаме изредени. Всяко правило се състои от selector и набор от пропъртита и стойности. Чрез selector-a h1, който виждаме на картинката горе, ние казваме на всички h1 тагове в HTML file-a да им бъдат изпълнени пропъртитата в selector-a.
 ### Combining HTML and CSS files (External Style)
-![](Pasted%20image%2020240824112433.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240824112433.png)
 
 В head частта на HTML file-a добавяме тага `<link>` ,който трябва да има пътя към CSS file-a.
 ### CSS Selectors
-![](Pasted%20image%2020240824113013.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240824113013.png)
 
 [CSS selectors - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) - документация.
 
-![](Pasted%20image%2020240824113216.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240824113216.png)
 #### Type selector
 Селектираме HTML тагa по неговото име за да приложим CSS пропъртита към всички елементи от този тип.
 #### Class selector
@@ -184,67 +184,67 @@ p ~ p {
 ### Adding CSS to our HTML documents
 Имаме три опции:
 #### External style sheet
-![](Pasted%20image%2020240826093404.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826093404.png)
 
 CSS file, който го линкваме в HTML file-a. Това е основно, което ще ползваме.
 В head тага слагаме link tag с адреса на CSS file-a.
 #### Internal style sheet
-![](Pasted%20image%2020240826093436.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826093436.png)
 
 Може да напишем style tag вътре в HTML-a и да пишем вътре CSS.
 #### Inline style
-![](Pasted%20image%2020240826093636.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826093636.png)
 
 Може в самия таг да пишем CSS, което е най-непредпочитания вариант и се ползва изключително рядко. Това чупи идеята да разделим стилизацията със съдържанието в отделни файлове, защото така ги свързваме в един файл и нямаме гъвкавост.
 ### Basic CSS Properties
 #### font-size
-![](Pasted%20image%2020240826154821.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826154821.png)
 
 Размера на шрифта, като може да използваме различни мерни единици.
 #### font-weight
-![](Pasted%20image%2020240826163604.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826163604.png)
 
 Kолко да е bold-нат шрифта.
 #### font-style
-![](Pasted%20image%2020240826154934.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826154934.png)
 #### text-align
-![](Pasted%20image%2020240826163529.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826163529.png)
 
 justify не трябва да се използва никога, защото е най-бързия начин да се счупи четимостта на текста. Разстоянията между думите се променя и от там идва главния проблем.
 #### line-height
-![](Pasted%20image%2020240826163221.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826163221.png)
 #### letter-spacing
-![](Pasted%20image%2020240826163823.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826163823.png)
 
 Основно се ползва за ефектни заглавия с голям текст, рядко се ползва за body текст.
 #### text-decoration
-![](Pasted%20image%2020240826164010.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164010.png)
 #### text-indent
-![](Pasted%20image%2020240826164154.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164154.png)
 
 Премества текста навътре.
 #### text-overflow
-![](Pasted%20image%2020240826164244.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164244.png)
 
 Контролира какво се случва, когато нямаме място за целия текст в нашия елемент. Вместо да отреже текста, може да сложи точки или нещо друго.
 #### text-transform
-![](Pasted%20image%2020240826164502.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164502.png)
 #### word-break
-![](Pasted%20image%2020240826164607.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164607.png)
 #### text-shadow
-![](Pasted%20image%2020240826164953.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826164953.png)
 #### text-color
-![](Pasted%20image%2020240826165014.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826165014.png)
 
 Имаме набор от ключови думи, които се разбират от браузърите, като red, blue и тн.
 Може да ползваме hexadecimal и rgb. Преди е трябвало да се ползва rgba за да се направи прозрачност, където последната стойност отговаря за прозрачността, като е в границите от 0 до 1. Това вече е събрано в rgb и няма нужда да се добавя а, може да се добави запетая и да се сложи стойност за прозрачност. 
 В CSS има и нови допълнителни системи за цветове.
 #### background-color
-![](Pasted%20image%2020240826165042.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826165042.png)
 #### cursor
-![](Pasted%20image%2020240826171641.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826171641.png)
 #### outline
-![](Pasted%20image%2020240826175841.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240826175841.png)
 # Misc
 ## Web
 Състои се от CSS, HTML и JavaScript, където CSS е визията, HTML е съдържанието, a JavaScript е behavior-a.
