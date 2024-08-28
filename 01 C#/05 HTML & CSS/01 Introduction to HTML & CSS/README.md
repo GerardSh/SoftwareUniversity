@@ -350,6 +350,7 @@ This flexibility allows CSS to be both simple and powerful, letting you apply st
       - `.box.shadow` targets elements that have both the `box` and `shadow` classes.
 - This is indeed a **compound selector** but specific to classes.
 **Compound Selector**:
+- A compound selector is a sequence of simple selectors that are not separated by a combinator. A compound selector represents a set of simultaneous conditions on a single element. A given element is said to match a compound selector when the element matches all the simple selectors in the compound selector.
 - Combines multiple simple selectors without using combinators. It can include tags, classes, and IDs together.
 - Example:
     - `div.box.shadow` targets all `<div>` elements with both `box` and `shadow` classes.
