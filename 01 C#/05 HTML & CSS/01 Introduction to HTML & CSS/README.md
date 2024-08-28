@@ -314,30 +314,58 @@ h1 {
  **Summary**:
 CSS selectors are generally preferred for their efficiency, consistency, and maintainability in styling web pages. Inline styles are useful for quick, single-element changes but are less ideal for large-scale or consistent styling. When both are used, inline styles will override CSS selectors due to their higher specificity.
 ## **Selector Types**
-Example:
+**1. Compound Selectors:**
+- **Definition:** Compound selectors are combinations of simple selectors (like tags, classes, IDs, and attributes) without using combinators. They are used to target elements that meet all the specified criteria simultaneously.
 
 ```
-.box.shadow {
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-}
+p.highlight { color: yellow; }
 ```
 
-**Simple Selector**: Targets elements based on a single criterion (e.g., class, ID, tag name).
-- `.box` targets elements with the class `box`.
-- `.shadow` targets elements with the class `shadow`.
-**Combined Class Selector**: Targets elements that match all of the specified classes.
-- `.box.shadow` targets elements that have both the `box` and `shadow` classes.
-- This is a **combined class selector** where multiple classes are combined using no space or combinators.
-**Compound Selector**: Combines multiple simple selectors (like classes, IDs, and tags) with combinators to target elements based on complex relationships.
-- `header h1` targets all `<h1>` elements that are descendants of `<header>`.
-- `.box > .shadow` targets `.shadow` elements that are direct children of `.box` elements.
-- **`.box.shadow`**: This selector targets elements that have both `box` and `shadow` classes. It’s a way to apply styles to elements that match multiple class names.
-- **CSS Rule**: The `box-shadow` property applies a shadow effect to these elements.
+**2. Combinators with Simple or Compound Selectors:**
+- **Definition:** Combinators (like space , `>`, `+`, `~`) are used to define the relationship between selectors. You can use combinators with simple selectors or even with compound selectors to create more complex patterns.
 
-**Summary**
+```
+.container .box.shadow > p { color: blue; }
+```
+
+ **Combination of Both:**
+
+- You can combine both compound selectors and combinators to form highly specific rules.
+
+```
+#main .content > article.featured p.intro { font-weight: bold; }
+```
+
+This flexibility allows CSS to be both simple and powerful, letting you apply styles to exactly the elements you need, with precision.
+
+**Simple Selector**:
+- Targets elements based on a single criterion, such as a tag, class, or ID.
+- Examples:
+      - `p` targets all `<p>` elements.
+    - `.box` targets all elements with the class `box`.
+    - `#header` targets the element with the ID `header`.
+**Combined Class Selector**:
+- A type of compound selector where multiple classes are combined without any spaces or combinators.
+- Example:
+      - `.box.shadow` targets elements that have both the `box` and `shadow` classes.
+- This is indeed a **compound selector** but specific to classes.
+**Compound Selector**:
+- Combines multiple simple selectors without using combinators. It can include tags, classes, and IDs together.
+- Example:
+    - `div.box.shadow` targets all `<div>` elements with both `box` and `shadow` classes.
+- No combinators are required; it combines the selectors directly.
+4. **Selectors with Combinators**:
+- Combinators such as descendant ( ), child (`>`), adjacent sibling (`+`), and general sibling (`~`) are used to combine simple or compound selectors to form more complex rules.
+- Examples:
+    - `header h1` (descendant combinator) targets all `<h1>` elements inside `<header>`.
+    - `.box > .shadow` (child combinator) targets `.shadow` elements that are direct children of `.box`.
+
+Summary:
+
 - **Simple Selector**: Targets elements based on a single criterion.
-- **Combined Class Selector**: Targets elements with multiple classes applied.
-- **Compound Selector**: Combines different types of selectors (tags, classes, IDs) with combinators to target elements based on more complex relationships.
+- **Compound Selector**: Combines multiple simple selectors without combinators (e.g., `.box.shadow` or `div#main.content`).
+- **Combined Class Selector**: A specific type of compound selector that targets elements with multiple classes (e.g., `.box.shadow`).
+- **Selectors with Combinators**: Use combinators to define relationships between elements (e.g., `header h1` or `.box > .shadow`).
 # Bookmarks 
 
 [Lorem Ipsum - All the facts - Lipsum generator](https://www.lipsum.com/) - генериране на random текст за тестови цели.
