@@ -313,7 +313,7 @@ h1 {
  
  **Summary**:
 CSS selectors are generally preferred for their efficiency, consistency, and maintainability in styling web pages. Inline styles are useful for quick, single-element changes but are less ideal for large-scale or consistent styling. When both are used, inline styles will override CSS selectors due to their higher specificity.
-## **Selector Types**
+## Selector Types
 **1. Compound Selectors:**
 - **Definition:** Compound selectors are combinations of simple selectors (like tags, classes, IDs, and attributes) without using combinators. They are used to target elements that meet all the specified criteria simultaneously.
 
@@ -366,6 +366,15 @@ Summary:
 - **Compound Selector**: Combines multiple simple selectors without combinators (e.g., `.box.shadow` or `div#main.content`).
 - **Combined Class Selector**: A specific type of compound selector that targets elements with multiple classes (e.g., `.box.shadow`).
 - **Selectors with Combinators**: Use combinators to define relationships between elements (e.g., `header h1` or `.box > .shadow`).
+## CSS Specificity
+**Specificity** determines which CSS rules are applied when multiple rules target the same element. It's calculated based on the types of selectors used:
+
+1. **Inline Styles**: 1000 points (highest priority).
+2. **ID Selectors**: 100 points.
+3. **Class Selectors, Attribute Selectors, and Pseudo-classes**: 10 points each.
+4. **Element Selectors and Pseudo-elements**: 1 point each.
+
+**More Specific Selectors** override less specific ones. For example, `#id .class p` is more specific than `.class p`, so it takes precedence.
 # Bookmarks 
 
 [Lorem Ipsum - All the facts - Lipsum generator](https://www.lipsum.com/) - генериране на random текст за тестови цели.
