@@ -1,0 +1,32 @@
+p.highlitghted {
+color: red;
+font-size: xx-large;
+}
+
+div#id {
+    background-color: rgb(165, 42, 114);
+    padding: 0.5vi;
+}
+
+.input-class[type="text"] {
+    background-color: rgb(165, 42, 114);
+    padding: 0.5vi;
+}
+
+.class1.class2 {
+    background-color: aqua;
+}
+
+.class3 {
+    background-color: red;
+    font-size: xx-large;
+}
+
+.class3#id2 {
+    background-color: blue;
+    color: aquamarine;
+}
+
+li.class3#id2 {
+    background-color: rgb(0, 255, 55);
+}
