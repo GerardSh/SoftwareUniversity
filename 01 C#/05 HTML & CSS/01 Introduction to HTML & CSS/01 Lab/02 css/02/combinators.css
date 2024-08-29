@@ -1,0 +1,15 @@
+div p {
+    color: darkslateblue;
+}
+
+ul > li {
+    list-style-type: square;
+}
+
+p + p {
+    background-color: azure;
+}
+
+p ~ span {
+    font-weight: 400;
+}
