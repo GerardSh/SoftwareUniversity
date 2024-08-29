@@ -1,0 +1,31 @@
+h1 {
+    color: blue;
+}
+
+p {
+font-size: 16px;
+}
+
+.highlight {
+    background-color: blue;
+}
+
+#main-title {
+    color: red;
+}
+
+#special-paragraph {
+    font-style: italic;
+}
+
+ul {
+    list-style-type: square;
+}
+
+li {
+    color: red;
+}
+
+div {
+    background-color: blueviolet;
+}
