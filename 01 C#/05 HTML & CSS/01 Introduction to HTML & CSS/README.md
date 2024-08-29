@@ -249,6 +249,52 @@ justify не трябва да се използва никога, защото 
 ## Web
 Състои се от CSS, HTML и JavaScript, където CSS е визията, HTML е съдържанието, a JavaScript е behavior-a.
 Реално без HTML, нищо друго няма смисъл. Идеята е че използваме елементи, които ги подреждаме, след което ги стилизираме с CSS и ако искаме допълнителни функционалности, може да ползваме и JS.
+## Emmet
+Това е инструмент за уеб разработчици, който ускорява писането на HTML и CSS код чрез съкращения. Работи в много текстови редактори като Visual Studio Code, Sublime Text и други.
+- Съкращения: Например, `ul>li*5` се разширява до:
+
+```
+<ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+```
+
+- CSS-подобни селектори: Например, `div#container>ul.list>li.item*3` и получаваме:
+
+```
+<div id="container">
+    <ul class="list">
+        <li class="item"></li>
+        <li class="item"></li>
+        <li class="item"></li>
+    </ul>
+</div>
+```
+
+- Автоматично завършване и навигация в кода, което улеснява работата.
+
+Как се използва: Въвеждате съкращения в редактора си и натискаме `Tab` или `Enter`,  за да разширим кода.
+
+Emmet е полезен за бързо генериране на HTML/CSS структури и спестяване на време.
+## Semantic Tags
+**Семантични тагове** в HTML са елементи, които описват значението на съдържанието, което обгръщат. Те помагат на браузърите и на достъпностните технологии да разбират структурата на документа и предлагат по-добра четимост на кода. Позволяват ни да разделяме определени части от съдържанието, по смислен начин.
+
+ Примери:
+- **`<header>`**: Заглавна част на страницата или секция.
+- **`<footer>`**: Долна част на страницата или секция.
+- **`<article>`**: Самостоятелно съдържание като статия или пост.
+- **`<section>`**: Тематични раздели от съдържанието.
+- **`<nav>`**: Навигационни връзки.
+- **`<aside>`**: Допълнителна информация или страничен панел.
+- **`<main>`**: Основното съдържание на страницата.
+
+Тези тагове подобряват SEO (Search Engine Optimization) и достъпността, като предлагат ясно структурирано съдържание.
+На ниво сайт, всеки документ може да има header, main и footer части. Main е само една част, докато header и footer може да са много. В един main, може да има много articles, а всеки article да има header и footer. Допълнително article-a, може да е разделен на sections, където може да имаме header и footer за всеки section. Семантичните тагове се формират от съдържанието и са абстрактни
+
 # ChatGPT
 ## HTML Tags and  CSS Selectors relation
 In HTML, **tags** like `<p>`, `<div>`, and `<img>` define the structure of a webpage. These tags can have **attributes** that provide extra information, such as `href` in `<a href="https://example.com">` or `src` in `<img src="image.jpg">`.
@@ -458,5 +504,9 @@ When using selectors such as `nav ul li:last-child a`, the styling process invol
 [Semantics - MDN Web Docs Glossary: Definitions of Web-related terms | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Semantics)
 
 [The W3C Markup Validation Service](https://validator.w3.org/)
+
+[CSS Diner - Where we feast on CSS Selectors!](https://flukeout.github.io/) игра за упражнение на селекторите.
+
+[Selectors Explained](https://kittygiraudel.github.io/selectors-explained/) - може да проверяваме какво точно селектират дадени селектори.
 
 Course completion: 26.08.2024
