@@ -351,11 +351,13 @@ This flexibility allows CSS to be both simple and powerful, letting you apply st
 - This is indeed a **compound selector** but specific to classes.
 **Compound Selector**:
 - A compound selector is a sequence of simple selectors that are not separated by a combinator. A compound selector represents a set of simultaneous conditions on a single element. A given element is said to match a compound selector when the element matches all the simple selectors in the compound selector.
+- Compound selectors target elements based on multiple conditions applied to the element itself, without considering its position or relationship to other elements. This allows for precise styling based on the element's attributes and classes, independent of its place in the document structure.
 - Combines multiple simple selectors without using combinators. It can include tags, classes, and IDs together.
 - Example:
     - `div.box.shadow` targets all `<div>` elements with both `box` and `shadow` classes.
 - No combinators are required; it combines the selectors directly.
-4. **Selectors with Combinators**:
+4. **Complex Selectors**:
+- A complex selector is a sequence of one or more simple and/or compound selectors that are separated by combinators, including the white space descendant combinator. A complex selector represents a set of simultaneous conditions on a set of elements.
 - Combinators such as descendant ( ), child (`>`), adjacent sibling (`+`), and general sibling (`~`) are used to combine simple or compound selectors to form more complex rules.
 - Examples:
     - `header h1` (descendant combinator) targets all `<h1>` elements inside `<header>`.
@@ -366,7 +368,7 @@ Summary:
 - **Simple Selector**: Targets elements based on a single criterion.
 - **Compound Selector**: Combines multiple simple selectors without combinators (e.g., `.box.shadow` or `div#main.content`).
 - **Combined Class Selector**: A specific type of compound selector that targets elements with multiple classes (e.g., `.box.shadow`).
-- **Selectors with Combinators**: Use combinators to define relationships between elements (e.g., `header h1` or `.box > .shadow`).
+- **Complex Selectors**: Use combinators to define relationships between elements (e.g., `header h1` or `.box > .shadow`).
 ## CSS Specificity
 **Specificity** determines which CSS rules are applied when multiple rules target the same element. It's calculated based on the types of selectors used:
 
@@ -376,6 +378,73 @@ Summary:
 4. **Element Selectors and Pseudo-elements**: 1 point each.
 
 **More Specific Selectors** override less specific ones. For example, `#id .class p` is more specific than `.class p`, so it takes precedence.
+## Attributes in Selectors
+IDs and classes are technically attributes but have their own syntax. IDs use `#` and classes use `.` for targeting, whereas other attributes use square brackets `[]`.
+
+**Selector Syntax**:
+- **Classes and IDs**: Use `.` for classes and `#` for IDs directly in the selector. Example: `.class1`, `#id`.
+- **Other Attributes**: Use `[attribute="value"]` syntax. Example: `[href="test"]`.
+**Selector Order**:
+- **Element First**: The selector must start with an element if combined with other types of selectors. Example: `a.class1` or `a[id="example"]`.
+- **Order of Classes**: The order of classes in the HTML should match the order in the CSS if using `class="class1 class2"` with `a[class="class1 class2"]`.
+**Performance**: Using `a.class1` is typically faster than `a[class="class1"]` because the latter involves attribute matching which is generally slower.
+## Selector Categories
+CSS selectors can be categorized in various ways, and the ones you mentioned cover a broad range of the available selectors. Here's a breakdown of the main types:
+1. **Simple Selectors**
+- **Type Selector**: Selects elements based on their tag name (e.g., `div`, `p`).
+- **Class Selector**: Selects elements based on their class attribute (e.g., `.className`).
+- **ID Selector**: Selects an element based on its ID attribute (e.g., `#idName`).
+- **Attribute Selector**: Selects elements based on the presence or value of an attribute (e.g., `[type="text"]`).
+- **Universal Selector**: Selects all elements (e.g., `*`).
+
+2. **Compound Selectors**
+- **Combined Class Selector**: Selects elements that have multiple classes (e.g., `.class1.class2`).
+- **Combined ID and Class Selector**: Selects an element by combining ID, class, and other simple selectors (e.g., `div#id.class1`).
+
+3. **Complex Selectors**
+- **Descendant Combinator**: Selects elements that are descendants of a specified element (e.g., `div p`).
+- **Child Combinator**: Selects direct children of a specified element (e.g., `div > p`).
+- **Adjacent Sibling Combinator**: Selects an element that is the immediate sibling of another (e.g., `h1 + p`).
+- **General Sibling Combinator**: Selects all siblings of an element (e.g., `h1 ~ p`).
+
+4. **Universal Selector**
+- **Universal Selector (`*`)**: Matches any element.
+
+5. **Pseudo-Class Selectors**
+- A **pseudo-class selector** is used in CSS to target elements based on their state or behavior, rather than their HTML structure. It allows you to style elements when they are in a specific condition, such as when they are being hovered over by a mouse, when they have been visited, or when they are the first child of a parent element.
+- **Pseudo-class selectors** generally target elements based on dynamic states (like `:hover`, `:focus`) or specific conditions related to their position in the document (like `:first-child`, `:nth-child`). While many pseudo-classes respond to user interactions or changes in element states, others are indeed structural, depending on the HTML layout to apply styles.
+- Two Types of Pseudo-Classes:
+  **State-based Selectors**: Select elements based on their state (e.g., `:hover`, `:focus`, `:checked`).
+  **Structural Selectors**: Select elements based on their position within the DOM (e.g., `:first-child`, `:nth-child`, `:last-child`).
+
+6. **Pseudo-Element Selectors**
+- A **pseudo-element selector** is used to style specific parts of an element, rather than the entire element itself. Pseudo-elements target specific portions of content within an element, such as the first letter, the first line, or content that is inserted before or after the element's main content.
+- The `::` pseudo-element selector is used specifically on the last element in your CSS selector chain to style a specific part of that element. It doesn't help in navigating through elements in the DOM but rather targets a specific part (like `::before`, `::after`, `::first-letter`, etc.) of the final selected element.
+- **Element Parts**: Select and style specific parts of an element (e.g., `::before`, `::after`, `::first-letter`, `::first-line`).
+
+7. **Attribute Selectors**
+- **Exact Attribute Selector**: Selects elements with a specific attribute value (e.g., `[type="text"]`).
+- **Partial Attribute Selectors**: Select elements based on partial matches within an attribute (e.g., `[href^="http"]`, `[href$=".com"]`).
+
+8. **Group Selectors**
+- **Selector List**: Group selectors to apply the same style to multiple elements (e.g., `h1, h2, p`).
+
+**Understanding the Hierarchy**
+- **Simple Selectors** form the basis of more complex selectors.
+- **Compound Selectors** and **Complex Selectors** build on simple selectors to target elements with more precision.
+- **Pseudo-Class** and **Pseudo-Element Selectors** add specific conditions or target specific parts of elements.
+- **Group Selectors** allow you to apply the same style to multiple elements efficiently.
+
+This categorization helps in understanding how different selectors work and how they can be combined to target elements with increasing specificity.
+
+CSS Selector Summary
+When using selectors such as `nav ul li:last-child a`, the styling process involves:
+**Hierarchy Definition**: Selectors are applied in a hierarchical manner. Each individual selector in the chain defines a step in the path from general to specific elements:
+- **General to Specific**: Starting with broad elements (e.g., `nav`), moving through intermediate elements (e.g., `ul`, `li:last-child`), and ending with the final specific target (e.g., `a`).
+**Applying Conditions**: Pseudo-classes and pseudo-elements refine the selection based on conditions (e.g., `:last-child`).
+**Targeting the Element**: The last selector in the chain is the actual element that will be styled, based on the conditions defined by the preceding selectors.
+
+**In Summary**: Each selector in the CSS chain defines part of the path to the final element. The overall selector works by progressively narrowing down from general elements to apply styles specifically to the last element in the chain.
 # Bookmarks 
 
 [Lorem Ipsum - All the facts - Lipsum generator](https://www.lipsum.com/) - генериране на random текст за тестови цели.
