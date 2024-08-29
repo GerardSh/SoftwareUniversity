@@ -1,0 +1,47 @@
+nav a{
+    color: navy;
+    text-decoration: none;
+}
+
+div.content > section p{
+    background-color: lightblue;
+}
+
+section + header:hover {
+    background-color: blue;
+    font-size: xx-large;
+}
+
+section.section-class ~ article {
+    background-color: aqua;
+}
+
+.gallery [src^="https://"] {
+    border: 10px solid red;
+}
+
+nav ul li:first-child a {
+    font-weight: bold;
+}
+
+nav ul li:last-child a {
+    font-style: italic;
+}
+
+nav ul li:nth-child(2) a:hover {
+    font-style: italic;
+}
+
+p:hover {
+    color: blue;
+}
+
+section.highlight h2:first-child::before {
+    content: ">> ";
+    color: darkred;
+}
+
+section.highlight h2:first-child::after {
+    content: " <<";
+    color: darkred;
+}
