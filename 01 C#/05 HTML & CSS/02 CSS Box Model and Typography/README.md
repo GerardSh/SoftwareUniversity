@@ -34,12 +34,105 @@ This is the actual content inside the element, such as text, images, or other el
 
 ![](Pasted%20image%2020240831145100.png)
 
-`span` и `div` са без семантична стойност и са еквивалентни, но първия е инлайн а втория блоков елемент. Ползват се, ако искаме да направим структура от елементи, които да стилизираме. Може да правим, колкото искаме от тях. Специфичното е, че може да им дадем padding, margin, top и bottom, но няма да афектира layout-a на страницата.
+`span` и `div` са без семантична стойност и са еквивалентни, но първия е инлайн а втория блоков елемент. Ползват се, ако искаме да направим структура от елементи, които да стилизираме. Може да правим, колкото искаме от тях. 
+
+**`span`**: Може да се зададат `padding`, `margin`, `top` и `bottom`, но не винаги ще бъде видимо как влияят на layout-а, тъй като inline елементите не формират нов ред в документа.
+**`div`**: Може да се използва за структуриране на страница и прилагане на `padding`, `margin`, `top`, `bottom`, което може да повлияе на разположението на други елементи.
+
+В примера долу се вижда много ясно разликата в държанието на блоков и инлайн елемент:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            border: 1px solid brown;
+            text-align: right;
+        }
+        
+        span {
+            border: 1px solid brown;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <p>test</p>
+    <span>test</span>
+</body>
+</html>
+```
+
+Размера на span-а в случая, винаги зависи от текста вътре в него, така че подравняването в дясно няма да има никакъв ефект. 
+Чрез пропъртито display, може да променяме как се държи един елемент. Може да кажем на span `display: block;` и той ще почне да се държи като блоков елемент - ще заеме цялото свободно място по хоризонтала и ще добави един ред от горе и отдолу:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            border: 1px solid brown;
+            text-align: right;
+        }
+        
+        span {
+            border: 1px solid brown;
+            text-align: right;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    test<span>test</span>test
+</body>
+</html>
+```
+
+Ако сложим padding на инлайн елемент, то единственото изместване на layout-a се случва по хоризонтала, защото инлайн елементите се занимават основно с текст и ги интересува хоризонталата. Ако инлайн елемента има background то той ще закрие горната част над span елемента, но не и долната:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            border: 1px solid brown;
+        }
+        
+        span {
+            border: 1px solid brown;
+            padding: 10px;
+            background-color: aqua;       
+        }
+    </style>
+</head>
+<body>
+    <p>
+       Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officia, optio ratione a ad vitae, dolorum amet quam magnam enim consequatur inventore 
+       Lorem ipsum dolor sit amet consectetur adipisicing elit. <span>Lorem ipsum dolor sit</span> quia nulla voluptatem eos. Libero, earum temporibus. 
+       Lorem ipsum dolor sit amet consectetur, adipisicing elit. Non, accusamus ipsa. Dolorem asperiores sed neque voluptas. Temporibus officia mollitia
+</p>
+</body>
+</html>
+```
+
+Ако при span selector-a добавим `display: inline-block;` получаваме нещо, което е по средата между двата свята. Елемента получава да е инлайн, но казваме да браузъра да вземе предвид и padding-а, който сме сложили и така може да направим блокче, само че вътре в текста.
 ## Display - inline-block
 ![](Pasted%20image%2020240831150936.png)
 
 Дава ни възможност да сложим няколко елемента един до друг.
-Позволява ни дадем padding, margin, top и bottom на инлайн елементи
+Позволява ни да дадем padding, margin, top и bottom на инлайн елементи.
 ## Width
 Property с което може да зададем каква да е ширината на даден елемент.
 Основните мерни единици са `pixels`, `em` и `rem`. Ако не декларираме width, по подразбиране заема цялата ширина. Ако искаме даден елемент да порасне в определени граници, може да ползваме `min-width` и `max-width`.
@@ -133,7 +226,6 @@ html {
 ```
 
 Чрез наследяването казваме всички елементи да наследят box-sizing, и така те ще стигнат до най-високото ниво -`<html>` от където ще наследят `box-sizing: border-box;` .  Ако искаме даден елемент да ползва друг box-sizing, може да го overrite-нем и да сложим друга стойност. Всички child елементи, на този елемент, ще ползват overrite-натата стойност. 
-
 # Misc
 ## Semantic Tags
 Семантичните тагове са важни, само когато ще публикуваме web site, който ще бъде достъпван от търсещи машини и тн. 
@@ -215,4 +307,103 @@ In CSS, the `inherit` value is used to make a property inherit its value from it
 Imagine you have a `div` element inside another `div`. You want the inner `div` to have the same text color as the outer `div`, regardless of what that color is.
 
 This approach is useful when you want to ensure that certain properties remain consistent across child elements without needing to manually set the same value for each child.
+## Semantic Properties
+Semantic properties like `margin-top-start` refer to logical properties in CSS that allow styling based on the content's flow and writing direction, rather than fixed physical directions (like `top`, `right`, `bottom`, `left`).
+
+For example:
+
+- **`margin-top-start`**: Refers to the margin at the start of the block, which could be on the top or left, depending on the writing mode (e.g., left-to-right or right-to-left text).
+- **`margin-block-start`** and **`margin-inline-start`**: Respectively control the margin at the start of block-level and inline-level content, adapting to different writing directions.
+
+These properties help create more flexible and language-sensitive layouts, especially for multilingual websites.
+## Default CSS Styles for HTML Elements
+In HTML, different elements come with their own default styles applied by the browser's user agent stylesheet. These default styles can vary between elements and include properties like margins, padding, display types, and font sizes. Here's a quick overview:
+
+1. **Block-Level Elements**:
+    - **Paragraphs (`<p>`)**: Typically have default margins applied to the top and bottom (`margin-top` and `margin-bottom`), usually around `1em`, which creates space between paragraphs.
+    - **Headings (`<h1>`, `<h2>`, etc.)**: Often have larger default margins and font sizes, making them stand out more as titles or section headers.
+    - **Divs (`<div>`)**: Usually do not have any default margins, padding, or font styles, serving as a generic container without added spacing unless specified.
+2. **Inline Elements**:
+    - **Span (`<span>`)**: Typically has no default margins, padding, or block-level characteristics. It flows inline with surrounding text.
+    - **Links (`<a>`)**: Often have default underlining and color styles applied, such as blue text and underline for unvisited links.
+3. **Form Elements**:
+    - **Inputs (`<input>`)**: May have default padding, borders, and specific sizing based on the input type (e.g., text input, checkbox).
+    - **Buttons (`<button>`)**: Generally have default padding, border styles, and background colors to make them visually distinct as interactive elements.
+4. **Lists (`<ul>`, `<ol>`, `<li>`)**:
+    - **Unordered and Ordered Lists**: Usually have default padding or margins to indent the list, as well as default bullet points or numbering.
+    - **List Items (`<li>`)**: Inherits spacing and list-style properties from the parent `<ul>` or `<ol>`.
+### Uniformity of HTML Elements with Default Property Values
+In HTML, while all elements are fundamentally the same in terms of their core functionality and behavior, they differ primarily in their default property values. Here’s a concise summary:
+
+1. **Core Functionality**:
+    - **Uniformity**: All HTML elements are fundamentally similar; they serve as containers or structures for content and can be styled and manipulated with CSS.
+    - **Basic Behavior**: Every element can have properties like `margin`, `padding`, `border`, and `display` applied to it.
+2. **Default Property Values**:
+    - **Predefined Defaults**: Each HTML element comes with predefined default values for properties like margins, padding, font size, and display type.
+    - **Example Differences**:
+        - **`<p>`**: Typically has default margins (`margin-top` and `margin-bottom`) to separate paragraphs, but no default padding.
+        - **`<div>`**: Usually has no default margins or padding, acting as a generic container.
+        - **`<h1>`**: Comes with larger default margins and font size for headings.
+3. **Custom Styling**:
+    - **Flexibility**: Although elements have default values, these can be overridden or adjusted using CSS to fit specific design requirements.
+    - **Consistency**: The core properties of elements remain the same, but their default styles provide a starting point that can be customized.
+
+Key Takeaway
+All HTML elements share a similar core functionality but differ in their default property values and inherent styles. Understanding these default settings allows for effective customization and design, ensuring consistent and flexible web development.
+Key Points:
+- **Default Styles**: Different HTML elements come with different default styles applied by browsers.
+- **Custom Styling**: To achieve specific layouts and designs, these default styles can be overridden using CSS.
+- **Understanding Defaults**: Knowing the default behavior helps in designing and troubleshooting layouts, especially when elements behave differently based on their type.
+
+This foundational knowledge helps in creating more predictable and controlled web designs.
+## Child Larger Than Parent
+**Behavior:**
+- When a child element is larger than its parent, it will overflow the parent container. This means that the child can extend beyond the edges of the parent box, potentially causing horizontal or vertical scrollbars, depending on the overflow settings of the parent.
+### Inline Children Behavior
+**Behavior:**
+- When using `inline` or `inline-block` display for children, the elements align horizontally within their parent. If the combined width of the inline elements exceeds the width of the parent container, the extra inline elements will wrap to the next line, similar to how text wraps in a paragraph.
+
+Summary:
+1. **Overflowing Child**: If a child element is larger than its parent, it will overflow outside the parent’s box. The `overflow` property on the parent controls how this overflow is handled (scrollbars, hidden content, etc.).
+2. **Inline Children Wrapping**: When using `inline` or `inline-block` for child elements, they will align horizontally until the parent’s width is exceeded. The excess inline children will then wrap to the next line.
+
+Understanding these behaviors helps in managing layouts and ensuring that elements are displayed as intended across different screen sizes and resolutions.
+## Box Size
+You
+If we make a very small box and the content cant fit in, it will just overflow?
+
+ChatGPT
+Yes, if you create a very small box (for example, with a small `width` and `height`), and the content inside it cannot fit within the box's dimensions, the content will overflow. How this overflow is handled depends on the CSS `overflow` property applied to the box.
+
+Here are the possible behaviors:
+
+1. **`overflow: visible;`** (default): The content will overflow the box and remain visible outside the box's boundaries.
+    
+2. **`overflow: hidden;`**: The overflowing content will be clipped, meaning it will be cut off and not visible outside the box.
+    
+3. **`overflow: scroll;`**: Scrollbars will appear on the box, allowing users to scroll to see the hidden content.
+    
+4. **`overflow: auto;`**: Scrollbars will appear only if the content overflows. If the content fits within the box, no scrollbars will be shown.
+
+For example:
+
+```
+<div style="width: 100px; height: 50px; overflow: auto;">
+  This is some very long content that won't fit in the box.
+</div>
+```
+
+## Content and Box
+The content within an HTML element is always linked to its containing box. 
+
+- **Content Size and Box Size:** The size of the content is determined by the content itself, while the size of the containing box is determined by CSS properties like `width`, `height`, `padding`, `border`, and `margin`.
+
+- **Overflow:** The `overflow` property manages how the content behaves if it exceeds the boundaries of the containing box. It doesn't change the size of the box or the content but dictates what happens when the content is larger than the box:
+    - `visible`: Content spills out of the box.
+    - `hidden`: Content is clipped, and the overflow is not visible.
+    - `scroll`: Scrollbars are added to navigate the overflowed content.
+    - `auto`: Scrollbars are added only if the content overflows.
+
+In summary, while `overflow` controls the visibility and behavior of excess content, it doesn’t alter the size of the content or the box itself.
 # Bookmarks 
+
