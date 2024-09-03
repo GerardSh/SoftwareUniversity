@@ -172,6 +172,7 @@ margin: 20px 20px 20px 20px;
 - Обща част от името: `padding`.
 - Свойства: `padding-top`, `padding-right`, `padding-bottom`, `padding-left`.
 - Shorthand: `padding: 10px 20px;`
+
 **`border` shorthand**:
 - Обща част от името: `border`.
 - Свойства: `border-width`, `border-style`, `border-color`.
@@ -374,6 +375,13 @@ Summary:
 - **Margin** is outside the border, increasing the space between the element and other elements. It affects the element's external spacing and ensures separation from neighboring elements. The margin area is transparent and does not inherit the background color of the element.
 
 This distinction is crucial when laying out elements on a page, as it helps control both the internal appearance and the spacing between different components, ensuring that elements are visually appealing and properly positioned.
+### Negative Margin
+Using a negative margin in CSS,, shifts the element in the direction of the margin where it would normally be placed. Here's how it works:
+
+- **Negative Top Margin (`margin-top: -25px;`)**: Moves the element 25 pixels up.
+- **Negative Bottom Margin (`margin-bottom: -25px;`)**: Moves the element 25 pixels closer to the next element below it, possibly overlapping.
+- **Negative Left Margin (`margin-left: -25px;`)**: Moves the element 25 pixels to the left.
+- **Negative Right Margin (`margin-right: -25px;`)**: Moves the element 25 pixels to the right.
 ## Inherit
 In CSS, the `inherit` value is used to make a property inherit its value from its parent element. This means that the child element will take on the same property value as its parent.
 
@@ -591,7 +599,7 @@ By default, elements in HTML follow a flow where they do not overlap. This defau
 - **No Overlap**: Without changing the positioning properties (`position: relative;`, `position: absolute;`, etc.), elements remain in their designated places, and the browser ensures that they don't overlap.
 
 However, once you start using positioning (like `absolute`, `relative`, `fixed`, or `sticky`) or certain CSS properties like `float` or `negative margins`, elements can overlap each other. This is where properties like `z-index` become useful to control the stacking order of the overlapping elements.
-### z-index
+## z-index
 The concept of `z-index` in CSS is akin to adding a third dimension to the layout of a webpage.
 
 **The Three Dimensions:**
@@ -619,6 +627,37 @@ You can think of `z-index` as layers in a stack of paper:
 - Higher layers (higher `z-index`) stack on top of this, obscuring parts or all of the layers beneath them.
 
 In this way, `z-index` adds a third dimension to the otherwise two-dimensional layout of web pages, allowing elements to overlap and create more complex designs.
+## Zoom Levels in Web Design
+**Zoom Levels**:
+
+- **Definition**: Zoom levels adjust the size of content displayed in the browser, affecting how elements are rendered and viewed.
+- **Types**:
+    - **In**: Enlarges content, making elements appear larger but potentially causing layout issues due to fractional pixel rendering.
+    - **Out**: Reduces content size, which can compress elements and affect readability.
+
+**Effects on Layout**:
+
+- **Pixel Measurement**: Zooming can cause pixel values to appear fractional in the browser’s inspector, impacting precision in element measurements.
+- **Rendering Adjustments**: Browsers may adjust how borders, fonts, and spacing are rendered to fit the zoom level, leading to inconsistencies.
+
+**Best Practices**:
+
+- **Design at 100%**: For accurate design and measurement, work and test at a 100% zoom level.
+- **Check Responsiveness**: Ensure layouts are responsive and functional across different zoom levels and device pixel ratios.
+- **Consistency**: Verify element sizes and positions after adjusting zoom to ensure visual consistency and accuracy.
+
+Understanding zoom levels helps in designing and debugging web layouts effectively, ensuring elements appear as intended across different viewing contexts.
+## User Agent Stylesheet
+A **user agent stylesheet** is the default set of CSS styles that a web browser applies to HTML elements when no other styles are specified by the author of the webpage. Every browser comes with its own built-in user agent stylesheet to ensure that web pages have a basic, consistent appearance even without any custom CSS.
+
+Key Points about User Agent Stylesheets:
+
+- **Defaults:** They provide default styles for HTML elements like headings, paragraphs, lists, tables, etc. For example, browsers typically render `<h1>` elements with a larger font size than `<h2>`, and `<p>` elements with some default margin.
+- **Override:** You can override these default styles by specifying your own CSS. The styles in your stylesheet or inline styles will take precedence over the user agent stylesheet due to CSS's cascading nature.
+- **Cross-Browser Differences:** While most user agent stylesheets are similar across browsers, there can be slight differences, which is why the same HTML may look slightly different in different browsers.
+- **Normalization:** Developers often use CSS "reset" or "normalize" stylesheets at the beginning of their own CSS to standardize styles across browsers, effectively neutralizing differences in user agent stylesheets.
+
+In summary, user agent stylesheets are the browser's way of ensuring that web pages have a base level of styling, which you can customize or override with your own CSS.
 # Bookmarks 
 
 Completion: 02.09.2024
