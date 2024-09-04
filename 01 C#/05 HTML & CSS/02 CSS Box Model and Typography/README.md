@@ -658,6 +658,48 @@ Key Points about User Agent Stylesheets:
 - **Normalization:** Developers often use CSS "reset" or "normalize" stylesheets at the beginning of their own CSS to standardize styles across browsers, effectively neutralizing differences in user agent stylesheets.
 
 In summary, user agent stylesheets are the browser's way of ensuring that web pages have a base level of styling, which you can customize or override with your own CSS.
+## Typeface / Font Family
+- **Definition**: The design or style of a set of characters. It is essentially the visual appearance or design of text.
+- **Example**: _Georgia_, _Times New Roman_, _Helvetica_.
+
+Font Family
+- **Definition**: A collection of related typefaces that share common design elements but come in different styles or weights. This collection often includes variations such as regular, bold, italic, and so on.
+- **Example**: The _Georgia_ font family includes _Georgia Regular_, _Georgia Bold_, _Georgia Italic_, and _Georgia Bold Italic_.
+
+Summary
+- **Typeface**: The specific design (e.g., Georgia).
+- **Font Family**: The group of related typefaces based on that design (e.g., Georgia Regular, Georgia Bold, etc.).
+
+In CSS, the `font-family` property allows you to specify the typefaces or font families that should be used for the text. If the preferred typeface is not available, the browser will use the next option in the list, or fall back to a generic font family if none of the specified fonts are available.
+### Font / Typeface
+The terms **typeface** and **font** are often used interchangeably, but they have distinct meanings, especially in the context of typography and design.
+
+Typeface
+- **Definition**: A typeface is a collection of characters that share a common design. It represents the style or design of the text, encompassing all of its variations (like different weights and styles).
+- **Example**: _Helvetica_, _Times New Roman_, _Georgia_.
+- **Components**: Includes various fonts such as Regular, Bold, Italic, and so on, within a single design.
+
+Font
+- **Definition**: A font is a specific instance of a typeface. It refers to the actual implementation of a typeface in a specific style and size. In the past, fonts were physical objects used in printing, but now they are digital files.
+- **Example**: _Helvetica Bold 12pt_, _Times New Roman Italic 14pt_.
+- **Components**: A font refers to a specific style, weight, size, and other attributes.
+
+ Key Differences
+- **Scope**: A typeface is a broader term encompassing various styles and weights of a single design. A font refers to a particular style and size of that typeface.
+- **Example**: If _Arial_ is the typeface, then _Arial Regular 12pt_, _Arial Bold 14pt_, and _Arial Italic 10pt_ are different fonts within that typeface.
+
+Analogy
+- **Typeface as a Class**: In programming, a class defines a blueprint or template for creating objects. Similarly, a typeface defines a general design or style for a set of characters.
+- **Font as an Object**: An object is an instance of a class with specific attributes and behaviors. Similarly, a font is an instance of a typeface with specific attributes such as weight, style, and size.
+- **Typeface** represents the overarching design concept (the class definition).
+- **Font** represents a specific implementation of that concept (an object created from the class).
+
+Summary
+- **Typeface**: The design or style of a collection of characters (e.g., _Arial_).
+- **Font**: A specific version or size of a typeface (e.g., _Arial Bold 12pt_).
+
+The typeface defines the design, while the font applies specific attributes to that design. 
+You can think of the typeface as the foundational style, and the font as the application of that style with detailed settings.
 # Bookmarks 
 
 Completion: 02.09.2024
