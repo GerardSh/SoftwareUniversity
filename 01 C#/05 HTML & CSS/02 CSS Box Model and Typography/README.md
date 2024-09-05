@@ -301,6 +301,40 @@ body {
 - **Padding (Подложка)**: Оцветен в **зелено**. Това е пространството между съдържанието на елемента и неговата граница. Padding-а може да бъде зададен с различни стойности (например `padding: 10px;`), което увеличава размера на елемента, без да променя размера на съдържанието.
 - **Border (Граница)**: Оцветен в **жълто** (или може да бъде показан в друг цветен код в зависимост от браузъра). Това е линията, която обгражда съдържанието и padding-а на елемента. Границата може да бъде с различна дебелина, стил и цвят.
 - **Margin (Отстояние)**: Оцветен в **оранжево**. Това е пространството между елемента и другите съседни елементи или границата на контейнера. Margin-а не влияе на размера на самия елемент, а на разстоянието между него и съседните елементи.
+## Inherit
+В CSS, някои пропъртита са наследими по подразбиране - което означава, че дъщерните елементи автоматично наследяват стойността му от родителя, освен ако не е зададена друга стойност за конкретния елемент. Други пропъртита не са наследими. Примерно, ако кажем color в `div` елемент да е red и после вкараме `p` в `div` елемента, то пропъртито color на `p`, ще наследи цвета, който идва от `div` елемента. `p`, който е извън `div`, няма да наследи от него а от `body`. `a` елемента, който също е в `div` не наследява автоматично, защото линковете обикновено имат собствен стил, който браузърът задава (например син цвят за ненавиждани линкове и лилав за посетени), затова ако искаме да наследим цвета от родителя, трябва изрично да зададем `color: inherit` на линка.
+
+```
+<style>   
+    div {
+        color:red; /* Всички дъщерни елементи наследяват този цвят, освен ако не се промени */
+    }
+    
+    p {
+        /* Не е нужно да добавяме color: inherit, защото p е наследимо */
+    }    
+    
+    a {
+        color:inherit; /* Трябва изрично да наследим цвета за <a>, защото то по подразбиране не наследява */
+        }       
+    </style>
+    
+</head>
+<body>
+    <div>
+        <p>Този текст ще бъде червен</p>
+        <a href="#">Този линк също ще бъде червен</a>
+    </div>
+    
+    <p>Този текст ще бъде с цвета на body (по подразбиране черен)</p>
+</body>
+```
+
+**Обобщение:**
+
+- Не е нужно да използваме `color: inherit` за да наследими елементи като `<p>`, тъй като те автоматично наследяват цвета на родителя.
+- За елементи като `<a>`, които имат свои собствени стилизации по подразбиране, е необходимо да използваме `color: inherit`, ако искаме те да наследяват цвета от родителя.
+- Можем да зададем `inherit` на **всяко CSS свойство**. Ако свойството не се наследява автоматично, `inherit` ще го принуди да приеме стойността на родителя.
 # ChatGPT
 ## Height Property and Its Effects:
 1. **Space Allocation**:
@@ -375,7 +409,9 @@ Summary:
 - **Margin** is outside the border, increasing the space between the element and other elements. It affects the element's external spacing and ensures separation from neighboring elements. The margin area is transparent and does not inherit the background color of the element.
 
 This distinction is crucial when laying out elements on a page, as it helps control both the internal appearance and the spacing between different components, ensuring that elements are visually appealing and properly positioned.
-### Negative Margin
+
+**Negative Margin**
+
 Using a negative margin in CSS,, shifts the element in the direction of the margin where it would normally be placed. Here's how it works:
 
 - **Negative Top Margin (`margin-top: -25px;`)**: Moves the element 25 pixels up.
@@ -413,7 +449,8 @@ In HTML, different elements come with their own default styles applied by the br
 4. **Lists (`<ul>`, `<ol>`, `<li>`)**:
     - **Unordered and Ordered Lists**: Usually have default padding or margins to indent the list, as well as default bullet points or numbering.
     - **List Items (`<li>`)**: Inherits spacing and list-style properties from the parent `<ul>` or `<ol>`.
-### Uniformity of HTML Elements with Default Property Values
+
+**Uniformity of HTML Elements with Default Property Values**
 In HTML, while all elements are fundamentally the same in terms of their core functionality and behavior, they differ primarily in their default property values. Here’s a concise summary:
 
 1. **Core Functionality**:
@@ -440,7 +477,8 @@ This foundational knowledge helps in creating more predictable and controlled we
 ## Child Larger Than Parent
 **Behavior:**
 - When a child element is larger than its parent, it will overflow the parent container. This means that the child can extend beyond the edges of the parent box, potentially causing horizontal or vertical scrollbars, depending on the overflow settings of the parent.
-### Inline Children Behavior
+
+Inline Children Behavior
 **Behavior:**
 - When using `inline` or `inline-block` display for children, the elements align horizontally within their parent. If the combined width of the inline elements exceeds the width of the parent container, the extra inline elements will wrap to the next line, similar to how text wraps in a paragraph.
 
@@ -583,6 +621,83 @@ Important Points:
 
 - **Margin collapsing** only applies to vertical margins (top and bottom).
 - Horizontal margins (left and right) do not collapse in this way; they simply add up.
+
+**Margin collapsing** (sometimes referred to as **"bleeding margins"**) occurs when the top and bottom margins of certain block-level elements collapse into one another instead of adding together. This behavior affects vertical margins between block elements, and understanding it can help you avoid unexpected layout issues in CSS.
+
+**Key Points of Margin Collapsing**
+
+**Vertical Margins Only:** Margin collapsing only happens with **vertical margins** (i.e., `margin-top` and `margin-bottom`), not with horizontal margins (`margin-left` and `margin-right`).
+    
+**How Collapsing Works:** When two vertical margins meet (e.g., the bottom margin of one element and the top margin of the next element), they **collapse** and the larger margin takes precedence. The resulting space between the elements will be equal to the largest of the two margins, not the sum of both.
+
+```
+<div style="margin-bottom: 20px;"></div>
+<div style="margin-top: 30px;"></div>
+```
+
+The space between the two `<div>` elements will be **30px**, not 50px, because the larger margin (30px) takes over.
+    
+**Adjacent Block Elements:** Collapsing typically happens between **adjacent block-level elements** in the normal document flow. If one block element has a bottom margin and the next block has a top margin, the margins collapse into a single margin (the larger of the two).
+    
+**Nested Block Elements:** Margin collapsing can also happen between a parent block element and its first/last child. If a child element has a top margin, and the parent doesn't have a border, padding, or overflow, the child's top margin may collapse with the parent’s margin.
+    
+```
+<div style="margin: 50px;">
+  <p style="margin: 30px 0;">Text inside</p>
+</div>
+```
+
+Here, the top margin of the `<p>` may collapse with the margin of the `<div>`, reducing the space between the top edge of the `<div>` and the first line of text inside.
+
+**Non-Collapsing Cases:** Vertical margins do not collapse in the following cases:
+- When there’s **border**, **padding**, or **content** separating the margins.
+- When an element has a **float** or is set to **absolute positioning**.
+- If the parent element has `overflow: auto` or `overflow: hidden`, margin collapsing will be prevented.
+
+**Empty Elements:** If a block element is **empty** and has no content, padding, or borders, its margins might collapse. This can lead to the unexpected disappearance of space between the empty block and its surrounding elements.
+
+**Examples of Margin Collapsing**
+**Two Adjacent Block Elements:**
+
+```
+<div style="margin-bottom: 50px;">Block 1</div>
+<div style="margin-top: 20px;">Block 2</div>
+```
+
+The space between Block 1 and Block 2 will be **50px**, not 70px, because the margins collapse to the larger value (50px).
+
+**Parent and First Child Collapse:**
+
+```
+<div style="margin-top: 30px;">
+  <p style="margin-top: 40px;">This is a paragraph.</p>
+</div>
+```
+
+ The space between the top of the `<div>` and the first line of text in the `<p>` will be **40px** (the margin of the child), not 70px, because the margins collapse.
+
+**Preventing Margin Collapsing**
+
+You can prevent margin collapsing using the following methods:
+
+1. **Add padding or border** to the parent or adjacent elements.
+2. **Use `overflow: hidden`** or another overflow value on the parent.
+3. **Use `display: inline-block`** or `display: flex` to change the layout model.
+4. **Apply float or positioning** (e.g., `position: relative`).
+
+Example of preventing collapsing by adding padding:
+
+```
+<div style="margin-top: 30px; padding-top: 1px;">
+  <p style="margin-top: 40px;">This is a paragraph.</p>
+</div>
+```
+
+In this case, the 1px padding prevents the margins from collapsing, so you’ll get the full combined margin (30px + 40px).
+
+**Conclusion**
+
+Margin collapsing (or bleeding margins) is a CSS behavior where vertical margins of adjacent block-level elements combine into a single margin instead of adding together. Understanding when and why margins collapse helps you control spacing and avoid unintended layout shifts.
 ## Viewport
 The viewport is the visible area of a webpage on a user's screen. It's the portion of the webpage that is currently visible within the browser window, excluding any off-screen content. The size of the viewport can vary depending on the device, such as desktops, tablets, or smartphones. Web developers often use viewport-related properties in CSS and meta tags to create responsive designs that adapt to different screen sizes, ensuring a consistent user experience across various devices.
 ## Normal Document Flow
@@ -666,12 +781,6 @@ Font Family
 - **Definition**: A collection of related typefaces that share common design elements but come in different styles or weights. This collection often includes variations such as regular, bold, italic, and so on.
 - **Example**: The _Georgia_ font family includes _Georgia Regular_, _Georgia Bold_, _Georgia Italic_, and _Georgia Bold Italic_.
 
-Summary
-- **Typeface**: The specific design (e.g., Georgia).
-- **Font Family**: The group of related typefaces based on that design (e.g., Georgia Regular, Georgia Bold, etc.).
-
-In CSS, the `font-family` property allows you to specify the typefaces or font families that should be used for the text. If the preferred typeface is not available, the browser will use the next option in the list, or fall back to a generic font family if none of the specified fonts are available.
-### Font / Typeface
 The terms **typeface** and **font** are often used interchangeably, but they have distinct meanings, especially in the context of typography and design.
 
 Typeface
@@ -697,9 +806,65 @@ Analogy
 Summary
 - **Typeface**: The design or style of a collection of characters (e.g., _Arial_).
 - **Font**: A specific version or size of a typeface (e.g., _Arial Bold 12pt_).
+- **Typeface**: The specific design (e.g., Georgia).
+- **Font Family**: The group of related typefaces based on that design (e.g., Georgia Regular, Georgia Bold, etc.).
 
+In CSS, the `font-family` property allows you to specify the typefaces or font families that should be used for the text. If the preferred typeface is not available, the browser will use the next option in the list, or fall back to a generic font family if none of the specified fonts are available.
 The typeface defines the design, while the font applies specific attributes to that design. 
 You can think of the typeface as the foundational style, and the font as the application of that style with detailed settings.
+## Block, Inline-Block Differences
+The primary differences between `inline-block` and `block` elements are:
+
+1. **Content Flow**:
+    
+    - **Block Elements**: Always start on a new line and take up the full width available, pushing other elements above or below them.
+    - **Inline-Block Elements**: Do not start on a new line. They allow other elements to sit beside them (to their left or right) if there is enough space. This allows them to appear in the same line with other `inline` or `inline-block` elements.
+2. **Width**:
+    
+    - **Block Elements**: By default, the width of a block element is 100% of its container's width (unless specified otherwise).
+    - **Inline-Block Elements**: The width of an `inline-block` element depends on its content. However, you can still set a specific width for an `inline-block` element, and it will respect that width. So, while `inline-block` elements don’t inherently take up the full width of their parent like block elements do, they can still do so under the right conditions (such as having enough content or a specified width).
+3. **Height**:
+    
+    - **Block Elements**: The height of a block element is determined by its content (or a set value), and it extends to fill its parent container horizontally.
+    - **Inline-Block Elements**: The height of an `inline-block` element is also determined by its content (or a set value), but it does not expand to fill the entire width of its parent container horizontally.
+4. **Box Model**:
+    
+    - **Block and Inline-Block Elements**: Both respect all aspects of the CSS box model, including padding, margin, and borders.
+
+In summary, `inline-block` elements combine the flow of inline elements with the layout flexibility of block elements, allowing them to sit next to other elements while still supporting width, height, and other block-level properties.
+## Behavior of Inline Elements
+- **No Control Over Width and Height**: Inline elements only take up as much width as their content requires, and they ignore `width` and `height` properties. This means you cannot explicitly control their dimensions in the same way as block elements.
+- **Flow Within Text**: Inline elements flow with the surrounding text, and they only occupy the width of the content inside them. Their height is determined by the line-height of the text.
+- **CSS Width Ignored**: Even though you can see the `width` set in the browser's inspector, it won't have any visible effect on an inline element. The `width` property is applied but isn't respected by inline elements because they are not intended to behave like block elements.
+## Block, Inline / Vertical, Horizontal
+
+- **Inline** elements are primarily concerned with **horizontal flow**.
+- They are placed **next to each other** horizontally, like text in a sentence, until they hit the edge of the container or run out of space.
+- Examples of inline elements include `<span>`, `<a>`, and `<em>`.
+- They **don’t start on a new line** and respect the content’s flow.
+- Inline elements only take up the **width of their content** and do not break the flow of the surrounding content vertically.
+
+**Block Elements:**
+
+- **Block** elements are more concerned with **vertical flow**.
+- They typically start on a **new line** and take up the full width of their container by default, pushing content vertically below them.
+- Examples of block elements include `<div>`, `<p>`, and `<h1>`.
+- Block elements **stack vertically** and typically expand to fill the width of their parent container (unless a specific width is set).
+
+**Margin and Layout
+
+- When we refer to **"inline"** in the context of CSS layout (e.g., `margin-inline`, `padding-inline`), it refers to the **horizontal dimension** (left and right in left-to-right languages).
+- Similarly, **"block"** refers to the **vertical dimension** (top and bottom).
+
+**Inline vs. Block Summary:**
+
+- **Inline:** Horizontal alignment and flow. Elements are placed side by side.
+- **Block:** Vertical stacking, where elements push content below and fill available width.
+
+**In CSS terminology:**
+
+- **Inline** = generally related to **horizontal behavior** (left/right).
+- **Block** = generally related to **vertical behavior** (top/bottom).
 # Bookmarks 
 
 Completion: 02.09.2024
