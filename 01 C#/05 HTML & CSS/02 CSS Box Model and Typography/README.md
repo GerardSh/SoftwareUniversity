@@ -335,6 +335,36 @@ body {
 - Не е нужно да използваме `color: inherit` за да наследими елементи като `<p>`, тъй като те автоматично наследяват цвета на родителя.
 - За елементи като `<a>`, които имат свои собствени стилизации по подразбиране, е необходимо да използваме `color: inherit`, ако искаме те да наследяват цвета от родителя.
 - Можем да зададем `inherit` на **всяко CSS свойство**. Ако свойството не се наследява автоматично, `inherit` ще го принуди да приеме стойността на родителя.
+## Pseudo Elements
+**Псевдоелементите** в CSS са елементи, които не съществуват в HTML документа, но могат да бъдат създадени и стилизирани чрез CSS. Те ни позволяват да добавяме и стилизираме допълнително съдържание или части от съществуващи елементи без да се налага да променяме HTML структурата.
+
+**Най-често използвани псевдоелементи:**
+
+1. `::before` – добавя съдържание пред избрания елемент.
+2. `::after` – добавя съдържание след избрания елемент.
+
+```
+p::before {
+  content: "Псевдоелемент: ";
+  color: red;
+}
+
+p::after {
+  content: " - край";
+  color: blue;
+}
+```
+
+Това ще добави текст "Псевдоелемент: " пред всяко `<p>`, и текст " - край" след него, без да променяме самото HTML съдържание.
+
+**Други псевдоелементи:**
+
+- `::first-letter` – стилизира първата буква на елемента.
+- `::first-line` – стилизира първия ред на елемента.
+
+Тези псевдоелементи са полезни за по-фин контрол върху стилизирането на HTML съдържанието.
+## Order of CSS Selectors
+Колкото по абстрактен и глобален е даден селектор, толкова по-нагоре трябва да е сложен в кода.
 # ChatGPT
 ## Height Property and Its Effects:
 1. **Space Allocation**:
@@ -865,6 +895,118 @@ In summary, `inline-block` elements combine the flow of inline elements with the
 
 - **Inline** = generally related to **horizontal behavior** (left/right).
 - **Block** = generally related to **vertical behavior** (top/bottom).
+## Pseudo Elements
+Here’s a concise summary of how pseudo-elements work and how they compare to HTML elements:
+
+**Default Behavior:**
+
+- **`::before` and `::after` (default display: inline):**
+    - **`::before`**: Adds content **before** the content of the element.
+    - **`::after`**: Adds content **after** the content of the element.
+    - **Default Display**: Acts like an inline element, similar to a `<span>`. It does not start on a new line.
+
+**Changing Display:**
+
+- **Changing to `display: block;`:**
+    - **`::before` (block-level)**: Adds content before the element, and this content behaves like a block-level element (similar to a `<div>`).
+    - **`::after` (block-level)**: Adds content after the element, and this content also behaves like a block-level element.
+
+**HTML Comparisons:**
+
+- **Default Inline (like `span`):**
+
+```
+<body>
+    <p>Text <span>Inserted content</span></p>
+</body>
+```
+
+- **Equivalent CSS:**
+
+```
+    <style>  
+        p::after {
+            content: " Inserted content";
+        }
+    </style>
+</head>
+
+<body>
+    <p>Text</p>
+</body>
+```
+
+- **Block-Level (like `div`):**
+
+```
+<body>
+    <div style="margin-top: 12px;">Block-level element</div>
+    <p style="margin-top: 0;">Text</p>
+</body>
+```
+
+- **Equivalent CSS for `::before` or `::after` with `display: block;`:**
+
+```
+    <style>   
+        p::before { 
+            content: "Block-level element"; 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+    <p>Text</p>
+</body>
+```
+
+ **Block-Level (like `div`):**
+
+```
+<body> 
+    <p style="margin-bottom: 0;">Text</p>
+    <div style="margin-bottom: 12px;">Block-level element</div>
+</body>
+```
+
+- **Equivalent CSS for `::before` or `::after` with `display: block;`:**
+
+```
+    <style>   
+        p::after { 
+            content: "Block-level element"; 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+    <p>Text</p>
+</body>
+```
+
+**Placement:**
+
+- **`::before`**: Inserts content before the actual content of the element (in the case of a block-level pseudo-element, before the content starts).
+- **`::after`**: Inserts content after the actual content of the element (in the case of a block-level pseudo-element, after the content ends).
+
+This flexibility allows you to add extra content and style it without modifying the HTML structure directly.
+
+**Margin Issue Summary:**
+
+- **Pseudo-Elements (`::before` and `::after`)**:
+    
+    - **Behavior**: They are considered part of the parent element, so their spacing is influenced by the parent's margin, padding, and overall layout.
+    - **Issue**: Adjusting the spacing can be tricky because pseudo-elements are nested inside the parent element, making their spacing relative to the parent’s styling.
+- **HTML Elements**:
+    
+    - **Behavior**: They are separate from each other and positioned as siblings or children in the DOM.
+    - **Issue**: Margins and padding are applied directly to these elements, so adjusting spacing is straightforward but requires careful positioning relative to other elements.
+
+**To match the visual output**:
+
+- Use margin adjustments on the parent element or pseudo-elements to align spacing between pseudo-elements and regular HTML elements effectively.
 # Bookmarks 
+
+[Figma](https://www.figma.com) - Figma is used in web development to design user interfaces, facilitate collaboration among design and development teams, create design systems, and streamline the handoff process. Its real-time collaboration features and integration with design systems make it a valuable tool in creating and refining web applications and websites.
 
 Completion: 02.09.2024
