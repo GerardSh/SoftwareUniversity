@@ -1,0 +1,59 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+}
+
+img {
+    display:block;
+    width: 100%;
+    height: auto;
+}
+
+html {
+    font: 14px/1.5 Lato, sans-serif;
+}
+
+body {
+    background: #eee;
+    padding: 2em;
+}
+
+.card {
+    background: #fff;
+    max-width: 300px;
+    border-radius: 0.3em;
+    text-decoration: none;
+    color:#000;
+    display: block;
+    overflow: hidden;
+    margin: 0 auto;
+    box-shadow: 0 0 1em 0 rgb(0, 0, 0, 0.2)
+}
+
+img {}
+
+.card span {
+    display: block;
+}
+
+.content,
+.footer {
+    padding: 1.5em;
+}
+
+.title {
+    font-weight: bold;
+    padding-bottom: 0.5em;
+}
+
+.footer span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.card:hover .title,
+.card:hover .footer {
+    color: darkorange;
+}
