@@ -129,7 +129,7 @@ This is the actual content inside the element, such as text, images, or other el
 
 Ако при span selector-a добавим `display: inline-block;` получаваме нещо, което е по средата между двата свята. Елемента става инлайн, но казваме да браузъра да вземе предвид и padding-а, който сме сложили и така може да направим блокче, само че вътре в текста.
 ### Display - inline-block
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831150936.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831150936.png)
 
 Дава ни възможност да сложим няколко елемента един до друг.
 Позволява ни да дадем padding, margin, top и bottom на инлайн елементи.
