@@ -519,9 +519,11 @@ Summary:
 Understanding these behaviors helps in managing layouts and ensuring that elements are displayed as intended across different screen sizes and resolutions.
 ## Box Size
 You
+
 If we make a very small box and the content cant fit in, it will just overflow?
 
 ChatGPT
+
 Yes, if you create a very small box (for example, with a small `width` and `height`), and the content inside it cannot fit within the box's dimensions, the content will overflow. How this overflow is handled depends on the CSS `overflow` property applied to the box.
 
 Here are the possible behaviors:
