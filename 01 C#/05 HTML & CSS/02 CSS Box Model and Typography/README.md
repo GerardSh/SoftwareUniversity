@@ -1,6 +1,6 @@
 # General
 ## CSS Basic Box Model
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240830232247.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240830232247.png)
 
 HTML се състои от тагове, а таговете са елементи. Всеки един елемент е тип правоъгълник и има размери, затова се нарича box модел. Browser-a взимайки съдържанието на HTML и стиловете в CSS, трябва да прецени: 
 
@@ -10,7 +10,7 @@ HTML се състои от тагове, а таговете са елемен�
 
 Всичко опира до това - колко са ни големи елементите, къде се намират и афектират останалите елементи.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831125925.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831125925.png)
 
 Margin: разстоянието отвън на кутийката.
 This is the space outside the border of the element, creating distance between the element and other elements around it.
@@ -28,11 +28,11 @@ This is the actual content inside the element, such as text, images, or other el
 
 `display: block;` eлементът се държи като блоков елемент. Това означава, че заема цялата ширина на родителския контейнер и всеки следващ елемент ще се показва на нов ред. Автоматично създават нов ред преди и след тях и заемат цялото пространство по хоризонтала, което могат да заемат. Примери за блокови елементи са `<div>, <h1>, <p>`.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831144234.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831144234.png)
 
 `display: inline;` eлементът се държи като инлайн елемент. Това означава, че заема само толкова ширина, колкото е необходима на съдържанието му, и не започва на нов ред. Ако един елемент може да бъде част от текста, то най-вероятно е инлайн. Примери за инлайн елементи са `<span>, <a>, <strong>, <img>`.
 
-![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831145100.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240831145100.png)
 
 `span` и `div` са без семантична стойност и са еквивалентни, но първия е инлайн а втория блоков елемент. Ползват се, ако искаме да направим структура от елементи, които да стилизираме. Може да правим, колкото искаме от тях. 
 
