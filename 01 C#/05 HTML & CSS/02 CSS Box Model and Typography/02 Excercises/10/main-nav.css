@@ -1,0 +1,52 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #eee;
+    padding: 2em;
+    font: 14px/1.5 Lato, sans-serif;
+}
+
+.main-nav li {
+    display: block;
+    list-style: none;
+    position: relative;
+    width: 12rem;
+    border: 1px dashed purple;
+    text-align: center;
+}
+
+.main-nav > ul > li {
+    display: inline-block;
+}
+
+.main-nav > ul ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+}
+
+.main-nav > ul ul ul {
+    top: 0%;
+    left: 100%;  
+}
+
+.main-nav a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+    background: #fff;
+    padding: 0.5em 1em;
+}
+
+.main-nav li:hover > a {
+    background: darkorange;
+    color: #fff;
+}
+
+.main-nav li:hover > ul {
+    display: block;
+}
