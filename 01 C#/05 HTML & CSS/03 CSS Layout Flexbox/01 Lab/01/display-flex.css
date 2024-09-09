@@ -1,0 +1,12 @@
+.flex-container {
+    border: 2px solid blue;
+    padding: 1em;
+    display: flex;
+    width: 400px;
+}
+
+.flex-item {
+    border: 2px solid #000;
+    background: #eee;
+    padding: 1em;
+}
