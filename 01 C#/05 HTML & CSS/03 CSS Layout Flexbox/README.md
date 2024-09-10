@@ -90,7 +90,7 @@ baseline - подрежда елементите по текста вътре, �
 ![](Pasted%20image%2020240909134106.png)
 
 Бърз и удобен начин, да посочим и трите пропъртита, които казват на един елемент, колко да е голям.
-## Align Self
+### Align Self
 ![](Pasted%20image%2020240909135031.png)
 
 ![](Pasted%20image%2020240909135049.png)
@@ -144,9 +144,7 @@ baseline - подрежда елементите по текста вътре, �
 - **`align-items`**: Aligns items along the cross axis (vertical or horizontal alignment).
 
 These properties are used to manage how items are arranged and aligned within a flex container, and they adapt based on the orientation of the main and cross axes.
-
 ## Positions Along the Axes
-
 1. **Main Axis Positions**:
     
     - **`main-start`**: The beginning of the main axis.
@@ -188,7 +186,76 @@ These properties are used to manage how items are arranged and aligned within a 
 - **Default Behavior**: In most cases, `flex-start` and `flex-end` align items to the edges of the container, but these references are adaptable to different flex directions and writing modes.
 
 This summary should help you understand how `start` and `end` positions work in different flexbox layouts and how they relate to alignment properties.
-## Inline Elements Behaving Like Block Elements in Flex Containers
+## Difference between align-content and align-items
+The difference between `align-content` and `align-items` in CSS lies in their application and function within Flexbox and Grid layouts:
+
+1. **`align-items`**:
+    
+    - **Purpose**: Aligns flex or grid items along the cross axis (the perpendicular axis to the main axis).
+    - **Applies to**: Individual items inside a flex or grid container.
+    - **Effect**: It determines how **each item** is aligned within the flex container or grid along the cross axis (e.g., vertically in a row layout, or horizontally in a column layout).
+    - **Example**: If you want all items to be vertically centered within their flex container, you would use `align-items: center;`.
+    
+2. **`align-content`**:
+    
+    - **Purpose**: Aligns the flex or grid lines themselves (the entire set of items) along the cross axis.
+    - **Applies to**: Only when there are **multiple lines** of items (i.e., when `flex-wrap` is used in Flexbox or when multiple rows/columns exist in a Grid layout).
+    - **Effect**: It determines how **the group of lines** is aligned within the container. If the flex items are wrapped onto multiple lines, `align-content` controls the alignment of those lines in the container.
+    - **Example**: If you have wrapped lines and want to distribute them evenly along the vertical axis of the container, you would use `align-content: space-between;`.
+
+**Key Distinction:**
+
+- `align-items` controls the alignment of **individual items** within a line.
+- `align-content` controls the alignment of **lines of items** within the container.
+
+If there's only one line of items, `align-content` won’t have any effect. When there is **only one row**, `align-items` is the property that controls the vertical alignment of items within that single row. `align-content` won't have any effect in this case because there's no need to align multiple rows—the container has only one.
+
+However, **when there are multiple rows** (due to `flex-wrap: wrap;`), the container's vertical space is divided into sections representing each row. At this point, `align-content` becomes useful because it allows you to control how those **rows as a group** are aligned inside the container.
+
+For example:
+
+- If you have **two rows**, `align-content` can:
+    - **`flex-start`**: Push both rows to the top.
+    - **`flex-end`**: Push both rows to the bottom.
+    - **`center`**: Center the rows in the middle of the container.
+    - **`space-between`**: Distribute the rows so the first one is at the top and the second one is at the bottom.
+    - **`space-around`** or **`space-evenly`**: Add equal spacing between the rows.
+
+Meanwhile, within each row, `align-items` continues to affect how the **individual items** are aligned within their respective row.
+
+**Summary**
+
+- **One row**: Only `align-items` matters.
+- **Two rows**: `align-items` aligns the items in each row, and `align-content` positions the rows relative to the container as a whole.
+## Flex Empty Item Containers
+Flexbox behaves differently from block-level elements when it comes to handling empty containers and content overflow. Here’s a clearer explanation of the two scenarios:
+1. **Flexbox Behavior:**
+
+- **Empty Flex Items**: Flexbox will shrink empty items that would otherwise extend beyond the container's borders. Even if you set a large `width` or other styles for the flex item, if there's no content inside, the flex item will adjust (shrink) to fit within the flex container based on its flex rules, such as `flex-grow`, `flex-shrink`, and `flex-basis`. This makes it very space-efficient.
+    
+- **Overflow with Content**: Flexbox allows an item to grow or shrink based on the content inside. If the content inside the item is too large (like long text), the flex item will expand and, if necessary, overflow the flex container. This happens when `flex-shrink` is set to `0` or when the content is too large to fit, and the container can't compress further.
+
+```
+<div class="flex-container">
+    <div class="flex-item">Short</div>
+    <div class="flex-item">This is a long string of text that causes overflow</div>
+</div>
+```
+
+Here, the second item will grow, and if it’s too large, it will overflow the flex container, but this only happens if there’s actual content to cause the overflow.
+
+2. **Block-Level Behavior:**
+
+- **Empty Block Elements**: Block elements generally expand to their full width by default, whether they contain content or not. If you set a large `width` on a block-level element, its borders will extend to the defined width, even if it is empty.
+    
+- **Overflow with Content**: When a block-level element contains content that exceeds the width of its container, it will overflow naturally without shrinking. Block-level elements do not have the same dynamic shrinking behavior as flex items. Overflow happens whether the content is small or large, and no automatic adjustments are made.
+
+**Key Differences:**
+
+- **Flex items are dynamic**: They grow or shrink based on content and the space available within the flex container. An empty flex item will shrink to avoid wasting space.
+- **Block elements are static**: They maintain their defined width even when empty, and they will overflow the container when the content exceeds the container’s width.
+
+**Inline Elements Behaving Like Block Elements in Flex Containers**
 - **Default Behavior**:
     
     - **Inline Elements**: By default, elements like `<span>` are inline and flow within text, not affecting the layout of surrounding elements.
@@ -203,6 +270,322 @@ This summary should help you understand how `start` and `end` positions work in 
     - **Flexbox Control**: Flexbox properties such as `flex-direction`, `align-items`, and `justify-content` will apply to all children, regardless of their initial display type.
 
 **Key Takeaway**: In a flex container, all child elements, including inline elements, are treated as flex items with block-level behavior, allowing for consistent application of flexbox layout properties.
+## Flex Grow
+Let’s break down how `flex-grow` works in Flexbox. This property determines how much a flex item will grow relative to the other flex items inside the same container when there's extra space available.
+
+**How `flex-grow` Works:**
+
+- **`flex-grow`** is a unitless number (often referred to as a "growth factor").
+- It defines the proportion of the available space (after taking into account `padding`, `border`, and `margin`) that the flex item should take up **in relation to the other flex items**.
+- The higher the `flex-grow` value, the more space the item will occupy in comparison to other flex items in the container.
+
+**Example:**
+
+```
+.flex-item {
+    flex-grow: 1; /* Default grow factor */
+}
+```
+
+- If all items inside a flex container have `flex-grow: 1`, then all items will grow equally and divide any extra space evenly.
+- If one item has a `flex-grow` value higher than the others, it will take up a larger portion of the available space.
+
+**Let's break it down with a simple scenario:**
+
+Imagine you have a flex container with 3 items inside, and the container has more space than the total of the items' width (or height if the flex direction is set to `column`).
+
+```
+<div class="flex-container">
+  <div class="flex-item" style="flex-grow: 1;">Item 1</div>
+  <div class="flex-item" style="flex-grow: 2;">Item 2</div>
+  <div class="flex-item" style="flex-grow: 3;">Item 3</div>
+</div>
+```
+
+**In this case:**
+
+- **Item 1**: `flex-grow: 1`
+- **Item 2**: `flex-grow: 2`
+- **Item 3**: `flex-grow: 3`
+
+Here’s how it works:
+
+1. **Total available space** is calculated after accounting for all fixed dimensions (widths, margins, etc.).
+2. **Sum of the grow factors**: 1 (Item 1) + 2 (Item 2) + 3 (Item 3) = 6.
+3. Now, Flexbox takes the available space and divides it into 6 equal parts (because the total grow factor is 6).
+4. **Item 1** gets 1 part (1/6th) of the available space.
+5. **Item 2** gets 2 parts (2/6th) of the available space.
+6. **Item 3** gets 3 parts (3/6th) of the available space.
+
+So, **Item 3** will be twice the width of **Item 1**, and **Item 2** will be in between, growing proportionally based on their `flex-grow` values.
+
+**Important Points to Remember:**
+
+- The `flex-grow` property only applies if there is extra space to distribute. If the content of the items already fills up the flex container, `flex-grow` won’t have any effect.
+- The value is relative, so `flex-grow: 2` doesn't mean twice the size of the item, it means "grow twice as fast" as other items that have `flex-grow: 1`.
+
+**Visual Example:**
+
+- If you have a 600px wide flex container and 3 items:
+    - Item 1 (`flex-grow: 1`)
+    - Item 2 (`flex-grow: 2`)
+    - Item 3 (`flex-grow: 3`)
+
+If the total content inside the items uses only 300px, that leaves 300px of extra space. Flexbox will distribute this space proportionally based on the `flex-grow` values:
+
+- **Item 1** gets 1/6 of the extra space: 50px.
+- **Item 2** gets 2/6 of the extra space: 100px.
+- **Item 3** gets 3/6 of the extra space: 150px.
+
+So, after distributing the extra space, the final widths of the items will be:
+
+- **Item 1**: initial width + 50px.
+- **Item 2**: initial width + 100px.
+- **Item 3**: initial width + 150px.
+
+**Summarizing:**
+
+- **`flex-grow: 0`**: The item will not grow at all (default).
+- **`flex-grow: 1`**: The item will grow to take up any remaining space equally with other flex items.
+- **`flex-grow: n`**: The item will grow proportionally to the other items based on the value of `n`.
+## Flex Shrink
+The `flex-shrink` property in Flexbox controls how flex items shrink relative to each other when there isn't enough space in the flex container. It's used to determine how items should reduce in size if the container is too small to fit all items at their initial sizes.
+
+**Basic Syntax**
+
+```
+.flex-item { flex-shrink: <number>; }
+```
+
+- **`<number>`**: This value determines how much the item will shrink relative to other items. The default value is `1`.
+
+**How `flex-shrink` Works**
+
+1. **Initial Sizes**:
+    
+    - Flex items are sized according to their initial widths (or heights, in case of a column layout) and any specified `flex-basis`.
+2. **Determine Available Space**:
+    
+    - The flex container calculates how much space is available by subtracting the total width of the flex items (including margins and paddings) from the width of the container.
+3. **Calculate Shrinkage**:
+    
+    - If the total width of the flex items exceeds the width of the flex container, the items will shrink to fit within the container.
+    - The `flex-shrink` property determines how much each item will shrink relative to other items.
+
+**Example**
+
+Given the following setup:
+
+```
+<div class="flex-container">
+  <div class="flex-item" style="flex-shrink: 1;">Item 1</div>
+  <div class="flex-item" style="flex-shrink: 2;">Item 2</div>
+  <div class="flex-item" style="flex-shrink: 1;">Item 3</div>
+</div>
+```
+
+And CSS:
+
+```
+.flex-container {
+  display: flex;
+  width: 400px;
+}
+
+.flex-item {
+  flex-basis: 200px; /* Initial size of each item */
+  border: 1px solid #000;
+}
+```
+
+**How It Works**
+
+1. **Initial Sizes**:
+    
+    - Each item has an initial size of `200px` (as specified by `flex-basis`), so the total initial width is `600px` (3 items * 200px).
+2. **Available Space**:
+    
+    - The container width is `400px`, so the items need to shrink by `200px` (`600px - 400px`).
+3. **Apply `flex-shrink`**:
+    
+    - **Item 1** and **Item 3** have `flex-shrink: 1`, meaning they will shrink equally.
+    - **Item 2** has `flex-shrink: 2`, meaning it will shrink twice as much as Item 1 and Item 3.
+4. **Distribution of Shrinkage**:
+    
+    - Total shrink factor = `1 (Item 1) + 2 (Item 2) + 1 (Item 3) = 4`
+    - Available space to shrink = `200px`
+    - **Item 1** and **Item 3** will each shrink by `(1 / 4) * 200px = 50px`
+    - **Item 2** will shrink by `(2 / 4) * 200px = 100px`
+
+**Resulting Sizes**
+
+- **Item 1**: `200px (initial) - 50px (shrinkage) = 150px`
+- **Item 2**: `200px (initial) - 100px (shrinkage) = 100px`
+- **Item 3**: `200px (initial) - 50px (shrinkage) = 150px`
+
+**Key Points**
+
+- **Default Value**: `flex-shrink` is `1` by default, which means items will shrink equally if necessary.
+- **Higher Values**: Items with a higher `flex-shrink` value will shrink more compared to items with a lower value.
+- **Zero Value**: Setting `flex-shrink: 0` means the item will not shrink, and overflow will occur if the total width of the items exceeds the container’s width.
+## Understanding `flex-basis` vs `width` in Flexbox
+
+1. **`flex-basis`**: Defines the initial size of a flex item before any `flex-grow` or `flex-shrink` adjustments. It is used to set the size of the item along the main axis in the flex container's direction. The dimension affected by `flex-basis` changes based on the `flex-direction` property.
+    
+2. **`width`**: Sets a fixed size for the flex item. It is always applied along the main axis regardless of the `flex-direction`.
+
+**Example:**
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Width vs Flex-Basis</title>
+    <style>
+        .flex-container {
+            display: flex;
+            border: 2px solid blue;
+            width: 600px; /* Container width is fixed */
+            flex-direction: column; /* Flex direction is column */
+        }
+        
+        .flex-item {
+            flex-grow: 1; /* Items grow to fill available space */
+            flex-shrink: 1; /* Items shrink if necessary */
+        }
+
+        /* Using flex-basis */
+        .flex-item-basis {
+            flex-basis: 200px; /* Initial height of 200px */
+        }
+
+        /* Using width */
+        .flex-item-width {
+            width: 200px; /* Fixed width of 200px */
+        }
+    </style>
+</head>
+<body>
+    <h2>Using Flex-Basis</h2>
+    <div class="flex-container">
+        <div class="flex-item flex-item-basis">Item 1</div>
+        <div class="flex-item flex-item-basis">Item 2</div>
+        <div class="flex-item flex-item-basis">Item 3</div>
+    </div>
+
+    <h2>Using Width</h2>
+    <div class="flex-container">
+        <div class="flex-item flex-item-width">Item 1</div>
+        <div class="flex-item flex-item-width">Item 2</div>
+        <div class="flex-item flex-item-width">Item 3</div>
+    </div>
+</body>
+</html>
+```
+
+**Explanation**
+
+- **`flex-basis`**: Defines the initial size of each flex item along the main axis, which is vertical in this case due to `flex-direction: column`. Here, `flex-basis: 200px` sets the initial height of each item to 200px. Items will grow or shrink to fit the container's height.
+    
+- **`width`**: Sets a fixed width for each flex item, which affects the size along the main axis. With `flex-direction: column`, the `width` property does not impact the height of items. Each item has a fixed width of 200px, but height adjustments are controlled by `flex-grow` and `flex-shrink`.
+
+**Summary**
+
+- **`flex-basis`** affects the dimension along the main axis based on the current `flex-direction`. In this example, it controls the height because the flex direction is column.
+- **`width`** sets a fixed size along the main axis, and in a column layout, it will be the width of the items, not their height.
+## `align-self: baseline`
+When you use `align-self` on a flex item, it overrides the `align-items` value for that specific item. 
+- **Purpose**: Aligns the baseline of a flex item with the baseline of other items that also use `align-self: baseline`. The baseline is typically the line upon which text sits.
+    
+- **Behavior**:
+    
+    - **When Multiple Items Use `align-self: baseline`**: The baselines of these items will align with each other.
+    - **When No Other Items Use `align-self: baseline`**: The item aligns its baseline relative to the container's cross-axis.
+- **Effect of Font Size and Padding**:
+    
+    - Items with different font sizes or padding will have their text baselines aligned according to their relative baseline positions.
+
+**Example with CSS and HTML**
+
+Here’s a concise example demonstrating how `align-self: baseline` works:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Align-Self Baseline Example</title>
+    <style>
+        .flex-container {
+            display: flex;
+            border: 2px solid blue;
+            width: 600px;
+            height: 200px;
+            flex-direction: row; /* Row direction */
+            align-items: flex-start; /* Default alignment */
+        }
+        
+        .flex-item {
+            border: 2px solid #000;
+            background: #eee;
+            padding: 10px;
+        }
+
+        .align-self-baseline .flex-item:nth-child(1) {
+            font-size: 20px;
+            align-self: baseline;
+        }
+
+        .align-self-baseline .flex-item:nth-child(2) {
+            font-size: 25px;
+            align-self: baseline;
+        }
+
+        .align-self-baseline .flex-item:nth-child(3) {
+            font-size: 30px;
+            align-self: baseline;
+        }
+
+        .align-self-baseline .flex-item:nth-child(4) {
+            padding: 30px;
+            align-self: baseline;
+        }
+
+        .align-self-baseline .flex-item:nth-child(5) {
+            align-self: baseline;
+        }
+    </style>
+</head>
+<body>
+    <h2>Align-Self: Baseline Example</h2>
+    <div class="flex-container align-self-baseline">
+        <div class="flex-item">Item 1</div>
+        <div class="flex-item">Item 2</div>
+        <div class="flex-item">Item 3</div>
+        <div class="flex-item">Item 4</div>
+        <div class="flex-item">Item 5</div>
+    </div>
+</body>
+</html>
+```
+
+**Explanation of the Example**
+
+- **Flex Container**: The flex container is set to `display: flex` with `flex-direction: row` and `align-items: flex-start`.
+    
+- **Flex Items**:
+    
+    - **Items 1 to 5**: All items use `align-self: baseline`.
+    - **Different Font Sizes**: Items have different font sizes, so their baselines will align according to their respective text baselines.
+    - **Padding**: Item 4 has extra padding, which affects its visual alignment, but the baseline alignment is still respected.
+
+In this example, you’ll see that all items with `align-self: baseline` align their baselines with each other, even if they have different font sizes and padding.
+
+**first / last baseline**
+`baseline` (shorthand for `first baseline`) aligns flex items based on the first line of text in each item, while `last baseline` aligns items based on the last line of text. If an item is aligned to `first baseline`, it will not align with other items using `last baseline`, since they are based on different baselines within the text.
 ## Managing Alignment of `inline-block` Elements
 1. **Baseline Alignment**:
     
@@ -225,7 +608,55 @@ This summary should help you understand how `start` and `end` positions work in 
     - **Absolute Positioning**: Allows precise placement of elements relative to their containing block, bypassing baseline alignment issues.
 
 By using these techniques, you can manage and override the default baseline alignment of `inline-block` elements, achieving more control over the layout and positioning of your elements.
+## Line Box and Baseline Relation
+the baseline is not necessarily at the bottom of the line box. Here's how they relate:
 
+**Line Box**
+
+- **Definition**: The line box is the container for inline-level elements within a block of text. It stretches to accommodate the height of the tallest element or the line-height of the text.
+- **Height**: The height of the line box is determined by the tallest element within it. This includes any inline elements and their line-height.
+
+**Baseline**
+
+- **Definition**: The baseline is a horizontal line upon which most text characters sit. It is the reference point for aligning text and inline-level elements.
+- **Position**: The baseline is generally above the bottom of the line box, not at the bottom. It is where the bottom of the text characters align.
+
+**Relationship**
+
+- **Alignment**: Inline-level elements are aligned relative to the baseline of the line box. Elements with `vertical-align: baseline` align their baselines with the baseline of the line box.
+- **Visual Layout**: The baseline is used to align text and inline elements so that they appear consistently across different lines of text. The actual position of the baseline within the line box depends on the font and the text’s line-height.
+
+**Visual Representation**
+
+Here’s a simplified representation:
+
+```
++--------------------+  <- Top of the line box (determined by the tallest element)
+|                    |
+|  Text              |
+|  with              |
+|  different heights |
+|                    |
+|                    |
+| Baseline           |  
++--------------------+  <- Baseline (where text aligns)
+|                    |
+|                    |
++--------------------+  <- Bottom of the line box (lowest point of the line box)
+
+- Top of the Line Box: This is defined by the tallest inline element in the line.
+- Baseline: This is where the baseline of the text aligns, not necessarily at the bottom of the line box.
+- Bottom of the Line Box: This is the lowest part of the line box, accommodating any descenders or additional space below the text.
+```
+
+- **Line Box Height**: The height of the line box includes all the space from the top to the bottom of the tallest element.
+- **Baseline Position**: The baseline is typically found somewhere above the bottom of the line box, where the characters align.
+
+In summary, the baseline is a reference line within the line box where text and inline elements align. It is not positioned at the bottom of the line box but is a crucial alignment point within the vertical space defined by the line box. The position of the baseline is not directly controlled by CSS properties; it is determined by the font metrics and the content of the text. However, you can influence the vertical alignment of elements relative to the baseline using the `vertical-align` property.
+
+![](Pasted%20image%2020240910225614.png)
+
+https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block
 # Bookmarks 
 
 [CSS Flexbox Layout Guide | CSS-Tricks](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) - cheat sheet.
@@ -236,4 +667,12 @@ By using these techniques, you can manage and override the default baseline alig
 
 [CSS Flexbox Tutorial - Learn the right way - YouTube - FollowAndrew](https://www.youtube.com/watch?v=w9lsR2tvkvQ) 
 
+[Learn flexbox the easy way - YouTube - Kevin Powell](https://www.youtube.com/watch?v=u044iM9xsWU)
+
+[The thing people get wrong about flex-basis - YouTube - Kevin Powell](https://www.youtube.com/watch?v=jx4FtPlDXJg)
+
 [Font Awesome](https://fontawesome.com/) - **Font Awesome** is the Internet's icon library and toolkit, used by millions of designers, developers, and content creators.
+
+https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block
+
+Completion: 01.01.2024
