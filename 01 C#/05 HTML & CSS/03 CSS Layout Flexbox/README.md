@@ -656,10 +656,127 @@ In summary, the baseline is a reference line within the line box where text and 
 
 ![](Pasted%20image%2020240910225614.png)
 
-https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block
+[html - Vertical align not working on inline-block - Stack Overflow](https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block)
+
+- **Single Inline Element:**
+    - When you have a single inline element (such as a single word or piece of text), it forms a **line box**. This line box holds the content (text) within it, and it expands vertically to fit the content inside it.
+- **Multiple Inline Elements:**
+    - When multiple inline or inline-level elements (such as `<span>`, `<a>`, or even text nodes) are placed within the same containing block, they each create **individual line boxes** for themselves. However, **these individual line boxes are grouped into a single larger line box** that covers all the inline elements on that line.
+    - This **larger line box** will adjust its height based on the tallest inline element within it (as you mentioned before).
+
+```
+<p>
+  <span>Short text</span>
+  <img src="image.jpg" alt="Image" style="vertical-align: middle;">
+  <span>Another text</span>
+</p>
+```
+
+- In this case, each `<span>` and the `<img>` create their own **individual line boxes**.
+- However, these individual line boxes are wrapped into **one larger line box** for the entire line of content.
+- The height of this larger line box is determined by the tallest element on the line (in this case, it could be the image or the tallest text element depending on their respective sizes).
+- Vertical alignment (e.g., `vertical-align: middle`) is applied relative to this larger line box.
+
+**Line Box Behavior Recap:**
+
+- A **line box** is essentially the horizontal box that wraps around inline-level content.
+- If there is a single inline element, it occupies a single line box.
+- When there are multiple inline elements, each has its own individual line box, but together they form one **larger line box** that spans the entire line, and its height is determined by the tallest element inside.
+
+This concept is crucial for understanding how text and inline elements are aligned and how they interact when positioned next to one another.
+## Vertical Alignment and Baseline
+When text breaks into multiple lines within an inline or inline-block element, the **baseline** of that element is determined by the **last line of text**.
+
+In detail:
+
+- Each line of text in a multi-line inline element has its own baseline.
+- The baseline for the whole element, when used in a layout, will be the baseline of the **last line of text**.
+
+For example, if you have a `span` or `div` containing text that wraps onto several lines, the entire element's baseline is aligned according to the baseline of the text in the last line, not the first.
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline Example</title>
+    <style>
+        .multi-line {
+            display: inline-block;
+            width: 150px;
+            font-size: 16px;
+            border: 1px solid black;
+            vertical-align: baseline;
+        }
+
+        .single-line {
+            display: inline-block;
+            width: 100px;
+            font-size: 16px;
+            border: 1px solid red;
+            vertical-align: baseline;
+        }
+    </style>
+</head>
+<body>
+
+    <span class="multi-line">This is some text that wraps onto multiple lines</span>
+    <span class="single-line">Single line</span>
+
+</body>
+</html>
+```
+
+In this example:
+
+- The `multi-line` span will have its baseline aligned based on the last line of text (which wraps to the next line due to the narrow width).
+- The `single-line` span will have its baseline determined by the single line of text.
+
+The result is that the baseline of the `multi-line` span will be lower than that of the `single-line` span because it is based on the last line of wrapped text.
+## Inline Elements Vertical Alignment
+1. **Baselines of Elements**:
+    
+    - Every inline-level or inline-block element has its own baseline, which typically corresponds to the bottom of the text inside the element. For elements with text that wraps over multiple lines, the baseline is determined by the last line of text.
+    - When multiple elements are placed within the same line, their individual baselines are considered for vertical alignment, influencing how elements are positioned relative to each other within the line box.
+    - Other elements, such as images or inline-block elements with no text, can have their baseline defined differently (e.g., by the bottom margin edge in the case of images).
+1. **Vertical Alignment and Line Box Behavior**:
+    
+    - The **line box adjusts its height** based on the tallest element it contains. This tallest element establishes the height of the line box.
+    - **Top, Middle, and Bottom Points**:
+        - The top, middle, and bottom points (for `vertical-align: top`, `vertical-align: middle`, and `vertical-align: bottom`) are defined relative to the tallest element in the line. These reference points are the same for all elements because the line box uses the tallest element to establish its boundaries.
+        - For example, when aligning an element to the top, all elements within the line will align relative to the top of the line box (which corresponds to the tallest element).
+        - The key point here is that the tallest element establishes a sort of reference for alignment for the other elements.
+1. **Aligning the Top of One Element with the Bottom of Another**:
+    
+    - If you attempt to align the **top of a smaller element** with the **bottom of the tallest element** in the line (using, for instance, `vertical-align: top` on one element and `vertical-align: bottom` on another), it **cannot happen**. This is because it would require the smaller element to move **above** the top boundary of the line box, which is not allowed.
+    - The line box ensures that all elements stay within its boundaries, so vertical alignment like this is not possible. Instead, elements are kept within the box, and alignment rules are applied accordingly. 
+    - The line box maintains its height based on the tallest element, and all vertical alignments occur within those bounds.
+1. **Aligning Baselines and Middle Points**:
+    
+    - You **can align** the **baseline of a smaller element** with the **middle point** of a larger element. This is achievable because the alignment is happening within the line box, respecting its boundaries.
+    - Similarly, you can align the **baseline of the smaller element** with the **middle point** of the larger element or align the **middle points of both elements** (`vertical-align: middle` on both). These configurations work because all of this alignment occurs within the borders of the line box, and the elements don’t need to move outside the line box to achieve this alignment.
+        - For example:
+            - **Baseline-to-middle alignment** means that the smaller element’s baseline will align with the vertical center (middle) of the larger element.
+            - **Middle-to-middle alignment** ensures that both elements' vertical centers will align with each other.
+
+**Key Points Recap:**
+
+- **Top, middle, and bottom alignment** are relative to the tallest element in the line box, with all elements sharing these points within the line box.
+- **The line box expands** to fit the tallest element, and vertical alignment is applied inside these boundaries.
+- **Cross-boundary alignment (like top-to-bottom)** is not possible, as elements cannot leave the line box.
+- **Baseline-to-middle** or **middle-to-middle alignment** works because the alignment occurs inside the line box’s boundaries, maintaining the correct visual alignment without breaking layout rules.
+
+This explanation covers the nuances of how vertical alignment functions for inline elements within a line box, ensuring clarity when aligning elements by their baseline or middle points!
+
+[vertical-align - CSS: Cascading Style Sheets | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align)
+## Outline
+The `outline` is a CSS property that draws a line around the outside of an element's border, used to make the element stand out or indicate focus. Unlike borders, outlines don't take up space in the layout, meaning they don't affect the element's size or position. Outlines are typically used for accessibility purposes, such as highlighting links or form elements when they receive focus via keyboard navigation. They can be customized in terms of color, style, and thickness but are not confined to the box model, meaning they can extend beyond the element's boundary.
 # Bookmarks 
 
 [CSS Flexbox Layout Guide | CSS-Tricks](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) - cheat sheet.
+
+[Flexbox - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox)
 
 [An Interactive Guide to Flexbox in CSS • Josh W. Comeau](https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/)
 
@@ -673,6 +790,9 @@ https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inlin
 
 [Font Awesome](https://fontawesome.com/) - **Font Awesome** is the Internet's icon library and toolkit, used by millions of designers, developers, and content creators.
 
-https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block
+[html - Vertical align not working on inline-block - Stack Overflow](https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block)
+
+[vertical-align - CSS: Cascading Style Sheets | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align)
+
 
 Completion: 01.01.2024
