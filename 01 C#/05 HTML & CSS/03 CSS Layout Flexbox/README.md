@@ -96,6 +96,79 @@ baseline - подрежда елементите по текста вътре, �
 ![](Pasted%20image%2020240909135049.png)
 
 Ползва се много рядко.
+## Centering Elements Vertically and Horizontally with Flexbox
+Чрез flex, много лесно може да се позиционира даден child елемент в центъра на parent елемент.
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline Example</title>
+    <style>
+        
+        body {
+            height: 500px;
+            display: flex;
+            border: 1px solid black;
+        }
+        
+        div {
+            border: 1px solid black;
+            max-width: 500px;
+            margin: auto;     
+        }
+        
+    </style>
+</head>
+<body>
+    
+    <div>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam est atque inventore earum, sit pariatur cumque nihil repellat, esse maiores deleniti perferendis, enim iste amet? Cupiditate minus optio reiciendis est.</p>
+    </div>
+    
+</body>
+</html>
+```
+
+`margin: auto` работи, само ако parent елемента има зададена височина и е `display: flex`, иначе би подравнил child елемента, само по хоризонтала. Ако не искаме да ограничим височината на parent елемента, може да ползваме `vh` - view port-a в комбинация с `min-height`.
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline Example</title>
+    <style>
+        
+        body {
+            display: flex;
+            border: 1px solid black;
+            min-height: 100vh;
+        }
+        
+        div {
+            border: 1px solid black;
+            max-width: 500px;
+            margin: auto;     
+        }
+        
+    </style>
+</head>
+<body>
+    
+    <div>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam est atque inventore earum, sit pariatur cumque nihil repellat, esse maiores deleniti perferendis, enim iste amet? Cupiditate minus optio reiciendis est.</p>
+    </div>
+    
+</body>
+</html>
+```
+
+Така child елемента ще бъде винаги позициониран в средата на view-porta. Слагаме `min-height` вместо само `height`, защото ако сложим `height: 100vh` то големината на parent елемента ще бъде само размера на екрана и ако съдържанието е по-голямо от този размер, ще прелее извън него.
+Вместо `margin: auto` в child елемента, може да ползваме `align-items: center` и `justify-content: center` в parent-а, което пак ще центрира child елемента в средата на екрана. Ако има повече от един child елемент, тогава ще има разлика, кой от двата начина се използва.
 # Misc
 # Styles Order
 Имаме няколко нива на прилагане на CSS стилове:
@@ -106,6 +179,69 @@ baseline - подрежда елементите по текста вътре, �
 
 Така че, **user styles** имат най-висок приоритет, след тях са **author styles**, и най-накрая са **user agent styles**.
 # ChatGPT
+## Element Declared as Flex
+
+When You Declare an Element as `display: flex` (Default: `flex-direction: row`):
+
+1. **Flex Container's Size by Default:**
+    
+    - The container itself will take the size of its content by default, unless constrained by a specific width or height.
+2. **Flex Items Inside the Container:**
+    
+    - **Height of Flex Items:**
+        - All the flex items will have the same height, **because of the default `align-items: stretch` property**. This means they will stretch to match the height of the tallest flex item, or to fill the container's height, if the container has a set height.
+    - **Width of Flex Items:**
+        - Each flex item will take up the width required by its content, unless flex properties like `flex-grow`, `flex-shrink`, or `flex-basis` are applied.
+        - In the default row direction (`flex-direction: row`), the width of each item is independent and based on its content. They do **not** stretch in the horizontal direction unless specified.
+
+**Key Points:**
+
+- **Stretching of Height:** By default, flex items stretch in height due to `align-items: stretch`. They all get the same height, which is determined by either the tallest item or the container height.
+- **Independent Widths:** The width of each flex item is determined by the content inside each one, so unless modified by flex properties, each item’s width is independent.
+
+**Example:**
+
+```
+.container {
+  display: flex;
+  /* Default: flex-direction: row; */
+  height: 300px; /* Fixed height for the container */
+}
+
+.container div {
+  background: lightblue;
+  padding: 10px;
+}
+```
+
+In this case:
+
+- **Height:** All `<div>` elements will stretch to be 300px in height, since the container has a fixed height and `align-items: stretch` is the default.
+- **Width:** Each `<div>` will only be as wide as the content inside it unless additional flex properties are applied.
+
+**Column Direction (`flex-direction: column`):**
+
+If you change the direction to column, the behavior flips:
+
+- **Width of Flex Items:** They will all stretch to the full width of the container.
+- **Height of Flex Items:** Each item’s height will depend on its content unless you modify it with flex properties like `flex-grow`.
+
+**Summary:**
+
+- **Flex Container:** By default, it takes the size of its content.
+- **Flex Items:**
+    - In row direction: They have the same height (due to `align-items: stretch`) and independent widths (based on content).
+    - In column direction: They have the same width (due to `align-items: stretch`) and independent heights (based on content).
+## Centering Elements Vertically and Horizontally with Flexbox
+- **Centering with Flexbox**: Flexbox is indeed a powerful tool for centering elements both horizontally and vertically. By setting the parent container to `display: flex`, you can easily align its child elements.
+    
+- **`margin: auto` for Horizontal Centering**: When using `display: flex` on a parent container, `margin: auto` on a child element horizontally centers it. For vertical centering, this approach alone is not sufficient.
+    
+- **Parent Element’s Height**: For vertical centering with Flexbox, the parent element must have a defined height. This can be done using `height`, `min-height`, or viewport units (`vh`).
+    
+- **`min-height` vs `height`**: Using `min-height: 100vh` ensures that the parent container takes up at least the full height of the viewport but can expand if the content exceeds this height. This prevents content from overflowing and keeps it centered relative to the viewport size.
+    
+- **Avoiding Overflow**: Setting a fixed `height` may cause overflow issues if the content exceeds the height of the viewport. Using `min-height` ensures that the container can grow with the content while still centering it initially.
 ## Main and Cross Axes
 **Main Axis** (Controlled by `flex-direction`)
 
@@ -227,6 +363,41 @@ Meanwhile, within each row, `align-items` continues to affect how the **individu
 
 - **One row**: Only `align-items` matters.
 - **Two rows**: `align-items` aligns the items in each row, and `align-content` positions the rows relative to the container as a whole.
+## Flex Items Behavior
+You
+Making a tag flex is a fast way to make all child elements inline blocks in a way. If we say direction column then it means all the tags will behave like block elements.
+
+ChatGPT
+Yes, you’re on the right track. Here’s a more detailed breakdown:
+
+**Flexbox as an Inline-Block Equivalent**
+
+1. **Flex Container in Row Direction (default):**
+    
+    - **Flex Items as Inline-Block:** By default, a flex container lays out its children (flex items) in a row direction. If you don't apply `flex-grow`, `flex-shrink`, or `flex-basis`, flex items will behave similarly to inline-block elements. They will be placed next to each other and will only take up as much width as their content requires. The flex container itself can handle the spacing and alignment of these items.
+2. **Flex Container in Column Direction:**
+    
+    - **Flex Items as Block Elements:** When you set `flex-direction: column`, the flex items are laid out in a column, similar to block elements. Each item will be stacked vertically and will take up the full width of the container (unless width is restricted). The height of each item will only be as much as its content unless you specify `height` or use flex properties to manage it.
+
+**Key Points**
+
+- **Inline-Block Behavior:** Flex items in row direction without specific flex properties do resemble inline-block elements in that they flow horizontally and only occupy the space required by their content. However, they also benefit from flexbox alignment properties (`justify-content`, `align-items`, etc.) for more control over their placement.
+    
+- **Block-Like Behavior in Column Direction:** When you switch to column direction, flex items behave like block elements. They stack vertically and can expand to fill the container’s width, with their height based on their content unless otherwise specified.
+
+**Key Differences**
+
+- **Flexbox (`row` Direction):** Flex items can grow or shrink to fill the available space based on the flex properties applied. This is more flexible than `inline-block`, which does not inherently adapt to changes in container size.
+    
+- **Flexbox (`column` Direction):** Flex items stack vertically and can expand to fill the available height, offering similar behavior to block elements but with additional control over how space is distributed.
+
+**Summary**
+
+- **Using Flexbox for Inline-Block Layouts:** Setting `display: flex` on a container can indeed provide a quick way to achieve a layout where children behave like inline-block elements, with the added advantage of flexible alignment and spacing control.
+    
+- **Using Flexbox for Block Layouts:** Switching to `flex-direction: column` allows you to stack elements like block elements, with the ability to manage alignment and spacing more dynamically.
+
+Flexbox offers more powerful and flexible layout options compared to simple inline-block or block styling, allowing for more complex and responsive designs.
 ## Flex Empty Item Containers
 Flexbox behaves differently from block-level elements when it comes to handling empty containers and content overflow. Here’s a clearer explanation of the two scenarios:
 1. **Flexbox Behavior:**
