@@ -1,7 +1,7 @@
 # General
 The Flexible Box Module - това е система от пропъртита, които описват логически как ние да разпределяме пространство на елементи, в 2D среда. Все едно да вземем лист хартия и да искаме да нарисуваме кутийки с най-различни размери. Чрез flexbox, много ефективно може да разделим пространството на листа. С други думи - това е система, която ни позволява да разпределим пространството на страницата. Занимава се с layout-a, кое колко да е голямо, позицията на елементите и тн. Може да работи хоризонтално и вертикално.
 ## The Flex Model
-![](Pasted%20image%2020240909111017.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909111017.png)
 
 Флекс модела се състои от `flex container` и `flex items`. Може да зададем на даден елемент `diaplay: flex` и след това всички деца на този елемент става items, което ни позволява да им задаваме различни правила.
 
@@ -11,89 +11,89 @@ The Flexible Box Module - това е система от пропъртита, 
 Flexbox има огромно количество от пропъртита, като в 99% от времето се ползва не повече от 1/3.
 ## Container Properties
 ### Display - flex
-![](Pasted%20image%2020240909111834.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909111834.png)
 
 [CSS Flexbox Layout Guide | CSS-Tricks](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) -cheat sheet.
 ### Flex Direction
-![](Pasted%20image%2020240909112250.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909112250.png)
 
 `flex-direction: row;`
 В каква посока работи флекс бокса - хоризонтална от ляво на дясно или обратното,  вертикална от горе надолу или обратното. Може да сменяме посоката и axis-a.
 ### Flex Wrap
-![](Pasted%20image%2020240909112826.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909112826.png)
 
 По подразбиране, стойността е `nowrap`, което казва, че нашите елементи никога няма да минат на нов ред.
 Ако ползваме wrap - това ще позволи на елементите да паднат на нов ред. Може да ги обърнем с `wrap-reverse`. Обръща ги и от долу нагоре и почти никога не се ползва.
 ### Flex Flow
-![](Pasted%20image%2020240909113151.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909113151.png)
 ### Justify Content
 Ползва се за изравняване по хоризонтала.
 
-![](Pasted%20image%2020240909115134.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909115134.png)
 
-![](Pasted%20image%2020240909115325.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909115325.png)
 
-![](Pasted%20image%2020240909115304.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909115304.png)
 
 Може да сложим и space-evenly, което ще изравни разстоянията навсякъде, включително и началото и края, а не както при space-around.
 ### Align Items
 Ползва се за изравняване по вертикала.
 
-![](Pasted%20image%2020240909115716.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909115716.png)
 
-![](Pasted%20image%2020240909115854.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909115854.png)
 
-![](Pasted%20image%2020240909120238.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909120238.png)
 
 baseline - подрежда елементите по текста вътре, няма да гледа техния height.
 ### Align Content
 Има значение, само когато имаме повече от един ред - `flex-wrap: wrap`. 
 Ползва се много рядко.
 
-![](Pasted%20image%2020240909121020.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121020.png)
 
-![](Pasted%20image%2020240909121308.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121308.png)
 
-![](Pasted%20image%2020240909121458.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121458.png)
 
-![](Pasted%20image%2020240909121639.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121639.png)
 
-![](Pasted%20image%2020240909121702.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121702.png)
 
-![](Pasted%20image%2020240909121721.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121721.png)
 
-![](Pasted%20image%2020240909121748.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909121748.png)
 ## Children Properties
 ### Order
 Може да подреждаме елементите както искаме. Source и визуалния order може да се различават.
 Може да преместим всеки един от елементите, където искаме.
 
-![](Pasted%20image%2020240909132723.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909132723.png)
 
-![](Pasted%20image%2020240909132924.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909132924.png)
 ### Flex Grow
-![](Pasted%20image%2020240909133048.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909133048.png)
 
 Контролираме логически елементите. По подразбиране, флекс бокс оразмерява кутийките спрямо съдържанието им. Може да кажем на даден елемент да порасне, ако има свободно пространство.
 ### Flex Shrink
-![](Pasted%20image%2020240909133444.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909133444.png)
 
-![](Pasted%20image%2020240909133650.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909133650.png)
 
 Контролираме дали позволяваме на елемента да се смали.
 Това и предишното пропърти, се ползват много често в комбинация с Flex Basis.
 ### Flex Basis
-![](Pasted%20image%2020240909133709.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909133709.png)
 
 Би трябвало да замени width, когато казваме размери, предимно по хоризонтала.
 ### Flex
-![](Pasted%20image%2020240909134106.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909134106.png)
 
 Бърз и удобен начин, да посочим и трите пропъртита, които казват на един елемент, колко да е голям.
 ### Align Self
-![](Pasted%20image%2020240909135031.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909135031.png)
 
-![](Pasted%20image%2020240909135049.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240909135049.png)
 
 Ползва се много рядко.
 ## Centering Elements Vertically and Horizontally with Flexbox
@@ -365,9 +365,11 @@ Meanwhile, within each row, `align-items` continues to affect how the **individu
 - **Two rows**: `align-items` aligns the items in each row, and `align-content` positions the rows relative to the container as a whole.
 ## Flex Items Behavior
 You
+
 Making a tag flex is a fast way to make all child elements inline blocks in a way. If we say direction column then it means all the tags will behave like block elements.
 
 ChatGPT
+
 Yes, you’re on the right track. Here’s a more detailed breakdown:
 
 **Flexbox as an Inline-Block Equivalent**
@@ -825,7 +827,7 @@ Here’s a simplified representation:
 
 In summary, the baseline is a reference line within the line box where text and inline elements align. It is not positioned at the bottom of the line box but is a crucial alignment point within the vertical space defined by the line box. The position of the baseline is not directly controlled by CSS properties; it is determined by the font metrics and the content of the text. However, you can influence the vertical alignment of elements relative to the baseline using the `vertical-align` property.
 
-![](Pasted%20image%2020240910225614.png)
+https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240910225614.png)
 
 [html - Vertical align not working on inline-block - Stack Overflow](https://stackoverflow.com/questions/35529582/vertical-align-not-working-on-inline-block)
 
@@ -966,4 +968,4 @@ The `outline` is a CSS property that draws a line around the outside of an eleme
 [vertical-align - CSS: Cascading Style Sheets | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align)
 
 
-Completion: 01.01.2024
+Completion: 13.09.2024
