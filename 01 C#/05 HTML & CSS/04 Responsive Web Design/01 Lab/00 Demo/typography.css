@@ -1,0 +1,17 @@
+/* Typography */
+
+html {
+    font: 11px/1.5 Lato, sans-serif;
+}
+
+@media (min-width: 400px) {
+    html { font-size: 12px; }
+}
+
+@media (min-width: 800px) {
+    html { font-size: 14px; }
+}
+
+@media (min-width: 1280px) {
+    html { font-size: 16px; }
+}
