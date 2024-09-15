@@ -15,6 +15,8 @@
 Чрез стиловете, които пишем чрез CSS, казваме на browser-a как да изглежда нашия сайт. Media query-тата, ни позволяват да питаме разни неща, за устройството в което в момента се отваря нашия сайт. Примерно може да питаме дали размера на екрана е определен размер, дали може да правим hover, какъв е aspect ratio-то и тн. Media queries ни позволяват да задаваме допълнителни правила. Ако устройството отговаря на определено правило, се apply-ва допълнителен CSS. Така може да пишем CSS, който да отговаря за различни устройства. Така нашия сайт се адаптира. 
 С други думи, responsive design е да знаем как да си променим layout-a, за да може да се адаптира към различни устройства.
 
+Media query-тата се отнасят главно до размера на **view port-a** (видимата част на екрана на потребителя), а не до размера на специфични елементи като `<body>` или други елементи. Те не предлагат директен начин да се насочат към нещо различно от характеристиките на view port-a, като неговата ширина, височина, резолюция и ориентация. Обикновено трябва да се ползва JavaScript, за да засече размера на елемента и след това динамично да приложи стилове или класове. Вместо JavaScript, може да се ползват container queries директно в CSS, без нужда от JS, но понеже са относително нови, не всички браузъри ги подържат.
+
 ![](Pasted%20image%2020240914141528.png)
 ### Media Types
 ![](Pasted%20image%2020240914161121.png)
@@ -34,10 +36,87 @@ and - `@media screen and (pointer: fine)` трябва и двете да са �
 not - `@media screen and not (pointer: fine)` трябва да е screen, но не трябва да е pointer fine.
 only - `@media only screen and (pointer: fine)` трябва, цялото media query да match-не.
 , (comma) - `@media (min-heigth: 680px), only screen and (orientation: portrait)` позволява ни да изреждаме повече от едно query-та, едно след друго. Ако едно от тях върне true, целия израз връща true. Този оператор се държи като OR оператор.
+
+**Examples:**
+#### and
+Used for combining multiple media features together into a single media query, requiring each chained feature to return true for the query to be true. It is also used for joining media features with media types.
+
+```
+@media (min-width: 801px) and (max-width: 1199px) {
+    body::before {
+        display: block;
+        content: 'The viewport width is larger than 800px and smaller than 1200px';
+        background: #369;
+        color: #fff;
+        padding: 1em 1.5em;
+        margin-bottom: 2em;
+        border-radius: 0.3em;
+    }
+}
+```     
+#### not
+Used to negate a media query, returning true if the query would otherwise return false. If present in a comma-separated list of queries, it will only negate the specific query to which it is applied.
+
+```
+@media not (max-width: 1200px) {
+    body::before {
+        display: block;
+        content: 'The viewport width is larger than 1200px';
+        background: #369;
+        color: #fff;
+        padding: 1em 1.5em;
+        margin-bottom: 2em;
+        border-radius: 0.3em;
+    }
+}
+```
+#### only
+Applies a style only if an entire query matches. It is useful for preventing older browsers from applying selected styles. When not using only, older browsers would interpret the query screen and (max-width: 500px) as screen, ignoring the remainder of the query, and applying its styles on all screens.
+
+```
+@media only screen and (min-width: 801px) {
+    body::before {
+        display: block;
+        content: 'The device is using a screen and the viewport width is larger than 800px';
+        background: #369;
+        color: #fff;
+        padding: 1em 1.5em;
+        margin-bottom: 2em;
+        border-radius: 0.3em;
+    }
+}
+```
+#### , (comma)
+Commas are used to combine multiple media queries into a single rule. Each query in a comma-separated list is treated separately from the others Thus, if any of the queries in a list is true, the entire media statement returns true. In other words, lists behave like a logical or operator.
+#### or
+Equivalent to the , operator. Added in Media Queries Level 4.
 ### Testing Media Queries
 Лесен начин да тестваме дали нашите media queries работят - Inspect и след това на device emulation. Може да задаваме конкретна резолюция, също изключва режими като hover, които мобилните устройства нямат.
-# Misc
+## Responsive Typography
 
+```
+/* Typography */
+
+html {
+    font: 11px/1.5 Lato, sans-serif;
+}
+
+@media (min-width: 400px) {
+    html { font-size: 12px; }
+}
+
+@media (min-width: 800px) {
+    html { font-size: 14px; }
+}
+
+@media (min-width: 1280px) {
+    html { font-size: 16px; }
+}
+```
+
+Когато padding, margin, line height и всичко останало, зависи от base font size-a, защото е сложено в em-ове, променяйки размера на страница, всичко расте заедно. Когато се налага да стане по-малко, за да може да съберем повече текст на един ред, то се променя. Така всичко си работи много добре и за малки и големи екрани. В примера горе, всяко следващо query, override-ва предишното. Винаги сме в посока от 400px нагоре, това се нарича mobile-first. Default стиловете са най-малки, колкото по-голям става екрана, толкова повече добавяме стилове. Алтернативно, може да ползваме max-width, което ще създаде desktop-first подход, където default стиловете са за големи екрани и промените са правят за по-малки екрани. 
+Често се смята, че когато се използва "desktop-first" подход (от по-големи към по-малки екрани), може да се наложи да се пише повече код. Това е така, защото първоначалният дизайн и стилове са създадени за по-големи екрани, а след това се добавят допълнителни медийни заявки (`@media`) за по-малки екрани, за да се коригират и адаптират стиловете. В "mobile-first" подхода (от по-малки към по-големи екрани) базовите стилове са за мобилни устройства. Когато екранът става по-голям, добавяме стилове чрез медийни заявки, като по този начин често намаляваме повторенията и сложността на кода. Това обикновено води до по-чист и по-малко излишен CSS код.
+# Misc
 # ChatGPT
 ## Key Media Features
 In CSS, media features are used within media queries to apply styles based on the characteristics of the user's device or viewport. There are many media features, and they can be broadly categorized into several groups. Here is an overview of the key media features:
@@ -569,6 +648,10 @@ This ensures that the 600 weight is available for use in your CSS.
 
 [Responsive design - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design)
 
+[Beginner's guide to media queries - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Media_queries)
+
 [Using media queries - CSS: Cascading Style Sheets | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries)
 
-Completion: 01.01.2024
+[Dribbble - Discover the World’s Top Designers & Creative Professionals](https://dribbble.com/) - excellent for layout design ideas. While Dribbble doesn't provide the code, you can use the visual designs as a reference and inspiration to recreate layouts in HTML and CSS yourself. It's a common practice for developers to take design concepts from Dribbble and use them as a basis for their projects, translating the visual ideas into functional web pages or applications.
+
+Completion: 15.09.2024
