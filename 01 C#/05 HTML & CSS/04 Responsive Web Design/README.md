@@ -642,6 +642,44 @@ To use a weight of 600, you would need to include it in the import statement lik
 ```
 
 This ensures that the 600 weight is available for use in your CSS.
+## ### Media Queries and `em` Units
+
+**1. Standard `em` Units:**
+
+- **Relative to Parent**: In regular CSS, `em` units are relative to the font size of the current element's parent. If a parent element has a font size of `16px`, `1em` will be `16px`, `2em` will be `32px`, and so on.
+- **Inheritance**: The value of `em` units can change depending on the font size of the parent elements.
+
+**2. `em` Units in Media Queries:**
+
+- **Relative to Root Font Size**: In media queries, `em` units are relative to the root element’s (`<html>`) font size, not the parent element’s font size. The root font size is typically `16px` by default unless explicitly changed.
+- **Consistent Interpretation**: Regardless of the font size set on elements like `<body>`, media queries will interpret `em` based on the root font size. For instance, if `<html>` is set to `16px`, then `1em` in a media query equals `16px`.
+
+**3. Common Issues:**
+
+- **Unexpected Behavior**: If the root font size is not explicitly set, `em` units in media queries may default to `16px`, leading to unexpected behavior if you're expecting them to be relative to a different size.
+- **Browser Variations**: Different browsers or environments might handle `em` units in media queries differently, especially if there's an override or conflict.
+
+**4. Troubleshooting Tips:**
+
+- **Set Root Font Size**: Explicitly set the font size of the root element (`<html>`) to ensure consistent behavior:
+    
+```
+html {
+    font-size: 14px; /* or another desired size */
+}
+```
+    
+- **Use `px` for Clarity**: For testing purposes, use `px` units in media queries to avoid confusion:
+    
+```
+@media (min-width: 420px) {
+    /* Styles here */
+}
+```
+    
+- **Check Browser and Settings**: Verify that browser settings and CSS are not overriding the expected behavior of `em` units.
+
+By understanding that `em` units in media queries are tied to the root font size and not the local context, you can better manage and predict responsive design behavior.
 # Bookmarks 
 
 [Responsive Web Design – A List Apart - Ethan Marcotte](https://alistapart.com/article/responsive-web-design/)
