@@ -21,21 +21,21 @@ p {
     padding-bottom: 1.5em;
 }
 
-@media (min-width: 30em) and (orientation: landscape) {
+@media (min-width: 31em) and (orientation: landscape) {
     body::before {
         display: block;
         content: 'The viewport width is larger than 30em and the orientation is landscape.';
     }
 }   
 
-@media (min-height: 680px), screen and (orientation: portrait) {
+@media (min-height: 681px), screen and (orientation: portrait) {
     body::before {
         display: block;
         content: 'The viewport height is larger than 680px or the media type is screen and the orientation is portrait.';
     }
 }
 
-@media not (min-width: 600px) {
+@media not (min-width: 601px) {
     body::before {
         display: block;
         content: 'The view port is NOT larger than 600px';

@@ -28,14 +28,14 @@ p {
     }
 }              
 
-@media (min-width: 800px) {
+@media (min-width: 801px) {
     body::before {
         display: block;
         content: 'The viewport width is larger than 800px';
     }
 }              
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
     body::before {
         display: block;
         content: 'The viewport width is smaller than 800px';
