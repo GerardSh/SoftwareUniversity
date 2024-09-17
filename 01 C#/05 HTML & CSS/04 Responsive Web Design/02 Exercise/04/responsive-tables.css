@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    padding: 2em;
+    font: 14px/1.5 Lato, sans-serif;
+    background-color: #eee;
+}
+
+table {
+    background-color: #fff;
+    border-collapse: collapse;
+}
+
+table td,
+table th {
+    padding: 1em 1.2em;
+    border: 1px solid #333;
+}
+
+@media (max-width: 600px) {   
+    table,
+    table thead,
+    table tbody,
+    table tr,
+    table th,
+    table td {
+        display: block;
+    }
+    
+    table thead {
+        display: none;
+    }
+    
+    table tr + tr {
+        padding-top : 1em;
+    }
+    
+    table tbody tr td::before {
+        display: inline-block;
+        content: attr(data-title);
+        padding-right: 1em;
+        font-weight: bold;
+    }
+}
