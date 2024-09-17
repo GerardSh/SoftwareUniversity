@@ -1,6 +1,6 @@
 # General
 ## What is Responsive Web Design?
-![](Pasted%20image%2020240914133637.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914133637.png)
 
 Идеята е един сайт, да си променя layout-a според устройството, на което е отворен, като зависи главно от широчината на екрана на устройството.
 При desktop, layout-a е най-сложен, защото имаме много повече хоризонтално място за нареждане на елементи.
@@ -10,24 +10,24 @@
 [Responsive design - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design)
 ## Responsive Web Design - How?
 ## Media Queries
-![](Pasted%20image%2020240914140456.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914140456.png)
 
 Чрез стиловете, които пишем чрез CSS, казваме на browser-a как да изглежда нашия сайт. Media query-тата, ни позволяват да питаме разни неща, за устройството в което в момента се отваря нашия сайт. Примерно може да питаме дали размера на екрана е определен размер, дали може да правим hover, какъв е aspect ratio-то и тн. Media queries ни позволяват да задаваме допълнителни правила. Ако устройството отговаря на определено правило, се apply-ва допълнителен CSS. Така може да пишем CSS, който да отговаря за различни устройства. Така нашия сайт се адаптира. 
 С други думи, responsive design е да знаем как да си променим layout-a, за да може да се адаптира към различни устройства.
 
 Media query-тата се отнасят главно до размера на **view port-a** (видимата част на екрана на потребителя), а не до размера на специфични елементи като `<body>` или други елементи. Те не предлагат директен начин да се насочат към нещо различно от характеристиките на view port-a, като неговата ширина, височина, резолюция и ориентация. Обикновено трябва да се ползва JavaScript, за да засече размера на елемента и след това динамично да приложи стилове или класове. Вместо JavaScript, може да се ползват container queries директно в CSS, без нужда от JS, но понеже са относително нови, не всички браузъри ги подържат.
 
-![](Pasted%20image%2020240914141528.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914141528.png)
 ### Media Types
-![](Pasted%20image%2020240914161121.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914161121.png)
 
 Примерно може да напишем специални стилове, които се зареждат, когато принтираме нашия сайт.
 ### Import
-![](Pasted%20image%2020240914161443.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914161443.png)
 
 Може да import-ваме CSS в друг CSS и там да кажем, за кой точно media type се отнася този CSS.
 ### Media Features
-![](Pasted%20image%2020240914163647.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914163647.png)
 
 Това са възможностите на устройството, за които ние ще казваме - при такива условия, този CSS трябва да бъде зареден.
 query-то в screenshot-a казва  - когато имаме екран и width да е поне 600px, по конкретно viewport-a е 600px, стиловете които са вътре в query-то, ще се вземат предвид.
@@ -117,6 +117,70 @@ html {
 Когато padding, margin, line height и всичко останало, зависи от base font size-a, защото е сложено в em-ове, променяйки размера на страница, всичко расте заедно. Когато се налага да стане по-малко, за да може да съберем повече текст на един ред, то се променя. Така всичко си работи много добре и за малки и големи екрани. В примера горе, всяко следващо query, override-ва предишното. Винаги сме в посока от 400px нагоре, това се нарича mobile-first. Default стиловете са най-малки, колкото по-голям става екрана, толкова повече добавяме стилове. Алтернативно, може да ползваме max-width, което ще създаде desktop-first подход, където default стиловете са за големи екрани и промените са правят за по-малки екрани. 
 Често се смята, че когато се използва "desktop-first" подход (от по-големи към по-малки екрани), може да се наложи да се пише повече код. Това е така, защото първоначалният дизайн и стилове са създадени за по-големи екрани, а след това се добавят допълнителни медийни заявки (`@media`) за по-малки екрани, за да се коригират и адаптират стиловете. В "mobile-first" подхода (от по-малки към по-големи екрани) базовите стилове са за мобилни устройства. Когато екранът става по-голям, добавяме стилове чрез медийни заявки, като по този начин често намаляваме повторенията и сложността на кода. Това обикновено води до по-чист и по-малко излишен CSS код.
 # Misc
+## Table Creation
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Creation</title>
+    <style>
+        
+        .table{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 22</th>
+                <th>Header 333</th>
+            </tr>   
+        </thead>
+        <tbody>
+            <tr>
+                <td>Row 1, Col 1</td>
+                <td>Row 1, Col 2</td>
+                <td>Row 1, Col 3</td>
+            </tr>
+            <tr>
+                <td>Row 2, Col 1</td>
+                <td>Row 2, Col 2</td>
+                <td>Row 2, Col 3</td>
+            </tr>
+            <tr>
+                <td>Row 3, Col 1</td>
+                <td>Row 3, Col 2</td>
+                <td>Row 3, Col 3</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Total:</td>
+                <td>9 Cols</td>
+                <td>Summary Info</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="table">*End of table</td>
+            </tr>
+        </table>
+        
+    </body>
+    </html>
+```
+
+Когато създаваме таблица, първо пишем `<table>`. 
+Първия ред на таблица table row - `<tr>`(всичко в table row е един ред), го слагаме в `<thead>`  и вътре изреждаме table header-и - `<th>`, защото става като заглавие на всяка колона. 
+Следващите редове ги слагаме в `<tbody>` и в тях изреждаме table data - `<td>`, което дефинира една клетка в таблицата.
+По желание, може да сложим и `<tfoot>`, ако искаме да добавим допълнителна информация като последен ред съдържаща - summary / total / note / remark.
+Атрибутът `colspan` в HTML се използва, за да позволи на една клетка да се разпростре хоризонтално върху няколко колони. Това е полезно, когато искаме да създадем заглавие или съдържание, което да обхване няколко колони и да създаде по-добра структура и визуален баланс в таблицата.
+Атрибутът `rowspan` в HTML се използва за вертикално обединяване на клетки в таблица. С него можем да зададем на една клетка да обхваща няколко реда. Например, ако зададем `rowspan="2"`, клетката ще се простира през два реда. Това е полезно, когато искаме да създадем таблица с комбинирани клетки за по-добра визуална организация на данните.
 # ChatGPT
 ## Key Media Features
 In CSS, media features are used within media queries to apply styles based on the characteristics of the user's device or viewport. There are many media features, and they can be broadly categorized into several groups. Here is an overview of the key media features:
@@ -680,6 +744,84 @@ html {
 - **Check Browser and Settings**: Verify that browser settings and CSS are not overriding the expected behavior of `em` units.
 
 By understanding that `em` units in media queries are tied to the root font size and not the local context, you can better manage and predict responsive design behavior.
+## Flex Items Width Calculation
+In a flex container with a horizontal layout (`flex-direction: row`), the width of each flex item is influenced by its content. Here’s how the width is determined:
+
+1. **Content-Based Width:** By default, flex items will grow to fit their content. If an item contains a long word that cannot break (like a long string without spaces), the item will expand to accommodate this word. This can cause the item to become wider than other items in the container.
+    
+2. **Longest Word:** When flex items have different content lengths, the item with the longest word will typically determine the minimum width required to contain that word. If the container does not have constraints (like a `max-width`), it will expand to fit the longest word.
+    
+3. **Flexbox Default Behavior:** By default, flex items will try to stay on a single line (`flex-wrap: nowrap`) and will not wrap to the next line. This means the width of the flex container itself may increase to accommodate the longest word among the items.
+    
+4. **Overflow:** If the combined width of the flex items exceeds the width of the flex container or viewport, the container will overflow horizontally unless styles like `overflow: hidden;` or `overflow-x: auto;` are applied.
+
+In summary, in a flex container laid out in a row, the width of each flex item is primarily determined by its content, and the container can expand to accommodate the widest item, especially when there's a long, unbreakable word.
+## Data Attribute
+The `data-*` attributes in HTML are a way to store custom data in HTML elements. They are useful for adding extra information to elements without affecting their appearance or functionality. Here’s a detailed overview:
+
+**Syntax**
+
+- **Attribute Name**: The attribute name starts with `data-`, followed by a name of your choice. For example: `data-user-id`, `data-product-name`, etc.
+- **Attribute Value**: The value assigned to the attribute can be any string. It’s often used to store information that JavaScript can later access.
+
+html
+
+```
+<div data-user-id="12345" data-product-name="Laptop"></div>
+```
+
+**Purpose**
+
+1. **Storing Extra Data**: You can use `data-*` attributes to store data that can be used by JavaScript. This is useful for passing additional information between HTML and JavaScript without embedding it directly in your HTML code or using complex class names or IDs.
+    
+2. **Customization and Flexibility**: They provide a way to store information in HTML elements that can be easily retrieved and manipulated with JavaScript.
+    
+3. **Non-Intrusive**: Using `data-*` attributes does not affect the rendering of the page, and they are purely for storing and retrieving data.
+
+**Accessing Data Attributes with JavaScript**
+
+You can access `data-*` attributes using the `dataset` property in JavaScript.
+
+**Example**
+
+html
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Attribute Example</title>
+</head>
+<body>
+    <div id="myElement" data-user-id="12345" data-product-name="Laptop"></div>
+
+    <script>
+        // Accessing data attributes
+        var element = document.getElementById('myElement');
+        var userId = element.dataset.userId; // "12345"
+        var productName = element.dataset.productName; // "Laptop"
+
+        console.log(userId); // Outputs: 12345
+        console.log(productName); // Outputs: Laptop
+    </script>
+</body>
+</html>
+```
+
+**Key Points**
+
+- **Naming Convention**: The name of the data attribute should be written in lowercase with hyphens (e.g., `data-user-id`). When accessed via JavaScript, hyphens are converted to camelCase (e.g., `dataset.userId`).
+- **Data Types**: Data attributes store data as strings. If you need to store other data types (like numbers or arrays), you’ll need to convert them to and from strings in JavaScript.
+- **Not for Styling**: Data attributes are not meant for styling elements. For styling, you should use CSS classes and IDs.
+
+**Limitations**
+
+- **No Special Behavior**: `data-*` attributes don’t have any special behavior or default functionality. They are simply a means of attaching custom data to elements.
+- **No Direct Use in CSS**: You cannot style elements based on `data-*` attributes directly in CSS (although you can use them in selectors with certain CSS-in-JS libraries).
+
+`data-*` attributes offer a flexible and unobtrusive way to store and retrieve custom data associated with HTML elements.
 # Bookmarks 
 
 [Responsive Web Design – A List Apart - Ethan Marcotte](https://alistapart.com/article/responsive-web-design/)
@@ -691,5 +833,7 @@ By understanding that `em` units in media queries are tied to the root font size
 [Using media queries - CSS: Cascading Style Sheets | MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries)
 
 [Dribbble - Discover the World’s Top Designers & Creative Professionals](https://dribbble.com/) - excellent for layout design ideas. While Dribbble doesn't provide the code, you can use the visual designs as a reference and inspiration to recreate layouts in HTML and CSS yourself. It's a common practice for developers to take design concepts from Dribbble and use them as a basis for their projects, translating the visual ideas into functional web pages or applications.
+
+[Backing Track](https://backingtrack.gg/) - music content, specifically focusing on backing tracks and stream-safe music. It has a presence on YouTube under the name "Backing Track," where it offers music that can be used for various purposes, including live streams and other content creation needs. This music is likely tailored to be copyright-safe, meaning content creators can use it without risking copyright infringement issues.
 
 Completion: 15.09.2024
