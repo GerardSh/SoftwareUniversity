@@ -1,5 +1,5 @@
 # General
-## What is Responsive Web Design?
+## Responsive Web Design
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914133637.png)
 
 Идеята е един сайт, да си променя layout-a според устройството, на което е отворен, като зависи главно от широчината на екрана на устройството.
@@ -8,7 +8,6 @@
 [Responsive Web Design – A List Apart - Ethan Marcotte](https://alistapart.com/article/responsive-web-design/)
 
 [Responsive design - Learn web development | MDN](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design)
-## Responsive Web Design - How?
 ## Media Queries
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240914140456.png)
 
