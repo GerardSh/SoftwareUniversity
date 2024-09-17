@@ -32,8 +32,11 @@ Media query-тата се отнасят главно до размера на *
 query-то в screenshot-a казва  - когато имаме екран и width да е поне 600px, по конкретно viewport-a е 600px, стиловете които са вътре в query-то, ще се вземат предвид.
 ### Logical operators
 and - `@media screen and (pointer: fine)` трябва и двете да са верни - да е screen и pointer fine.
+
 not - `@media screen and not (pointer: fine)` трябва да е screen, но не трябва да е pointer fine.
+
 only - `@media only screen and (pointer: fine)` трябва, цялото media query да match-не.
+
 , (comma) - `@media (min-heigth: 680px), only screen and (orientation: portrait)` позволява ни да изреждаме повече от едно query-та, едно след друго. Ако едно от тях върне true, целия израз връща true. Този оператор се държи като OR оператор.
 
 **Examples:**
@@ -705,7 +708,7 @@ To use a weight of 600, you would need to include it in the import statement lik
 ```
 
 This ensures that the 600 weight is available for use in your CSS.
-## ### Media Queries and `em` Units
+## Media Queries and `em` Units
 
 **1. Standard `em` Units:**
 
