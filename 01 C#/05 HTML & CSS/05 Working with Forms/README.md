@@ -4,7 +4,6 @@
 
 Формите се използват основно, за да може ние като потребители, да пратим информация до сървъра или да получим информация от нашите клиенти.
 ## Attributes
-
 ![](Pasted%20image%2020240922092110.png)
 
 По какъв начин да пратим информацията към сървъра. Приема две стойности - `GET` и `POST`:
@@ -37,6 +36,7 @@
 ![](Pasted%20image%2020240922112544.png)
 
 Списък от опции, който се постига, чрез `<select>` тага и в него трябва да сложим `<option>` тагове.
+Използваме `<select>` , когато имаме много голям избор от възможности, като примерно избор за държава.
 ### `<button>`
 ![](Pasted%20image%2020240922112821.png)
 
@@ -382,6 +382,46 @@ https://www.example.com/search?q=default+search+term
 **Summary:**
 
 Yes, you can manually define default values in form fields, and they will be included in the query when the form is submitted. Users can either keep the predefined value or change it before submission.
+## Radio Button (`<input type="radio">`)
+- **Purpose**: Allows users to select **one option** from a group.
+- **Behavior**: Only one radio button in a group can be selected at a time.
+- **Grouping**: Multiple radio buttons are grouped using the same `name` attribute.
+
+**Example:**
+
+```html
+<form>
+  <input type="radio" id="option1" name="choice" value="1">
+  <label for="option1">Option 1</label>
+  
+  <input type="radio" id="option2" name="choice" value="2">
+  <label for="option2">Option 2</label>
+</form>
+```
+## Checkbox (`<input type="checkbox">`)
+- **Purpose**: Allows users to select **multiple options** from a set.
+- **Behavior**: Multiple checkboxes can be selected independently.
+- **No Grouping**: Each checkbox is independent unless grouped by logic (not by the `name` attribute).
+
+**Example:**
+
+```html
+<form>
+  <input type="checkbox" id="optionA" name="options" value="A">
+  <label for="optionA">Option A</label>
+  
+  <input type="checkbox" id="optionB" name="options" value="B">
+  <label for="optionB">Option B</label>
+</form>
+```
+## Backend-generated HTML
+Backend-generated HTML can be styled using CSS just like static HTML. You can apply styles in three main ways:
+
+1. **External CSS**: Link an external stylesheet to style the dynamically generated content.
+2. **Internal CSS**: Include CSS within `<style>` tags in the `<head>` of the generated HTML.
+3. **Inline CSS**: Apply styles directly to HTML elements using the `style` attribute.
+
+Additionally, you can dynamically assign CSS classes to elements based on backend logic, allowing flexible styling. Once the HTML is rendered in the browser, the CSS is applied in the usual way.
 # Bookmarks 
 
-Completion: 01.01.2024
+Completion: 23.09.2024
