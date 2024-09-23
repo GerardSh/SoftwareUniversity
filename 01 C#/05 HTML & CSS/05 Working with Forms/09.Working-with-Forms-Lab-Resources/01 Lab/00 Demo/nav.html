@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation</title>
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+        
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font: 14px/1.5 Lato, sans-serif;
+        }
+        
+        
+        body {
+            padding: 2em;
+            background: #ccc;
+        }
+        
+        body::before {
+            display:block;
+            background-color: #369;
+            color: #fff;
+            
+            margin-bottom: 2em;
+            border-radius: 0.3em;
+            padding: 1em 2em;
+        }
+        
+        .site {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 1em 0 rgb(0, 0, 0, 0.1);
+            border-radius: 0.3em;
+            padding: 2em;
+        }
+        
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            gap: 0.5em;
+        }
+        
+        .main-nav li {
+            display: block;
+            list-style: outside;
+        }
+        
+        .main-nav a {
+            display: block;
+            text-decoration: none;
+            background: orange;
+            color: #fff;
+            padding: 0.5em 0.8em;
+            border-radius: 0.3em;
+        }
+        
+        .main-nav a:hover {
+            background: darkorange;
+        }
+        
+        @media (hover: hover) {
+            body::before {
+                content: 'Hover!';
+            }
+            
+            #main-nav-toggle,
+            label[for="main-nav-toggle"] {
+                display: none;
+            }
+        }
+        
+        @media (hover: none) {
+            body::before {
+                background-color: #090;
+                content: 'No Hover!';
+            }
+
+            #main-nav-toggle {
+                opacity: 0;
+                pointer-events: none;
+                position: absolute;
+                top: 0; left: 0;
+            }
+
+            label[for="main-nav-toggle"] {
+                position: absolute;
+                top: 1em;
+                right: 1em;
+                z-index: 1000;
+            }
+
+            .main-nav {
+                display:flex;
+                flex-direction: column;
+                position: absolute;
+                inset: 0;
+                padding: 2em;
+                background: #fff;
+                align-items: stretch;
+                justify-content: center;
+            }
+            
+            .main-nav ul {
+                flex-direction: column; 
+            }
+
+            #main-nav-toggle:checked + .site label .open {
+                display: none;
+            }
+            
+            #main-nav-toggle:not(:checked) + .site .site-header .main-nav {
+                display: none;
+            }
+
+            #main-nav-toggle:not(:checked) + .site label .close {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <input type="checkbox" id="main-nav-toggle" name="main-nav-toggle">
+    <div class="site">
+        <header class="site-header">
+            <h1>Site tile</h1>
+            <label for="main-nav-toggle">
+                <span class="open">Open</span>
+                <span class="close">Close</span>
+            </label>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Contacts</a></li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+    
+</body>
+</html>
