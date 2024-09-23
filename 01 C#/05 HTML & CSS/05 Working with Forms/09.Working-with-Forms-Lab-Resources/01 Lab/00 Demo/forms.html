@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title> 
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font: 14px/1.5 Lato, sans-serif;
+        }
+        
+        body, input, select, option, button, textarea {
+            font: inherit;
+        }
+        
+        body {
+            padding: 2em;
+            background: #eee;
+        }
+        
+        form {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2em;
+            background: #fff;
+            border-radius: 0.3em;
+            box-shadow: 0 0 1em 0 rgb(0, 0, 0, 0.1);
+        }
+        
+        form h2 {
+            margin-bottom: 1rem;
+        }
+        
+        fieldset {
+            border: 1px solid #ccc;
+            padding: 2em;
+            border-radius: 0.3em;
+            margin-bottom: 2em;
+        }
+        
+        fieldset legend {
+            padding: 0 1em;
+            margin-left: -1em;
+            font-weight: bold;
+        }
+        
+        input[type=text],
+        .field label {
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        label {
+            font-weight: bold;
+        } 
+        
+        input[required] ~ label::after {
+            display: inline-block;
+            content: "*";
+            padding-left: 0.3em;
+            color: red;
+        }
+        
+        input,
+        textarea,
+        select {
+            padding: 0.5em 0.8em;
+            border: 2px solid #ccc;
+            background: #fff;
+            border-radius: 0.3em;
+            outline: none;
+        }
+        
+        input[type=text]:user-invalid,
+        input[type=email]:user-invalid {
+            border-color: red;
+        }
+        
+        input[type=text]:user-invalid ~ label,
+        input[type=email]:user-invalid ~ label,
+        input[type="email"]:user-invalid ~ .helper,
+        input[type=text]:user-invalid ~ .helper {
+            color: red;
+        }
+
+        input[type=text]:user-invalid ~ .helper.error {
+        display: block;
+        }
+        
+        input[type=text]:user-valid,
+        input[type=email]:user-valid  {
+            border-color: blue;
+        }
+        
+        input[type=text]:user-valid ~ label,
+        input[type=email]:user-valid ~ label {
+            color: blue;
+        }
+
+        input[type=email]:user-valid ~ label::before {
+            display: block;
+            content: '\f00c';
+            font-family: "Font Awesome 6 Free";
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        input[type=text]:focus,
+        input[type=email]:focus {
+            border-color: orange;
+        }
+        
+        input[type=text]:focus ~ label,
+        input[type=email]:focus ~ label {
+            color: darkorange;
+        }
+        
+        input[type="submit"] {
+            border-color: #ccc;
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 1.5em;
+            position: relative;
+        }
+        
+        .field label {
+            order: -1;
+        }
+
+        .field .helper {
+            font-size: 0.9em;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .field .helper.error {
+            display: none;
+        }
+        
+        .field-radio,
+        .field-checkbox {
+            padding-bottom: 1.5em;
+        }
+        
+        .field-radio ul,
+        .field-checkbox ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 0.3em;
+            padding: 0.5em;
+        }
+        
+        .field-radio ul li,
+        .field-checkbox ul li {
+            flex: 1 1 120px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .field-radio ul li label,
+        .field-checkbox ul li label {
+            padding-left: 0.2em;
+        }
+        
+        form ul li {
+            list-style: none; 
+        }
+        
+    </style>
+</head>
+
+<body>
+    <form action="#" method="get">
+        <h2>Registration</h2>
+        
+        <fieldset>
+            <legend>Login Information</legend>   
+
+            <p class="field">
+                <input type="email" name="register-email" id="register-email" placeholder="eg: johndoe@gmail.com" required>
+                <label for="register-email">Email</label>
+                <span class="helper info">Enter your email address</span>
+            </p>
+            
+            <p class="field">
+                <input type="password" name="register-pass" id="register-pass" required>
+                <label for="register-pass">Password</label>
+            </p>
+        </fieldset>
+        
+        <fieldset>
+            <legend> Additional Information</legend>
+            <p class="field">
+                <input type="text" name="register-name" id="register-name" placeholder="eg: John Doe" required pattern="[A-Za-z]{3,16} [A-Za-z]{3,16}">
+                <label for="register-name">Full Name</label>
+                <span class="helper info">eg: John Doe</span> 
+                <span class="helper error">First and Last Names must contain 3 to 16 letters</span> 
+            </p>
+            
+            <p class="field">
+                <textarea name="register-bio" id="register-bio"></textarea>
+                <label for="register-bio">Bio</label>
+            </p>
+            
+            <p class="field">
+                <select name="register-age-group" id="register-age-group">
+                    <option>Please select your age Group</option>
+                    <option value="option1">18 - 25</option>
+                    <option value="option2">26 - 35</option>
+                    <option value="option3">36 - 45</option>
+                </select>
+                <label for="register-age-group">Age Group</label>
+            </p>
+            
+            <div class="field-radio">
+                <label>Age Group</label>
+                <ul class="radio-group">
+                    <li>
+                        <input type="radio" name="register-age-group-v2" id="register-age-group-v2-o1">
+                        <label for="register-age-group-v2-o1">18 - 25</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="register-age-group-v2" id="register-age-group-v2-o2">
+                        <label for="register-age-group-v2-o2">26 - 35</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="register-age-group-v2" id="register-age-group-v2-o3">
+                        <label for="register-age-group-v2-o3">36 - 45</label>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="field-checkbox">
+                <label>Interests</label>
+                <ul class="checkbox-group">
+                    <li>
+                        <input type="checkbox" name="register-interests-o1" id="register-interests-o1">
+                        <label for="register-interests-o1">Photography</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="register-interests-o2" id="register-interests-o2">
+                        <label for="register-interests-o2">Games</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="register-interests-o3" id="register-interests-o3">
+                        <label for="register-interests-o3">Computers</label>
+                    </li>
+                </ul>
+            </div>       
+            
+            <div class="field-range">
+                <label for=""></label>
+                <input type="range", name="register-age-group-v3" id="register-age-group-v3" min="25" max="45" step="1">
+            </div>
+           
+        </fieldset>
+        
+        <input type="submit" value="Register">
+        
+    </form>
+</body>
+</html>
