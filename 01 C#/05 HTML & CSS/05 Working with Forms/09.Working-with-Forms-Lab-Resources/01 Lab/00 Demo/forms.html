@@ -8,7 +8,7 @@
         
         @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
-
+        
         * {
             padding: 0;
             margin: 0;
@@ -93,9 +93,9 @@
         input[type=text]:user-invalid ~ .helper {
             color: red;
         }
-
+        
         input[type=text]:user-invalid ~ .helper.error {
-        display: block;
+            display: block;
         }
         
         input[type=text]:user-valid,
@@ -107,7 +107,7 @@
         input[type=email]:user-valid ~ label {
             color: blue;
         }
-
+        
         input[type=email]:user-valid ~ label::before {
             display: block;
             content: '\f00c';
@@ -141,13 +141,13 @@
         .field label {
             order: -1;
         }
-
+        
         .field .helper {
             font-size: 0.9em;
             font-style: italic;
             opacity: 0.7;
         }
-
+        
         .field .helper.error {
             display: none;
         }
@@ -192,7 +192,7 @@
         
         <fieldset>
             <legend>Login Information</legend>   
-
+            
             <p class="field">
                 <input type="email" name="register-email" id="register-email" placeholder="eg: johndoe@gmail.com" required>
                 <label for="register-email">Email</label>
@@ -266,10 +266,10 @@
             </div>       
             
             <div class="field-range">
-                <label for=""></label>
-                <input type="range", name="register-age-group-v3" id="register-age-group-v3" min="25" max="45" step="1">
+                <label for="register-age-group-v3"></label>
+                <input type="range" name="register-age-group-v3" id="register-age-group-v3" min="25" max="45" step="1">
             </div>
-           
+            
         </fieldset>
         
         <input type="submit" value="Register">

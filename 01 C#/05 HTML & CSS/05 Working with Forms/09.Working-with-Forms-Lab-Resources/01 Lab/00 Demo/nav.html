@@ -16,8 +16,7 @@
         
         html {
             font: 14px/1.5 Lato, sans-serif;
-        }
-        
+        }    
         
         body {
             padding: 2em;
@@ -88,21 +87,14 @@
                 background-color: #090;
                 content: 'No Hover!';
             }
-
+            
             #main-nav-toggle {
                 opacity: 0;
                 pointer-events: none;
                 position: absolute;
                 top: 0; left: 0;
             }
-
-            label[for="main-nav-toggle"] {
-                position: absolute;
-                top: 1em;
-                right: 1em;
-                z-index: 1000;
-            }
-
+            
             .main-nav {
                 display:flex;
                 flex-direction: column;
@@ -117,7 +109,7 @@
             .main-nav ul {
                 flex-direction: column; 
             }
-
+            
             #main-nav-toggle:checked + .site label .open {
                 display: none;
             }
@@ -125,14 +117,26 @@
             #main-nav-toggle:not(:checked) + .site .site-header .main-nav {
                 display: none;
             }
-
+            
             #main-nav-toggle:not(:checked) + .site label .close {
                 display: none;
+            }
+            
+            #main-nav-toggle:checked + .site label[for="main-nav-toggle"] {
+                position: absolute;
+                top: 1em;
+                right: 1em;
+                z-index: 1000;
+                background: orange;
+                padding: 1em 1.2em;
+                border-radius: 0.3em;
+                color: #fff;
             }
         }
     </style>
 </head>
 <body>
+    
     <input type="checkbox" id="main-nav-toggle" name="main-nav-toggle">
     <div class="site">
         <header class="site-header">
