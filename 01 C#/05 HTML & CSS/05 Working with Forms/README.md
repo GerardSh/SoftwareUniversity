@@ -264,7 +264,11 @@ Yes, we can add as many fields as we want to a form, and the information will be
 
 **You said:**
 
-`<input type="submit" value="Search">` what about this example? We don't have a key and the value is not user submitted?
+```html
+<input type="submit" value="Search">
+``` 
+
+what about this example? We don't have a key and the value is not user submitted?
 
 **ChatGPT said:**
 
@@ -300,6 +304,7 @@ In this case, when the form is submitted, it will send `submitButton=Search` alo
 - The submit button by default doesn’t generate a key-value pair, and its `value` is just a label for the button. However, adding a `name` attribute to the submit button can cause it to send data as a key-value pair along with the rest of the form data.
 
 **You said:**
+
 We can always see the name and the value in the search query of all input tags?
 
 **ChatGPT said:**
@@ -423,5 +428,7 @@ Backend-generated HTML can be styled using CSS just like static HTML. You can ap
 
 Additionally, you can dynamically assign CSS classes to elements based on backend logic, allowing flexible styling. Once the HTML is rendered in the browser, the CSS is applied in the usual way.
 # Bookmarks 
+
+[Palettes | Flat UI Colors 🎨 280 handpicked colors ready for COPY & PASTE](https://flatuicolors.com/) - provides developers with a curated collection of 280 ready-to-use color codes, making it easy to implement attractive and consistent color schemes in web or app designs.
 
 Completion: 23.09.2024
