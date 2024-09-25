@@ -204,7 +204,7 @@ In the context of HTML forms, the `name` attribute acts like a **variable name**
 - `name="q"` is the variable name (key).
 - If a user types "example" into this input and submits the form, the data sent to the server would be:
 
-```css
+```
 q=example
 ```
 
