@@ -197,8 +197,6 @@ In the context of HTML forms, the `name` attribute acts like a **variable name**
 
 **Example:**
 
-In your form:
-
 ```html
 <input type="text" name="q" id="search">
 ```
@@ -268,7 +266,7 @@ Yes, we can add as many fields as we want to a form, and the information will be
 <input type="submit" value="Search">
 ``` 
 
-what about this example? We don't have a key and the value is not user submitted?
+What about this example? We don't have a key and the value is not user submitted?
 
 **ChatGPT said:**
 
