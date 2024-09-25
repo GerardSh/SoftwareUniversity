@@ -1,48 +1,48 @@
 # General
 
-![](Pasted%20image%2020240922091551.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922091551.png)
 
 Формите се използват основно, за да може ние като потребители, да пратим информация до сървъра или да получим информация от нашите клиенти.
 ## Attributes
-![](Pasted%20image%2020240922092110.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922092110.png)
 
 По какъв начин да пратим информацията към сървъра. Приема две стойности - `GET` и `POST`:
 ### POST Method
-![](Pasted%20image%2020240922092410.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922092410.png)
 
 Информацията се изпраща като част от `POST` заявката, която е скрита визуално и тези данни не се виждат от browser-a. Потребителя си въвежда данните, натиска submit и те се изпращат като скрити данни спрямо адресната лента към сървъра, но могат да се видят в dev tools.
 ### GET Method
-![](Pasted%20image%2020240922092742.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922092742.png)
 
 Когато имаме `GET`, заявката е част от самия URL в query параметрите. Това ги прави видими в адресната лента на браузъра и лесни за проследяване. Затова `GET` не се използва за изпращане на чувствителна информация (като пароли).
 ## HTML Tags
 ### `<label>`
-![](Pasted%20image%2020240922101510.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922101510.png)
 
-![](Pasted%20image%2020240922105623.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922105623.png)
 
 Позволява ни да кажем, за какво се отнася дадено поле, нещо като заглавие за полето. 
 ### `<input>`
-![](Pasted%20image%2020240922111713.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922111713.png)
 
 Тагът `<input>` в HTML се използва за създаване на интерактивни елементи, които позволяват на потребителите да въвеждат данни. Той може да приема различни **типове** в зависимост от нуждите на формуляра.
 ### `<Textarea>`
-![](Pasted%20image%2020240922111859.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922111859.png)
 
 **`<textarea>`** е елемент в HTML, който позволява на потребителите да въвеждат **много редове текст**.
 Специфичен случай на input type text, когато искаме да добавим текст, но искаме той да е повече от един ред.
 `<input>`  полетата са просто един таг, който не се затваря, докато `textaread` има отварящ и затварящ таг и вътре между двата елемента, може да си добавим content, който да се показва.
 ### `<select>` & `<option>`
-![](Pasted%20image%2020240922112544.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922112544.png)
 
 Списък от опции, който се постига, чрез `<select>` тага и в него трябва да сложим `<option>` тагове.
 Използваме `<select>` , когато имаме много голям избор от възможности, като примерно избор за държава.
 ### `<button>`
-![](Pasted%20image%2020240922112821.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922112821.png)
 
 Използва се за най-различни цели, които може да се контролират с java script.
 ### `<fieldset>` & `<legend>`
-![](Pasted%20image%2020240922113419.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020240922113419.png)
 
 Това са семантични тагове, които ни позволяват да групираме група от полета, в някаква семантична структура.
 ## Key Value Pairs
