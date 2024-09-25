@@ -429,4 +429,6 @@ Additionally, you can dynamically assign CSS classes to elements based on backen
 
 [Palettes | Flat UI Colors 🎨 280 handpicked colors ready for COPY & PASTE](https://flatuicolors.com/) - provides developers with a curated collection of 280 ready-to-use color codes, making it easy to implement attractive and consistent color schemes in web or app designs.
 
+[The Elements of Typographic Style Applied to the Web – a practical guide to web typography](https://webtypography.net/) - a practical guide that adapts the principles of the renowned book _The Elements of Typographic Style_ by Robert Bringhurst to the context of web typography. The original book is considered a seminal work on typography, covering the art and science of arranging type to make text readable, beautiful, and effective in print.
+
 Completion: 23.09.2024
