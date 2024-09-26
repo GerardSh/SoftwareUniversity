@@ -1,0 +1,88 @@
+@import url('reset.css');
+@import url('typography.css');
+
+body {
+   
+    /* background-size: cover; */
+    background-image: url(/images/poster.jpg);
+    background-size: 1920px 869px;
+    background-repeat: no-repeat;
+    background-position: center top ;
+    padding: 30px;
+}
+
+body::before {
+display: block;
+content: '';
+position: absolute;
+inset: 0;
+background: rgb(0, 0, 0, 0.5);
+z-index: -1;
+}
+
+/* @media (min-width: 1920px) {
+    body {
+        background-size: 1920px 869px;
+    }
+} */
+
+.main-nav ul {
+    display: flex;
+    gap: 2em;
+}
+
+.main-nav li {
+    display: block;
+    list-style: none;
+}
+
+.section {
+    padding: 2em max(calc((100vw - 800px) /2), 2em)
+}
+
+.image {
+
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.section.section-header,
+.section-banner,
+.section.section-footer {
+    padding: 2em max(calc((100vh - 1600px) /2), 2em)
+}
+
+.section-banner {
+    color: #fff;
+    text-align: center;
+    padding-top: 18em;
+}
+
+.section-banner h2 {
+    font-size: 6em;
+}
+
+.section-banner p {
+    max-width: 80ch;
+    font-size: 1.4em;
+    padding: 7em 0;
+    margin: 0 auto;
+}
+
+.section-testimonial {
+    background: #F8F0E9;
+}
+
+.section-support {
+    background: #E14747;
+    color: #fff;
+}

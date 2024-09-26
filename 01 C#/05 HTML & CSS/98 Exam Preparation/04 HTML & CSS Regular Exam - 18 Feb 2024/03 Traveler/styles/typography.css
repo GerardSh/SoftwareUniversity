@@ -1,0 +1,7 @@
+html {
+    font: 14px/1.5 Lato, sans-serif;
+}
+
+body, input, textarea, button {
+    font: inherit;
+}
