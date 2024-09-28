@@ -1329,6 +1329,48 @@ The `flex-shrink` behavior prioritizes the width of the **parent** as a baseline
 In nested flex containers, the shrinkage of a flex item (like the child) depends on the size of its direct parent, not the outermost container. This can cause overflow if the parent itself is already constrained by a smaller container (like the grandparent in this case). The parent shrinks, but the child’s shrinkage is relative to the original (unshrunk) width of the parent.
 
 If you want both the parent and child to respect the available space within the grandparent container, you may need to manage the widths more explicitly (e.g., using `flex-grow`, `min-width`, or careful width settings) to ensure they shrink uniformly within the entire hierarchy.
+### Flex Child Larger Than Parent
+In flexbox, even if a **child element** is larger than its **parent container**, you can still center the child using flex properties like `align-items` and `justify-content`.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Larger Than Flex Parent</title>
+    <style>
+        .parent {
+            margin: 50px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid red; 
+            width: 50px;
+            height: 50px;
+        }
+        
+        .child {      
+            border: 1px solid blue; 
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="parent">
+        <div class="child"></div>    
+    </div>
+</body>
+</html>
+```
+
+- The **parent** is set to a fixed size of `50px` by `50px`, but the **child** has a larger size (`100px` by `100px`).
+- With the use of `flex-shrink: 0`, the **child** does not shrink to fit within the **parent**, maintaining its size.
+- Using `align-items: center` and `justify-content: center`, the **child** is centered within the smaller **parent** despite overflowing its borders.
+
+This demonstrates how flexbox allows precise control over positioning, even when the content is larger than the container.
 # Bookmarks
 
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
