@@ -1371,6 +1371,142 @@ In flexbox, even if a **child element** is larger than its **parent container**,
 - Using `align-items: center` and `justify-content: center`, the **child** is centered within the smaller **parent** despite overflowing its borders.
 
 This demonstrates how flexbox allows precise control over positioning, even when the content is larger than the container.
+### Width Auto vs 100%
+The difference between `width: auto;` and `height: auto;` in block elements is primarily due to how these dimensions are treated by default:
+
+1. **Width (auto)**: For block elements, `width: auto;` makes the element stretch to fill the entire width of its parent container, often occupying 100% of the available horizontal space, unless restricted by padding, margin, or other constraints.
+    
+2. **Height (auto)**: In contrast, `height: auto;` only expands the element vertically to fit the content it contains. It will grow in height as needed, but it won't automatically fill the height of its parent unless the content requires it.
+
+**Key Point:**
+
+- **Width auto** generally stretches to fill available space in the container.
+- **Height auto** adjusts to content, growing only as much as the content demands.
+
+This behavior reflects how web layouts prioritize content-driven vertical expansion and space-filling horizontal expansion.
+
+**You said:**
+
+Its interesting that there is a difference between width 100% and width auto.
+
+**ChatGPT said:**
+
+Yes, it’s quite interesting! While both `width: auto` and `width: 100%` might seem similar, they behave differently in several contexts:
+
+1. **Width: auto**
+
+- **Default behavior for block elements**: A block element with `width: auto` will naturally expand to fill the available width of its container, minus any padding, margins, or borders. It adjusts based on the remaining space in the parent container.
+- **Content-based expansion**: If the element’s content or parent’s size changes, it can dynamically adjust. However, it won't go beyond the space allowed by the container.
+
+2. **Width: 100%**
+
+- **Forces full width**: `width: 100%` ensures that the element will take up exactly 100% of the parent container's width, including any padding inside the element. This could lead to overflow or scrolling issues if not managed carefully.
+- **Doesn’t account for margin/border**: If there’s any margin or padding, this value will add to the total size, potentially causing the element to overflow its container.
+
+**Key Difference**:
+
+- **`width: auto`** takes up the remaining available space and dynamically adjusts, leaving room for padding and margins.
+- **`width: 100%`** forces the element to always take up the entire width of the container, which could lead to overflow if there’s extra padding or borders.
+
+This subtle difference is important for responsive layouts and ensuring that elements behave predictably across devices.
+
+In this example, you can see how `width: 100%` affects the child element:
+
+**Example:**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto vs 100%</title>
+    <style>
+        .parent {
+            margin: 50px auto;          
+            border: 1px solid red; 
+            width: 400px;
+            height: 400px;
+            padding: 40px;
+        }
+        
+        .child {      
+            border: 15px solid blue; 
+            height: auto;
+            width: 100%;  /* Forces the child to take full content width */
+        }
+    </style>
+</head>
+<body>
+    <div class="parent">
+        <div class="child">Content</div>    
+    </div>
+</body>
+</html>
+```
+
+**Explanation:**
+
+- **`width: 100%` in the child**: When you set the `width` to `100%`, it forces the child element to occupy the entire width of the **content area** of the parent element (400px in this case), _ignoring its own border_.
+    - In this example, the parent has a width of **400px**, and because of `width: 100%`, the child tries to fill exactly 400px. However, the **child has a 15px border**, so the actual **rendered size** of the child becomes **400px (content) + 2 * 15px (borders) = 430px**, causing the child to overflow its parent slightly.
+
+**Contrast with `width: auto`:**
+
+- **`width: auto`** in the child would calculate the width based on the available space and would _account for the child’s own borders_. This means the child’s total width, including borders, would fit inside the parent without causing overflow. It dynamically adjusts and does not force the content width to fill the parent's width.
+
+**Key Points:**
+
+- **`width: 100%`** causes the child to fill the entire width of the parent’s content box, _without accounting for padding or borders_ of the child itself. This can result in overflow if the child has borders, margins, or padding.
+- **`width: auto`** adapts to the available space, considering borders and paddings, ensuring that the total width of the child stays within the parent without causing overflow.
+
+So in this example, `width: 100%` forces the child to occupy the full width of 400px (ignoring its borders), leading to an overflow beyond the parent’s boundary.
+
+When **`box-sizing: border-box`** is applied, it changes the way the browser calculates the size of elements. It includes the padding and borders in the total width and height of the element, making **`width: auto`** and **`width: 100%`** behave the same in terms of fitting the content inside the parent container.
+
+**You said:**
+
+Without the border box property, what happens is that the browser takes the content of the parent for example 400px and applies it to the child width 400px, and this makes the content of the child exactly 400px, without calculating the child's border and padding sizes.
+
+**ChatGPT said:**
+
+Yes, that's exactly right!
+
+Without **`box-sizing: border-box`**, the browser calculates the **content width** of the child element as 400px based on the parent's width (400px). It doesn't factor in the borders or padding into that width, so it only applies to the content inside the child element.
+### Auto Property
+**You said:**
+
+The auto property just means - take the available space of the parent and apply it to the child, while calculating the padding and border of the child so it can perfectly fit inside the content of the parent.
+
+**ChatGPT said:**
+
+Yes, that's a great way to summarize it!
+
+**Understanding `height: auto` and `width: auto`:**
+
+- **`width: auto`**:
+    - The child element will take the full width of the parent container, considering the parent’s dimensions and any borders or padding applied to the child. It essentially allows the child to expand to fill the available width while ensuring it fits within the parent’s total width, including any borders and padding.
+- **`height: auto`**:
+    - The height of the child will adjust based on its content. It only expands vertically when there is enough content to require additional space. If there’s little or no content, the child will have a height that reflects the minimum needed to display the content, regardless of the parent’s height.
+
+So yes, the **`auto` property** effectively means to use the available space of the parent while also ensuring that the child’s dimensions are calculated correctly to fit inside the parent, accommodating any padding and borders as needed.
+
+### Box layers
+**You said:**
+
+Can we say that every box has his own rules especially when their dimensions are set? Its like operating on different layers as their content start to go on top of each other?
+
+**ChatGPT said:**
+
+Yes, you can think of each box as having its own "rules" or behavior based on its CSS properties, especially when dimensions like `width` and `height` are explicitly set. These rules govern how the box interacts with its parent, children, and surrounding elements. As content overflows or flex properties are applied, the layout can feel like it operates on different layers, with elements overlapping or resizing independently.
+
+When dimensions are set:
+
+- **Block-level elements** tend to respect their parent container’s width but may grow in height if content overflows.
+- **Flex items** behave differently, with the ability to shrink or grow based on `flex-shrink`, `flex-grow`, and other flexbox properties, leading to content potentially spilling over or being aligned in unexpected ways.
+
+When elements start overlapping or content exceeds the size of its container, it's as if each element follows its own set of rules, and these interactions can give the impression of content "stacking" or "floating" across different layers. This is particularly noticeable with larger elements centered in smaller containers, like in the example you provided, where different layers interact independently of each other.
+
+It's these unique interactions between containers and their content that give CSS its flexibility and complexity.
 # Bookmarks
 
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
