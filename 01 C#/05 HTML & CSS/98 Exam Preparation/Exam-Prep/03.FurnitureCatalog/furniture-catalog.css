@@ -55,7 +55,6 @@ h6 { font-size: 1em; }
 
 .section .wrapper.wide  {
     max-width: 1920px;
-    margin:0 auto;
 }
 
 .section-catalog {
@@ -64,4 +63,10 @@ h6 { font-size: 1em; }
 
 .site-footer {
     background: #1E1E1E;
+    color: #ddd;
+    text-align: center;
+}
+
+.site-footer .wrapper {
+    padding: 1em;
 }
