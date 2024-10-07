@@ -90,6 +90,25 @@ h6 { font-size: 1em; }
     display: flex;
 }
 
+.section-catalog .flex-columns.c2 article h4 {
+    font-size: 1em;
+    text-align: center;
+}
+
+.section-catalog .flex-columns.c2 article > * {
+    flex: 0 0 50%;
+}
+
+.section-catalog .flex-columns.c2 article .media  {
+width: 360px;
+height: 368px;
+}
+
+.section-catalog .flex-columns.c2 article .media img {
+object-fit: cover;
+object-position: -5px;
+}
+
 .section-catalog .flex-columns.c3 {
     gap: 3em;
 }
