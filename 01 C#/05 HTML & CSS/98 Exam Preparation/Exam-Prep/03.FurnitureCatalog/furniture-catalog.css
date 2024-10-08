@@ -50,7 +50,7 @@ h6 { font-size: 1em; }
 }
 
 .flex-columns.c2 > * {
-    flex: 0 0 40%;
+    flex: 1 1 45%;
 }
 
 .flex-columns.c3 > * {
@@ -60,18 +60,32 @@ h6 { font-size: 1em; }
 /* Sections */
 
 .section .wrapper {
-    max-width: 700px;
-    margin:0 auto;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-.section .wrapper.wide  {
-    max-width: 1920px;
+.section .wrapper.narrow  {
+    max-width: 1000px;
 }
 
 .section-catalog header,
 .section-about,
 .section-banner {
     text-align: center;
+}
+
+.site-header .site-title a {
+display: block;
+background: url('images/logo.png') center no-repeat;
+width: 7em;
+height: 4em;
+background-size: contain;
+text-indent: -100vw;
+overflow: hidden;
+}
+
+.section-banner .wrapper {
+    padding: 6em 0 4em 0;
 }
 
 .section-catalog header {
@@ -86,8 +100,20 @@ h6 { font-size: 1em; }
     font-size: 1.2em;
 }
 
+.section-catalog .flex-columns.c2  {
+    gap: 11em;
+}
+
+
 .section-catalog .flex-columns.c2 article {
     display: flex;
+    overflow: hidden;
+    box-shadow: 0 0 1em 0 rgb(0,0,0,0.2);
+}
+
+
+.section-catalog .flex-columns.c2 article > * {
+    flex: 0 0 50%;
 }
 
 .section-catalog .flex-columns.c2 article h4 {
@@ -95,18 +121,21 @@ h6 { font-size: 1em; }
     text-align: center;
 }
 
-.section-catalog .flex-columns.c2 article > * {
-    flex: 0 0 50%;
-}
-
 .section-catalog .flex-columns.c2 article .media  {
-width: 360px;
-height: 368px;
+    overflow: hidden;
+    position: relative;
+    
 }
 
 .section-catalog .flex-columns.c2 article .media img {
-object-fit: cover;
-object-position: -5px;
+    position: absolute;
+    height: 210px;
+    width: auto;
+}
+
+.section-catalog .flex-columns.c2 article section {
+    background: #fff;
+    padding: 3em 2em; 
 }
 
 .section-catalog .flex-columns.c3 {
@@ -117,11 +146,60 @@ object-position: -5px;
     box-shadow: 0 0 1em 0 rgb(0,0,0,0.4);
 }
 
+.section-furniture .wrapper {
+    padding: 3em 0;
+}
+
+.section-furniture .flex-columns.c3 {
+    gap: 2em;
+    text-align: center;
+}
+
+.section-furniture .flex-columns.c3 > * {
+flex-grow: 1;
+}
+
+.section-furniture .flex-columns.c3 img {
+    height: 5em;
+    width: 5em;
+    margin: 0 auto;
+}
+
+.section-furniture .flex-columns.c3 h4 {
+    font-size: 1.2em;
+}
+
+.section-about .wrapper {
+    padding: 2em;
+    opacity: 0.7;
+}
+
+.section-about .wrapper header {
+padding-bottom: 2em;
+}
+
+.section-about .wrapper header h3 {
+    font-size: 1.2em;
+}
+
+.section-about .wrapper header p {
+    font-style: italic;
+    }
+
+.section-about .wrapper p {
+    max-width: 100ch;
+    margin: 0 auto;
+}
+
+
 .site-header .wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 2em;
 }
+
+
 
 .section-catalog {
     background: #60ACC1;
