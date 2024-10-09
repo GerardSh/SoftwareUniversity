@@ -13,7 +13,7 @@ img {
 }
 
 html {
-    font: 14px/1.5 "PT Sans", sans-serif;
+    font: 18px/1.5 "PT Sans", sans-serif;
 }
 
 body, input, textarea, button {
@@ -42,6 +42,8 @@ h6 { font-size: 1em; }
     display: block;
     padding: 0.5em 1em;
     text-decoration: none;
+    color: black;
+    font-weight: bold;
 }
 
 .flex-columns {
@@ -59,8 +61,15 @@ h6 { font-size: 1em; }
 
 /* Sections */
 
+body {
+   background-image: url('images/background.jpg');
+   background-position: center -20em;
+   background-repeat: no-repeat;
+   background-size: 1920px auto;
+}
+
 .section .wrapper {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -88,6 +97,19 @@ overflow: hidden;
     padding: 6em 0 4em 0;
 }
 
+.section-banner .wrapper h2 {
+    padding-bottom: 1rem;
+}
+
+.section-banner .wrapper .button {
+    display: inline-block;
+    background: #fff;
+    border-radius: 0.3em;
+    color: #666;
+    margin-top: 2em;
+    padding: 0.5em 1em;
+}
+
 .section-catalog header {
     padding-bottom: 1.5em;
 }
@@ -104,13 +126,11 @@ overflow: hidden;
     gap: 11em;
 }
 
-
 .section-catalog .flex-columns.c2 article {
     display: flex;
     overflow: hidden;
     box-shadow: 0 0 1em 0 rgb(0,0,0,0.2);
 }
-
 
 .section-catalog .flex-columns.c2 article > * {
     flex: 0 0 50%;
@@ -124,12 +144,11 @@ overflow: hidden;
 .section-catalog .flex-columns.c2 article .media  {
     overflow: hidden;
     position: relative;
-    
 }
 
 .section-catalog .flex-columns.c2 article .media img {
     position: absolute;
-    height: 210px;
+    height: 100%;
     width: auto;
 }
 
@@ -144,6 +163,10 @@ overflow: hidden;
 
 .section-catalog .flex-columns.c3 img {
     box-shadow: 0 0 1em 0 rgb(0,0,0,0.4);
+}
+
+.section-furniture {
+    background: #fff;
 }
 
 .section-furniture .wrapper {
@@ -199,8 +222,6 @@ padding-bottom: 2em;
     padding: 2em;
 }
 
-
-
 .section-catalog {
     background: #60ACC1;
 }
@@ -211,6 +232,6 @@ padding-bottom: 2em;
     text-align: center;
 }
 
-.site-footer .wrapper {
+.section-footer .wrapper {
     padding: 1em;
 }
