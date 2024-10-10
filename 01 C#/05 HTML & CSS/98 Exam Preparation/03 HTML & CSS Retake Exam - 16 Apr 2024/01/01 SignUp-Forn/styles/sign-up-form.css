@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap");
+@import url('reset.css');
+@import url('typography.css');
+
+html {
+    background: black;
+}
+
+body {
+    width: 1920px;
+    height: 868px;
+    padding-top: 60px;
+    background-color: #C1BDBA;
+}
+
+form {
+    width: 750px;
+    margin: auto;
+    background-color: #24333C;
+    padding: 50px;
+    border-radius: 0.4em;
+    box-shadow: 0 0 1em 0 rgb(0,0,0,0.3);
+    color: #fff;
+}
+
+.nav {
+    display:flex;
+}
+
+.nav li {
+    flex: 1 1 50%;
+    display: block;
+    list-style: none;
+    text-align: center;
+}
+
+.nav a {
+    display: block;
+    color: #A0B3B0;
+    text-decoration: none;
+    line-height: 71px;
+    font-size: 25px;
+    background-color: #435359;
+}
+
+a.main {
+    color: inherit;
+    background-color: #1AB188;
+}
+
+ul li:not(:first-child) a:hover {
+    background-color: #179A77;
+}
+
+.heading {
+    height: 151px;
+    line-height: 151px;
+    text-align: center;
+    font-size: 40px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 50px;
+    color: #92999E;
+}
+
+.flex {
+    display: flex;
+    gap: 26px;
+}
+
+.flex div {
+    flex: 1 1 50%;
+}
+
+.container div input {
+    height: 46px;
+    border: 1px solid #A0B3B0;
+    background: #24333C;
+    width: 100%;
+}
+
+.container div {
+    position: relative;
+}
+
+label {
+    font-size: 28px;
+    position: absolute;
+    top:5px; left: 15px;
+}
+label:after {
+    
+    content: "*";
+    padding-left: 3px;
+    color: #1BAB87;   
+}
+
+input[type="submit"] {
+    height: 89px;
+    font-size: 40px;
+    color: #fff;
+    background-color: #1AB188 ;
+    font-weight: bold;
+    letter-spacing: 5px;
+    border: none;
+    text-transform: uppercase;
+}
