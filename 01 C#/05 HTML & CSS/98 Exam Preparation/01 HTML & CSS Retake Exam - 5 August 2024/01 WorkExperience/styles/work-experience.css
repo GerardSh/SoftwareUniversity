@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Margarine&display=swap');
+@import url('reset.css');
+@import url('typography.css');
+
+html {
+    background: black;
+}
+
+body {
+    padding-top: 150px;
+    background-color: #FAECE0;
+    height: 2000px;
+}
+
+.flex {
+    width: 1368px;
+    gap: 16px;
+    display: flex;
+    margin: 0 auto; 
+}
+
+.flex > * {
+    box-shadow: 0 0px 1em 0 rgb(0,0,0,0.3);
+    padding: 20px 16px;
+}
+
+.contact {
+    width: 441px;
+}
+
+.work-experience {
+    width: 911px;
+}
+
+.contact .heading {
+    margin-bottom: 38px;
+    font-size: 30px;
+    line-height: 24px;
+}
+
+.info-text {
+    padding-left: 17px;
+}
+
+.icon {
+    margin-bottom: 16px; 
+}
+
+.hr {
+    border-bottom: 1px solid #9A9A9A;
+}
+
+i {
+    color: #2991E6;
+}
+
+.bar-text {
+    margin-block: 14px;
+    font-size: 15px;
+}
+
+.bar { 
+    text-align: center;  
+    background-color: #2991E6;
+    border-radius: 10px;
+    color: white;
+}
+
+.wrapper {
+    width: 407px;
+    font-size: 12px;
+}
+
+.adobe {
+    width: 90%;
+}
+
+.photography {
+    width: 80%;
+}
+
+.illustrator {
+    width: 75%;
+}
+
+.media {
+    width: 50%;
+    margin-bottom: 50px;
+}
+
+.work-experience {
+    padding-inline: 30px;
+}
+
+.work-experience > * {
+    margin-bottom: 8px;
+}
+
+.work-experience .heading {
+    margin-top: 38px;
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.position {
+color: #66605B;
+font-size: 20px;
+font-weight: bold;
+}
+
+.date {
+    color: #2E91E6;
+    margin-bottom: 15px;
+}
+
+.info {
+    margin-bottom: 15px;  
+    word-spacing: 3px;
+}
+
+.work-experience .hr {
+margin-bottom: 23px;
+}
