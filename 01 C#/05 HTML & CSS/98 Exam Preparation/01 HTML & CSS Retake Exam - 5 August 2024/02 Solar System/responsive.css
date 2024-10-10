@@ -1,0 +1,45 @@
+@media (max-width: 600px) {
+    nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    nav a {
+        border: 0 !important;
+    }
+    
+    .pair {
+        flex-direction: column;
+    }
+    
+    .pair .planet {
+        width: initial;
+        align-items: center;
+    }
+    
+    .pair .planet_info {
+        text-align: center;
+    }
+    
+    header {
+        padding-bottom: 10px;
+    }
+    
+    .news ul {
+        flex-direction: column;
+    }
+    
+    .news ul li {
+        text-align: center;
+    }
+    
+    .news ul li img {
+        display: block;
+        margin: 0 auto;
+    }
+    
+    nav a {
+        border: 0 !important;
+    }
+}
