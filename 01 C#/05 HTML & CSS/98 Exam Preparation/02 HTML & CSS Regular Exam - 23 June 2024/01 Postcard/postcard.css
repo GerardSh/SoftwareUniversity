@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Gochi Hand", sans-serif;
+}
+
+body, input, textarea, button {
+    font: inherit;
+}
+
+body {
+    background-color: #E0E0E0;
+}
+
+main {
+    width: 1000px;
+    padding: 25px;
+    margin: 27px auto;
+    margin-bottom: 1px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: #FBFBFB;
+}
+
+.background {
+    background-image: url(images/nature.jpg);
+    background-size: contain;
+    height: 535px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.text {
+    width: 900px;
+    height: 159px;
+    background-color: white;
+    margin-bottom: 13px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.text h4 {
+    margin-top: 14px;
+    margin-bottom: 7px;
+    font-size: 25px;
+}
+
+.text p {
+    line-height: 20px;
+    margin-inline: 25px;
+    font-size: 17.5px;
+    color: #666666;
+}
+
+footer {
+    background-color: #F9F9F9;
+    width: 1000px;
+    margin: 0 auto;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.wrap {
+    margin-left: 50px;
+}
+
+footer h4 {
+    padding-top: 30px;  
+    margin-bottom: 19px;
+    font-size: 25px;
+}
+
+footer p {
+    color: #666666;
+    margin-bottom: 6px;
+    font-size: 20px;
+}
+
+footer p:last-child {
+    padding-bottom: 38px;
+}
