@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Karla", sans-serif;
+}
+
+body, input, textarea, button {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.site {
+    width: 1920px;
+    height: 3000px;
+}
+
+.heading {
+    height: 870px;
+    background-image: url(images/poster.jpg);
+    background-size: 100% 100%;
+    padding: 35px 100px;
+}
+
+.heading nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.media-heading {
+    width: 110px;
+}
+
+.media-heading img {
+    display: block;
+    width: 100%;
+}
+
+.heading ul {
+    list-style: none;
+    display: flex;
+    gap: 60px;
+    color: white;
+    font-size: 22px;
+}
+
+.heading h1 {
+    margin-top: 250px;
+    text-align: center;
+    font-family: 'Cormorant Infant';
+    font-size: 112px;
+    color: white;
+}
+
+.heading p {
+    margin: 0 auto;
+    margin-top: 120px;  
+    color: white;
+    font-size: 22px;
+    width: 740px;
+    text-align: center;
+}
+
+.main-1 {
+    height: 618px;
+    background-color: #F8F0E9;
+    padding-top: 55px;
+    padding-left: 400px;
+    color: #352B2A;
+}
+
+.main-1 p {
+    font-size: 22px;
+    word-spacing: 2px;
+}
+
+.main-1 h2 {
+    margin-top: 90px;
+    font-style: italic;
+    font-size: 75px;
+    font-family: 'Cormorant Infant';
+    width: 1111px;
+    line-height: 60px; 
+}
+
+.main-2 {
+    height: 326px;
+    background-color: #E14747;
+    color: white;
+    text-align: center;
+}
+
+.main-2 h4 {
+    padding-top: 90px;
+    font-size: 30px;
+}
+
+.main-2 p {
+    margin: 50px auto;
+    font-size: 22.5px;
+    width: 300px;
+}
+
+.main-3 {
+    background-color: #F8F0E9;
+    padding-top: 80px;
+}
+
+.main-3-media {
+    margin: 0 auto;
+    width: 625px;
+    height: 468px;
+    overflow: hidden;
+    background-image: url(images/place1.jpg);
+    background-size: 700px 468px;
+    background-position: center;
+}
+
+/* .main-3-media img {
+width: 695px;
+height: 468px;
+display: block;
+
+} */
+
+.main-3 h1 {
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 93px;
+    font-size: 75px;
+    width: 560px;
+    font-family: 'Cormorant Infant';
+    line-height: 75px;
+}
+
+
