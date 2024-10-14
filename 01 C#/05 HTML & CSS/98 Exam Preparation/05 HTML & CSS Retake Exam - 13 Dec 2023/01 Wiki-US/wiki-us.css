@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Agbalumo&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Agbalumo", sans-serif;
+}
+
+body, input, textarea, button {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+body {
+    width: 844px;
+    padding: 16px;
+    margin: 0 auto;
+}
+
+.site {
+    border: 2px solid black;
+    width: 844px;
+}
+
+.main-1 {
+    background-color: #D5EBEA;
+}
+
+.main-1 .wrapper {
+    margin-left: 18px;
+}
+
+.border {
+    width: 773px;
+    border-block: 1px solid black;
+    margin-left: 19px;
+}
+
+.main-1 h1 {
+    
+    text-align: center;
+    padding-top: 28px;
+    padding-bottom: 2px;
+    font-size: 37px;
+    line-height: 50px;
+}
+
+.main-1 h4 {
+    text-align: center;
+    
+    font-weight: 100;
+    padding-top: 1px;
+    
+}
+
+.main-2 .flex {
+    margin-top: 37px;
+    margin-left: 19px;
+    display: flex;
+    gap: 21px;
+    align-items: end;
+}
+
+.map {
+    width: 293px;
+    height: 321px;
+    padding: 9px;
+    padding-right: 13px;
+    border: 2px solid black;
+}
+
+.media img {
+    width: 100%;
+}
+
+.media p {
+    padding-top: 17px;
+    font-size: 11.2px;
+    text-align: center;
+    padding-right: 19px;
+    line-height: 16px;
+}
+
+.media p + p {
+    text-align: initial;
+    padding: 0;
+    padding-left: 1px; 
+    width: 267px;
+}
+
+.main-2 .text {
+    font-size: 16.8px;
+    width: 467px;
+    position: relative;
+    bottom: 7px;
+}
+
+.text span {
+    padding-left: 29px;
+}
+
+.text p + p {
+    margin-top: 20px;
+}
+
+.text p:first-child {
+    position: relative;
+    top: 2px;
+}
+
+.last {
+    margin-top: 37px;
+    width: 373px;
+    height: 34px;
+    text-align: center;
+    color: white;
+    background-color: black;
+    font-weight: bold;
+    font-size: 22.5px;
+}
+
+footer {
+    background-color: #D5EBEA;
+    padding-left: 38px; 
+    padding-bottom: 8px;
+    padding-top: 5px;
+}
+
+footer p {
+    padding-top: 10px;
+    font-size: 16.5px;
+    word-spacing: 1.3px;
+}
+
+footer p span {
+    font-weight: bold;
+}
+
+footer p:last-child {
+    padding-top: 10px;
+}
