@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Agbalumo&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Helvetica", sans-serif;
+}
+
+.site {
+    width: 840px;
+    border: 3px solid black;
+    border-radius:10px;
+    margin: 0 auto;
+    margin-top: 20px;
+    background-color: #1881B6;
+    padding: 25px;
+    padding-left: 33px;
+    padding-right: 29px;
+}
+
+.main-1,
+.main-2 {
+    display: inline-block;
+    width: 475px;
+    height: 290px;
+    vertical-align: top;
+}
+
+.main-2 {
+    width: 290px;
+}
+
+.main-1 {
+    padding-top: 25px;
+}
+
+.main-1 h2 {
+    text-transform:uppercase;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.main-1 h1 {
+    padding-top: 20px;
+    font-size: 30.5px;
+    word-spacing: 2px;
+    color: white;
+    font-weight: 100;
+}
+
+.main-1 p {
+text-indent: 35px;
+font-size: 12.5px;
+  padding-right: 5px;
+  padding-top: 10px;
+  line-height: 2;
+}
+
+.main-2 {
+    background-image: url(image/img.jpg);
+    background-size: contain;
+}
+
+.button {
+    margin-top: 10px;
+    margin-left: 80px;
+    display: inline-block;
+    line-height: 26px;
+    width: 90px;
+    font-size: 10px;
+    letter-spacing: -1px;
+    border: 1px solid black;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.button-1 {
+background-color: #B6416D;
+}
+
+.button-2 {
+width: 80px;
+color: black;
+
+}
