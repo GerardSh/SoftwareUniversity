@@ -1,0 +1,114 @@
+@media (max-width: 600px) {   
+    .game-world-header.container.placeholder {
+        height: auto;
+    }
+    
+    .parallax-window {
+        height: inherit;
+    }
+    
+    .tm-header {
+        position: initial;
+    }
+    
+    .tm-header-inner {
+        justify-content: center;
+        margin: 0;
+        padding-top: 0;
+    }
+    
+    .tm-site-title {
+        text-align: center;
+    }
+    
+    .row.tm-welcome-section {
+        justify-content: center;
+    }
+    
+    .row.tm-welcome-section h2 {
+        max-width: 350px;
+        margin-inline: 0;
+    }
+    
+    .row.tm-welcome-section p {
+        padding-inline: 110px;
+    }
+    
+    .row.tm-gallery {
+        margin: 0;
+        max-width: 600px;
+        flex-direction: column;
+    }
+    #tm-gallery-page-all {
+        margin:0;
+        align-items: center;
+        flex-direction: column;
+    }
+    
+    .parallax-window {
+        padding-bottom: 30px;
+    }
+    
+    .tm-paging-links {
+        margin-bottom: 20px;
+    }
+    
+    h4.tm-gallery-title {
+        text-align: center;
+    }
+    
+    .tm-gallery-item {
+        max-width: 290px;
+        padding: 0;
+    }
+    
+    .tm-gallery-price {
+        margin-bottom: 30px;
+    }
+    
+    article.row {
+        flex-direction: column;
+        max-width: 340px;
+        margin: 0 auto;
+        padding: 0;
+    }
+    
+    .tm-description-figure {
+        max-width: 100%;
+        width: initial;
+    }
+    
+    .img-fluid {
+        width: 100%;
+    }
+    
+    .row.tm-header-inner {
+        max-width: 400px;
+    }
+    
+    .tm-cta-section.tm-section.tm-container-inner {
+        max-width: 600px;
+        width: initial;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .col-md-6 {
+        padding: 0;
+    }
+    
+    .tm-description-box {
+        margin-top: 10px; 
+    }
+    
+    .tm-description-box h4.tm-gallery-title {
+        text-align: initial;
+    }
+    
+    .tm-mb-45 {
+        margin-bottom: 20px;
+    }
+    footer {
+        padding-top: 0 !important;
+    }
+}
