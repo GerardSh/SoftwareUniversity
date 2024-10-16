@@ -26,7 +26,7 @@ html {
 .main-2 {
     display: inline-block;
     width: 475px;
-    height: 290px;
+    height: 100%;
     vertical-align: top;
 }
 
@@ -34,8 +34,14 @@ html {
     width: 290px;
 }
 
+.main-2 img {
+    width: 100%;
+    display: block;
+}
+
 .main-1 {
     padding-top: 25px;
+    padding-bottom: 11px;
 }
 
 .main-1 h2 {
@@ -53,26 +59,20 @@ html {
 }
 
 .main-1 p {
-text-indent: 35px;
-font-size: 12.5px;
-  padding-right: 5px;
-  padding-top: 10px;
-  line-height: 2;
-}
-
-.main-2 {
-    background-image: url(image/img.jpg);
-    background-size: contain;
+    text-indent: 35px;
+    font-size: 12.5px;
+    padding-right: 5px;
+    padding-top: 10px;
+    line-height: 1.9;
 }
 
 .button {
-    margin-top: 10px;
-    margin-left: 80px;
+    margin-top: 12px;
+    margin-left: 75px;
     display: inline-block;
     line-height: 26px;
     width: 90px;
     font-size: 10px;
-    letter-spacing: -1px;
     border: 1px solid black;
     text-align: center;
     color: white;
@@ -81,11 +81,10 @@ font-size: 12.5px;
 }
 
 .button-1 {
-background-color: #B6416D;
+    background-color: #B6416D;
 }
 
 .button-2 {
-width: 80px;
-color: black;
-
+    width: 80px;
+    color: black;
 }
