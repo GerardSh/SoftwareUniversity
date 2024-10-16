@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Inter", sans-serif;
+}
+
+body, input, textarea, button {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.site {
+    border: 2px solid black;
+    width: 1920px;
+    height: 975px;
+    margin: 0px auto;
+    background-image: url(images/background.jpg);
+    background-size: 100% auto;
+    background-position: center;
+    padding: 60px 145px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.left {
+    width: 1060px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.right {
+    width: 530px;
+}
+
+.left > div {
+    width: 100%;
+    height: 406px;
+}
+
+.quote {
+    background-color: #FFFFFF;
+}
+
+.left .quote {
+    padding: 85px 60px 65px 60px;
+    display: flex;
+    gap: 60px;
+}
+
+.left i {
+    font-size: 90px;
+}
+
+.text {
+    width: 640px;
+    flex-shrink: 0;
+}
+
+.text p {
+    margin-block: 25px;
+    font-size: 23px;
+    color: #595959;
+    line-height: 29px;
+}
+
+.text h4 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 30px;
+}
+
+.left .image {
+    overflow: hidden;
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+}
+
+.left img {
+    width: 100%;
+    height: auto;
+    position: relative;
+    bottom: 40px;
+}
+
+.left div:nth-child(2) div:nth-child(2) img {
+    width: 100%;
+    height: auto;
+    position: static;
+}
+
+.right i {
+    font-size: 120px;
+}
+
+.right {
+    padding-left: 40px;
+    padding-right: 45px;
+    padding-top: 75px;
+}
+
+.right > p {
+    margin-top: 70px;
+    padding-bottom: 155px;
+    font-size: 23px;
+    color: #595959;
+    line-height: 29px;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.right .image {
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+}
+
+.right img {
+    width: 100%;
+    height: auto;
+    position: relative;
+    bottom: 30px; 
+}
+
+img {
+    filter: grayscale(100%);
+}
+
+.right .flex {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.right .text-right h4 {
+    font-size: 29.5px;
+    font-weight: 600;
+}
+
+.right .text-right p {
+    font-size: 15px;
+    font-weight: bold;
+    color: #595959;
+}
+
+.text-right {
+    position: relative;
+    top: 10px;
+}
