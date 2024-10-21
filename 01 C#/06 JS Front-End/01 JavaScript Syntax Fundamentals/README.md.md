@@ -34,12 +34,12 @@ Node.js позволява да инсталираме пакети.
 За JS не е естествено да се чете през конзолата, понеже няма как да стане в browser-a, затова JS начина е да се направи функция, която 
 ще приема input-a като параметър и ще се подава на функцията. Обикновено се кръщава `solve`.
 ## Printing to the Console
-![](Pasted%20image%2020241019142356.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020241019142356.png)
 
 **console.log()**
 Изписване на конзолата, еквивалент на `Console.WriteLine();`
 Може да ползваме конкатенация, както и интерполация. Интерполацията позволява да вмъкваме променливи директно в низове. В JavaScript за това използваме шаблонни низове, които се обозначават с **обратни кавички** (`` ` ``), и вмъкваме променливите с `${}`.
-Метода `toFixed()` е като `F2` в C#, примерно `firstNumber.ToString("F2")`. Използва се за да форматира числото, без да му променя стойността. 
+Метода `.toFixed(n)` е като `F2` в C#, примерно `firstNumber.ToString("F2")`. Използва се за да форматира числото, без да му променя стойността. 
 ## Data Types and Variables
 ```javascript
 let integerNumber = 10;
@@ -190,8 +190,8 @@ Scope-a на `const` и `let` променливите е block и се дефи
 `parseFloat()` и `parseInt()` имат предимството, че ако string-a започва с число, то ще вземе числото и няма да върне `NaN`.
 Примерно при `parseFloat('3test')`, ще върне числото 3.
 ## Operators
-### Arithmetic Operators
-![](Pasted%20image%2020241019211442.png)
+### Arithmetic
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020241019211442.png)
 
 Трябва да се прави разлика между addition + и concatenation +, защото когато събираме число с друго число но тип стринг, тогава реално не се случва събиране но конкатенация - `console.log(5 + '10');` ще е равно на 510
 
@@ -203,20 +203,20 @@ Scope-a на `const` и `let` променливите е block и се дефи
 
 Exponentiation e оператор за степенуване  - 10 ** 2 = 100
 В C# степенуването обикновено се прави с помощта на метода `Math.Pow`.
-### Comparison Operators
+### Comparison
 Имаме unary оператори имаме само един операнд - `!`, `typeof`, `++`, `--`
 При binary операторите имаме два операнда - `+`, `-`, `*`, `/`, `==`, `===`
 При ternary оператора имаме три операнда.
 
-![](Pasted%20image%2020241020130427.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020241020130427.png)
 
 `==` equality - equality with coercion. Aко сравняваме 1 == '1' резултата ще е true, заради coercion. Coercion е способността на JS да обърне един тип в друг тип - примерно когато сравняваме number и string, JS ги приравнява в един и същи тип и тогава ги сравнява.
 `===` identity - equality without coercion. Това забранява на JS да променя типовете и затова  1 == '1'  връща false.
 `!=` inequality - inequality with coercion. Връща true, ако стойностите са различни, като coercion е разрешен.
 `!==` inequality - strict inequality without coercion. Връща true, ако стойностите са различни, като coercion не е разрешен.
 `Ternary` - това е все едно if statement - ако израза в ляво връща true, върни числото от ляво на `:` ако е false от дясно.
-### Logical Operators
-![](Pasted%20image%2020241020145928.png)
+### Logical
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020241020145928.png)
 
 В JSи C# операторът NOT (`!`) работи по един и същи начин — променя стойността от true на false и обратно.
 В JS имаме - **Двоен оператор NOT (`!!`)**:
@@ -232,13 +232,13 @@ console.log(!!null);       // false
 ```
 
 Важно правило е че comparison операторите, имат по-голям приоритет от logical операторите. Когато имаме израз, първо се изпълняват те и тогава логическите. Например, в израза `5 > 3 || 4 < 2` операторите за сравнение `5 > 3` и `4 < 2` ще се изчислят първо, след което резултатът от тях ще бъде обработен от логическия оператор `||`. Аритметичните оператори са с по-голям приоритет от comparison операторите. Скобите са с най-голям приоритет.
-### Typeof Operator
+### Typeof
 Връща типа на всичките променливи или стойности. При примитивни типове, ще получим съответния тип. Когато `typeof` се използва с референтни типове, като обекти или масиви, ще върне `"object"`:
 
 - `typeof {}` ще върне `"object"`
 - `typeof []` ще върне `"object"` - може да ползваме  - `Array.isArray()`
 - `typeof function() {}` ще върне `"function"` (функциите са специален вид обекти)
-### Incremental Operators
+### Incremental
 - **Оператори**: И двата езика използват increment (`++`) и decrement (`--`) оператори в prefix и postfix форма, с еднакво поведение при увеличаване или намаляване на стойността.
 - **Postfix (`x++`, `x--`)**: Връща оригиналната стойност преди increment/decrement.
 - **Prefix (`++x`, `--x`)**: Връща новата стойност след increment/decrement.
@@ -654,9 +654,344 @@ In JavaScript, whether a **string** (or any variable) is stored in the **stack**
 - **Larger strings** may have their data stored in the **heap**, with a reference to the string stored in the stack.
 
 In contrast, **in C#**, since strings are reference types, they are always stored on the heap, but a reference (pointer) to the string is stored on the stack.
+## Functions - Methods Difference
+In JavaScript, the terms **function** and **method** are often used interchangeably, but they have distinct meanings based on context. Here’s a breakdown of the differences along with examples:
+
+**Function**
+
+A **function** is a standalone block of code designed to perform a particular task. It can be defined globally or within another function, and it does not belong to any object.
+
+**Example of a Function:**
+
+```javascript
+// Function declaration
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+// Function call
+console.log(greet('Alice')); // Output: Hello, Alice!
+```
+
+**Method**
+
+A **method** is a function that is associated with an object. In JavaScript, when a function is a property of an object, it is referred to as a method. Methods are called on objects, and they can access and modify the object's properties.
+
+**Example of a Method:**
+
+```javascript
+// Object with a method
+const person = {
+    name: 'Bob',
+    greet: function() {
+        return `Hello, ${this.name}!`;
+    }
+};
+
+// Method call
+console.log(person.greet()); // Output: Hello, Bob!
+```
+
+**Key Differences**
+
+1. **Context**:
+    
+    - A **function** can be defined independently and called anywhere in the code.
+    - A **method** is defined as part of an object and is called on that object.
+2. **Binding**:
+    
+    - A **function** does not have an implicit reference to an object.
+    - A **method** has access to the object it belongs to via the `this` keyword, allowing it to access and manipulate the object’s properties.
+3. **Use Cases**:
+    
+    - Functions are used for reusable blocks of code that can perform specific tasks.
+    - Methods are used to define behaviors for objects, encapsulating functionality related to that object.
+
+**Summary**
+
+- Use a **function** when you need a reusable code block that doesn’t rely on any particular object.
+- Use a **method** when you want a function that operates on the properties of a specific object.
+
+**You said:**
+
+In correlation to C# a JS method is like when we have instance of an class in C#, which have instanced methods, while JS function is like the static methods in a class in C#?
+
+**ChatGPT said:**
+
+Yes, you can think of it that way in the context of C#. Here’s how the analogy works between JavaScript and C#:
+
+**JavaScript:**
+
+- **Function**: A standalone block of code that can be defined globally or within another function. It is not tied to any object.
+- **Method**: A function that is a property of an object. Methods are often used in conjunction with object instances, allowing access to the object's properties through the `this` keyword.
+
+**C#:**
+
+- **Static Method**: A method that belongs to the class itself rather than an instance of the class. It can be called without creating an instance of the class.
+- **Instance Method**: A method that belongs to an instance of a class. It can access instance variables and other instance methods within the same class.
+
+**Example Comparison:**
+
+**JavaScript Example:**
+
+```javascript
+// Function (similar to a static method in C#)
+function staticFunction() {
+    return "This is a static function.";
+}
+
+// Method (similar to an instance method in C#)
+const obj = {
+    instanceMethod: function() {
+        return "This is an instance method.";
+    }
+};
+
+// Calling the function and the method
+console.log(staticFunction());  // Output: This is a static function.
+console.log(obj.instanceMethod()); // Output: This is an instance method.
+```
+
+**C# Example:**
+
+```csharp
+public class MyClass
+{
+    // Static method
+    public static string StaticMethod()
+    {
+        return "This is a static method.";
+    }
+
+    // Instance method
+    public string InstanceMethod()
+    {
+        return "This is an instance method.";
+    }
+}
+
+// Usage
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Calling the static method
+        Console.WriteLine(MyClass.StaticMethod()); // Output: This is a static method.
+
+        // Creating an instance to call the instance method
+        MyClass myClassInstance = new MyClass();
+        Console.WriteLine(myClassInstance.InstanceMethod()); // Output: This is an instance method.
+    }
+}
+```
+
+**Summary of the Analogy:**
+
+- **JavaScript Functions** are akin to **C# Static Methods** because they are not tied to any object instance and can be called directly.
+- **JavaScript Methods** are akin to **C# Instance Methods** because they are functions that operate on instances of objects and can access instance-specific properties and behaviors.
+
+This analogy helps clarify how functions and methods operate in both languages, emphasizing their relationship to objects and classes.
+
+**You said:**
+
+However even static methods are part of a class in C# where in JS they are not part of any class?
+
+**ChatGPT said:**
+
+You're correct! While both static methods in C# and functions in JavaScript can be called without instantiating an object, they have different relationships to classes or objects. Let’s break this down further:
+
+**C# Static Methods:**
+
+- **Part of a Class**: Static methods are defined within a class and are associated with that class. They can be called using the class name without needing to create an instance of the class.
+- **Access to Static Members**: Static methods can only access static members (fields, properties, methods) of the class. They cannot access instance members directly.
+
+**JavaScript Functions:**
+
+- **Not Necessarily Part of a Class**: JavaScript functions can exist independently of any object or class. They can be declared in the global scope or inside other functions, but they don't need to be part of a class.
+- **Function as First-Class Citizens**: Functions in JavaScript are first-class citizens, meaning they can be assigned to variables, passed as arguments, and returned from other functions.
+
+**Summary of the Key Differences:**
+
+1. **Class Association**:
+    
+    - **C# Static Methods**: Always part of a class.
+    - **JavaScript Functions**: Can exist independently without being part of a class or object.
+2. **Call Syntax**:
+    
+    - **C# Static Methods**: Called using the class name.
+    - **JavaScript Functions**: Called by their name if in scope, regardless of class or object association.
+3. **Context**:
+    
+    - **C# Static Methods**: Can only access static data and methods of the class.
+    - **JavaScript Functions**: Can access variables in their own scope and the global scope but do not have an inherent association with instance properties unless defined as methods within an object.
+
+**Conclusion:**
+
+While the concept of static methods in C# and standalone functions in JavaScript may appear similar because they both can be called without an instance, the key distinction lies in their association with classes and how they are utilized within their respective languages.
+
+**You said:**
+
+So functions in JS have the same height in hierarchy as classes, delegates, enums and etc. which are top level data types?
+
+**ChatGPT said:**
+
+Yes, that's a good way to conceptualize it! In terms of **hierarchical importance** and **data type categorization**, functions in JavaScript can indeed be viewed as being on the same level as classes, delegates, and enums in C#. Here's a clearer breakdown of this hierarchy and relationship:
+
+**Hierarchical Comparison**
+
+1. **JavaScript**:
+    
+    - **Functions**:
+        - First-class citizens that can be assigned to variables, passed as arguments, and returned from other functions. They are a fundamental building block of JavaScript and essential for defining behavior.
+    - **Objects**:
+        - Functions are objects in JavaScript, and they can have properties and methods. This means they can be treated like other top-level data types.
+    - **Classes (ES6)**:
+        - In JavaScript, classes are syntactical sugar over functions and prototypes. They provide a way to create objects and define methods, but they are fundamentally built on the concept of functions.
+2. **C#**:
+    
+    - **Classes**:
+        - Fundamental constructs for object-oriented programming, allowing for the creation of objects, methods, and properties.
+    - **Delegates**:
+        - Type-safe function pointers that allow methods to be treated as first-class citizens, enabling callback functionality.
+    - **Enums**:
+        - Special types that define a set of named constants, providing a way to work with a group of related values.
+
+**Summary of Hierarchy:**
+
+In both languages, you can consider the following as top-level data types:
+
+- **JavaScript**:
+    - Functions
+    - Objects (including instances of classes)
+    - Classes (ES6 syntax)
+- **C#**:
+    - Classes
+    - Delegates
+    - Enums
+
+**Conceptual Parity:**
+
+- **Functions in JavaScript** are comparable to **classes, delegates, and enums in C#** in that they serve as core building blocks for structuring programs.
+- They provide a way to encapsulate behavior, just as classes encapsulate state and behavior, delegates encapsulate method references, and enums encapsulate named constants.
+
+**Conclusion:**
+
+So, your understanding that **functions in JavaScript hold the same hierarchical significance as classes, delegates, and enums in C#** is correct. They are all essential constructs that facilitate different programming paradigms within their respective languages. Functions in JavaScript, due to their first-class nature, play a particularly central role, much like classes do in C#.
+
+**You said:**
+
+functions in JS are most similar to delegates in C#?
+
+**ChatGPT said:**
+
+Yes, that's a valid observation! Functions in JavaScript are indeed most similar to **delegates** in C# in terms of their behavior and usage. Here's a detailed comparison to highlight the similarities and some distinctions:
+
+**Similarities Between JavaScript Functions and C# Delegates**
+
+1. **First-Class Citizens**:
+    
+    - **JavaScript Functions**: Functions can be assigned to variables, passed as arguments to other functions, returned from functions, and stored in data structures. This flexibility allows them to be treated like any other value.
+    - **C# Delegates**: Delegates are also first-class entities. They are types that define references to methods with a particular parameter list and return type, allowing methods to be passed around as parameters.
+2. **Encapsulation of Behavior**:
+    
+    - **JavaScript Functions**: Functions can encapsulate behavior, allowing you to define what actions to perform when called.
+    - **C# Delegates**: Delegates encapsulate references to methods, enabling you to define a method signature and invoke methods indirectly.
+3. **Use in Callbacks**:
+    
+    - Both JavaScript functions and C# delegates are commonly used for callback mechanisms. For instance, when an asynchronous operation completes, a function or delegate can be called to handle the result.
+
+**Example Comparison**
+
+**JavaScript Function Example:**
+
+```javascript
+// JavaScript function as a callback
+function sayHello(name) {
+    return `Hello, ${name}!`;
+}
+
+// Higher-order function that takes another function as an argument
+function greet(callback, name) {
+    return callback(name);
+}
+
+// Using the function as a delegate
+console.log(greet(sayHello, 'Alice')); // Output: Hello, Alice!
+```
+
+**C# Delegate Example:**
+
+```csharp
+using System;
+
+// Delegate definition
+public delegate string GreetDelegate(string name);
+
+public class Program
+{
+    // Method that matches the delegate signature
+    public static string SayHello(string name)
+    {
+        return $"Hello, {name}!";
+    }
+
+    // Higher-order method that takes a delegate as an argument
+    public static string Greet(GreetDelegate greetMethod, string name)
+    {
+        return greetMethod(name);
+    }
+
+    public static void Main(string[] args)
+    {
+        // Using the delegate
+        GreetDelegate greetDelegate = new GreetDelegate(SayHello);
+        Console.WriteLine(Greet(greetDelegate, "Alice")); // Output: Hello, Alice!
+    }
+}
+```
+
+**Key Points:**
+
+- **Syntax and Structure**: While the syntax and underlying structure differ (functions in JavaScript vs. delegates in C#), the conceptual use cases are quite similar.
+- **Flexibility**: Both provide flexibility in how behaviors are defined and invoked, allowing for clean, modular code.
+- **Event Handling**: Delegates in C# are commonly used in event handling, similar to how functions are used in JavaScript for event listeners.
+
+**Conclusion:**
+
+Functions in JavaScript and delegates in C# share significant similarities, particularly in how they encapsulate behavior and are used as first-class entities. This comparison highlights how both languages allow for flexible and modular coding practices through these constructs.
+## String and Number Operations
+In JavaScript, the behavior of arithmetic operations with strings and numbers varies depending on the operator used:
+
+1. **Addition (`+`)**:
+    
+    - If **both operands are numbers**, it performs **regular addition**.
+    - If **one operand is a string**, the `+` operator performs **string concatenation**.
+    - Example:
+        
+```javascript
+'5' + 2  // Output: '52' (concatenation)
+5 + 2    // Output: 7 (addition)
+```
+        
+2. **Other Operators (`*`, `/`, `-`)**:
+    
+    - These operators attempt to **coerce** a string into a number when used with a string.
+    - If the string can be converted to a number, the operation is performed.
+    - If the string cannot be converted, the result is `NaN` (Not-a-Number).
+    - Example:
+        
+```javascript
+'5' * 2  // Output: 10 (multiplication)
+'abc' - 2  // Output: NaN (invalid string-to-number conversion)
+```
+
+Key Points:
+
+- **Addition (`+`)**: Performs **concatenation** if any operand is a string.
+- **Other operators**: Always attempt to convert strings into numbers; if conversion fails, they return `NaN`.
 # Bookmarks 
 [ECMA-262 - Ecma International](https://ecma-international.org/publications-and-standards/standards/ecma-262/)
 
 [Node.js — Download Node.js®](https://nodejs.org/en/download/prebuilt-installer)
 
-Completion: 01.01.2024
+Completion: 20.10.2024
