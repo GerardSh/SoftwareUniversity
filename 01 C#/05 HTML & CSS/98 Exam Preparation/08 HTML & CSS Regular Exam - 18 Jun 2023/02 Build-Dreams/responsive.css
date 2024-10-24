@@ -1,0 +1,74 @@
+@media (max-width: 600px) {
+    .home-container .home-cta-container .home-cta-btn {
+        width: 120px;
+        font-size: 12px;
+        padding: 10px;
+    }
+    
+    .home-container .home-navbar {
+        padding-left: 60px;
+    }
+    
+    /* section 2 */
+    
+    .home-hero {
+        flex-direction: column-reverse;
+    }
+    
+    .home-hero .home-image1 {
+        width: 100%;
+    }
+    
+    .home-hero-text-container {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .home-hero-text-container .home-cta-btn2 {
+        align-self: initial;
+        font-size: 20px;
+        padding: 14px;
+        margin: 0 auto;
+    }
+    
+    /* section 3 */
+    #features {
+        height: auto;
+    }
+    
+    .home-features .home-heading-container {
+        width: 100%;
+    }
+    
+    .home-features .home-cards-container {
+        flex-direction: column;
+    }
+    
+    .home-features .home-cards-container .home-feature-card,
+    .home-features .home-cards-container .home-feature-card1,
+    .home-features .home-cards-container .home-feature-card2 {
+        width: 100%;
+    }
+    
+    .home-features .home-cards-container img {
+        width: 400px;
+        height: 300px;
+    }
+    
+    .home-text06.Card-Text,
+    .home-text07.Card-Text {
+        font-size: 16px;
+    }
+    
+    .home-features .home-cards-container .home-feature-card .home-text05.Card-Text {
+        font-size: 16px;
+    }
+    
+    /* section 4 */
+    
+    .home-stats {
+        display: flex;
+        flex-direction: column;
+        padding-top: 90px;
+    }
+}
