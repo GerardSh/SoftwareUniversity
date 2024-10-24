@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font: 18px/1.5 "Inter", sans-serif;
+}
+
+body,
+input,
+textarea,
+button {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+ul {
+    list-style: none;
+}
+
+.site {
+    width: 1920px;
+}
+
+.heading {}
+
+nav {
+    display: flex;
+    height: 90px;
+    padding-left: 120px;
+    padding-right: 60px;
+    background-color: #D9D9D9;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    gap: 25px;
+}
+
+nav .button {
+    border: 1px solid black;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100px
+}
+
+.main-1 {
+    background-image: url(images/background.jpg);
+    background-position: bottom;
+    padding-top: 175px;
+    padding-left: 315px;
+    padding-bottom: 150px;
+}
+
+.main-1 div h1 {
+    font-size: 50px;
+    width: 500px;
+}
+
+.main-1 div p {
+    margin-top: 90px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: white;
+    width: 700px;
+    font-size: 22px;
+}
+
+.main-1 div div {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    background-color: black;
+    width: 165px;
+    border-radius: 10px;
+    color: white;
+}
+
+.main-2 {
+    padding-top: 100px;
+    padding-inline: 150px;
+    padding-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.main-2 div {
+    width: 385px;
+    text-align: center;
+}
+
+.main-2 div h1 {
+    color: #FF7C4C;
+    width: 385px;
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+}
+
+.main-2 div h3 {
+    padding-top: 30px;
+    font-weight: 400;
+}
+
+.main-2 div p {
+    font-size: 15px;
+    color: #5E5E63;
+    padding-top: 5px;
+}
+
+.main-3 {
+    background-color: #D9D9D9;
+    display: flex;
+    flex-direction: column;
+    padding-left: 85px;
+    padding-block: 60px;
+    gap: 40px;
+}
+
+.main-3>div {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    color: #595959;
+}
+
+.main-3>div>img {
+    width: 625px;
+    height: auto;
+}
+
+.main-3>div h1 {
+    color: black;
+    padding-top: 60px;
+    font-size: 40px;
+}
+
+.main-3>div .text {
+    padding-top: 70px;
+    font-size: 18px;
+    padding-right: 200px;
+}
+
+.main-3>div .read-more {
+    color: black;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+.main-3>div .quote {
+    padding-top: 40px;
+}
+
+.main-4 {
+    background-color: #F5F5F5;
+}
+
+.main-4>div {
+    width: 1755px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 60px;
+    display: flex;
+    height: 680px;
+}
+
+.main-4 .first {
+    width: 585px;
+}
+
+.main-4 .first h1 {
+    font-size: 40px;
+}
+
+.main-4 .first p {
+    color: #595959;
+    font-size: 22px;
+    padding-top: 60px;
+}
+
+.main-4 .box {
+    width: 510px;
+    padding: 40px 160px;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.33);
+}
+
+.main-4 .second {
+    margin-right: 40px;
+    background-color: #FF7C4C;
+}
+
+.main-4 .third {
+    color: white;
+    background-color: black;
+}
+
+.main-4 .box h3 {
+    font-size: 30px;
+    padding-bottom: 30px;
+}
+
+.main-4 .box p:first-of-type {
+    font-size: 80px;
+    padding-bottom: 30px;
+    font-weight: 200;
+}
+
+.main-4 .box p:not(:first-of-type) {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.main-4 .box span {
+    font-weight: bold;
+}
+
+.main-4 .button {
+    margin: 0 auto;
+    margin-top: 40px;
+    border-radius: 5px;
+    font-weight: initial;
+    line-height: 60px;
+    width: 170px;
+}
+
+.main-4 .button.first {
+    background-color: black;
+    color: white;
+}
+
+.main-4 .button.second {
+    background-color: white;
+    color: black;
+}
+
+footer {
+    height: 140px;
+    background-color: #D9D9D9;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+footer i {
+    font-size: 26px;
+}
