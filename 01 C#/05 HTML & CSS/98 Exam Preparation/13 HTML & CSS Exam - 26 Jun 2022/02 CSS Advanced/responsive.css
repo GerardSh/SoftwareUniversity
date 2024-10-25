@@ -1,0 +1,131 @@
+@media (max-width: 600px) {
+    body {
+        margin: 0;
+    }
+    
+    main {
+        width: 100%;
+    }
+    
+    main .left-to-right:first-child {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        padding-top: 70px;
+        height: 600px;
+    }
+    
+    main .left-to-right:first-child article {
+        border-radius: 120px;
+        width: 70%;
+        padding: 50px;
+        padding-top: 60px;
+        height: 65%;
+        font-size: 16px;
+    }
+    
+    main .left-to-righ:first-child article header h1 {
+        font-size: 35px;
+    }
+    
+    main .left-to-right:first-child article header p {
+        font-size: 20px;
+        padding-right: 30px;
+    }
+    
+    main .left-to-right:first-child article > p {
+        padding-right: 7px;
+    }
+    
+    main .left-to-right:first-child article  button {
+        display: none;
+    }
+    
+    main section:nth-child(2) {
+        flex-direction: column;
+    }
+    
+    main section:nth-child(2) article:nth-child(1) {
+        margin-left: 50px;
+    }
+    
+    main section:nth-child(2) article:nth-child(1) header h1 {
+        font-size: 30px;
+    }
+    
+    main section:nth-child(2) article:nth-child(1) header p {
+        font-size: 20px;
+        padding-right: 50px;
+    }
+    
+    main section:nth-child(2) article:nth-child(1) > p {
+        padding-right: 30px;
+        font-size: 18px;
+    }
+    
+    main section:nth-child(2) article:nth-child(1) > button {
+        display: none;
+    }
+    
+    main section:nth-child(2) article img {
+        width: 100%;
+    }
+    
+    main section.left-to-right:nth-child(3) > article {
+        border-radius: 30%; 
+        height: 300px;
+        padding-inline: 30px;
+        padding-top: 90px;
+    }
+    
+    main section.left-to-right:nth-child(3) > article header h1 {
+        font-size: 30px;
+    }
+    
+    main section.left-to-right:nth-child(3) > article  p {
+        font-size: 17px;
+        padding-inline:10px;
+    }
+    
+    main section.left-to-right:nth-child(3) > article button {
+        display: none;
+    }
+    
+    main section:nth-child(4) > article:first-of-type {
+        margin-inline: 80px;
+    }
+    
+    main section:nth-child(4) form {
+        width: 100%;
+    }
+    
+    main section:nth-child(4) form input {
+        width: 100%;
+    }
+    
+    label:nth-of-type(4) {
+        
+    }
+    main section:nth-child(4) {
+        flex-direction: column;
+        margin-bottom: 0;
+    }
+    
+    main section:nth-child(4) textarea {
+        width: 100%;
+    }
+    
+    input#send {
+        width: 100px;
+        margin: 20px auto;
+        display: block;
+    }
+    
+    main section:nth-child(4) article img {
+        width: 90%;
+    }
+    
+    main section:nth-child(4) article:nth-child(2) {
+        margin-inline: 100px;
+    }
+}
