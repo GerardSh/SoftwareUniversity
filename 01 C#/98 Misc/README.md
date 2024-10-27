@@ -8,6 +8,7 @@ Deferred Execution: The internal object created by methods like Select supports 
 Abstraction: By returning `IEnumerable<T>`, LINQ methods provide a common interface for various operations, hiding the complexity and details of the actual implementation. This abstraction enables powerful and flexible query capabilities without exposing the underlying mechanics.
 Example to Illustrate
 Consider the following example:
+
 ```
 IEnumerable<int> test = new int[] { 1, 2, 3 }.Select(x => x);
 
@@ -1554,6 +1555,51 @@ Here's an example of how you can do this:
 **Result**
 
 This setup will create a container of 360px by 360px, and the image will be resized to a height of 360px. If the width of the image exceeds the container width, the overflow will be hidden, and you'll achieve the desired effect.
+
+**You said:**
+
+Can we achieve the same thing if we use the `img` tag along with the `object-fit: cover`?
+
+**ChatGPT said:**
+
+Yes, you can achieve a similar effect using the `object-fit: cover` property directly on the `img` tag. This approach simplifies your code by avoiding the need for `position: absolute` or other complex CSS properties.
+
+Here’s how you can do it:
+
+**HTML:**
+
+```html
+<div class="container">
+    <img src="your-image.jpg" alt="Image Description" class="overflow-image">
+</div>
+```
+
+**CSS:**
+
+```css
+.container {
+    width: 360px;
+    height: 360px;
+    overflow: hidden; /* Hide overflow */
+    border: 1px solid #ccc; /* Optional: just to visualize the container */
+}
+
+.overflow-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the container */
+}
+```
+
+**Explanation:**
+
+1. **Container**: The `.container` class has fixed dimensions of 360px by 360px with `overflow: hidden` to ensure any overflow is hidden.
+2. **Image**: The `.overflow-image` class sets both the width and height of the image to 100% of the container, meaning the image will scale to fit the container.
+    - `object-fit: cover` ensures that the image will maintain its aspect ratio while covering the entire container. Parts of the image that exceed the container's dimensions will be cropped, similar to the behavior you wanted.
+
+**Result:**
+
+This will give you the same effect of resizing the image to fill the container (360px by 360px) while maintaining the aspect ratio. The image will be cropped appropriately if its aspect ratio doesn't match that of the container, and no extra positioning is required. This approach is more concise and modern, making it easier to manage.
 ### How to Use Font Awesome
 1. **Include the Font Awesome CDN** in the `<head>` of your HTML:
 
