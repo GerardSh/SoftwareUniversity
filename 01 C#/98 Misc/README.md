@@ -1489,7 +1489,6 @@ Yes, that's a great way to summarize it!
     - The height of the child will adjust based on its content. It only expands vertically when there is enough content to require additional space. If there’s little or no content, the child will have a height that reflects the minimum needed to display the content, regardless of the parent’s height.
 
 So yes, the **`auto` property** effectively means to use the available space of the parent while also ensuring that the child’s dimensions are calculated correctly to fit inside the parent, accommodating any padding and borders as needed.
-
 ### Box layers
 **You said:**
 
@@ -1507,6 +1506,154 @@ When dimensions are set:
 When elements start overlapping or content exceeds the size of its container, it's as if each element follows its own set of rules, and these interactions can give the impression of content "stacking" or "floating" across different layers. This is particularly noticeable with larger elements centered in smaller containers, like in the example you provided, where different layers interact independently of each other.
 
 It's these unique interactions between containers and their content that give CSS its flexibility and complexity.
+### Positioning Image Inside Container
+**You said:**
+
+What is the easiest way i have an image i want to resize to 360px height maintaining the proportions and then i want to place it inside a 360px container width and height. However the width of the picture should not fit inside the container but it should overflow, how to achieve this?
+
+**ChatGPT said:**
+
+To achieve this effect using CSS, you can follow these steps:
+
+1. **Resize the Image**: Ensure the image maintains its proportions while being resized to a height of 360px.
+2. **Create a Container**: Set up a container that is 360px by 360px.
+3. **Overflow the Image**: Allow the image to overflow the container while still being centered.
+
+Here's an example of how you can do this:
+
+```html
+<div class="container">
+    <img src="your-image.jpg" alt="Image Description" class="overflow-image">
+</div>
+```
+
+```css
+.container {
+    width: 360px;
+    height: 360px;
+    overflow: hidden; /* Hide overflow */
+    position: relative; /* For centering the image */
+    border: 1px solid #ccc; /* Optional: just to visualize the container */
+}
+
+.overflow-image {
+    height: 360px; /* Set the height of the image */
+    width: auto; /* Maintain aspect ratio */
+    position: absolute; /* Position the image */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust to center */
+}
+```
+
+**Explanation**
+
+1. **Container**: The `.container` class has fixed dimensions of 360px by 360px and uses `overflow: hidden` to hide any part of the image that exceeds these dimensions.
+
+2. **Image Resizing**: The `.overflow-image` class sets the image height to 360px while keeping its width `auto`, allowing the image to maintain its aspect ratio. The image is positioned absolutely so that it can be centered horizontally using `left: 50%` and `transform: translateX(-50%)`.
+
+**Result**
+
+This setup will create a container of 360px by 360px, and the image will be resized to a height of 360px. If the width of the image exceeds the container width, the overflow will be hidden, and you'll achieve the desired effect.
+### How to Use Font Awesome
+1. **Include the Font Awesome CDN** in the `<head>` of your HTML:
+
+```html
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+```
+
+2. **Use the `<i>` tag** with the appropriate Font Awesome icon class inside your HTML:
+
+```html
+<i class="fas fa-envelope"></i>  <!-- Example for an envelope icon -->
+```
+
+- **Class structure**:
+    - `fas` for solid icons.
+    - `fa-[icon-name]` for specific icons.
+
+Example of using multiple icons:
+
+```html
+<i class="fas fa-map-marker-alt"></i> <!-- Location icon -->
+<i class="fas fa-phone"></i> <!-- Phone icon -->
+<i class="fas fa-envelope"></i> <!-- Email icon -->
+```
+
+This will add the specified icons to your page, using Font Awesome’s solid style.
+
+**Solid icons** in Font Awesome are a style of icons that are filled with a solid color, usually black by default. They are bold and have no outlines, making them appear "filled in" compared to other styles like regular (outlined) or light (thin line) icons.
+
+In Font Awesome, to use **solid icons**, you add the `fas` class (which stands for "Font Awesome Solid") to the `<i>` tag.
+
+**Example:**
+
+```html
+<i class="fas fa-envelope"></i> <!-- This is a solid envelope icon -->
+```
+
+Here’s a quick breakdown of the **Font Awesome styles**:
+
+- **Solid (`fas`)**: Filled icons with a bold look.
+- **Regular (`far`)**: Outlined icons with a thinner stroke.
+- **Light (`fal`)**: Thin and lighter icons (available in the Pro version).
+- **Brands (`fab`)**: Icons related to brands (e.g., Facebook, Twitter).
+
+Solid icons are widely used for their strong, visible appearance in user interfaces.
+### Text Align, Inline, and Block Elements:
+- **`text-align: center`** is a property used to align **inline** and **inline-block** content, including text and elements like `<span>`, `<img>`, and others that behave like inline content. It works by centering inline content within a block-level container by calculating the total width of the content and distributing the remaining space equally on both sides.
+    
+- **Inline elements** (or elements with `display: inline-block`) participate in the **inline formatting context**. They are treated like text and are easily centered using `text-align: center` because the browser treats all inline content as a single line of text and centers it within its parent container.
+    
+- **Block elements**, like `<div>`, `<p>`, and `<section>`, participate in the **block formatting context**. They take up the full width of their container by default and are not aligned by `text-align` because they don’t behave like inline content. Instead, block-level elements stack vertically and occupy their own line.
+    
+- **To center block elements** with a fixed width, you must use **`margin: 0 auto;`**. This centers the block element by subtracting its width from the parent’s width and distributing the remaining space equally on the left and right margins. **Note**: A provided width is necessary for this method to work.
+    
+- In essence, **`text-align: center` works for inline elements**, not for block elements, because of the difference in how inline and block elements are treated in terms of layout. For block-level elements, centering requires **margin-based** centering, while inline content is centered using **text alignment**.
+### `object-fit` Property and its Behavior
+
+The `object-fit` property controls how an image is placed inside its own `<img>` element, treating the `<img>` as a container. By setting `object-fit`, you dictate how the content (the image) behaves inside this container, much like setting a background image for a container in CSS.
+
+- The default value of `object-fit` is **`fill`**, which stretches the image to completely fill the container, potentially causing distortion if the aspect ratio differs.
+- **`cover`**     scales the image to cover the entire container while maintaining its aspect ratio, potentially cropping parts of the image.
+		    The image scales to fill the container completely by covering the entire area. Only the dimension that best covers the container is used, which can result in cropping if the aspect ratios differ. This is ideal when you want to fill the container entirely, even if parts of the image are cut off.
+- **`contain`** scales the image to fit inside the container without cropping or distortion, but may leave empty space if the aspect ratio differs.
+		    The image scales to fit _both_ dimensions of the container (width and height) while preserving its aspect ratio. This means the entire image will always be visible, but if the container's aspect ratio differs from the image’s, you may see blank space (like letterboxing) along one dimension.
+
+This difference is useful depending on whether preserving the entire image or covering the space is more important.
+
+This is similar to how background images are handled in containers, where properties like `background-size: cover` or `background-size: contain` control how the background image fits. However, with `object-fit`, the focus is on images inside their own `<img>` container, providing similar but slightly fewer options for positioning compared to background images.
+
+**You said:**
+
+Its similar to how we can have a background image inside a container, but then we have more options to control the image position right?
+
+**ChatGPT said:**
+
+Yes, you're absolutely right!
+
+The behavior of `object-fit` for images inside `<img>` elements is **similar** to how we control background images inside a container with `background-size` (like `cover` and `contain`). However, with **background images**, you have **more options** for controlling both the size and **position** of the image using properties like `background-position` (to place the image at the top, center, bottom, etc.), which you don't have with `object-fit`.
+
+In summary:
+
+- **`object-fit`** controls how the image fits inside the `<img>` container.
+- **Background images** give you more flexibility, not only in how they fit but also in how they are positioned inside the container using `background-position`.
+
+So while the two concepts are similar, background images provide additional control over positioning that `object-fit` doesn't directly offer.
+
+**You said:**
+
+What about the position of the image, is it centered?
+
+**ChatGPT said:**
+
+When you use `object-fit` (especially with values like `cover` or `contain`), the image is **centered by default** within the container. This means:
+
+- For **`object-fit: cover;`**, the image will scale to cover the entire container while maintaining its aspect ratio, and the image will be centered, with any excess portions of the image cropped evenly from the sides.
+- For **`object-fit: contain;`**, the image will scale to fit inside the container without cropping, and it will also be centered, leaving empty space (padding) around it if necessary.
+
+The centering behavior ensures that even if part of the image is cropped (in the case of `cover`) or there's extra space around the image (in the case of `contain`), the image is balanced in the middle of the container.
+
+If you need more control over how the image is positioned (e.g., aligning it to the top or left), you'd typically have to use **background images** with properties like `background-position`. But for `object-fit`, centering is the default and only positioning behavior.
 # Bookmarks
 
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
