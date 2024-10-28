@@ -1,5 +1,5 @@
-# ChatGPT
-## CSharp
+# CSharp
+## ChatGPT
 ### Internal Types returned by LINQ
 What Happens Internally: When you call a LINQ method like Select, it does not immediately execute the query. Instead, it creates an internal object that describes how to perform the query when needed. This object is an instance of a compiler-generated type that implements `IEnumerable<T>`.
 Implementation Details: These internal types often have names like `WhereSelectArrayIterator<TSource, TResult>`, indicating their role in applying a projection (like Select) or filtering (like Where) operation to a source collection. These names are internal and may vary.
@@ -9,7 +9,7 @@ Abstraction: By returning `IEnumerable<T>`, LINQ methods provide a common interf
 Example to Illustrate
 Consider the following example:
 
-```
+```csharp
 IEnumerable<int> test = new int[] { 1, 2, 3 }.Select(x => x);
 
 // The runtime type of 'test' is an internal type implementing IEnumerable<int>
@@ -46,32 +46,32 @@ This design ensures that while consumers can read and query the collection, they
 ### Delegates and Lambda Expressions
 Definition of Method Signature: Delegates in C# are types that define the signature of a method, including the return type and the types and number of parameters. A delegate acts as a blueprint for methods that can be assigned to it.
 
-```
+```csharp
 public delegate int MyDelegate(int a, int b);  // Defines a method signature
 ```
 
 Storing Method Bodies: Variables of delegate types can store references to methods or lambda expressions that match the delegate's signature. These variables can be used to invoke the method, allowing for dynamic method calls.
 
-```
+```csharp
 MyDelegate del = (x, y) => x + y;  // Stores a lambda expression in the delegate
 ```
 
 Object Creation: Delegates can also store lambda expressions or methods that include object creation. This allows for dynamic instantiation of objects within delegate bodies.
 
-```
+```csharp
 Func<Startup> createStartup = () => new Startup();  // Stores object creation in the delegate
 ```
 
 Collections of Delegates: Delegate variables can be stored in collections such as lists, enabling the storage and invocation of multiple methods. This is useful for executing a series of methods in a sequence.
 
-```
+```csharp
 List<MyDelegate> delegatesList = new List<MyDelegate>();
 delegatesList.Add((x, y) => x * y);  // Adding method references to a list
 ```
 
 Example usage:
 
-```
+```csharp
 public delegate int MyDelegate(int a);  // Define a delegate with a specific method signature
 
 public class Program
@@ -116,7 +116,7 @@ This summary captures the essence of how delegates work in C#.
 
 You
 
-```
+```csharp
 public delegate void MyDelegate(int a);
 
 public class Program
@@ -185,7 +185,7 @@ While lambda expressions are a specific type of anonymous method, in practice, t
 ### Protected Modifier
 In C#, the `protected` access modifier allows members to be accessed within their own class and by derived classes. Here’s a summary of the key points, using the following example:
 
-```
+```csharp
 public class BaseClass
 {
     protected void ProtectedMethod()
@@ -233,7 +233,7 @@ This summary highlights how the `protected` access modifier facilitates controll
 
 You
 Why the below works:
-```
+```csharp
 public class BaseClass
 {
     protected void ProtectedMethod()
@@ -306,7 +306,7 @@ Access in `Animal` Class:
 
 Simplified Example:
 
-```
+```csharp
 public class Animal
 {
     protected void Eat()
@@ -364,7 +364,7 @@ Exceptions to Instance Access Restrictions for `protected` Members
 - Rule:*You can access `protected` members from within the class where they are defined, even through an instance of the same class.
 - Rationale: This exception exists because the class defining the `protected` member has full access to its own members. Whether you access the `protected` member directly or via an instance, you are still within the context of the class itself.
 
-```
+```csharp
 public class BaseClass
 {
     protected void ProtectedMethod()
@@ -388,7 +388,7 @@ public class BaseClass
 - Rule: You can access `protected` members of the parent class from within an instance of a derived class when the instance is created inside the parent class.
 - Rationale: This exception occurs because, although the `protected` member is not accessible through instances externally, the parent class itself has control over its derived instances and can interact with its protected members directly. The derived class inherits the `protected` member, so it's accessible within the scope of the parent class's methods when dealing with instances of derived classes.
 
-```
+```csharp
 public class BaseClass
 {
     protected void ProtectedMethod()
@@ -423,7 +423,14 @@ Why These Exceptions Exist
 In essence, these exceptions reflect a balance between strict encapsulation and practical usage within the confines of inheritance, ensuring that `protected` members remain protected from external access while still being fully usable within the class and its derived types.
 
 [c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
-## HTML & CSS
+## Bookmarks
+[Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
+
+[vcmi/vcmi: Open-source engine for Heroes of Might and Magic III](https://github.com/vcmi/vcmi) - open-source recreation of Heroes of Might & Magic III engine
+
+[c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
+# HTML & CSS
+## ChatGPT
 ### Pixel Resolution and PPI Relation
 1. **Display PPI (Pixels Per Inch):**
     
@@ -1700,14 +1707,36 @@ When you use `object-fit` (especially with values like `cover` or `contain`), th
 The centering behavior ensures that even if part of the image is cropped (in the case of `cover`) or there's extra space around the image (in the case of `contain`), the image is balanced in the middle of the container.
 
 If you need more control over how the image is positioned (e.g., aligning it to the top or left), you'd typically have to use **background images** with properties like `background-position`. But for `object-fit`, centering is the default and only positioning behavior.
-# Bookmarks
-
-[Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
-
-[vcmi/vcmi: Open-source engine for Heroes of Might and Magic III](https://github.com/vcmi/vcmi) - open-source recreation of Heroes of Might & Magic III engine
-
+## Bookmarks
 [Image Resolution Tutorial Basics - TV, HD, 1080, 4k, 8k, Megapixels, PPI, DPI! - YouTube FollowAndrew](https://www.youtube.com/watch?v=9d-6Alkcymo)
 
 [PPI is Imaginary! PPI vs DPI vs Resolution - YouTube PiXimperfect](https://www.youtube.com/watch?v=73o_UnmAeP0)
 
 [PPI vs. DPI: what's the difference? Colette Pomerleau](https://99designs.com/blog/tips/ppi-vs-dpi-whats-the-difference/)
+# JavaScript
+## Misc
+### Code Spell Checker Extension
+Много полезен extension за VS Code, който подчертава правописни грешки.
+## ChatGPT
+### Autoboxing
+
+```javascript
+function solve(number) {
+    let number2 = 5;
+
+    console.log(number.toFixed(2));  // Works: Outputs "5.00"
+    console.log(number2.toFixed(2)); // Works: Outputs "5.00"
+}
+
+solve(5);
+```
+
+**Explanation:**
+
+- **Autoboxing**: JavaScript temporarily wraps primitives (like `number` and `number2`) in their respective object types (e.g., `Number`) when you call methods on them.
+- **Behavior in Editors**: Both `number` (the parameter) and `number2` (the local variable) can use `.toFixed(2)` because of autoboxing, allowing access to number methods.
+- **Autocomplete Note**: Some editors might not show methods for `number` (the function parameter) in autocomplete suggestions, as autoboxing happens only at runtime. However, the methods will still work as expected.
+## Bookmarks
+https://jsisweird.com/
+
+https://javascriptquiz.com/
