@@ -3,5 +3,3 @@ function solve(num) {
         console.log(`${num} X ${i} = ${num * i}`);
     }
 }
-
-solve(5);

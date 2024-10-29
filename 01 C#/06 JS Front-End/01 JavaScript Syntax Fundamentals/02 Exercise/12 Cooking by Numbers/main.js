@@ -2,57 +2,28 @@ function solve(number, op1, op2, op3, op4, op5) {
 
     for (let i = 0; i < 5; i++) {
         switch (i) {
-            case 0:
-                switch (op1) {
-                    case 'chop': number /= 2; break;
-                    case 'dice': number = Math.sqrt(number); break;
-                    case 'spice': number += 1; break;
-                    case 'bake': number *= 3; break;
-                    case 'fillet': number *= 0.8; break;
-                }
-                break;
-
-            case 1:
-                switch (op2) {
-                    case 'chop': number /= 2; break;
-                    case 'dice': number = Math.sqrt(number); break;
-                    case 'spice': number += 1; break;
-                    case 'bake': number *= 3; break;
-                    case 'fillet': number *= 0.8; break;
-                }
-                break;
-
-            case 2:
-                switch (op3) {
-                    case 'chop': number /= 2; break;
-                    case 'dice': number = Math.sqrt(number); break;
-                    case 'spice': number += 1; break;
-                    case 'bake': number *= 3; break;
-                    case 'fillet': number *= 0.8; break;
-                }
-                break;
-
-            case 3:
-                switch (op4) {
-                    case 'chop': number /= 2; break;
-                    case 'dice': number = Math.sqrt(number); break;
-                    case 'spice': number += 1; break;
-                    case 'bake': number *= 3; break;
-                    case 'fillet': number *= 0.8; break;
-                }
-                break;
-
-            case 4:
-                switch (op5) {
-                    case 'chop': number /= 2; break;
-                    case 'dice': number = Math.sqrt(number); break;
-                    case 'spice': number += 1; break;
-                    case 'bake': number *= 3; break;
-                    case 'fillet': number *= 0.8; break;
-                }
-                break;
+            case 0: numberManipulator(op1); break;
+            case 1: numberManipulator(op2); break;
+            case 2: numberManipulator(op3); break;
+            case 3: numberManipulator(op4); break;
+            case 4: numberManipulator(op5); break;
         }
 
         console.log(number);
+    }
+
+    function numberManipulator(operation) {
+
+        if (operation === 'chop') {
+            number /= 2;
+        } else if (operation === 'dice') {
+            number = Math.sqrt(number);
+        } else if (operation === 'spice') {
+            number += 1;
+        } else if (operation === 'bake') {
+            number *= 3;
+        } else if (operation === 'fillet') {
+            number *= 0.8;
+        }
     }
 }

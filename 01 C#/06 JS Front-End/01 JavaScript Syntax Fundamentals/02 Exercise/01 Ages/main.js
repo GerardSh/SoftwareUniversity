@@ -17,5 +17,3 @@ function solve(age) {
 
     console.log(result);
 }
-
-solve(66);
