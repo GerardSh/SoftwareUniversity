@@ -45,5 +45,3 @@ function solve(number) {
 
     console.log(month);
 }
-
-solve(2);
