@@ -1714,9 +1714,10 @@ If you need more control over how the image is positioned (e.g., aligning it to 
 
 [PPI vs. DPI: what's the difference? Colette Pomerleau](https://99designs.com/blog/tips/ppi-vs-dpi-whats-the-difference/)
 # JavaScript
-## Misc
-### Code Spell Checker Extension
+## Code Spell Checker Extension
 Много полезен extension за VS Code, който подчертава правописни грешки.
+## Optional Parameters
+Когато даден параметър в метод има `?:` след параметъра, това означава че е optional. 
 ## ChatGPT
 ### Autoboxing
 
