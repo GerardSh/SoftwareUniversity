@@ -26,5 +26,3 @@ function solve(words, text) {
 
     console.log(textArray.join(' '));
 }
-
-solve('great, learning', 'softuni is ***** place for ******** new programming languages');
