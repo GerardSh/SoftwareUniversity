@@ -1718,6 +1718,13 @@ If you need more control over how the image is positioned (e.g., aligning it to 
 Много полезен extension за VS Code, който подчертава правописни грешки.
 ## Optional Parameters
 Когато даден параметър в метод има `?:` след параметъра, това означава че е optional. 
+## `_` As a Placeholder
+В много езици за програмиране, като JavaScript и Python, долната черта `_` се използва като конвенционален placeholder (или заместител), когато искаме да подчертаем, че даден параметър или променлива няма да бъде използвана.
+
+Това се прави поради две основни причини:
+
+1. **Яснота на кода** - показва, че този параметър е умишлено игнориран.
+2. **Избягване на предупреждения** - някои редактори или компилатори могат да дадат предупреждение, ако декларираме променлива, която не се използва. Използването на `_` често премахва това предупреждение.
 ## ChatGPT
 ### Autoboxing
 
@@ -1737,6 +1744,33 @@ solve(5);
 - **Autoboxing**: JavaScript temporarily wraps primitives (like `number` and `number2`) in their respective object types (e.g., `Number`) when you call methods on them.
 - **Behavior in Editors**: Both `number` (the parameter) and `number2` (the local variable) can use `.toFixed(2)` because of autoboxing, allowing access to number methods.
 - **Autocomplete Note**: Some editors might not show methods for `number` (the function parameter) in autocomplete suggestions, as autoboxing happens only at runtime. However, the methods will still work as expected.
+
+### Return Values and Data Structures in JavaScript and C#
+The way JavaScript and C# handle returned objects and data structures can lead to some confusion, especially when it comes to accessing properties and methods. Let's delve into the differences in more detail:
+
+1. **Return Values in JavaScript**
+
+In JavaScript, many functions (especially those related to string manipulation, array methods, and regex operations) return data in forms that may be arrays or specific types, often lacking the kind of structure you would expect in a strongly-typed language like C#.
+
+For example when you use regex in JavaScript, the `match()` method returns an array, where the first element is the entire match and subsequent elements are capturing groups.
+
+2. **Return Values in C#**
+
+In C#, when you work with strings and regular expressions, the returned types are often more structured. For example, the `Regex.Match()` method returns a `Match` object, which has properties and methods that provide detailed information about the match.
+
+3. **Data Types and Member Access**
+
+- **JavaScript**: Functions often return arrays, and while objects do exist, you must understand their structure to access properties. Many JavaScript methods return primitive values or collections, which do not inherently have "member" methods like in C#. For instance, the `replace()` method returns a string and doesn’t provide further structured information about the replacement.
+    
+- **C#**: Objects and data types are more explicitly defined. You can directly access properties and methods of returned objects due to strong typing. This leads to a more predictable interaction with the data.
+    
+4. **Limited Properties in JavaScript**
+
+JavaScript has some built-in properties (like `length` for arrays and strings), but many operations return primitive values or arrays. This can feel limiting if you come from a strongly typed language where data types are encapsulated within classes that expose their members directly.
+
+**Conclusion**
+
+Overall, JavaScript often returns results in forms (like arrays) that require you to unpack the data and navigate its structure, while C# provides more structured data types that allow direct access to properties and methods. This fundamental difference stems from JavaScript's dynamic and prototype-based nature versus C#'s static and class-based nature. This design choice can lead to more flexibility in JavaScript but may also introduce complexities, especially for developers used to the strong typing and structured approach of C#.
 ## Bookmarks
 https://jsisweird.com/
 
