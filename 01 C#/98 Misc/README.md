@@ -1771,6 +1771,85 @@ JavaScript has some built-in properties (like `length` for arrays and strings), 
 **Conclusion**
 
 Overall, JavaScript often returns results in forms (like arrays) that require you to unpack the data and navigate its structure, while C# provides more structured data types that allow direct access to properties and methods. This fundamental difference stems from JavaScript's dynamic and prototype-based nature versus C#'s static and class-based nature. This design choice can lead to more flexibility in JavaScript but may also introduce complexities, especially for developers used to the strong typing and structured approach of C#.
+### `null` and `undefined`
+
+**`undefined`**:
+
+- Represents the default state of a variable that has been declared but not assigned a value.
+- Indicates that a variable exists but lacks a meaningful value. It is automatically assigned by JavaScript when a variable is declared without an initializer.
+
+**`null`**:
+
+- Represents an intentional absence of any object value. It is explicitly assigned to indicate that a variable should not reference any object.
+- Unlike `undefined`, `null` is used to signify that a variable is intentionally empty or has been cleared.
+
+**Role of `null` in Garbage Collection**
+
+When you assign `null` to a variable that previously held a reference to an object, you inform the JavaScript engine that the variable no longer points to that object. This action allows the garbage collector to recognize that the memory allocated for the object is no longer needed, making it eligible for reclamation. This helps manage memory efficiently, preventing memory leaks and ensuring that the system can reuse memory resources as necessary.
+
+**Key Points**
+
+- Both `null` and `undefined` are types used to signify the absence of a value.
+- `null` is explicitly assigned, while `undefined` is assigned automatically.
+- Assigning `null` helps with memory management by allowing garbage collection to reclaim unused memory.
+### How `sort()` Works with Strings
+When the `sort()` method is used to sort strings in JavaScript, it compares the characters of the strings lexicographically (dictionary order) to determine their order. Here’s how it works:
+
+1. **Character Comparison**:
+    
+    - The `sort` method compares the strings character by character.
+    - It starts with the first character of each string. If the first characters are different, it determines the order based on their Unicode values.
+2. **Unicode Value**:
+    
+    - Each character has a corresponding Unicode value, which is a numeric representation of that character. For example, the Unicode value for "A" is 65, and for "B" it is 66. This is what the sorting process uses to determine which string comes first.
+    - If the first characters are the same, the method moves to the second character and compares them in the same way, continuing this process until it finds a difference or reaches the end of the strings.
+3. **Sorting Order**:
+    
+    - The default sorting order is ascending. For example, if you have the strings `["apple", "banana", "cherry"]`, the `sort` method will compare the first characters (`'a'`, `'b'`, and `'c'`) and arrange them in that order.
+
+**Summary**
+
+- The `sort` method compares strings character by character based on their Unicode values.
+- It starts with the first character, moving to the next only when the characters are identical, allowing it to sort the strings in lexicographical order.
+- This character-by-character comparison enables sorting of strings based on their natural order, which is useful for alphabetical sorting.
+### Global Variables
+In JavaScript, if a variable is assigned a value without using `let`, `const`, or `var`, it becomes a **global variable** by default. This behavior applies to any variables, not just in destructuring assignments.
+
+**Key Points:**
+
+1. **Implicit Global Variables**: When you assign a value to a variable without declaring it with `let`, `const`, or `var`, JavaScript creates a global variable, even if it’s inside a function. This means the variable is accessible throughout the entire program.
+
+```javascript
+function example() {
+    myVar = 42; // Implicitly creates a global variable
+}
+
+example();
+console.log(myVar); // Outputs 42 because myVar is global
+```
+
+2. **Strict Mode**: In strict mode (`"use strict";`), JavaScript will throw an error if you try to use a variable without declaring it. This prevents the creation of unintended global variables.
+
+```javascript
+"use strict";
+function example() {
+    myVar = 42; // Throws an error in strict mode
+}
+```
+
+3. **Best Practice**: Always use `let` or `const` to declare variables. This ensures that variables are limited to their intended scope, prevents accidental global variables, and makes the code more maintainable and less error-prone.
+
+```javascript
+function example() {
+    let myVar = 42; // Local variable, accessible only in this function
+    console.log(myVar);
+}
+
+example();
+console.log(myVar); // Error: myVar is not defined (because it's local)
+```
+
+Using explicit declarations with `let` or `const` avoids unintentional global scope, improving code reliability and readability.
 ## Bookmarks
 https://jsisweird.com/
 
