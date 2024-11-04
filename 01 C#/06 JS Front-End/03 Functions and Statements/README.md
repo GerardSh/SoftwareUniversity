@@ -84,6 +84,8 @@ console.log(factorial(5)); // Outputs: 120
 
 Функциите могат да имат параметри (входни данни) изредени със запетайка, ако са повече от един.
 
+Може да слагаме default стойности на параметрите, но те трябва да са след задължителните параметри - `function myFunction(mandatoryParam, optionalParam = 1)`
+
 Функциите винаги връщат стойност (custom or default).
 ### Expression / Statement
 Expression е всеки израз, който се изпълнява на един ред и връща стойност. Всичко може да е expression, примерно `true`, `5`,`(5)`, `5 + 5`, `true && false` и тн. Обикновено expression-ите имат финална стойност като резултат. Противоположното на expression е statement - `if`, `for`, `while` и тн. 
