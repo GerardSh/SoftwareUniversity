@@ -19,3 +19,15 @@ function solve(base, power, result = 1, i = 0) {
 
     return solve(base, power, result * base, ++i);
 }
+
+
+
+
+//3
+function solve(base, power) {
+    if (power === 1) {
+        return base;
+    }
+
+    return base * solve(base, power - 1);
+}
