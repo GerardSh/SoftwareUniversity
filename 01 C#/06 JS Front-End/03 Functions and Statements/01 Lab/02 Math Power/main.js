@@ -7,3 +7,15 @@ function solve(number, power) {
 
     return result;
 }
+
+
+
+
+//2
+function solve(base, power, result = 1, i = 0) {
+    if (i == power) {
+        return result;
+    }
+
+    return solve(base, power, result * base, ++i);
+}
