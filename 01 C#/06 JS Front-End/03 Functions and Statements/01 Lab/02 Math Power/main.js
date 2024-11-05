@@ -1,23 +1,31 @@
 function solve(number, power) {
-    let result = number;
+    console.log(mathPower(number, power));
 
-    for (let i = 1; i < power; i++) {
-        result *= number;
+    function mathPower(number, power) {
+        let result = number;
+
+        for (let i = 1; i < power; i++) {
+            result *= number;
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 
 
 
 //2
-function solve(base, power, result = 1, i = 0) {
-    if (i == power) {
-        return result;
-    }
+function solve(base, power) {
+    console.log(mathPower(base, power));
 
-    return solve(base, power, result * base, ++i);
+    function mathPower(base, power, result = 1, i = 0) {
+        if (i == power) {
+            return result;
+        }
+
+        return mathPower(base, power, result * base, ++i);
+    }
 }
 
 
@@ -25,9 +33,13 @@ function solve(base, power, result = 1, i = 0) {
 
 //3
 function solve(base, power) {
-    if (power === 1) {
-        return base;
-    }
+    console.log(mathPower(base, power));
 
-    return base * solve(base, power - 1);
+    function mathPower(base, power) {
+        if (power === 1) {
+            return base;
+        }
+
+        return base * mathPower(base, power - 1);
+    }
 }

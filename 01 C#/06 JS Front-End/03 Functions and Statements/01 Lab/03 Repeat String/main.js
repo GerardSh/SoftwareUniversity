@@ -23,3 +23,19 @@ function solve(text, repeatCount) {
         return text.repeat(repeatCount);
     }
 }
+
+
+
+
+//3
+function solve(text, repeatCounter) {
+    console.log(repeat(text, repeatCounter));
+
+    function repeat(text, repeatCounter) {
+        if (repeatCounter == 1) {
+            return text
+        }
+
+        return text += repeat(text, --repeatCounter);
+    }
+}
