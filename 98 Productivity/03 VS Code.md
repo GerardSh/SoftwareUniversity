@@ -1,6 +1,6 @@
 # General
 ## Shortcuts
-`Ctrl+K Ctrl+S` - отваря shortcuts editor.
+`Ctrl + K Ctrl + S` - отваря shortcuts editor.
 
  `! + Enter` - създава темплейт.
 
@@ -53,6 +53,7 @@ Selecting Semicolons in Multiple Lines
 `log + 2 x Tab` - изписва `console.log();` *`Tab Completion` трябва да е on за да работи.* 
 ## Extensions
 Live server - рефрешва документа в браузъра автоматично.
+Better Comments - стилизира коментарите, за да може да са по-ясни.
 ## Emmet
 Това е инструмент за уеб разработчици, който ускорява писането на HTML и CSS код чрез съкращения. Работи в много текстови редактори като Visual Studio Code, Sublime Text и други.
 - Съкращения: Например, `ul>li*5` се разширява до:
@@ -87,7 +88,8 @@ Live server - рефрешва документа в браузъра автом
 
 Emmet е полезен за бързо генериране на HTML/CSS структури и спестяване на време.
 # Misc
-
+## Final Newline
+Винаги трябва да има един празен ред на края на файла, като това може да се автоматизира чрез `Insert Final Newline` настройката в Settings.
 # ChatGPT
 ## Settings Scope
 In Visual Studio Code, there are several different scopes for settings, and you can modify them depending on whether you want the changes to apply globally (across all projects) or locally (to a specific project or workspace). Here's the breakdown:
