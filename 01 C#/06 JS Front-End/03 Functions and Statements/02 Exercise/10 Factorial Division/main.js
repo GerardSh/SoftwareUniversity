@@ -16,7 +16,6 @@ function solve(numberOne, numberTwo) {
 //2
 function solve(numberOne, numberTwo) {
     function factorial(number) {
-
         let result = 1;
         for (let i = number; i > 0; i--) {
             result *= i;
