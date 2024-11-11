@@ -386,6 +386,75 @@ In summary, you can say that functions are like variables that hold a piece of c
 **Key Difference**
 
 - **Value vs Action**: Expressions evaluate to a value, while statements perform an action without returning a value.
+## Function Names Are Scoped Identifiers
+in JavaScript as well in C#, when you declare a function with a name (a **named function declaration**), that name acts as an identifier (or variable) within its scope. This means you cannot reuse that name for a different variable in the same scope.
+
+For example:
+
+```javascript
+function calculate() {
+    // function body
+}
+
+// Trying to declare a variable with the same name in the same scope will cause an error
+let calculate = 5; // This will throw an error: SyntaxError: Identifier 'calculate' has already been declared
+```
+
+However, you can reuse the function name in different scopes without conflict. For instance, inside a different function, you could use the same name for a variable:
+
+```javascript
+function calculate() {
+    // function body
+}
+
+function anotherFunction() {
+    let calculate = 10; // This is allowed because it's in a different scope
+    console.log(calculate); // Outputs 10
+}
+```
+
+In general, JavaScript treats named function declarations like variable declarations (they’re hoisted to the top of their scope), so they must have unique names within the same scope.
+## Higher-Order Functions
+In JavaScript (and many other programming languages), **higher-order functions** are functions that either take other functions as arguments, return functions as results, or do both. This ability makes JavaScript highly flexible, allowing developers to write modular, reusable code. Higher-order functions are fundamental to functional programming concepts and can enable efficient, readable, and clean code.
+
+Here's how they work:
+
+1. **Taking Functions as Arguments**
+- Functions like `.map`, `.filter`, and `.forEach` in JavaScript accept functions as arguments to process elements in an array. These passed functions are called _callback functions_.
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+const squared = numbers.map(num => num * num); // [1, 4, 9, 16, 25]
+```
+
+In this example, `.map` is a higher-order function that takes a function `(num => num * num)` as an argument to apply to each element in the `numbers` array.
+
+2. **Returning Functions**
+- Some functions generate and return other functions, allowing for customization and delayed execution.
+
+```javascript
+function multiplier(factor) {
+    return function(number) {
+        return number * factor;
+    };
+}
+
+const double = multiplier(2);
+console.log(double(5)); // 10
+```
+
+Here, `multiplier` is a higher-order function that returns a function. The returned function `double` multiplies any input by 2.
+
+3. **Combining Functions**
+- Since higher-order functions can take and return functions, they can be composed to create more complex behaviors.
+
+```javascript
+const add = x => y => x + y;
+const add5 = add(5);
+console.log(add5(10)); // 15
+```
+
+Higher-order functions are powerful for creating dynamic, modular, and reusable code, especially in situations where we want to perform actions on data collections or create pipelines of functions.
 # Bookmarks 
 
 Completion: 07.11.2024
