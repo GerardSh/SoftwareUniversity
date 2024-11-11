@@ -137,6 +137,31 @@ Callback функциите, предлагат гъвкавост и могат
 
 `filter(predicate)` - връща масив с всички елементи, отговарящи на даден филтър.
 
+`reduce(callbackFunction, initialValue)` - подобен на `Aggregate()` в C#, обединява всички елементи в масива до една стойност. Пълният синтаксис на `reduce` е следният:
+
+```javascript
+array.reduce(callbackFunction, initialValue);
+```
+
+**Обяснение на параметрите**
+
+1. `callbackFunction`: Това е функцията, която се извиква за всяка итерация на елементите в масива. Тя получава обикновено следните четири аргумента, като първите два са задължителни:
+- `accumulator` (стойността, която се натрупва),
+- `currentValue` (текущият елемент от масива),
+- `currentIndex` (индексът на текущия елемент),
+- `array` (самият масив).
+2. `initialValue`: Това е стойността, която се използва като начален `accumulator` за първата итерация. Ако тя не е зададена, `reduce` ще използва първия елемент на масива като начален `accumulator`, а итерацията ще започне от втория елемент.
+
+**Пример:**
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 10);
+console.log(sum); // Изход: 25
+```
+
+В този пример `initialValue` е `10`, така че `reduce` започва с натрупване, като добавя 10 към всеки елемент от масива.
+
 [Array - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) - всичките array методи в JS
 ## String
 `firstString.concat(secondString)` - събира два string-a и връща нов стринг съставен от тях.
