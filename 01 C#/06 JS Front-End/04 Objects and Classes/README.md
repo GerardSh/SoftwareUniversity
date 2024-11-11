@@ -1,0 +1,7 @@
+# General
+
+# Misc
+
+# ChatGPT
+
+# Bookmarks 
