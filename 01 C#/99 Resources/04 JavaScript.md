@@ -229,6 +229,43 @@ let result = text.split(/[,; ]+/); // Разделя по запетая, точ
 Разликата между `Number` и другите две е че ако string-a започва с число, то ще вземе числото и няма да върне `NaN`. Примерно при `parseFloat('3test')`, ще върне числото 3.
 
 `Number.isInteger(value)` - връща boolean в зависимост дали подадената стойност е цяло число (integer). Това включва и отрицателните цели числа, както и нула, но изключва десетични числа и стойности, които не са от числов тип.
+## Object
+`Object.freeze(myObject)` - забранява на даден обект да може да се променя, трябва да го подадем на метода. Има възможност и само конкретни пропъртита да не се променят.
+
+`Object.values(myObject)` - взима всички стойности от подадения обект и ги слага в масив. Ако в някой от методите има `this`, за да се запази оригиналния контекст, трябва да ползваме `bind()` при изпълнение на метода:
+
+```javascript
+    let dog = {
+        name: 'Hero',
+        bark: function () { // Function expression syntax
+            console.log(`${this.name} is barking!`);
+        },
+    };
+
+    let myObjectValues = Object.values(dog);
+
+    myObjectValues[1].bind(dog)(); // Hero is barking!
+    myObjectValues[1](); // undefined is barking!
+```
+
+`Object.keys(myObject)` - взима всички ключове от подадения обект и ги слага в масив. 
+
+`Object.entries(myObject)` -  връща масив от двойки ключ-стойност, като всяка двойка е масив с два елемента: първият е ключът, а вторият е стойността.
+Ако в някой от методите има `this`, за да се запази оригиналния контекст, трябва да ползваме `bind()` при изпълнение на метода:
+
+```javascript
+    let dog = {
+        name: 'Hero',
+        bark: function () { // Function expression syntax
+            console.log(`${this.name} is barking!`);
+        },
+    };
+
+    let myObjectPairs = Object.entries(dog);
+
+    myObjectPairs[1][1].bind(dog)(); // Hero is barking!
+    myObjectPairs[1][1](); // undefined is barking!
+```
 # RegExp
 ## Creating RegExp
 Има два основни начина за създаване на регулярни изрази в JavaScript:
