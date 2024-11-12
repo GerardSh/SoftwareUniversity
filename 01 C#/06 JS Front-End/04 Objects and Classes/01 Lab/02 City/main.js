@@ -17,3 +17,13 @@ function solve(city) {
         console.log(`${key} -> ${city[key]}`);
     }
 }
+
+
+
+
+//3
+function solve(city) {
+    for (const key in city) {
+        console.log(`${key} -> ${city[key]}`);
+    }
+}
