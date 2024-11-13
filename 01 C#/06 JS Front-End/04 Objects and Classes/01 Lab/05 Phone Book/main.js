@@ -1,12 +1,12 @@
-function solve(phoneBookData) {
-    let phoneBook = {};
+function solve(entries) {
+    let phonebook = {};
 
-    for (contact of phoneBookData) {
+    for (contact of entries) {
         const [name, number] = contact.split(' ');
-        phoneBook[name] = number;
+        phonebook[name] = number;
     }
 
-    for (let key in phoneBook) {
-        console.log(`${key} -> ${phoneBook[key]}`);
+    for (let key in phonebook) {
+        console.log(`${key} -> ${phonebook[key]}`);
     }
 }
