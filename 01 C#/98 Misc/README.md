@@ -1850,6 +1850,12 @@ console.log(myVar); // Error: myVar is not defined (because it's local)
 ```
 
 Using explicit declarations with `let` or `const` avoids unintentional global scope, improving code reliability and readability.
+### Reference Error
+In JavaScript, once a variable is assigned an object, accessing non-existing properties on that object will indeed return `undefined` rather than throwing an error, as JavaScript is designed to handle undefined values gracefully.
+
+In contrast, trying to access a property on an uninitialized (or unassigned) variable triggers a `ReferenceError` because JavaScript can't find a reference to it in memory. C#’s stricter approach reflects its static typing, so attempting to access an undefined property throws an error in both cases to ensure type safety.
+
+This flexibility in JavaScript can be convenient but also requires careful handling to avoid runtime issues, especially in large applications.
 ## Bookmarks
 https://jsisweird.com/
 
