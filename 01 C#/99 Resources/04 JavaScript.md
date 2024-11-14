@@ -267,6 +267,8 @@ let result = text.split(/[,; ]+/); // Разделя по запетая, точ
     myObjectPairs[1][1](); // undefined is barking!
 ```
 
+`Object.fromEntries(phonebookEntries)` - връща обект създаден от масив от двойки`[key, value]`, какъвто създава и `Object.entries(myObject)` метода.
+
 `hasOwnProperty(propertyKey)` - проверява дали даден обект, съдържа определен ключ, връща boolean.
 
 `delete myObject['key]` - за изтриване на пропърти се ползва оператора delete, като освен bracket notation, работи и dot notation.
