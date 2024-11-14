@@ -264,6 +264,168 @@ Key-a е стринг, тъй като в обект задължително т
 `for-in` не използва вътрешен итератор (по начина, по който работят масивите и други обекти в JavaScript, като например `Map` и `Set`). Вместо това, той директно обхожда собствените свойства на обекта, като използва съществуващите му ключове (индекси). В случая с масиви, `for-in` всъщност се използва за обхождане на индексите (ключовете) като текстови стойности, а не самите стойности на елементите.
     
 Итератори обикновено се използват за обхождане на колекции, които следват по-формален протокол. Например, масивите имат вграден итератор, който може да бъде използван чрез `for-of` или `Array.prototype.forEach`. Итераторите осигуряват механизъм за обход, който не зависи от ключовете или индексите, а от самите елементи. Ако нашия обект няма итератор, не може да ползваме `for-of` върху него. Това е много подобно на enumerator-а в C#.
+## Sorting
+В обектите, няма гаранция как ще бъдат подредени елементите. Обикновено подредбата е в реда в който са добавени пропъртитата, но в някои случаи се пренареждат, примерно ако заменим, изтрием стойности и тн. За да направим сортиране, първо трябва да конвертираме обектите към масив и след това да сортираме масива. За да създадем масива, може да ползваме метода `Object.entries(myObject)` и след това да го сортираме чрез метода `sort()`. А може да вземем само key-овете и да сортираме тях. Може да се прави и сортиране по стойност, а не по ключ, като единствената разлика е, че вместо да подаваме ключовете в `localeCompare()` метода, трябва да подадем стойностите.
+
+```javascript
+    let phonebook = {
+        'Pesho': '0888888888',
+        'Gosho': '0888888887',
+        'Tosho': '0888888886'
+    };
+
+    // Sorting using entries by values
+    let phonebookEntries = Object.entries(phonebook).sort((entryA, entryB) => entryA[1].localeCompare(entryB[1]));
+
+    console.log('Sorted using entries by values');
+
+    for (let [key, value] of phonebookEntries) {
+        console.log(key, value);
+    }
+
+    // Sorting using entries by keys
+    let phonebookEntries = Object.entries(phonebook).sort((entryA, entryB) => entryA[0].localeCompare(entryB[0]));
+
+    // Alternative syntax, using destructuring where we can further omit valueA and valueB since they are not used
+    let phonebookEntries2 = Object.entries(phonebook).sort(([keyA, valueA], [keyB, valueB]) => keyA.localeCompare(keyB));
+    
+    console.log('Sorted using entries by keys');
+
+    for (let [key, value] of phonebookEntries) {
+        console.log(key, value);
+    }
+
+    // Sorting using keys
+    let sortedKeys = Object.keys(phonebook).sort((a, b) => a.localeCompare(b));
+
+    console.log(`\r\nSorted using keys`);
+
+    for (let key of sortedKeys) {
+        console.log(key, phonebook[key]);
+    }
+
+    //Reconstructing object from the entries array
+    let sortedPhonebook = Object.fromEntries(phonebookEntries);
+
+    console.log(`\r\nOriginal object`);
+    console.log(phonebook);
+
+    console.log(`\r\Sorted object`);
+    console.log(sortedPhonebook);
+```
+
+Как работи метода `sort()` има подробно обяснение в JavaScript file-a в папката с ресурси.
+
+Ако искаме да обърнем масив в обект, може да ползваме метода `Object.fromEntries(myEntriesArray)`, но в този случай, ни трябва масив от двойки`[key, value]` какъвто създава и `Object.entries(myObject)` метода.
+## Array and Object Destructuring
+Както и при масивите и така и при обектите може да ползваме destructuring за да запишем стойностите на дадени пропъртита в променливи. Може освен стойностите да се взимат и ключовете.
+
+```javascript
+    // Array destructuring
+    let arr = [1, 2, 3];
+    const [x, y, z] = arr;
+    // Equivalent to:
+    const x2 = arr[0];
+    const y2 = arr[1];
+    const z2 = arr[2];
+
+    // Object destructuring values only
+    let obj = { a: 1, b: 2 };
+    const { a, b } = obj;
+    // Equivalent to:
+    const a2 = obj.a;
+    const b2 = obj.b;
+
+    // Object destructuring keys and values
+    for (let [key, value] of Object.entries(obj)) {
+        console.log(key, value);
+    }
+```
+
+Деструктурирането може да се използва директно като параметър на функции за приемане на масиви или обекти. Това прави кода по-кратък и четлив, защото можем директно да присвояваме стойностите на променливи, без да се налага да достъпваме елементите или пропъртитата ръчно вътре в тялото на функцията.
+
+**Примери**
+
+**Деструктуриране на Масив в Параметър на Функция**
+
+```javascript
+function printCoordinates([x, y]) {
+    console.log(`X: ${x}, Y: ${y}`);
+}
+
+printCoordinates([10, 20]); // Output: X: 10, Y: 20
+```
+
+**Обяснение**: Тук `printCoordinates` приема масив с две стойности и директно ги деструктурира в променливите `x` и `y`.
+
+**Деструктуриране на Обект в Параметър на Функция**
+
+```javascript
+function greet({ name, age }) {
+    console.log(`Hello, ${name}! You are ${age} years old.`);
+}
+
+greet({ name: "Maria", age: 25 }); // Output: Hello, Maria! You are 25 years old.
+```
+
+**Обяснение**: В този случай функцията `greet` приема обект и директно деструктурира стойностите на пропъртитата `name` и `age`.
+
+**Допълнителни Ползи**
+
+Деструктурирането в параметрите на функцията е удобно, защото:
+
+1. Намалява нуждата от допълнителен код за достъп до стойностите.
+2. Улеснява четимостта и поддръжката на кода.
+3. Позволява директно да определяме променливи само за стойностите, които са ни необходими, като избягваме излишни данни.
+
+При деструктуриране на обект, взимаме стойностите на пропъртитата, като използваме името на ключа, но не се интересуваме от реда на ключовете. Ако въведем име на несъществуващ ключ, тази променлива ще бъде `undefined`. 
+Има начин да сложим ново име на променлива, различно от името на ключа, трябва да се напише името на ключа, две точки и новото име. В примера долу създаваме променлива с име `university`, вместо `school`.
+Може да ползваме и `...` rest оператора, за да съберем останалите пропъртита в обект, след като сме извлекли конкретни ключове от оригиналния обект.
+
+```javascript
+    let person = { name: "John", age: 30, school: 'SoftUni', gender: 'male', country: 'Bulgaria', city: 'Sofia' };
+    const { name, age, school: university, sex, ...rest } = person;  // Извличаме стойностите по ключовете 'name' и 'age', а останалите стойности ги слагаме в отделен обект, чрез rest оператора
+
+    console.log(name); // "John"
+    console.log(age);  // 30
+    console.log(university);  // SoftUni 
+    console.log(sex);  // undefined 
+    console.log(rest); // {gender: 'male', country: 'Bulgaria', city: 'Sofia'}
+    console.log(typeof (rest)); // object
+```
+
+В горния пример, деструктурирахме обекта `person` на няколко променливи, като всички оставащи пропъртита събрахме в нов обект чрез оператора `rest`.
+
+
+При масивите деструктурирането се прави на базата на позициите (индекси) в масива:
+
+```javascript
+let arr = [1, 2, 3];
+const [x, y, z, h] = arr; // Вземаме стойностите в същия ред на позициите
+
+console.log(x); // 1
+console.log(y); // 2
+console.log(z); // 3
+console.log(h); // undefined
+```
+
+**Заключение:**
+
+При обектите деструктурирането извлича стойностите на пропъртитата, като се базира на имената на ключовете, позицията им няма значение. Докато при масивите стойностите се извличат според реда на елементите, имената на променливите нямат значение.
+## Classes
+Класовете са механизъм, който дава възможност за създаване на еднотипни обекти. Класа е като шаблон за обекти и дефинира тяхната структурата и поведение.
+
+Обект създаден от клас се нарича инстанция на този клас. Реално това са стандартни JS обекти, но имат гаранция за тяхната структура, защото произлизат от даден клас.
+
+Инстанциите се създават с ключовата дума `class` и името на класа, което трябва да бъде PascalCase. Това е и едно от местата в JS където се нарушава конвенцията да се изписват идентификаторите с camelCase.
+### Constructor
+Класовете имат конструктор - метод който се извиква автоматично, за да създаде обекта. За разлика от C# където конструктора е с името на класа, в JS се казва `constructor()`.
+
+```javascript
+
+```
+
+`this` в контекста на клас, сочи към инстанцията, която ще бъде създадена от класа. Обекта, който ще бъде създаден, ще има пропърти `name`, което ще е равно на променливата `name` в конструктора.
 # Misc
 ## Identifiers
 Имаме идентификатори на функции, променливи и пропъртита, като всички имат еднакви правила:
@@ -330,4 +492,138 @@ In this case, the keys (e.g., `Name`, `Age`, `IsStudent`) and their types are st
 - **C# classes with properties** are more structured and predefined, with a fixed set of properties (keys) and associated types, whereas JavaScript objects and C# dictionaries are more flexible and can have arbitrary keys and values.
 
 So, yes, JavaScript objects are **more similar to C# dictionaries** than to C# objects (i.e., classes with properties).
+## this Keyword
+The `this` keyword in JavaScript refers to the context in which a function is executed. It is a way to access the object that is currently executing the code, and its value is determined by how a function is called. The value of `this` can vary depending on the situation:
+
+1. **Global Context (Outside any function)**
+
+In the global execution context (i.e., outside of any function or object), `this` refers to the global object.
+
+- In a **browser** environment, `this` refers to the `window` object.
+- In **Node.js**, `this` refers to the global object.
+
+```javascript
+console.log(this); // In a browser, it logs the window object
+```
+
+2. **Inside a Regular Function**
+
+In a regular function (not inside an object), the value of `this` depends on how the function is called.
+
+- In **strict mode** (`'use strict';`), `this` will be `undefined`.
+- Without strict mode, `this` refers to the global object (in a browser, the `window` object).
+
+```javascript
+function example() {
+  console.log(this); // In non-strict mode, it logs the global object (window in the browser)
+}
+
+example();
+```
+
+3. **Inside an Object Method**
+
+When `this` is used inside a method (a function that is a property of an object), it refers to the object that called the method.
+
+```javascript
+const person = {
+  name: 'John',
+  greet() {
+    console.log(this.name); // 'this' refers to the 'person' object
+  }
+};
+
+person.greet(); // Logs 'John'
+```
+
+4. **Inside a Constructor Function (Class/Constructor)**
+
+When `this` is used in a constructor function (or in a class method), it refers to the newly created instance of the object.
+
+```javascript
+function Person(name) {
+  this.name = name; // 'this' refers to the new object created
+}
+
+const john = new Person('John');
+console.log(john.name); // 'John'
+```
+
+5. **Arrow Functions**
+
+In arrow functions, `this` **does not** have its own context. Instead, it **inherits** `this` from the surrounding (lexical) context. This is often used to maintain the value of `this` from the outer scope.
+
+```javascript
+const person = {
+  name: 'John',
+  greet: function() {
+    setTimeout(() => {
+      console.log(this.name); // 'this' refers to the 'person' object, not the global context
+    }, 1000);
+  }
+};
+
+person.greet(); // Logs 'John' after 1 second
+```
+
+6. **Explicit Binding (call, apply, bind)**
+
+You can explicitly set the value of `this` using the `call()`, `apply()`, and `bind()` methods.
+
+- **`call()`** and **`apply()`**: These methods immediately invoke the function with a specified `this` value.
+- **`bind()`**: This method returns a new function with the specified `this` value, but does not invoke it immediately.
+
+```javascript
+function greet() {
+  console.log(this.name);
+}
+
+const person = { name: 'John' };
+
+greet.call(person);  // Logs 'John'
+greet.apply(person); // Logs 'John'
+
+const boundGreet = greet.bind(person);
+boundGreet();  // Logs 'John'
+```
+
+7. **Event Handlers**
+
+When `this` is used inside an event handler, it typically refers to the DOM element that triggered the event.
+
+```javascript
+const button = document.querySelector('button');
+button.addEventListener('click', function() {
+  console.log(this); // 'this' refers to the button element
+});
+```
+
+8. **Class Methods**
+
+In classes, `this` refers to the instance of the class, i.e., the object created from the class.
+
+```javascript
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log(this.name); // 'this' refers to the instance of the class
+  }
+}
+
+const john = new Person('John');
+john.greet(); // Logs 'John'
+```
+
+**Key Points:**
+
+- **Global context**: `this` refers to the global object (`window` in browsers).
+- **In methods**: `this` refers to the object the method is called on.
+- **In constructors**: `this` refers to the newly created object.
+- **Arrow functions**: `this` refers to the surrounding context.
+- **Explicit binding**: Use `call()`, `apply()`, or `bind()` to explicitly set `this`.
+
+Understanding how `this` works in JavaScript is essential for managing object-oriented code, handling events, and working with dynamic contexts.
 # Bookmarks 
