@@ -117,10 +117,9 @@ function solve(firstName, lastName, age) {
 
     console.log(person);
     person.sleep();
-
 }
 
-solve('Gerard', 'Shahin', 20);
+solve('John', 'Doe', 20);
 ```
 ## JSON - JavaScript Object Notation
 Това е формат на данни, който най-често се използва за прехвърляне на данни. Когато искаме да прехвърлим данни от едно място на друго, трябва да ги сериализараме - да ги обърнем в текстов формат, за да може да се прехвърлят лесно. JSON е такъв текстов формат, който ни позволява да прехвърляме данни, без значение от къде на къде. Използва се най-вече за прехвърляне на обекти, между клиент сървър, сървъри и тн, тъй като е лек и лесен за парсване от машини.
@@ -396,7 +395,6 @@ greet({ name: "Maria", age: 25 }); // Output: Hello, Maria! You are 25 years old
 
 В горния пример, деструктурирахме обекта `person` на няколко променливи, като всички оставащи пропъртита събрахме в нов обект чрез оператора `rest`.
 
-
 При масивите деструктурирането се прави на базата на позициите (индекси) в масива:
 
 ```javascript
@@ -415,17 +413,191 @@ console.log(h); // undefined
 ## Classes
 Класовете са механизъм, който дава възможност за създаване на еднотипни обекти. Класа е като шаблон за обекти и дефинира тяхната структурата и поведение.
 
-Обект създаден от клас се нарича инстанция на този клас. Реално това са стандартни JS обекти, но имат гаранция за тяхната структура, защото произлизат от даден клас.
+Обект създаден от клас се нарича инстанция на този клас. Реално това са стандартни JS обекти, но имат гаранция за тяхната структура, защото произлизат от даден клас. Има ситуации, където ако имаме логика в конструктора на класа да се създават обекти с различни пропъртита. Примерно ако имаме клас животно, където конструктора приема вида на животното и спрямо него, създава различни пропъртита. В тези ситуации, макар дадени обекти да произлизат от един и същи клас, те ще имат различна структура.
 
-Инстанциите се създават с ключовата дума `class` и името на класа, което трябва да бъде PascalCase. Това е и едно от местата в JS където се нарушава конвенцията да се изписват идентификаторите с camelCase.
-### Constructor
-Класовете имат конструктор - метод който се извиква автоматично, за да създаде обекта. За разлика от C# където конструктора е с името на класа, в JS се казва `constructor()`.
+Класовете се създават с ключовата дума `class` и името на класа, което трябва да бъде PascalCase. Това е и едно от местата в JS където се нарушава конвенцията да се изписват идентификаторите с camelCase.
 
 ```javascript
+    class Dog {
 
+        constructor(name, breed, age) {
+            this.name = name;
+            this.breed = breed;
+            this.age = age;
+        }
+
+        makeSound() {
+            console.log('bark');
+        }
+    }
+
+    let firstDog = new Dog('Hero', 'Swiss Shepard', 5);
+    let secondDog = new Dog('Axel', 'German Shepard', 12);
+
+    console.log(firstDog); // Dog {name: 'Hero', breed: 'Swiss Shepard', age: 5}
+
+    firstDog.makeSound();
+}
+```
+### Constructor
+Класовете имат конструктор - метод който се извиква автоматично, за да създаде обекта. За разлика от C# където конструктора е с името на класа, в JS се казва `constructor()`. В конструктора можем да добавим параметри, които се задават при създаването на нов обект.
+Може да имаме само един конструктор в клас, но като варианти за workaround можем да използваме следните подходи:
+- **Default parameter values**: Да зададем стойности по подразбиране за параметрите на конструктора.
+- **Conditional logic в конструктора**: Да добавим логика, която обработва различни типове аргументи или комбинации от параметри.
+- **Factory methods**: Да създадем статични методи, които връщат нови обекти, базирани на различни входни данни.
+### Default Properties
+Ако искаме в класа ни да има пропъртита, които не се дефинират в конструктора, трябва да напишем името на пропъртито и да му дадем стойност. Ако не му дадем стойност, ще бъде undefined. Желателно е да се слагат преди конструктора. Интерпретатора първо ще инициализира тези пропъртита и после ще влезне в конструктора да инициализира пропъртитата вътре. Може да следваме принципа където, ако слагаме default стойности ги позиционираме пропъртитата извън конструктора, а ако стойностите биват подадени като аргументи на конструктора, тогава  ги слагаме вътре в него.
+
+```javascript
+    class MyClass {
+        myProperty = 0;
+        myProperty2;
+        
+        constructor(myProperty3) {
+            this.myProperty3 = myProperty3;
+        };
+    }
+
+    console.log(new MyClass(3)); // MyClass {myProperty: 0, myProperty2: undefined, myProperty3: 0}
+```
+### `this` Keyword
+`this` в контекста на клас, сочи към текущата инстанция с която работим в момента. Обекта, който ще бъде създаден, ще има пропърти `name`, което ще е равно на променливата `name` в конструктора. Променливата в конструктора и пропъртито може да имат различни имена.
+### `new` Operator
+С оператора `new` създаваме инстанция на класа. Това което получаваме е съвсем нормален обект, за който важат всички правила и ограничения за обектите в JS. Единствено пред обекта, може да видим че се вижда името на класа, от който е бил създаден.
+
+За да можем да създадем обект, класовете трябва да бъдат дефинирани преди реда, на който се създава обектът, защото в JavaScript няма hoisting за класове. Това означава, че класовите декларации не се "вдигат" в началото на кода, както става с функциите. Ако опитаме да използваме клас преди неговото дефиниране, ще получим `ReferenceError`.
+### Methods
+Методите се добавят почти както method notation-a, но с разликата че не се слагат запетайки между отделните членове на класа.
+В примера метода `makeSound()` е инстанционен метод, който се достъпва само през инстанциите на класа. Може да имаме и статични методи и пропъртита, като трябва да напишем `static` keyword-a преди метода или пропъртито.
+
+```javascript
+class MyClass {
+    // Static property
+    static staticProperty = 'I am a static property';
+
+    // Instance property
+    instanceProperty = 'I am an instance property';
+
+    // Static method
+    static staticMethod() {
+        console.log('This is a static method.');
+    }
+
+    // Instance method
+    instanceMethod() {
+        console.log('This is an instance method.');
+    }
+}
+
+// Accessing static property and method directly from the class
+console.log(MyClass.staticProperty);  // Output: I am a static property
+MyClass.staticMethod();               // Output: This is a static method.
+
+// Creating an instance of the class
+let obj = new MyClass();
+
+// Accessing instance property and method through the instance
+console.log(obj.instanceProperty);  // Output: I am an instance property
+obj.instanceMethod();                 // Output: This is an instance method.
+
+// You cannot access static properties or methods through an instance
+// console.log(obj.staticProperty);  // Error: Cannot read property 'staticProperty' of undefined
+// obj.staticMethod();              // Error: obj.staticMethod is not a function
+```
+### Private Methods and Properties
+Може да имаме и private методи и пропъртита, като преди името им се слага `#`.  Така не могат да бъдат модифицирани или достъпени отвънка, но само от вътре в класа.
+
+```javascript
+class MyClass {
+    // Private property
+    #privateProperty = 'This is a private property';
+
+    // Private method
+    #privateMethod() {
+        console.log('This is a private method.');
+    }
+
+    // Public method
+    publicMethod() {
+        console.log('This is a public method.');
+        console.log('Accessing private property:', this.#privateProperty);  // Accessing the private property
+        this.#privateMethod();  // Calling the private method
+    }
+
+    // Getter for private property
+    getPrivateProperty() {
+        return this.#privateProperty;
+    }
+}
+
+let obj = new MyClass();
+obj.publicMethod();  // Access private property and method via public method
+
+// Accessing private property and method outside the class will result in errors
+// console.log(obj.#privateProperty);  // SyntaxError: Private field '#privateProperty' must be declared in an enclosing class
+// obj.#privateMethod();  // SyntaxError: Private method '#privateMethod' is not accessible outside class
+
+console.log(obj.getPrivateProperty());  // Access private property via a public getter method
 ```
 
-`this` в контекста на клас, сочи към инстанцията, която ще бъде създадена от класа. Обекта, който ще бъде създаден, ще има пропърти `name`, което ще е равно на променливата `name` в конструктора.
+Може да имаме комбинация между `static` и `private` пропъртита и методи. Те могат да бъдат достъпени само от вътре в класа и то през статичен публичен метод.
+
+```javascript
+class MyClass {
+    // Private static property
+    static #privateStaticProperty = 'This is a private static property';
+
+    // Private static method
+    static #privateStaticMethod() {
+        console.log('This is a private static method.');
+    }
+
+    // Public static method to access private static property and method
+    static publicStaticMethod() {
+        console.log('Accessing private static property:', MyClass.#privateStaticProperty);
+        MyClass.#privateStaticMethod();
+
+        // Using 'this' keyword works as well
+        console.log('Accessing private static property:', this.#privateStaticProperty);
+        this.#privateStaticMethod();
+    }
+}
+
+MyClass.publicStaticMethod();  // Access the private static property and method through a public static method
+
+// Accessing private static property and method outside the class will result in errors
+// console.log(MyClass.#privateStaticProperty);  // SyntaxError: Private field '#privateStaticProperty' must be declared in an enclosing class
+// MyClass.#privateStaticMethod();  // SyntaxError: Private static method '#privateStaticMethod' is not accessible outside class
+```
+
+По подобие на C# и тук може да имаме getters и setters, които са методи.
+
+```javascript
+class MyClass {
+    #internalProperty = 'internal value';
+
+    // Getter
+    get internalProperty() {
+        return this.#internalProperty;
+    }
+
+    // Setter
+    set internalProperty(value) {
+        this.#internalProperty = value;
+    }
+}
+
+let obj = new MyClass();
+
+console.log(obj.internalProperty); // Getting the old value of the internal property
+
+obj.internalProperty = 'new internal value' // Setting the new value of the internal property
+
+console.log(obj.internalProperty); // Getting the new value of the internal property
+```
+
+Възможно е да се комбинират `private`, `static` и `get` / `set`.
+Към момента в JS няма `protected` модификатор за достъп, както и няма интерфейси.
 # Misc
 ## Identifiers
 Имаме идентификатори на функции, променливи и пропъртита, като всички имат еднакви правила:
@@ -492,7 +664,7 @@ In this case, the keys (e.g., `Name`, `Age`, `IsStudent`) and their types are st
 - **C# classes with properties** are more structured and predefined, with a fixed set of properties (keys) and associated types, whereas JavaScript objects and C# dictionaries are more flexible and can have arbitrary keys and values.
 
 So, yes, JavaScript objects are **more similar to C# dictionaries** than to C# objects (i.e., classes with properties).
-## this Keyword
+## `this` Keyword
 The `this` keyword in JavaScript refers to the context in which a function is executed. It is a way to access the object that is currently executing the code, and its value is determined by how a function is called. The value of `this` can vary depending on the situation:
 
 1. **Global Context (Outside any function)**
@@ -626,4 +798,43 @@ john.greet(); // Logs 'John'
 - **Explicit binding**: Use `call()`, `apply()`, or `bind()` to explicitly set `this`.
 
 Understanding how `this` works in JavaScript is essential for managing object-oriented code, handling events, and working with dynamic contexts.
+## Private Field Scope Issue
+In JavaScript, when classes are defined inside functions, private fields (denoted with `#`) may unintentionally be accessible across different instances of the class within the same scope. This happens because, despite being defined as private, private fields aren't isolated to individual instances when the class is scoped within a function. This could be seen as a design flaw, as it violates the principle of encapsulation—private fields should only be accessible within their own instance, not from other instances in the same scope. The issue arises due to the flexibility of JavaScript, but it could be addressed by strengthening the encapsulation rules for private fields, especially in function-scoped classes. By defining the class inside the `solve` function, you're essentially putting the class in the local scope of that function. This means all variables (including private fields like `#myPrivateProperty`) are scoped to that function, which might allow some unintended behavior when you try to access the private fields. Normally, private fields are meant to be scoped to individual instances, but this scope collision can cause the JavaScript engine to behave unexpectedly.
+
+Here's a simple example demonstrating the potential issue with private fields in function-scoped classes:
+
+```javascript
+function solve() {
+    class MyClass {
+        #myPrivateProperty = 5;
+
+        constructor(value) {
+            this.value = value;
+            if (value === 3) {
+                this.#myPrivateProperty = 2;
+            }
+        }
+
+        test() {
+            console.log(test2.#myPrivateProperty); // Accessing another instance's private field
+        }
+    }
+
+    let test = new MyClass(3);
+    let test2 = new MyClass(5);
+    
+    test.test();  // Logs: 5
+    test2.test(); // Logs: 5
+}
+
+solve();
+```
+
+**Explanation:**
+
+- The class `MyClass` defines a private field `#myPrivateProperty`.
+- `test` and `test2` are two instances of `MyClass`, but the private field is accessible across instances within the same scope of the `solve()` function.
+- This behavior is unexpected because private fields should be isolated to each instance, but the class is scoped inside a function, leading to shared access to private fields across instances.
 # Bookmarks 
+
+Completion: 15.11.2024
