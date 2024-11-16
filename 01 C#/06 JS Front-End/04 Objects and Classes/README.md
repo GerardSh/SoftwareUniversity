@@ -598,6 +598,49 @@ console.log(obj.internalProperty); // Getting the new value of the internal prop
 
 Възможно е да се комбинират `private`, `static` и `get` / `set`.
 Към момента в JS няма `protected` модификатор за достъп, както и няма интерфейси.
+### Inheritance
+Класовете могат да наследяват други класове, като един от новите начини е да се ползва ключовата дума `extends`. 
+Извикването на метод или конструктор от базовия клас, става чрез ключовата дума `super`.
+Няма модификатор за достъп `protected` в JavaScript (както има в C#), така че трябва да се разчита на други подходи за контрол на достъпа.
+
+```javascript
+class Animal {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    makeSound() {
+        console.log(`${this.name} is making a generic sound`);
+    }
+
+    sleep() {
+        console.log('zZz');
+    }
+}
+
+class Dog extends Animal {
+    constructor(name, age, breed) {
+        super(name, age); // Calling the Animal class constructor
+        this.breed = breed;
+    }
+
+    swingTail() {
+        console.log(`${this.name} swings his tail!`);
+    }
+
+    makeSound() { // Implementing a new version of the Animal class makeSound() method, this is called method overriding
+        super.makeSound(); // Calling the base class method
+        console.log('Bark!');
+    }
+}
+
+dog = new Dog('Hero', 5, 'Swiss Shepard');
+dog.swingTail(); // Accessing the newly added in the Dog class swingTail() method
+dog.makeSound(); // Accessing the Dog class implementation of the makeSound() method
+dog.sleep(); // Accessing the inherited sleep() method from the Animal class
+console.log(`The name of the dog is ${dog.name}!`); // Accessing the inherited property from the Animal class
+```
 # Misc
 ## Identifiers
 Имаме идентификатори на функции, променливи и пропъртита, като всички имат еднакви правила:
