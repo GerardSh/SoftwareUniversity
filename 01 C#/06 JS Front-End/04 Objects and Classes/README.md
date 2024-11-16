@@ -707,6 +707,40 @@ In this case, the keys (e.g., `Name`, `Age`, `IsStudent`) and their types are st
 - **C# classes with properties** are more structured and predefined, with a fixed set of properties (keys) and associated types, whereas JavaScript objects and C# dictionaries are more flexible and can have arbitrary keys and values.
 
 So, yes, JavaScript objects are **more similar to C# dictionaries** than to C# objects (i.e., classes with properties).
+## Arrow Functions and Object Literals
+
+When using arrow functions:
+
+1. **Without `{}`**:
+    - The arrow function **automatically returns** the value.
+    - If you're returning an object literal, wrap it in parentheses `(...)` to avoid confusion with a code block.
+2. **With `{}`**:
+    - JavaScript treats `{}` as a **code block**.
+    - You must use `return` explicitly to return a value.
+
+**Simple Examples**
+
+1. **Concise Body (Automatic Return):**
+
+```javascript
+const result = [1, 2, 3].map(x => ({ number: x })); 
+// Returns: [{ number: 1 }, { number: 2 }, { number: 3 }]
+```
+
+2. **Block Body (Explicit Return):**
+
+```javascript
+const result = [1, 2, 3].map(x => { return { number: x }; });
+// Returns: [{ number: 1 }, { number: 2 }, { number: 3 }]
+```
+
+3. **What Causes an Error:**
+
+```javascript
+const result = [1, 2, 3].map(x => { number: x }); 
+// Throws an error because JavaScript thinks it's a code block without a return.
+```
+
 ## `this` Keyword
 The `this` keyword in JavaScript refers to the context in which a function is executed. It is a way to access the object that is currently executing the code, and its value is determined by how a function is called. The value of `this` can vary depending on the situation:
 
