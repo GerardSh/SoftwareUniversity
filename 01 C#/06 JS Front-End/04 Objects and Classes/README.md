@@ -835,6 +835,242 @@ solve();
 - The class `MyClass` defines a private field `#myPrivateProperty`.
 - `test` and `test2` are two instances of `MyClass`, but the private field is accessible across instances within the same scope of the `solve()` function.
 - This behavior is unexpected because private fields should be isolated to each instance, but the class is scoped inside a function, leading to shared access to private fields across instances.
-# Bookmarks 
+## Inheritance
+In JavaScript, inheritance is a way to create a new class from an existing class, allowing the new class to reuse, modify, or extend the properties and methods of the parent class. This is achieved using the `extends` keyword and the concept of prototypal inheritance. Here's an overview:
 
+1. **Class Inheritance** (ES6+ Syntax)
+The `extends` keyword is used to create a subclass that inherits from a parent class.
+
+```javascript
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+
+    makeSound() {
+        console.log(`${this.name} makes a sound.`);
+    }
+}
+
+class Dog extends Animal {
+    constructor(name, breed) {
+        super(name); // Call the parent class constructor
+        this.breed = breed;
+    }
+
+    bark() {
+        console.log(`${this.name} barks loudly!`);
+    }
+}
+
+const dog = new Dog('Rex', 'Labrador');
+dog.makeSound(); // Rex makes a sound.
+dog.bark();      // Rex barks loudly!
+```
+
+2. **Prototype-Based Inheritance**
+Before ES6, inheritance in JavaScript was implemented using prototypes.
+
+```javascript
+function Animal(name) {
+    this.name = name;
+}
+
+Animal.prototype.makeSound = function () {
+    console.log(`${this.name} makes a sound.`);
+};
+
+function Dog(name, breed) {
+    Animal.call(this, name); // Inherit properties
+    this.breed = breed;
+}
+
+// Inherit methods
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function () {
+    console.log(`${this.name} barks loudly!`);
+};
+
+const dog = new Dog('Rex', 'Labrador');
+dog.makeSound(); // Rex makes a sound.
+dog.bark();      // Rex barks loudly!
+```
+
+3. **Overriding Methods**
+Child classes can override parent methods by defining a method with the same name.
+
+```javascript
+class Animal {
+    makeSound() {
+        console.log('Generic animal sound');
+    }
+}
+
+class Dog extends Animal {
+    makeSound() {
+        console.log('Woof!');
+    }
+}
+
+const dog = new Dog();
+dog.makeSound(); // Woof!
+```
+
+4. **Accessing Parent Methods**
+You can access a parent class's methods using the `super` keyword.
+
+```javascript
+class Animal {
+    makeSound() {
+        console.log('Generic animal sound');
+    }
+}
+
+class Dog extends Animal {
+    makeSound() {
+        super.makeSound(); // Call the parent class method
+        console.log('Woof!');
+    }
+}
+
+const dog = new Dog();
+dog.makeSound(); 
+// Generic animal sound
+// Woof!
+```
+
+5. **Static Inheritance**
+Static methods and properties are inherited by subclasses as well.
+
+```javascript
+class Animal {
+    static info() {
+        console.log('Animals are living beings.');
+    }
+}
+
+class Dog extends Animal {}
+
+Dog.info(); // Animals are living beings.
+```
+
+6. **Prototypal Nature**
+Under the hood, even with `class` syntax, JavaScript inheritance relies on prototypes. When a method or property is not found on an object, JavaScript looks up the prototype chain until it finds the method/property or reaches `null`.
+
+**Key Notes:**
+- **Single Inheritance**: JavaScript classes support single inheritance, meaning a class can only directly extend one parent class.
+- **Mixins for Multiple Behaviors**: To achieve multiple inheritance-like behavior, JavaScript uses mixins (functions or objects that can be shared between classes).
+- Parent methods can always be accessed via `super`, but only within the context of child classes.
+## Prototypes
+In JavaScript, **prototypes** are a mechanism by which objects inherit properties and methods from other objects. Every JavaScript object has an internal link to another object called its **prototype**, which acts as a fallback for property and method lookups. This is part of JavaScript's **prototypal inheritance** system.
+
+1. **Understanding the Prototype Chain**
+- Each object has a hidden internal property called `[[Prototype]]`, which can be accessed via the `__proto__` property (though not recommended).
+- When you try to access a property or method on an object and it doesn’t exist, JavaScript checks the object’s prototype.
+- If the property or method still isn’t found, JavaScript continues up the **prototype chain** until it reaches `null` (the end of the chain).
+
+2. **Prototype in Action**
+
+```javascript
+const obj = { name: 'John' };
+
+console.log(obj.toString()); // [object Object]
+
+// 'toString' is not a property of obj, so JavaScript looks in obj's prototype.
+// obj's prototype is Object.prototype, which has the toString method.
+```
+
+3. **Creating Objects with Prototypes**
+You can explicitly set the prototype of an object when creating it using `Object.create`.
+
+```javascript
+const animal = {
+    makeSound() {
+        console.log('Generic animal sound');
+    }
+};
+
+const dog = Object.create(animal); // dog inherits from animal
+dog.bark = function () {
+    console.log('Woof!');
+};
+
+dog.makeSound(); // Generic animal sound
+dog.bark();      // Woof!
+```
+
+4. **Prototype Property on Functions**
+Every JavaScript function has a `prototype` property, which is used when the function is used as a constructor.
+
+```javascript
+function Animal(name) {
+    this.name = name;
+}
+
+Animal.prototype.makeSound = function () {
+    console.log(this.name + ' makes a sound.');
+};
+
+const dog = new Animal('Rex');
+dog.makeSound(); // Rex makes a sound.
+```
+
+The dog object inherits the `makeSound()` method from `Animal.prototype`.
+
+5. **Changing the Prototype**
+The `Object.setPrototypeOf` method allows you to change the prototype of an existing object.
+
+```javascript
+const animal = {
+    makeSound() {
+        console.log('Generic animal sound');
+    }
+};
+
+const dog = { bark: () => console.log('Woof!') };
+
+Object.setPrototypeOf(dog, animal);
+
+dog.makeSound(); // Generic animal sound
+dog.bark();      // Woof!
+```
+
+6. **Prototype Inheritance in Classes**
+In ES6 classes, prototypes are used under the hood for inheritance.
+
+```javascript
+class Animal {
+    makeSound() {
+        console.log('Generic animal sound');
+    }
+}
+
+class Dog extends Animal {
+    bark() {
+        console.log('Woof!');
+    }
+}
+
+const dog = new Dog();
+dog.makeSound(); // Generic animal sound
+dog.bark();      // Woof!
+```
+
+7. **Prototype Chain Diagram**
+Here’s a simplified prototype chain for an object:
+
+```javascript
+dog -> Animal.prototype -> Object.prototype -> null
+```
+
+8. **Key Points About Prototypes**
+- **Prototype Sharing**: Methods defined on the prototype are shared among all instances of the object.
+- **Avoid Overuse**: Directly modifying `__proto__` or the prototype chain dynamically can hurt performance and is generally discouraged.
+- **Custom Methods**: You can extend built-in prototypes like `Array` or `String`, but this is also generally discouraged as it can lead to conflicts.
+
+**Summary**
+Prototypes are a core concept in JavaScript’s object model. They allow objects to share behavior and support the inheritance system, enabling features like method sharing and prototype chains. Understanding prototypes is key to mastering JavaScript inheritance and object behavior.
+# Bookmarks
 Completion: 15.11.2024
