@@ -4,7 +4,7 @@
 
 Обектите композират в себе си повече данни, както и масивите, където имаме индексиран списък от данни. В обектите данните се асоциират към стрингове в `kvp` - key value pair тип данни. 
 
-Обектите са структура от свързани данни или функционалности, които са групирани по принадлежност към даден обект. Примерно имаме обект котка, която може да я опишем примерно с години - int,  име - string, пол - boolean, списък от прегледи - array и тн, все различен тип данни, но свързани с конкретния обект. Това е и съществена разлика с масива, където данните са предимно групирани по тяхната еднотипност.
+Обектите са структура от свързани данни или функционалности, които са групирани по принадлежност към даден обект. Примерно имаме обект котка, която може да я опишем с години - int,  име - string, пол - boolean, списък от прегледи - array и тн, все различен тип данни, но свързани с конкретния обект. Това е и съществена разлика с масива, където данните са предимно групирани по тяхната еднотипност.
 
 Всеки обект може да бъде характеризиран от пропъртита и / или методи, които може да има в себе си. Те може да бъдат добавяни и изтривани динамично (dynamic property), по време на runtime.
 
@@ -745,7 +745,6 @@ const result = [1, 2, 3].map(x => { number: x });
 The `this` keyword in JavaScript refers to the context in which a function is executed. It is a way to access the object that is currently executing the code, and its value is determined by how a function is called. The value of `this` can vary depending on the situation:
 
 1. **Global Context (Outside any function)**
-
 In the global execution context (i.e., outside of any function or object), `this` refers to the global object.
 
 - In a **browser** environment, `this` refers to the `window` object.
@@ -756,7 +755,6 @@ console.log(this); // In a browser, it logs the window object
 ```
 
 2. **Inside a Regular Function**
-
 In a regular function (not inside an object), the value of `this` depends on how the function is called.
 
 - In **strict mode** (`'use strict';`), `this` will be `undefined`.
@@ -771,7 +769,6 @@ example();
 ```
 
 3. **Inside an Object Method**
-
 When `this` is used inside a method (a function that is a property of an object), it refers to the object that called the method.
 
 ```javascript
@@ -786,7 +783,6 @@ person.greet(); // Logs 'John'
 ```
 
 4. **Inside a Constructor Function (Class/Constructor)**
-
 When `this` is used in a constructor function (or in a class method), it refers to the newly created instance of the object.
 
 ```javascript
@@ -799,7 +795,6 @@ console.log(john.name); // 'John'
 ```
 
 5. **Arrow Functions**
-
 In arrow functions, `this` **does not** have its own context. Instead, it **inherits** `this` from the surrounding (lexical) context. This is often used to maintain the value of `this` from the outer scope.
 
 ```javascript
@@ -816,7 +811,6 @@ person.greet(); // Logs 'John' after 1 second
 ```
 
 6. **Explicit Binding (call, apply, bind)**
-
 You can explicitly set the value of `this` using the `call()`, `apply()`, and `bind()` methods.
 
 - **`call()`** and **`apply()`**: These methods immediately invoke the function with a specified `this` value.
@@ -837,7 +831,6 @@ boundGreet();  // Logs 'John'
 ```
 
 7. **Event Handlers**
-
 When `this` is used inside an event handler, it typically refers to the DOM element that triggered the event.
 
 ```javascript
@@ -848,7 +841,6 @@ button.addEventListener('click', function() {
 ```
 
 8. **Class Methods**
-
 In classes, `this` refers to the instance of the class, i.e., the object created from the class.
 
 ```javascript
@@ -867,7 +859,6 @@ john.greet(); // Logs 'John'
 ```
 
 **Key Points:**
-
 - **Global context**: `this` refers to the global object (`window` in browsers).
 - **In methods**: `this` refers to the object the method is called on.
 - **In constructors**: `this` refers to the newly created object.
@@ -875,6 +866,57 @@ john.greet(); // Logs 'John'
 - **Explicit binding**: Use `call()`, `apply()`, or `bind()` to explicitly set `this`.
 
 Understanding how `this` works in JavaScript is essential for managing object-oriented code, handling events, and working with dynamic contexts.
+### Behave Like An Object
+In JavaScript, **`this`** refers to the **current execution context**, which is the **global object** (e.g., `window` in browsers) in the global scope (non-strict mode). During debugging, **`this`** behaves like an object, containing properties such as global variables. You can inspect its current values just like other objects.
+
+However, **`this`** is a reserved keyword, and you cannot create a variable named `this`. Attempting to do so will result in a syntax error:
+
+```javascript
+var this = [1, 2, 3];  // SyntaxError: Unexpected token 'this'
+```
+
+The value of **`this`** changes depending on the context:
+
+- In the global scope (non-strict mode), **`this`** refers to the global object (e.g., `window` in browsers).
+- Inside a function, **`this`** refers to the object that called the function (or is set explicitly with `call`, `apply`, or `bind`).
+- In **strict mode** or **modules**, **`this`** is `undefined` in functions.
+
+For example:
+
+```javascript
+var name = 'Pesho';
+console.log(this.name);  // 'Pesho' (this refers to the global object)
+
+function example() {
+  console.log(this.name);  // undefined, because 'this' refers to the function's context
+}
+example();
+```
+
+In summary, **`this`** behaves like an object that holds global properties, and its value changes depending on the execution context. You can inspect it during debugging, but **`this`** cannot be used as a variable name.
+### Debugging - Local / Global Sections
+During debugging, the **Local** and **Global** sections capture the **execution context** and show how **`this`** behaves at different points in the code.
+- **Global Context (Outside any function)**:
+    - When you're not inside any function, you're still in the global execution context.
+    - In **Node.js** or similar environments, the **Local section** will contain properties like:
+        - `__dirname`: The directory name of the current module.
+        - `__filename`: The file name of the current module.
+        - `exports`: The object that will be exported from the module.
+        - `module`: The current module object.
+        - `require`: The function used to import modules.
+    - **`this`** in the global context typically points to a generic **`Object`**, not directly to the global object itself (like `window` in browsers). This is why you see `this` pointing to an empty object with `[[prototype]] = Object`.
+- **Inside a Function**:
+    - **`this`** will behave according to the function's context:
+        - In **non-strict mode**, **`this`** will often refer to the global object (in browsers, `window`), or the function's own `this` if it's an object method.
+        - In **strict mode**, **`this`** will be `undefined`.
+
+**Debugging Steps:**
+1. **Global Context**: When outside a function, the **Local section** will show global properties like `__dirname`, `__filename`, `exports`, `module`, and `require` (in Node.js). **`this`** points to a plain object (`Object`), and you won't directly see the global object (like `window` in the browser) in this context.
+2. **Inside a Function**: When inside a function, the **Local `functionName`** section will appear, and **`this`** may point to the global object (non-strict mode) or be `undefined` (strict mode). It will also show **function-specific variables** and will reflect the scope of that function.
+
+**Key Takeaway:**
+- In **Node.js** or similar environments, the **Local section** in the debugger outside functions can include additional properties (`__dirname`, `module`, etc.) that are part of the Node.js global context.
+- **`this`** in the global context points to an **empty object** (with `[[prototype]] = Object`), not directly to the global object (`window` in browsers).
 ## Private Field Scope Issue
 In JavaScript, when classes are defined inside functions, private fields (denoted with `#`) may unintentionally be accessible across different instances of the class within the same scope. This happens because, despite being defined as private, private fields aren't isolated to individual instances when the class is scoped within a function. This could be seen as a design flaw, as it violates the principle of encapsulation—private fields should only be accessible within their own instance, not from other instances in the same scope. The issue arises due to the flexibility of JavaScript, but it could be addressed by strengthening the encapsulation rules for private fields, especially in function-scoped classes. By defining the class inside the `solve` function, you're essentially putting the class in the local scope of that function. This means all variables (including private fields like `#myPrivateProperty`) are scoped to that function, which might allow some unintended behavior when you try to access the private fields. Normally, private fields are meant to be scoped to individual instances, but this scope collision can cause the JavaScript engine to behave unexpectedly.
 
@@ -1149,5 +1191,484 @@ dog -> Animal.prototype -> Object.prototype -> null
 
 **Summary**
 Prototypes are a core concept in JavaScript’s object model. They allow objects to share behavior and support the inheritance system, enabling features like method sharing and prototype chains. Understanding prototypes is key to mastering JavaScript inheritance and object behavior.
+## Anonymous Objects
+Declaring objects in JavaScript is conceptually similar to creating **anonymous objects** in C#. Here's a comparison:
+
+**JavaScript Objects**
+In JavaScript, you can declare an object using curly braces `{}`. These objects can have properties and methods, and their structure is defined directly when you create them.
+
+```javascript
+let person = {
+    name: "John",
+    age: 30,
+    greet: function() {
+        console.log(`Hello, my name is ${this.name}`);
+    }
+};
+```
+
+**C# Anonymous Objects**
+In C#, you can create **anonymous objects** using the `new {}` syntax. These objects are immutable and used often in LINQ queries or quick encapsulations.
+
+```csharp
+var person = new 
+{
+    Name = "John",
+    Age = 30
+};
+
+// Accessing properties
+Console.WriteLine($"Hello, my name is {person.Name}");
+```
+
+**Key Differences**
+
+1. **Mutability**
+- **JavaScript**: Objects are mutable; you can add, modify, or delete properties dynamically.
+- **C#**: Anonymous objects are immutable; their properties can't be changed after creation.
+2. **Methods**
+- **JavaScript**: Objects can have methods directly assigned as properties.
+- **C#**: Anonymous objects do not support methods; you can only define properties.
+3. **Usage Context**
+- **JavaScript**: Objects are a fundamental building block, used everywhere in the language.
+- **C#**: Anonymous objects are typically used for temporary data encapsulation or query projections, not as a general-purpose structure.
+
+**Analogy**
+Think of JavaScript objects as **dynamic anonymous objects** that you can freely modify, whereas C# anonymous objects are **fixed snapshots** of data.
+## Scope
+Scope determines **where variables, functions, and objects are accessible** in your code. It defines the boundaries or context within which a piece of code can reference a variable or function.
+
+**Types of Scope in JavaScript**
+1. **Global Scope**
+    - Variables declared **outside of any function or block** are in the global scope.
+    - These variables can be accessed from anywhere in your program.
+
+    **Example:**
+    
+```javascript
+let globalVar = 'I am global';
+
+function printGlobal() {
+    console.log(globalVar); // Accessible here
+}
+
+printGlobal(); // Logs: 'I am global'
+console.log(globalVar); // Logs: 'I am global'
+```
+    
+2. **Function Scope**
+    - Variables declared inside a function are only accessible within that function.
+    - These variables are created when the function is called and destroyed when it finishes execution.
+    
+    **Example:**
+    
+```javascript
+function exampleFunction() {
+    let functionScopedVar = 'I am inside the function';
+    console.log(functionScopedVar); // Logs: 'I am inside the function'
+}
+
+exampleFunction();
+console.log(functionScopedVar); // Error: functionScopedVar is not defined
+```
+    
+3. **Block Scope** (Introduced with `let` and `const` in ES6)
+    
+    - Variables declared inside a block (`{}`) are only accessible within that block.
+    - A block can be part of a function, a loop, or an `if` statement.
+    
+    **Example:**
+    
+```javascript
+{
+    let blockScopedVar = 'I am block scoped';
+    console.log(blockScopedVar); // Logs: 'I am block scoped'
+}
+
+console.log(blockScopedVar); // Error: blockScopedVar is not defined
+```
+    
+4. **Lexical Scope**
+    
+    - Variables are accessible based on where they are declared in the **source code**, not where they are executed.
+    - This means inner functions can access variables from their **parent scope**.
+    
+    **Example:**
+    
+```javascript
+function outerFunction() {
+    let outerVar = 'I am in the outer scope';
+
+    function innerFunction() {
+        console.log(outerVar); // Accessible here
+    }
+
+    innerFunction(); // Logs: 'I am in the outer scope'
+}
+
+outerFunction();
+```
+    
+5. **Module Scope** (Introduced in ES6 Modules)
+    
+    - Variables declared in an ES6 module file are scoped to that file. They are not accessible in other files unless explicitly exported.
+    
+**Example (File A):**
+    
+```javascript
+export let moduleVar = 'I am in the module';
+```
+
+**Example (File B):**
+
+```javascript
+import { moduleVar } from './FileA.js';
+console.log(moduleVar); // Logs: 'I am in the module'
+```
+
+**Key Concepts in Scope**
+
+1. **Hoisting**
+
+    - Variables declared with `var` are "hoisted" to the top of their scope, but their value is `undefined` until the assignment.
+    - Variables declared with `let` and `const` are also hoisted, but they remain in a "temporal dead zone" and are not accessible until their declaration is encountered.
+    
+    **Example:**
+    
+```javascript
+console.log(x); // undefined
+var x = 10;
+
+console.log(y); // Error: Cannot access 'y' before initialization
+let y = 20;
+```
+    
+2. **Closure**
+    
+    - A closure is created when an inner function "remembers" variables from its outer scope, even after the outer function has finished executing.
+    
+    **Example:**
+    
+```javascript
+function outerFunction() {
+    let count = 0; // This is a variable in the outer scope
+
+    return function innerFunction() {
+        count++; // The inner function uses the 'count' variable
+        return count; // The inner function "remembers" the variable
+    };
+}
+
+let counter = outerFunction(); // outerFunction runs, and innerFunction is returned
+console.log(counter()); // 1
+console.log(counter()); // 2
+console.log(counter()); // 3
+```
+
+3. **The Global Object**
+    
+    - In browsers, variables declared globally become properties of the `window` object (if not using `let` or `const`).
+    - Avoid polluting the global scope as it can lead to bugs.
+    
+    **Example:**
+    
+```javascript
+var globalVar = 'I am on the window';
+console.log(window.globalVar); // 'I am on the window'
+```
+
+**Analogy for Scope**
+
+Think of scope as **rooms in a house**:
+
+- **Global scope** is like the **living room**, where everyone has access.
+- **Function scope** is like a **bedroom**, where only the occupant (function) has access.
+- **Block scope** is like a **closet** inside a room, accessible only to people inside that specific room.
+- **Lexical scope** is like a window—you can see outside and access what's there, but people outside can't see into your private room.
+### Explaining the Scope of Closures
+```javascript
+function outerFunction() {
+    let count = 0; // This is a variable in the outer scope
+
+    return function innerFunction() {
+        count++; // The inner function uses the 'count' variable
+        return count; // The inner function "remembers" the variable
+    };
+}
+
+let counter = outerFunction(); // outerFunction runs, and innerFunction is returned
+console.log(counter()); // 1
+console.log(counter()); // 2
+console.log(counter()); // 3
+```
+
+**Step 1:** `outerFunction` is called.
+    - Inside `outerFunction`, the variable `count` is created with the value `0`.
+    - `outerFunction` then **returns `innerFunction`** (but doesn't execute it yet).
+**Step 2:** Assign the returned `innerFunction` to `counter`.
+    - Now, `counter` is essentially the `innerFunction`, but it "remembers" the `count` variable from `outerFunction`.
+**Step 3:** Call `counter()` multiple times.
+    - Each time `counter()` is called, it:
+        1. **Accesses** the `count` variable (still "remembered").
+        2. Increments the value of `count`.
+        3. Returns the new value of `count`.
+4. Even though `outerFunction` has finished executing, the variable `count` is still "alive" because `innerFunction` keeps a **reference** to it. This is the **closure**.
+
+**Simpler Analogy**
+
+Imagine you’re in a house:
+
+- **Outer function:** This is the **kitchen** where a cookie jar (`count`) exists.
+- **Inner function:** You take the cookie jar out of the kitchen and keep it with you. Now you can still **use the jar and add cookies** even after you leave the kitchen.
+
+The inner function (`counter`) still remembers where the cookie jar (`count`) came from, even if the kitchen (outer function) is locked up.
+
+**Why Are Closures Useful?**
+
+Closures allow you to:
+
+**Preserve state:** Like in our example, `count` persists between function calls.
+**Create private variables:** Variables in the closure scope are not directly accessible from outside.
+**Encapsulate functionality:** Closures are widely used in event handlers, callbacks, and module patterns.
+
+**Do Closures Always Require Two Functions?**
+
+Closures conceptually **require two scopes**:
+
+1. The **outer scope** (to declare the variables to be captured).
+2. The **inner scope** (to use and "remember" those variables).
+
+This is why you always see two functions in closure examples. However, they don’t always have to be **explicitly nested**.
+
+**Closures Without Explicit Nesting**
+
+Sometimes, closures can occur in less obvious forms.
+
+**Example in C# LINQ:**
+
+```csharp
+var numbers = new[] { 1, 2, 3 };
+int multiplier = 2; // Outer scope variable
+
+var query = numbers.Select(x => x * multiplier); // Lambda creates a closure
+foreach (var result in query)
+{
+    Console.WriteLine(result); // Outputs: 2, 4, 6
+}
+```
+
+- The lambda `x => x * multiplier` captures `multiplier` from the outer scope.
+- Even though `Select` executes later, it still "remembers" the `multiplier` variable.
+
+Here, the **outer function** is implicit (the scope containing `multiplier`), but the same principles of closure apply.
+
+**Why Closures Retain Variables**
+
+Closures work because the **inner function keeps a reference** to the variables of the outer function, not a copy. This reference ensures the variables remain alive as long as the inner function exists.
+
+- In JavaScript: The inner function remembers the outer scope's **execution context**.
+- In C#: The compiler generates a **hidden class** (closure object) to store the captured variables.
+
+**Final Takeaway**
+
+To create a closure:
+
+1. Define an **outer function** that initializes variables.
+2. Define an **inner function** that uses those variables.
+3. **Return the inner function** from the outer function.
+
+This pattern ensures that variables in the outer function’s scope are remembered and can be modified by the inner function, even after the outer function has exited.
+## Context
+In programming, **context** generally refers to the environment in which code is executed. Specifically, in JavaScript, **context** most often refers to the value of the special variable `this`, which is determined by how a function is called or invoked.
+
+Here’s a more detailed explanation of **context** in different programming scenarios:
+
+**1. In JavaScript: Context is About `this`**
+
+In JavaScript, the context is tied to the value of the `this` keyword. The value of `this` is determined by **how** a function is called, and it can refer to different objects depending on the invocation.
+
+**How `this` Works (Execution Context):**
+
+- **Global Context:** When a function is called in the **global scope**, `this` usually refers to the global object. In a browser, it’s typically the `window` object.
+
+```javascript
+function globalContext() {
+    console.log(this); // In a browser, 'this' refers to the window object
+}
+globalContext();
+```
+
+- **Object Context:** When a function is called as a method of an object, `this` refers to the object the function is called on.
+
+```javascript
+const person = {
+    name: 'Alice',
+    greet: function() {
+        console.log(this.name); // 'this' refers to the 'person' object
+    }
+};
+person.greet(); // 'this' is the person object, so 'this.name' is 'Alice'
+```
+
+- **Constructor Context:** When a function is used as a constructor (using the `new` keyword), `this` refers to the newly created object.
+ 
+```javascript
+function Person(name) {
+    this.name = name;
+}
+
+const john = new Person('John');
+console.log(john.name); // 'this' refers to the new 'john' object, so 'john.name' is 'John'
+```
+
+- **Explicit Binding (`call`, `apply`, `bind`):** JavaScript allows you to **explicitly set the context** using methods like `call()`, `apply()`, and `bind()`.
+  
+```javascript
+function greet() {
+    console.log(this.name);
+}
+
+const person = { name: 'Alice' };
+greet.call(person); // Explicitly sets 'this' to the 'person' object
+```
+
+**2. Context in Other Languages:**
+
+While the term "context" is most commonly used in JavaScript in relation to `this`, other programming languages may use it to refer to the environment in which code executes, or the set of available variables, objects, or data.
+
+**In C#:**
+
+Context often refers to **the current execution environment**, which can include things like:
+
+- **Execution Context:** The state of the program at a particular point in time (e.g., which method is being called, which object is being referenced).
+- **Synchronization Context:** A special object used in asynchronous programming (like in `async` methods) to manage thread synchronization.
+
+For example, in **asynchronous programming**, the **synchronization context** ensures that a continuation (like updating the UI) happens on the correct thread.
+
+**3. Context in Closures:**
+
+In closures (especially in JavaScript), context refers to the environment (or the scope) in which a function is created and executed. It often refers to how variables are captured by the inner function and how `this` behaves when the inner function is invoked.
+
+For example:
+
+```javascript
+function outerFunction() {
+    let outerVar = 'I am outside';
+    return function innerFunction() {
+        console.log(outerVar); // inner function has access to outerVar because of the closure
+    };
+}
+
+const closure = outerFunction();
+closure(); // 'I am outside' is remembered in the closure, even after outerFunction finishes
+```
+
+In this example, the **context** of `innerFunction` refers to the scope where `outerVar` was declared, and even though `outerFunction` has finished executing, the inner function still has access to its variables.
+
+**4. General Context in Programming:**
+
+Beyond JavaScript, **context** can refer to:
+
+- The **execution environment** of a program.
+- The **state** of a program when a certain operation occurs.
+- The **variables, parameters, and conditions** under which a function or block of code operates.
+
+For instance, in Python, the context can refer to the **call stack** or the **namespace** that holds the variables and functions during execution.
+
+**Summary of Context in Programming:**
+
+- **In JavaScript:** The context is most commonly about the value of `this`, and it is determined by how a function is called.
+- **In general programming:** Context refers to the environment and state in which code is executed, including the variables, objects, or execution flow at that time.
+### Capturing The Context During Debugging
+During debugging, the **Local** and **Global** sections capture the **execution context** and show how **`this`** behaves at different points in the code. Here's how this works:
+
+Debugging Context Captured:
+
+1. **Local Section**:
+    
+    - The **Local section** displays the **variables and state** specific to the current scope.
+        - Outside of functions (in the global context), this section will show global variables, objects, and runtime-specific properties (like `__dirname`, `exports` in Node.js).
+        - Inside a function, the **Local section** will show **function-specific variables** and will reflect the scope of that function.
+2. **Global Section**:
+    
+    - The **Global section** shows the properties of the **global object** (e.g., `window` in browsers or `global` in Node.js).
+    - This section allows you to inspect global variables and functions available in the environment.
+3. **Closure Section** (if visible):
+    
+    - If you're dealing with **closures**, you might see a **Closure section** that shows **variables from the outer scope** that are captured by the inner function, even after the outer function has executed.
+    - This section highlights how closures maintain access to variables outside their scope, allowing the inner function to "remember" these values.
+
+**Key Points:**
+
+- **Execution Context**: During debugging, the **Local** and **Global** sections represent different levels of the **execution context**:
+    - **Local**: Current scope (global or function-specific).
+    - **Global**: Global scope and properties.
+- **Closure Section**: If a closure is involved, you'll see a **Closure section** that helps track the captured variables from the outer function's scope.
+
+**Conclusion:**
+
+- Yes, these sections in the debugger effectively **capture and represent the execution context** at different points in your code.
+- They help you understand the current state of variables and **how `this` behaves** based on where you are in the code (global scope, function, or closure).
+## Scope / Context Relation
+**Scope** refers to the **visibility and lifetime** of variables or functions. It determines where in your code a particular variable or function can be accessed or used.
+
+- **Local Scope:** A variable or function is accessible only within the block of code where it’s defined (e.g., inside a function or a loop).
+- **Global Scope:** A variable or function can be accessed anywhere in the program.
+- **Lexical Scope:** The scope in which a function is defined. This is important in closures because the inner function retains access to the variables in the outer scope where it was created.
+
+**Example of Scope:**
+
+```javascript
+let x = 10;  // Global scope
+
+function foo() {
+    let y = 20; // Local scope of function foo
+    console.log(x); // x is accessible here
+    console.log(y); // y is accessible here
+}
+
+foo();
+
+console.log(x); // Accessible outside foo, because x is in the global scope
+console.log(y); // Error! y is not accessible outside foo
+```
+
+**Context**, on the other hand, refers to the **environment** in which a function is executed. This often involves the **value of `this`** inside a function, which can change depending on how the function is invoked.
+
+- In JavaScript, **`this`** refers to the **execution context** of the function. It can point to different objects depending on how the function is called (e.g., method of an object, global context, or explicitly set with `bind()`, `call()`, or `apply()`).
+
+**Example of Context:**
+
+```javascript
+function myFunction() {
+    console.log(this); // 'this' refers to the context in which the function is called
+}
+
+myFunction(); // In the global context, 'this' refers to the global object (window in browsers)
+
+const obj = {
+    name: 'Object Context',
+    myMethod: myFunction
+};
+
+obj.myMethod(); // 'this' refers to the 'obj' object because the method is called on 'obj'
+```
+
+**Key Differences:**
+
+- **Scope** is about **where** a variable is accessible (its visibility), while **context** is about **what** an expression or function refers to during execution (usually through `this`).
+- **Scope** is determined at the time of **function creation** (lexical scoping), while **context** is determined at the time of **function execution**.
+
+**Analogy:**
+
+- **Scope** is like the **room** where you can use certain items (variables). If the item is in a specific room, you can access it only when you're in that room.
+- **Context** is like the **owner of the room**. Depending on who enters the room (the function call), the room’s **owner** (context) might change, but the objects in the room (variables) are still the same.
+
+Conclusion:
+
+- **Scope** controls **what variables** are available in which part of your code.
+- **Context** controls **what `this` refers to** during function execution.
+
+Though they often intersect (especially in closures), they are separate concepts that serve different purposes in understanding how code behaves.
 # Bookmarks
 Completion: 15.11.2024
