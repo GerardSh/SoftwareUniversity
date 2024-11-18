@@ -1,12 +1,11 @@
 class Storage {
-    storage = [];
-
-    get totalCost() {
-        return this.storage.reduce((sum, product) => sum + product.price * product.quantity, 0);
-    }
-
     constructor(capacity) {
         this.capacity = capacity;
+		this.storage = [];
+    }
+	
+	    get totalCost() {
+        return this.storage.reduce((sum, product) => sum + product.price * product.quantity, 0);
     }
 
     addProduct(product) {
@@ -15,6 +14,6 @@ class Storage {
     }
 
     getProducts() {
-        return this.storage.map(x => JSON.stringify(x)).join('\r\n');
+        return this.storage.map(x => JSON.stringify(x)).join('\n');
     }
 }
