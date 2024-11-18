@@ -51,3 +51,20 @@ function solve(input) {
         }
     }
 }
+
+
+
+
+//3
+function solve(input) {
+    let group = "";
+
+    for (const product of input.sort((a, b) => a.localeCompare(b))) {
+        if (group !== product[0]) {
+            group = product[0];
+            console.log(group);
+        }
+
+        console.log(`  ${product.replaceAll(' :', ':')}`);
+    }
+}
