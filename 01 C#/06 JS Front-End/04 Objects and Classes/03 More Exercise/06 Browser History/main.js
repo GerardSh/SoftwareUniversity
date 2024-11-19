@@ -24,6 +24,6 @@ function solve(browser, commands) {
 
     console.log(browser['Browser Name']);
     console.log(`Open Tabs: ${openedTabs.join(', ')}`);
-    console.log(`Recently Closed: ${browser['Recently Closed'].join(', ')}`);
-    console.log(`Browser Logs: ${browser['Browser Logs'].join(', ')}`);
+    console.log(`Recently Closed: ${recentlyClosed.join(', ')}`);
+    console.log(`Browser Logs: ${browserLogs.join(', ')}`);
 }
