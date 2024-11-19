@@ -1,20 +1,20 @@
 function solve(input) {
-    const shelfs = [];
+    const shelves = [];
 
     for (const line of input) {
         if (line.includes('->')) {
             const [iD, genre] = line.split(' -> ');
 
-            const shelf = shelfs.find(x => x.iD == iD);
+            const shelf = shelves.find(x => x.iD == iD);
 
             if (!shelf) {
-                shelfs.push({ iD, genre, books: [] });
+                shelves.push({ iD, genre, books: [] });
             }
 
         } else {
             const [title, author, genre] = line.split(/: |, /);
 
-            const shelf = shelfs.find(x => x.genre == genre);
+            const shelf = shelves.find(x => x.genre == genre);
 
             if (shelf) {
                 shelf.books.push({
@@ -25,9 +25,9 @@ function solve(input) {
         }
     }
 
-    shelfs.sort((a, b) => b.books.length - a.books.length);
+    shelves.sort((a, b) => b.books.length - a.books.length);
 
-    for (const shelf of shelfs) {
+    for (const shelf of shelves) {
         console.log(`${shelf.iD} ${shelf.genre}: ${shelf.books.length}`);
 
         for (const book of shelf.books) {
