@@ -284,6 +284,8 @@ const merged = Object.assign({}, obj1, obj2); // Merge
 const copy = Object.assign({}, originalObject); // Copy
 ```
 
+`convertInputObject(object)` - връща копие на подадения обект, друг начин да се направи копие е чрез деструктуриране - `const newObj = {...objToCopy}`
+
 `hasOwnProperty(propertyKey)` - проверява дали даден обект, съдържа определен ключ, връща boolean.
 
 `delete myObject['key']` - за изтриване на пропърти се ползва оператора delete, като освен bracket notation, работи и dot notation.
