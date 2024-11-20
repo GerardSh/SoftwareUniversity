@@ -269,9 +269,24 @@ let result = text.split(/[,; ]+/); // Разделя по запетая, точ
 
 `Object.fromEntries(phonebookEntries)` - връща обект създаден от масив от двойки`[key, value]`, какъвто създава и `Object.entries(myObject)` метода.
 
+`Object.assign` - копира пропъртита от един или повече изходни обекти към целеви обект и връща модифицирания целеви обект. Прави повърхностно копие (не копира вложени обекти рекурсивно). Ако има еднакви пропъртита, последният източник замества стойността в целевия обект. Ползва се често за сливане или създаване на копие на обекти
+
+```javascript
+const target = { a: 1 };
+const source = { b: 2, c: 3 };
+const result = Object.assign(target, source);
+
+console.log(result); // { a: 1, b: 2, c: 3 }
+console.log(target); // { a: 1, b: 2, c: 3 } - The target object is modified
+
+const merged = Object.assign({}, obj1, obj2); // Merge
+
+const copy = Object.assign({}, originalObject); // Copy
+```
+
 `hasOwnProperty(propertyKey)` - проверява дали даден обект, съдържа определен ключ, връща boolean.
 
-`delete myObject['key]` - за изтриване на пропърти се ползва оператора delete, като освен bracket notation, работи и dot notation.
+`delete myObject['key']` - за изтриване на пропърти се ползва оператора delete, като освен bracket notation, работи и dot notation.
 ## JSON
 `JSON.stringify(myObject, replacer, space)` - конвертира даден обект и го прави в JSON, връща string. Не включва методи. `replacer` и `space` са optional параметри. 
 `replacer` aко е функция, тя се извиква за всяко свойство на обекта и може да променя стойността или да изключва свойства от сериализацията. Ако е масив, той указва кои свойства да се включат. Всички други свойства ще бъдат игнорирани.
