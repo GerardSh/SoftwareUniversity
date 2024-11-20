@@ -409,6 +409,21 @@ console.log(updated); // { name: "John", age: 35, city: "New York" }
 
 Това е често срещан и лесен начин да се актуализират свойства, без да променяме оригиналния обект.
 
+Mожем да копираме един обект в друг, като използваме разпръскващия оператор.
+
+```javascript
+const original = { name: "John", age: 30 };
+const copy = { ...original };
+
+console.log(copy); // { name: "John", age: 30 }
+```
+
+Това създава плитко копие на оригиналния обект. Ако обектът съдържа вложени структури (като други обекти или масиви), те ще бъдат споделени между оригиналния и копирания обект. Ако искате дълбоко копие, може да използвате `structuredClone`:
+
+```javascript
+const deepCopy = structuredClone(original);
+```
+
 При масивите деструктурирането се прави на базата на позициите (индекси) в масива:
 
 ```javascript
@@ -1696,4 +1711,4 @@ Conclusion:
 
 Though they often intersect (especially in closures), they are separate concepts that serve different purposes in understanding how code behaves.
 # Bookmarks
-Completion: 15.11.2024
+Completion: 20.11.2024
