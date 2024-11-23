@@ -2,7 +2,7 @@ function extract(content) {
     const targetElementText = document.getElementById(content).textContent;
     const pattern = /\((.+?)\)+/g;
 
-    const matches = targetElementText.matchAll(pattern);
+    const matches = [...targetElementText.matchAll(pattern)];
 
     const matchArray = matches.reduce((aggregate, currentElement) => {
         aggregate.push(currentElement[1]);
@@ -24,25 +24,26 @@ function extract(content) {
 
     const resultArr = [];
 
-    let hasStarted = false;
+    let writeWord = false;
     let currentWord = '';
 
     for (let i = 0; i < targetElementText.length; i++) {
 
         if (targetElementText[i] == '(') {
-            hasStarted = true;
-
+            writeWord = true;
             continue;
         } else if (targetElementText[i] == ')') {
-            hasStarted = false;
+            writeWord = false;
+
             resultArr.push(currentWord);
+
             currentWord = '';
         }
 
-        if (hasStarted) {
+        if (writeWord) {
             currentWord += targetElementText[i];
         }
     }
 
-    console.log(resultArr.join('; '));
+    return resultArr.join('; ');
 }
