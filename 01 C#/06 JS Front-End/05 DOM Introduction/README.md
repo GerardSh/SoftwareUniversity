@@ -55,9 +55,14 @@ Relationship-a е много важен, имаме:
 Има две неща, които може да имаме в DOM дървото - HTML елементи, които са основното нещо и нодово (nodes), които са по-малко. Нодовете са текстови елементи, които не са обгърнати от конкретен елемент, но влизат в DOM дървото.
 DOM не е специфично свързан с конкретен език, направен е като отделна спецификация, за да може да се ползва от повече езици, но на практика JS е единствения популярен език, който го ползва. Към момента това е доминиращия език и няма реална конкуренция.
 ### `NodeList` vs `HTMLCollection`
-И двете са колекции от елементи, които са част от DOM дървото. `HTMLCollection` може да държи само HTML елементи, докато `NodeList` може да съдържа и `nodes`.
+И двете са колекции от елементи, които са част от DOM дървото. `HTMLCollection` може да държи само HTML nodes , докато `NodeList` може да съдържа и други видове nodes, включително whitespaces и само текст. Реално всеки HTML елемент е node, но не всеки node е HTML елемент. И двете колекции може да се итерират, като има малка разлика в наличните методи.
+
+`HTMLCollection` е live, докато `NodeList` може да бъде live или static. Live колекция означава че тя автоматично ще отрази в случай, че възникне промяна в DOM дървото. 
+Ако искаме `NodeList` колекцията да е винаги live, трябва да ползваме `childNodes` върху конкретен родителски елемент, който сме взели например чрез `getElementById()`. Когато извикаме `childNodes` върху елемент, това ще върне live `NodeList` колекция, която включва всички директни деца (независимо от типа им) на този елемент.
+
+Ако искаме да правим по-сложни модификации може да направим convert към array с метода `Array.from(myIterableCollection)`. Този метод трансформира всяка iterable колекция в масив.
 ### Accessing a Website Summary
-Когато отворим даден сайт, браузъра праща http request към сървъра на който се hots-ва сайта и който връща html response - чист текст с html тагове. Този текст се зарежда в браузъра, който го parse-ва и създава DOM дървото. Елемент по елемент ги parse-ва и създава обекти от html елементите, които събира в DOM структурата. Реално html е йерархична дървовидна структура.
+Когато отворим даден сайт, браузъра праща http request към сървъра на който се hots-ва сайта и който връща html response - чист текст с html тагове. Този текст се зарежда в браузъра, който го parse-ва и създава DOM дървото. Елемент по елемент ги parse-ва и създава обекти от html елементите, които събира в DOM структурата. Реално html е йерархична дървовидна структура. При статичната колекция, резултата не се променя.
 
 С `Ctrl + Shift + C` може да селектираме html елемент на сайта и с десен бутон да го запишем като променлива с име `temp1`. След това може да разгледаме неговите пропъртита, като използваме `console.dir(temp1)`. Примерно може да expand-нем родителя на елемента, след това може да видим и родителя на родителя и тн.
 
@@ -97,7 +102,9 @@ JS file:
 console.log('Hello from external js file');
 ```
 
-Този вариант се ползва по-често.
+Този вариант се ползва по-често. Функциите от скрипт файловете са в глобалния скоуп и може да бъдат използвани от events и inline scripts.
+Може да имаме повече от един файл, като има значение реда в който се включват. 
+Добре е скрипта да е най-отдолу на `<body>` елемента, за да сме сигурни че всички DOM елементи са създадени, защото DOM елементите се създават отгоре надолу.
 
 3. Event handler - може да пишем JS и в атрибута на button елемента `onclick`:
 
@@ -161,6 +168,25 @@ example.innerHTML = "<p>Нов HTML елемент</p>"; // Заменя тек�
 - `innerHTML` е по-гъвкав, защото позволява работа с HTML структура.
 ## Targeting DOM Elements - Obtaining Element References
 Чрез метода, може да таргетираме и да взимаме референция към елементите в DOM, след което може да ги манипулираме. Описани са във файла за JavaScript в папката с ресурси.
+## Parents and Child Elements
+Всеки DOM елемент освен root елемента `<html>` има родител, като той може да бъде достъпен през `parentElement` и `parentNode` пропъртитата. В 99% от случаите и двете ще връщат един и същи обект, само в две ситуации има разминаване:
+- `<html>` root елемента `.parentElement` - ще върне `null`, а`.parentNode` ще върне целия DOM.
+- `DocumentFragment` е специален обект в DOM, който представлява "лека" структура от възли, използвана за групиране на елементи без тяхното непосредствено добавяне в DOM дървото. `parentElement` е `null`, но `parentNode` сочи към фрагмента.
+
+Децата на даден елемент може да бъдат достъпени с `.children` пропъртито, което държи `HTMLCollection` с всички деца.
+## Control Content via Visibility
+Съдържанието може да бъде скрито или разкрито като променим неговия display style.
+Скриване на елемент - `element.style.display = 'none';`
+Разкриване на елемент, трябва да сложим стойност различна от `none` - `element.style.display = '';`
+## Match `n-th` Child
+Понякога се налага да таргетираме елементи базирано на тяхното положение спрямо други подобни елементи. Има няколко начина:
+- Index
+- CSS selector
+
+```javascript
+const thirdLi = document.getElementsByTagName('li')[2]; // Using index
+const thirdLi = document.querySelector('ul li:nth-child(3)'); // Using CSS selector
+```
 # Misc
 
 # ChatGPT
@@ -471,4 +497,52 @@ sharedFunction(); // Call function from script.js
     - Adding attributes like `async` or `defer` to `<script>` tags can change the way scripts are executed, potentially affecting the flow.
 
 In the example, the behavior we observe is due to both scripts sharing the same global scope and being executed sequentially as per their order in the HTML.
+## Debugger
+Using the `debugger` statement is one of the simplest ways to trigger debugging directly in your program when working in the browser. It pauses the execution of your script at the point where the `debugger` statement is encountered, allowing you to inspect variables, the call stack, and the overall program state.
+
+**How `debugger` Works:**
+1. Open your browser's Developer Tools (usually `F12` or `Ctrl+Shift+I` on Windows/Linux, `Cmd+Opt+I` on macOS).
+2. Write `debugger;` in your code at the point where you want execution to pause.
+3. When the browser executes that line, it halts execution and opens the debugging interface in Developer Tools.
+4. From there, you can step through your code, inspect variables, and analyze your program's behavior.
+
+JavaScript Code:
+
+```javascript
+function calculateSum(a, b) {
+    let sum = a + b;
+    debugger; // Pauses execution here
+    return sum;
+}
+
+calculateSum(5, 10);
+```
+
+**Steps:**
+1. Run this script in the browser (e.g., linked in an HTML file).
+2. When the `debugger` line is reached, the script pauses.
+3. In the Developer Tools:
+    - You can inspect the values of `a`, `b`, and `sum`.
+    - Use the "Step Over", "Step Into", or "Step Out" buttons to navigate through the code.
+
+**Benefits of Using `debugger`:**
+1. **Direct Control**: Allows you to pinpoint exactly where you want to pause execution.
+2. **No Breakpoint Setup Needed**: Eliminates the need to manually set breakpoints in the Developer Tools.
+3. **Quick and Easy**: Particularly useful for debugging smaller scripts or specific problematic sections.
+
+**Alternative: Setting Breakpoints in Developer Tools**
+
+For more robust debugging, you can:
+
+1. Open the **Sources** tab in Developer Tools.
+2. Navigate to the script file.
+3. Click on the line number where you want to pause execution to set a breakpoint.
+
+This approach avoids modifying your code with `debugger;` statements and is better for larger or production environments.
+
+**Important Notes:**
+
+- **Avoid Leaving `debugger` in Production Code**: The `debugger` statement will pause the script execution for all users in their browsers if left in production, which can cause significant issues.
+- Use it as a temporary debugging tool during development and remove it afterward.
 # Bookmarks 
+Completion: 23.11.2024
