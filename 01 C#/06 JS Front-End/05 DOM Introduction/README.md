@@ -190,6 +190,33 @@ const thirdLi = document.querySelector('ul li:nth-child(3)'); // Using CSS selec
 # Misc
 
 # ChatGPT
+## Global / Window Objects
+The **global object in Node.js** and the **`window` object in the browser** share the **same architectural role** in their respective environments—they are the "global namespace" where globally accessible variables, functions, and properties are defined. However, they have **different sets of properties and methods tailored to their environments**.
+
+**Key Points About the Architecture**
+
+1. **Role as the Global Namespace**:
+    
+    - In the **browser**, the `window` object is the global namespace. Variables defined with `var` or functions declared globally automatically become properties of `window`.
+    - In **Node.js**, the `global` object serves the same purpose, holding globally accessible properties like `process`, `require`, etc.
+2. **Environment-Specific Properties**:
+    
+    - **Browser (`window`)**: Includes browser-specific APIs like `document`, `localStorage`, `fetch`, `onload`, and the DOM.
+    - **Node.js (`global`)**: Includes Node.js-specific APIs like `process`, `Buffer`, `require`, and global timers (`setTimeout`, `setInterval`).
+3. **Shared Concepts**:
+    
+    - Both allow access to built-in JavaScript features, like `setTimeout`, `JSON`, `Promise`, etc., though these are not always implemented identically.
+4. **Not Interchangeable**:
+    
+    - A property like `window.onload` exists only in the browser and has no counterpart in Node.js.
+    - Similarly, `global.process` or `global.require` exists only in Node.js and has no counterpart in the browser.
+
+**To Summarize:**
+
+The **global object** in both environments plays the **same architectural role** as the top-level container for global properties and methods. They are **different in implementation**, reflecting the needs of their respective environments:
+
+- Browser → `window`
+- Node.js → `global`
 ## Working With The Browser Console
 **You said:**
 
