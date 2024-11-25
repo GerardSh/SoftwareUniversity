@@ -177,7 +177,7 @@ example.innerHTML = "<p>Нов HTML елемент</p>"; // Заменя тек�
 ## Control Content via Visibility
 Съдържанието може да бъде скрито или разкрито като променим неговия display style.
 Скриване на елемент - `element.style.display = 'none';`
-Разкриване на елемент, трябва да сложим стойност различна от `none` - `element.style.display = '';`
+Разкриване на елемент, трябва да сложим стойност различна от `none` - примерно `element.style.display = 'block';`
 ## Match `n-th` Child
 Понякога се налага да таргетираме елементи базирано на тяхното положение спрямо други подобни елементи. Има няколко начина:
 - Index
@@ -188,7 +188,6 @@ const thirdLi = document.getElementsByTagName('li')[2]; // Using index
 const thirdLi = document.querySelector('ul li:nth-child(3)'); // Using CSS selector
 ```
 # Misc
-
 # ChatGPT
 ## Global / Window Objects
 The **global object in Node.js** and the **`window` object in the browser** share the **same architectural role** in their respective environments—they are the "global namespace" where globally accessible variables, functions, and properties are defined. However, they have **different sets of properties and methods tailored to their environments**.
