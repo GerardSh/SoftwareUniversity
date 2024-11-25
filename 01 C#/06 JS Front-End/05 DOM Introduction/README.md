@@ -387,6 +387,62 @@ Yes, you're correct. **CSS operations** do indeed affect the DOM, but this proce
 
 - **CSS does change the DOM** in terms of **visual representation** and layout, but the changes are managed automatically by the browser, making them more efficient than manual changes through JavaScript.
 - The key advantage of CSS is that it allows for efficient, declarative styling, while JavaScript is more suited for **dynamic interactions** and complex behavior, often with a higher performance cost.
+### Property Access
+In **CSS**, we are limited to styling properties that directly influence the appearance and layout of an element. Unlike **JavaScript**, where you can access and modify the underlying **properties** and **attributes** of an element (like `value`, `checked`, `src`, etc.), CSS doesn't allow you to change the actual state or behavior of an element in the same way. You can only manipulate **styling properties** (like `color`, `background`, `width`, `height`, etc.) that affect the visual aspect of the element.
+
+**JavaScript vs CSS - Property Access:**
+
+1. **CSS**:
+    - **Focus**: Styling properties.
+    - **Examples**: You can modify properties like `color`, `font-size`, `margin`, `padding`, `border`, etc.
+    - **CSS cannot modify properties like `value`**: You cannot change the `value` of a form input or select element directly in CSS. For instance, you can't use CSS to change what text is inside an input field or select a different option from a dropdown.
+    
+```css
+input {
+  background-color: yellow;  /* Changes the background color */
+  font-size: 16px;  /* Changes the font size */
+}
+```
+    
+    CSS can only **style** the elements based on their state (e.g., `:checked`, `:focus`, `:disabled`, `:hover`), but it doesn't have access to properties like `value` or `innerHTML`.
+    
+2. **JavaScript**:
+    - **Focus**: Manipulating the element's **properties**, **attributes**, **events**, and **styling**.
+    - **Examples**: You can change the `value`, `checked`, `src`, `href`, `innerHTML`, `classList`, and other properties and attributes.
+    
+```javascript
+// Changing the value of an input field
+document.getElementById('myInput').value = 'New text value';
+
+// Changing the selected option in a select element
+document.getElementById('mySelect').value = 'Option2';  // Selects the option with the value "Option2"
+
+// Changing the inner HTML of an element
+document.getElementById('myDiv').innerHTML = 'New content';
+```
+
+**Why can't CSS change properties like `value`?**
+
+CSS is designed specifically for **styling** and **presentation**, not for altering the actual **state** or **content** of an element. Changing an element’s value (e.g., the text of a button, the selection in a dropdown, or the content of an input field) requires interaction with the element's **JavaScript properties** rather than its visual style.
+
+**Styling Properties vs State/Content:**
+
+- **Styling Properties** (CSS can change):
+    - Color (`color`, `background`, `border`)
+    - Position (`top`, `left`, `position`)
+    - Size (`width`, `height`, `margin`, `padding`)
+    - Typography (`font-size`, `line-height`, `font-family`)
+
+- **State or Content** (JavaScript can change):
+    - Value of form inputs (`input.value`, `select.value`)
+    - Selected option (`option.selected`, `select.selectedIndex`)
+    - Inner HTML of elements (`element.innerHTML`, `element.textContent`)
+    - Attributes like `src`, `href`, `alt`, etc.
+
+**Summary:**
+
+- **CSS** is **only for styling** — it can change how an element looks but **not the underlying properties** like `value` or `checked`.
+- **JavaScript** is used to **change both styling and functional properties** (such as `value`, `checked`, `src`, etc.) of elements.
 ## DOM Element Properties, Attributes and Styles
 1. **Attributes as Main Properties**:  
     In the context of the DOM, HTML attributes (e.g., `id`, `class`, `src`, `href`) are considered the core properties that define the element’s identity or fundamental characteristics. These are set directly in the HTML markup and can be accessed and modified in JavaScript.
@@ -428,6 +484,33 @@ console.log(computedStyle.fontSize); // Logs computed font-size value
 
 - **Attributes** (e.g., `id`, `class`) define the identity and basic configuration of elements and are stored as properties on the DOM object.
 - **CSS properties** (e.g., `height`, `color`) define the visual appearance and are stored in the element’s **style object**, but the final computed styles are calculated dynamically by the browser.
+## Predefined HTML Attributes and DOM Properties
+- **Definition**: Some HTML attributes (e.g., `id`, `value`, `checked`) have a direct relationship with DOM properties of elements.
+    
+- **Behavior**:
+
+    - Changes to these attributes in HTML reflect in the DOM as properties.
+    - Modifying the DOM properties in JavaScript **does not update the corresponding HTML attribute**, but it updates the live state of the element.
+    - **Changing the attribute directly** using `setAttribute()` also updates the associated property in most cases.
+- **Example**:
+
+```html
+<input type="text" value="Hello">
+```
+    
+    - **Attribute**: `value="Hello"` is the HTML representation.
+    - **Property**: Accessed via JavaScript as `input.value`.
+- **Changing Attributes and Properties**:
+    - To **change the property**: `input.value = "NewValue";`
+    - To **change the attribute**: `input.setAttribute('value', 'NewValue');`
+- **Key Point**:
+    - **Changing the property (`input.value`) does not update the attribute.**
+    - **Changing the attribute using `setAttribute()` does update the property.**
+## `Value` vs. `TextContent`
+- **`value` Property**: Found in **input-like elements** (e.g., `<input>`, `<textarea>`, `<select>`). Represents the user-modifiable value.
+- **`textContent` Property**: Found in elements that display **text content** (e.g., `<div>`, `<p>`, `<span>`). Represents the text inside the element.
+
+Both can be dynamically read or updated using JavaScript.
 ## Including Script Files
 Once you include a script file inside an HTML document, the functions and variables defined in that script become globally accessible throughout the HTML page, provided the script is included in the global scope (i.e., not inside a module or a specific function).
 
@@ -572,4 +655,4 @@ This approach avoids modifying your code with `debugger;` statements and is bett
 - **Avoid Leaving `debugger` in Production Code**: The `debugger` statement will pause the script execution for all users in their browsers if left in production, which can cause significant issues.
 - Use it as a temporary debugging tool during development and remove it afterward.
 # Bookmarks 
-Completion: 23.11.2024
+Completion: 25.11.2024
