@@ -654,5 +654,13 @@ This approach avoids modifying your code with `debugger;` statements and is bett
 
 - **Avoid Leaving `debugger` in Production Code**: The `debugger` statement will pause the script execution for all users in their browsers if left in production, which can cause significant issues.
 - Use it as a temporary debugging tool during development and remove it afterward.
+### `$0` and `Ctrl + Shift + C` in Browser DevTools
+- **`$0`**:  
+    Refers to the **last selected element** in the browser's DevTools. When you inspect an element, `$0` allows you to quickly access it in the console for debugging or manipulation.
+    - **Only the last selected element** is accessible with `$0`.
+	- **Previously selected elements** are also available, referenced by `$1`, `$2`, `$3`, and `$4`. If you select a new element, it becomes `$0`, and the previous `$0` shifts to `$1`. However, not all elements are always accessible - only the last five selected elements are tracked this way.
+
+- **`Ctrl + Shift + C`** (or `Cmd + Shift + C` on macOS):  
+    Activates the **element picker** tool in the browser's DevTools. It lets you click on any element on the page to inspect or select it directly. The selected element is then accessible via `$0`.
 # Bookmarks 
 Completion: 25.11.2024
