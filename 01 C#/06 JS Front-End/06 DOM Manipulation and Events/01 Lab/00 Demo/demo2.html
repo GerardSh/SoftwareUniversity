@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+</head>
+
+<body>
+    <h1>Event Handling</h1>
+    <ol>
+        <li>
+            <span>Add event handler with HTML Attributes</span>
+            <button onclick="htmlAttributeEventHandler(event)">Click ME!</button>
+        </li>
+        <li>
+            <span>Add event handler using DOM element properties</span>
+            <button id="second-button">Click ME!</button>
+        </li>
+        <li>
+            <span>Add event using DOM event handler - preferred method</span>
+            <button id="third-button">Click ME!</button>
+        </li>
+    </ol>
+    <script>
+        // Add event handler with HTML Attributes
+        function htmlAttributeEventHandler(event) {
+            console.log(event);
+            console.log('Add event handler with HTML Attributes');
+        }
+
+        //Add event handler with DOM element properties
+        const secondButton = document.getElementById('second-button');
+        secondButton.onclick = function (event) {
+            console.log(event);
+            console.log('Add event handler using DOM element properties');
+        }
+
+        // Add event using DOM event handler - preferred method
+        const thirdButton = document.getElementById('third-button');
+        thirdButton.addEventListener('click', event => {
+            console.log(event);
+            console.log('Add event using DOM event handler - preferred method')
+        });
+
+        // Add second event handler to the thirdButton element
+        function secondEventHandler(event) {
+            console.log(event);
+            console.log('Second event handler');
+        }
+
+        thirdButton.addEventListener('click', secondEventHandler);
+
+        // Remove the second event handler
+        setTimeout(() => {
+            thirdButton.removeEventListener('click', secondEventHandler);
+            console.log('Removed');
+
+        }, 10000)
+
+    </script>
+</body>
+
+</html>
