@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        .orange {
+            background: orange;
+            width: 50vw;
+            height: 50vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .green {
+            background: green;
+            width: 50%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .yellow {
+            background: yellow;
+            width: 50%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Event Propagation</h1>
+
+    <div class="box orange">
+        <div class="box green">
+            <div class="box yellow">He-he</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.box')
+            .forEach(el => el.addEventListener('click', e => {
+                //e.stopPropagation(); // e.stopPropagation() halts the event propagation,meaning parent or next elements won't execute their event handlers in the current propagation phase.
+                console.log(`${e.currentTarget.getAttribute('class')} - clicked`);
+
+            }, false)) // // Set true to make this event handler execute in the capture phase
+    </script>
+</body>
+
+</html>
