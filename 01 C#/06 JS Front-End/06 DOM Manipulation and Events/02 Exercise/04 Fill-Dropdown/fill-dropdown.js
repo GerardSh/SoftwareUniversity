@@ -9,11 +9,14 @@ function solve() {
         const menuEl = document.getElementById('menu');
 
         const optionEl = document.createElement('option');
-        optionEl.textContent = textInputEl.value + valueInputEl.value;
+        optionEl.textContent = textInputEl.value;
+        optionEl.value = valueInputEl.value;
 
         menuEl.append(optionEl);
 
         textInputEl.value = '';
         valueInputEl.value = '';
+
+        textInputEl.focus();
     });
 }
