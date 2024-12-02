@@ -170,7 +170,8 @@ Response headers се намират в Developer Tools - Network - Headers - Re
 Тези статуси са основни за диагностициране на състоянието на HTTP заявките.
 
 Забавни списъци с най-често срещаните и значими статуси:
-[HTTP Cats](https://http.cat/)  
+[HTTP Cats](https://http.cat/)
+
 [HTTP Status Dogs API - A dog image for every HTTP Status Code](https://http.dog/)
 ### Developer Tools
 Network tab-a в Developer Tools, може да анализираме и debug-ваме всичките HTTP заявки - requests и responses които се случват към дадения момент на комуникацията. След като отворим някоя страница, ще се появят множество заявки, всеки ред е заявка и означава request и последващия го response. В Headers таба на всеки request, може да видим към кого е направен, какъв метод е използван, какъв е отговора и тн. Браузъра започва да чете ред по ред HTML кода и прави отделни заявки, които ще се покажат като отделни заявки, примерно за шрифтове, иконки, снимки, JS, стилове и тн.
@@ -687,7 +688,8 @@ So, for **`^0.12.0`**, it means that you can update to any version that's compa
 Yarn is a package manager for JavaScript, similar to npm. It helps manage dependencies, install packages, and automate tasks. Yarn is known for faster performance and better reliability in managing packages, particularly with its lockfile system.
 # Bookmarks
 Забавни списъци с най-често срещаните и значими статуси:
-[HTTP Cats](https://http.cat/)  
+[HTTP Cats](https://http.cat/)
+ 
 [HTTP Status Dogs API - A dog image for every HTTP Status Code](https://http.dog/)
 
 [REST API - ready to use](https://restful-api.dev/) - предоставя готов сървър за ресурси, върху който може да се упражняват различни REST заявки.
