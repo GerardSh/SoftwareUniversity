@@ -170,6 +170,7 @@ Response headers се намират в Developer Tools - Network - Headers - Re
 Тези статуси са основни за диагностициране на състоянието на HTTP заявките.
 
 Забавни списъци с най-често срещаните и значими статуси:
+
 [HTTP Cats](https://http.cat/)
 
 [HTTP Status Dogs API - A dog image for every HTTP Status Code](https://http.dog/)
@@ -688,6 +689,7 @@ So, for **`^0.12.0`**, it means that you can update to any version that's compa
 Yarn is a package manager for JavaScript, similar to npm. It helps manage dependencies, install packages, and automate tasks. Yarn is known for faster performance and better reliability in managing packages, particularly with its lockfile system.
 # Bookmarks
 Забавни списъци с най-често срещаните и значими статуси:
+
 [HTTP Cats](https://http.cat/)
  
 [HTTP Status Dogs API - A dog image for every HTTP Status Code](https://http.dog/)
