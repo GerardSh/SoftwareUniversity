@@ -20,7 +20,7 @@ HTTP е текстово базиран протокол за правене н�
 Сървъра също е софтуер, който може да бъде инсталиран на произволен хардуер. Работи като process / service / daemon, което е безкрайна програма, която работи, докато не бъде спряна и слуша за HTTP requests. Сървъра слуша на определен порт и има готовност да посрещне и отговори на тези заявки. Портовете са нужни, за да може комуникацията с външния свят на една машина да се разпознава от кого и за кого е. Това е нещо като пристанище където имаме различни докове за приемане и изпращане на различни товарни кораби, които знаят на кой док точно да разтоварят или натоварят. Всяка програма или услуга използва определен порт, чрез който осъществява комуникацията си. Някои приложения използват стандартни портове, за да бъдат разпознати (като HTTP през порт 80), докато други използват динамични портове, които се задават временно за конкретна сесия.
 Сървърните програми са различни и се използват според технологията, за която са оптимизирани. Например, Apache е популярен в света на PHP, Nginx често се предпочита за Python приложения и като обратен прокси, IIS (Internet Information Services) е основният избор за .NET среди, а Tomcat се използва широко за Java приложения. Освен тях има и други специализирани сървъри според конкретните нужди. За JavaScript съществуват вградени самостоятелни сървъри (self-hosted), като например тези, които идват с Node.js, което позволява създаване на приложения без нужда от външен уеб сървър. Подобно, в .NET средата има вградени хостинг възможности, като Kestrel – самостоятелен уеб сървър, който е част от ASP.NET Core.
 ### HTTP Request Methods
-![](Pasted%20image%2020241201134020.png)
+![]((https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020241201134020.png)
 Методите са начини, по които оказваме допълнителна информация какво всъщност искаме да направим с дадена заявка. Целта е сървъра да разбере, какво е действието, което искаме да извършим със заявката.
 #### CRUD - Create Read Update Delete
 CRUD операциите са концепция за манипулация на данни, HTTP методите са инструмент за комуникация между клиент и сървър. HTTP методите са конкретен механизъм за осъществяване на тези действия чрез заявки между клиент и сървър. Те не са ограничени до CRUD, но често се използват за неговото изпълнение:
@@ -212,6 +212,17 @@ Content-Disposition: attachment; filename="example.pdf"
 Postman е необходим и задължителен tool за един web developer, без значение дали e front end или back end.
 От страна на фронт енд-а ни трябва, защото комуникираме с backend service или искаме да знаем как да си направим дадена заявка, за да постигнем определен резултат, като най-често ще тестваме дали се получава през Postman и после ще я пренесем в JS.
 Ако разработваме сървър и като напишем един end point, искаме да пробваме дали клиента ще получи данните, които сме предвидили да се връщат.
+
+В Postman можем да създаваме колекции, които да съдържат групи от заявки. Това е полезно, когато работим с множество свързани заявки, като API тестове или други операции, които трябва да се изпълняват в ред.
+
+Ето как да създадем колекция в Postman:
+1. **Отваряме Postman** — Стартираме Postman приложението.
+2. В лявата част на екрана, под секцията **Collections**, кликваме върху бутона **New** — Това ще отвори меню за нови елементи.
+3. Избираме **Collection** от изскачащото меню — Това ще ни позволи да създадем нова колекция.
+4. Дадената колекция може да получи име и описание (по желание) — Това е полезно за организиране на колекциите.
+5. Кликваме **Create** — Потвърждаваме създаването на колекцията.
+
+След това можете да добавяме заявки към тази колекция, като просто ги изберем и щракнем върху **Save**. Можем да организираме заявките си, да добавяме папки и да ги групираме по различни критерии в рамките на колекцията.
 ### Simulating HTTPS Communication with OpenSSL
 **OpenSSL** е инструмент, който позволява симулиране на комуникация между клиент и сървър през **HTTPS** (криптирания вариант на **HTTP**), използвайки **SSL/TLS** протоколите. Това е полезно за разработчици, които искат да тестват сигурността и функционалността на своите приложения през защитена комуникация, без да е необходимо да разполагат с валидни сертификати от сертифицирани органи.
 
@@ -350,9 +361,340 @@ RESTful service означава service, който спазва REST стан�
  С други думи, ресурса е нещо което отделяме и може да правим заявки върху него.
 
 В общи линии, когато говорим за RESTful API или RESTful Service, се отнасяме до същия принцип на работа: достъп до сървърни ресурси чрез HTTP и следване на принципите на REST архитектурата.
+### REST and RESTful Services - Example
+Create a new post:
+
+```
+POST http://some-service.org/api/posts
+```
+
+Имаме система в която хората може да постват неща, post в примера е публикация / коментар. Service-a си има domain name, преди него има протокол, няма записан порт, което означава че ползва default порт-а, който за http е 80, а на https е 443. `/posts` е името на ресурса, който достъпваме, това е URI-а на нашия ресурс. Изпращаме POST заявка с body, в която казвам, че искаме да създадем нов post.
+
+Get all posts / specific post:
+
+```
+GET http://some-service.org/api/posts
+GET http://some-service.org/api/posts/17
+```
+
+Може да създадем заявка да вземем всички постове. Правим заявка със същия URL, само с разликата че вместо POST е GET. Това ще върне списък с всички постове. Ако след ресурса, сложим конкретен пост номер, в примера 17, сървъра ще върне само този конкретен пост. Този начин на получаване на ресурси се нарича get all / get one заявки.
+
+Delete existing post:
+
+```
+DELETE http://some-service.org/api/posts/17
+```
+
+С тази заявка, казваме да бъде изтрит конкретен индивидуален пост - от колекцията с постове, искаме 17-тия. Метода говори за действието, затова няма нужда да се добавя в името на ресурса, примерно `DELETE http://some-service.org/api/delete-posts/17` би било грешка и в противоречие с REST стандарта. Не трябва да се вкарват глаголи в името. RESTful стандарта е универсален URL и метода оказва, какво е действието, което трябва да се извърши.
+
+Replace / modify existing post:
+
+```
+PUT/PATCH http://some-service.org/api/posts/17
+```
+
+С тези заявка, казваме да бъде update-нат конкретен индивидуален пост, като ще изпратим body-то с новите данни, за да презапише / модифицира стария пост.
+
+С RESTful services се работи много лесно, защото трябва да знаем името на ресурса, де факто неговия URI и вече да се използват правилните методи, според целите.
+Проблема е че този стандарт не е твърде обширен и има много индивидуални случаи, които не са покрити и дефинирани. Примерно няма опция за изтриване на повече от едно нещо. Ако искаме да дадем възможност да се изтрият всички постове наведнъж, REST стандарта не го позволява, той казва че може да се изтрива само едно нещо. Ако искаме все пак да може да се изтриват повече неща, каквото и да направим, вече не отговаряме на този стандарт, защото той не дефинира множество специфични ситуации. Разработчиците са принудени да намерят решение, което да е максимално RESTful like, но все пак е извън стандарта. Важното е да се стараем да спазваме правилата, въпреки че не е възможно да го правим на 100%.
+### Practicing REST Requests
+#### RESTFUL API
+[REST API - ready to use](https://restful-api.dev/) - предоставя готов сървър за ресурси, върху който може да се упражняват различни REST заявки. На този сайт ще открием примерни **JSON обекти**, които могат да бъдат достъпвани, създавани, модифицирани и изтривани чрез стандартни HTTP методи като `GET`, `POST`, `PUT`, `PATCH` и `DELETE`.
+
+Този тип ресурси е предназначен за практическо обучение и тестване на REST API интеграции без да е необходимо да създаваме собствен сървър. Обектите, които използваме, съществуват само във нашата сесия, което прави това безопасна и удобна среда за учене.
+
+Повечето RESTful сървъри, когато поискаме да list-нат всички обекти от даден ресурс, връщат лист с кратка информация за всеки от тях. Ако искаме по детайлна информация, трябва да изберем конкретен ресурс и да посочим само него в заявката.
+
+В RESTful API може да вземем обекти по дадено **пропърти** (или атрибут), ако сървърът позволява филтриране чрез параметри в заявката. Това е често срещана практика, когато искаме да получим всички ресурси, които отговарят на определено условие, базирано на тяхно пропърти.
+Вземане на постове по категория (като пропърти) - `GET /posts?category=technology`
+Това ще върне всички постове, които имат категория "technology".
+#### GitHub API
+[GitHub REST API documentation - GitHub Docs](https://docs.github.com/en/rest?apiVersion=2022-11-28) - API документацията на GitHub.
+
+List user's all public repositories:
+
+```
+GET https://api.github.com/users/testnakov/repos
+```
+
+`/users` е ресурс в който имаме конкретен user ресурс `/testnakov` и в него имаме крайния ресурс `/repos`, който на REST език се нарича nested ресурс. Нарича се така, защото е ресурс, който се намира в друг ресурс. Това показва relationship между ресурсите.
+
+1. **`/users`** – Това е основният ресурс, който обхваща всички потребители в GitHub.
+2. **`/testnakov`** – Това е подресурс, който е конкретен потребител в контекста на `/users`. В случая, това е потребителят с име `"testnakov"`.
+3. **`/repos`** – Това е подресурс, който показва всички repository на конкретния потребител `testnakov`.
+
+Get all commits from a public repository:
+
+```
+GET https://api.github.com/repos/testnakov/softuniada-2016/commits
+```
+
+В предишния пример, `repos` беше nested ресурс, а тук го имаме и като основен ресурс. Nested ресурса тук е `/commits`. Чрез тази заявка взимаме commits в даденото repository. Можем да си напишем приложение с JS, което да взима тази информация и да я изобразява. 
+
+Get all issues/issue #1 from a public repository:
+
+```
+GET https://api.github.com/repos/testnakov/test-nakov-repo/issues
+GET https://api.github.com/repos/testnakov/test-nakov-repo/issues/1
+```
+
+Тук имаме достъп до issues в даденото repository.
+
+Get all labels for certain issue from a public repository:
+
+```
+https://api.github.com/repos/testnakov/test-nakov-repo/issues/1/labels
+```
+
+Create a new issue to certain repository (with authentication)
+
+```
+POST https://api.github.com/repos/testnakov/test-nakov-repo/issues
+Body {"title":"Found a bug", "body": "I'm having a problem with this."}
+```
+
+За да можем да извършим POST заявка към GitHub API, като например за създаване на issue в repository, трябва да генерираме GitHub токен с `Access public repositories` permission. Този токен ще ни позволи да извършваме действия, които изискват удостоверяване, като създаване на нови проблеми.
+Тялото на заявката ще съдържа данни като заглавие и описание на проблема. Когато правим POST заявката, трябва да въведем токен-а в Authorization таба.
+## Node Package Manager (NPM)
+Това е система която върви с Node.js, който я инсталира by default. За да проверим версията на NPM, трябва да напишем в конзолата `npm-v`.
+
+Тази система ни позволява на управляваме и използваме готови пакети. Пакет е библиотека, като може да използваме готови такива или да си създадем. 
+[npm | Home](https://www.npmjs.com/) - най-голямото repository за JS пакети. Обикновено са open source и са безплатни.
+
+За да си направим наш пакет: 
+1. Oтваряме терминала в VS Code с `Ctrl + J`.
+2. Въвеждаме команда `npm init`.
+3. Слагаме име на проекта, по default е името на папката и трябва да натиснем `Enter`.
+4. Натискаме `Enter` за всички останали неща, които ни изрежда, освен ако не искаме да променим нещо.
+5. Показва ни JSON обект с неговите пропъртита и ни пита, дали това е което искаме, ако да натискаме `Enter`.
+6. Вече имаме генериран package JSON file, в който имаме цялата въведена информация. Тази информация подлежи на промяна, просто трябва да запазим промените във файла. `package.json` е файл, който държи мета данните за нашия пакет - данните, които го описват.
+
+По краткия начин за създаване е да напишем командата `npm init --yes` или по-кратката версия - `npm init -y`.  Това означава да създаде файла по default и да не ни пита за нищо.
+### Defining scripts
+След като имаме JSON файла, трябва да направим entry JS file. Може да го стартираме по стандартния начин с командата в терминала `node .\index.js` (index е името на JS файла). Може да дефинираме в `package.json` файла в секцията `"scripts"` скрипт команди които да се изпълняват върху нашия проект. Може да изтрием `test` командата, която имаме по default и да сложим командата `"start": "node index.js"` с която казвам, че начина да стартираме пакета е като изпълним `node index.js`.
+Тази команда, може да се изпълни с командата `npm start`, като `npm` ще провери в `package.json` файла на текущия проект дали има дефиниран скрипт с името `start` и ще влезе в локалния пакет и ще изпълни командата, която в случая е `node index.js`.
+## Types of Modules in Node.js
+Имаме три типа модули:
+1. Core / Node.js modules - това са готови модули, като може да ги намерим в документацията - [Index | Node.js v23.3.0 Documentation](https://nodejs.org/docs/latest/api/). Използват се чрез две модулни системи, като стандартната за JS е `module`. Трябва да добавим в нашия `package.json` файл `"type": "module"` като така оказваме, желания тип. Вече може да използваме в нашия JS файл, import синтаксиса - `import os from 'os'`.  `os` идва от Node.js Core библиотеката. След като сме import-нали тази библиотека, вече може да я ползваме, примерно ако искаме да генерираме нов ред, без да се интересуваме от операционната система:
+
+```javascript
+import { log } from 'console';
+import os from 'os'; // Core module
+
+console.log(`Hello from Nodejs ${os.EOL} new line`);
+
+log(os.EOL.charCodeAt(0));
+log(os.EOL.charCodeAt(1));
+
+// Output
+// Hello from Nodejs 
+// new line
+// 13
+// 10
+```
+
+Реално `os.EOL` генерира двата символа за нов ред и carriage return, които са с номера 10 и 13 в ASCII таблицата. Това не ни касае за Front-end, защото е Back-end. Front-end приложенията работят в браузъра, където новите редове се представят само с `\n` (Line Feed). `os.EOL` е полезно само в  Back-end приложения, където трябва да се генерират текстови файлове, логове или когато има нужда от съвместимост между различни операционни системи.
+
+2. Internal / custom - са файлове или скриптове, създадени от разработчика в рамките на проекта. Те не са част от Node.js Core библиотеките или външни пакети, а са дефинирани от нас. За да използваме internal modules, трябва да посочим техния път в импорта.
+
+```javascript
+import sum from './calculator.js'; // Internal module
+import { log } from 'console';
+
+log(sum(2, 5)); // Using internal module
+```
+
+`./calculator.js` е вътрешен модул, който трябва да бъде дефиниран (например функцията `sum`). Вътрешните модули изискват относителен или абсолютен път при импортиране, за разлика от Core модулите или външните пакети. Методът `log` идва от Core модула `console` в Node.js, който е вграден и предоставя удобни методи за извеждане на съобщения в конзолата. 
+
+3. External / Vendor - трябва да бъдат инсталирани, преди да може да се import-ват. Когато имаме дефиниран `package.json` файл, трябва да изпълним командата `npm install nameOfThePackage`, `install` може да бъде съкратено с `i`. След това, в нашия `package.json` се появява `"dependencies"` където се регистрира нашето dependency, тоест външна библиотека на която разчитаме, за да работи нашата.  Инсталираната библиотека се сваля и инсталира в папка `node-modules`, където се инсталират много библиотеки из между които и тази, която сме избрали. Инсталира повече от една библиотека, защото ако отидем в `package.json` на инсталираната библиотека, ще видим че тя също има dependencies и затова се налага да инсталираме и тях. Нейните dependencies, също имат dependencies и така се получава dependency tree в което `npm` има грижата да го resolve-не цялото и да инсталира всички пакети, за да може да проработи. Няма нужда да пипаме тези библиотеки, `npm` си има грижата.
+
+```javascript
+import calculator from 'calculator'; // External module
+import { log } from 'console';
+
+const f = calculator.func('f(x) = x*10 - 20');
+console.log(f(3)); // returns 10
+```
 # Misc
 # ChatGPT
+## URI, URL, and URN: What’s the Difference?
+
+All three terms are related to identifying resources, but they serve slightly different purposes. Here's how they differ:
+
+1. **URI (Uniform Resource Identifier)**
+- **Definition**: A URI is a generic term that identifies a resource. It may do so by **name**, **location**, or **both**.
+- **Scope**: URI is the umbrella term that encompasses both **URL** and **URN**.
+- **Purpose**: To uniquely identify a resource in some way.
+- **Examples**:
+    - `http://example.com/resource` (a locator — URL)
+    - `urn:resource` (a name — URN)
+
+2. **URL (Uniform Resource Locator)**
+- **Definition**: A URL is a specific type of URI that provides the **location** of a resource and specifies how to access it. Its the best and most commonly used identifier when it comes to locating a resource on the internet because it combines both a name and an address.
+- **Scope**: URLs are a subset of URIs.
+- **Purpose**: To locate a resource by specifying its address.
+- **Examples**:
+    - `http://example.com/resource`
+    - `ftp://ftp.example.com/file.txt`
+
+3. **URN (Uniform Resource Name)**
+- **Definition**: A URN is another subset of URI that identifies a resource **by name only**, without providing its location or access method.
+- **Scope**: URNs are also a subset of URIs.
+- **Purpose**: To provide a persistent, location-independent identifier for a resource.
+- **Examples**:
+    - `urn:isbn:978-3-16-148410-0` (an ISBN for a book)
+    - `urn:resource` (a hypothetical named resource)
+
+**Comparison Table**
+
+| **Aspect**        | **URI**                           | **URL**                                      | **URN**                                 |
+| ----------------- | --------------------------------- | -------------------------------------------- | --------------------------------------- |
+| **Definition**    | General identifier for resources. | Locator: Identifies resource by location.    | Name: Identifies resource by name only. |
+| **Purpose**       | To identify a resource.           | To locate a resource.                        | To uniquely name a resource.            |
+| **Includes**      | Both URL and URN.                 | Subset of URI.                               | Subset of URI.                          |
+| **Access Method** | May or may not specify access.    | Always specifies how to access the resource. | Does not specify access.                |
+| **Examples**      | `http://example.com/resource`     | `http://example.com/resource`                | `urn:isbn:978-3-16-148410-0`            |
+
+**Analogy**
+Think of a URI as the broad concept of "identity."
+
+- A **URL** is like an **address** that tells you exactly where to find something.
+- A **URN** is like a **name** that uniquely identifies something without telling you where to find it.
+
+**Conclusion**
+- **URI** is the general category for identifying resources.
+- **URL** and **URN** are specialized types of URIs.
+- A **URL** locates a resource, while a **URN** names it.
+## Why REST Was Created
+The main reason **REST** (Representational State Transfer) was created was to provide **standards and guidelines** for how to use HTTP methods correctly and consistently when building web services. Without REST, there would be no clear structure or conventions on how to use HTTP methods for different operations, such as creating, updating, deleting, or retrieving resources.
+
+Without a standardized approach like REST, we could theoretically use any **HTTP method** for any operation. For example, we could use the **DELETE** method to create a resource, or **POST** to retrieve it. This would lead to inconsistency, confusion, and potentially flawed implementations.
+
+REST provides a set of **rules** for the correct use of HTTP methods, making APIs more predictable, intuitive, and easier to work with.
+
+**Key reasons for the creation of REST:**
+1. **Standardizing HTTP method usage**:
+    - REST ensures that:
+        - **GET** is used for **retrieving** resources.
+        - **POST** is used for **creating** new resources.
+        - **PUT/PATCH** is used for **updating** resources.
+        - **DELETE** is used for **deleting** resources.
+    
+    Without this structure, we could mix up methods and use them inappropriately (e.g., using **DELETE** to create a resource).
+    
+2. **Consistency in API design**:
+    - By following RESTful principles, developers can ensure consistency across different APIs, making it easier for other developers to understand and use those APIs.
+3. **Statelessness**:
+    - REST promotes statelessness, meaning each request from the client to the server must contain all the information needed to understand and process the request. This makes the API simpler and more scalable.
+4. **Separation of concerns**:
+    - REST separates the **structure of resources** (how they are named and identified) from the **operations** (what can be done to them). This separation leads to cleaner and more maintainable code.
+
+**Example of inconsistency without REST:**
+Without RESTful principles, someone might decide to use **DELETE** to create a new resource, like this - `DELETE /api/posts`
+
+This would make it unclear to others what the actual intention is. A DELETE request is traditionally used to remove a resource, not create one.
+
+With REST, the same operation would be done with a **POST** method - `POST /api/posts`
+
+This follows the convention that **POST** is used to **create** resources.
+
+**Conclusion:**
+REST was primarily created to standardize the usage of HTTP methods for different actions (create, read, update, delete) and to provide a consistent way of naming resources. Without REST, there would be no standard to enforce that methods like **DELETE** are used for deletion and not for creation, leading to confusion and inconsistency.
+## Statelessness in REST
+
+**Statelessness** is a key principle in the **REST** architectural style, and it refers to the idea that **each request from the client to the server must contain all the information necessary to process the request**. In simpler terms, the server does not store any information about the client's state between requests.
+
+**Key Concepts of Statelessness:**
+1. **No Session State on the Server**:
+    - The server does **not** store any information about the client between requests. This means that every time a client sends a request to the server, the server treats it as a **new request**, independent of any previous requests.
+    - For example, if a client logs in and then makes several requests to retrieve or update data, each of those requests must include all the necessary details (such as authentication tokens) to prove the identity and permissions of the client.
+    - This is in contrast to **stateful** systems, where the server keeps track of information (such as user sessions) between requests.
+2. **Self-contained Requests**:
+    - Each **request** must contain all the information required for the server to understand and process it.
+        - For instance, if a client is requesting data from the server, the request should include **authentication information** (like a token) and the necessary **data** (e.g., resource identifiers).
+    - The server does not rely on any stored information (like previous user actions or state) to fulfill the request. If any contextual information is needed, the client must send it explicitly.
+3. **Simplified Communication**:
+    - Stateless communication reduces the complexity of the server because the server does not need to keep track of client-specific state between requests. This results in:
+        - **Simpler Server Logic**: The server only processes the current request without needing to know the history of previous requests.
+        - **Scalability**: Since the server doesn’t need to store session information, it can handle more requests and scale better, because each request is independent.
+        - **Load Balancing**: Statelessness allows requests to be routed to any server in a distributed environment. As there’s no need to remember the client's state, requests can be load-balanced across multiple servers without issues.
+4. **Client Responsibility**:
+    - The client is responsible for managing any **state information** necessary for its interactions with the server. For example, the client must keep track of things like:
+        - **Authentication tokens** or **session identifiers**.
+        - **User preferences** or other context information that may be needed for each request.
+    - If the client needs to maintain a session (for instance, to keep the user logged in), it must handle it itself (e.g., storing and sending an authentication token with each request).
+
+**Example: Stateless Request**
+Imagine a client wants to fetch a specific post from a blog. In a **stateless** REST API, the client would send a request like this:
+
+`GET /api/posts/42 Authorization: Bearer <auth_token>`
+
+**In this example:**
+- The request is **self-contained**, meaning it contains the **authorization token** (via the `Authorization` header) to authenticate the user and identify the requested resource (in this case, the post with ID 42).
+- The server doesn’t need to remember who the user is from previous requests because all the required information is sent with the current request.
+
+**Example: Stateful vs Stateless**
+**Stateful API**: If a server were stateful, it might store the user session after the first request, so subsequent requests don’t need to send authentication information. For example, a server might store user information in a session cookie or in memory, and the client might not need to send the token with each request.
+
+`GET /api/posts/42`
+
+The server would automatically know which user is making the request based on the session or stored information, without the need for the client to include authentication details.
+
+**Stateless API**: In a stateless system, every request must include all necessary details for authentication:
+
+`GET /api/posts/42 Authorization: Bearer <auth_token>`
+
+**Advantages of Statelessness in REST:**
+1. **Scalability**:
+    - Since each request is independent, servers can handle many more requests without needing to manage user sessions or stored data. This makes it easier to scale an application horizontally by adding more servers.
+2. **Flexibility**:
+    - Statelessness allows any request to be routed to any server because the server does not need to rely on information stored from previous requests. This is ideal for distributed and cloud-based architectures.
+3. **Simplicity**:
+    - By not requiring the server to track state, the logic on the server side becomes simpler and easier to maintain. The server only needs to process the request it receives, without keeping track of previous interactions with the client.
+4. **Resilience**:
+    - If one server fails, requests can be routed to another server without losing state, as the request itself contains all the necessary information. This increases the system's resilience and availability.
+
+**Disadvantages:**
+While statelessness offers many benefits, there are cases where **stateful** behavior is desirable:
+
+- If your application needs to maintain user sessions or context (e.g., shopping carts or user profiles), you would need to manage that state explicitly on the client side or use mechanisms like **JWT tokens**, **cookies**, or **session data**.
+- Statelessness means that every request must be fully self-contained, which can increase the amount of data being sent with each request (e.g., authentication tokens in every request).
+
+**Conclusion:**
+Statelessness is a key principle of REST that ensures each request is independent and contains all the necessary information for the server to understand and process it. This results in simpler, more scalable, and flexible systems because the server does not need to store or manage client state. However, it also places the responsibility for maintaining state on the client, which can sometimes require more effort for certain types of applications.
+## Software Versioning
+In software versioning, a version number typically follows the format **X.Y.Z**, where:
+
+- **X (major version)**: This indicates major changes that are not backward compatible with previous versions. A change in the major version might break the API or existing functionality.
+- **Y (minor version)**: This represents backward-compatible changes that add new features without breaking existing functionality.
+- **Z (patch version)**: This refers to backward-compatible fixes or minor improvements, typically addressing bugs without adding new features.
+
+**Example:**
+The version **`^0.12.0`** follows **semver** (semantic versioning) and means the following:
+
+- **`^0.12.0`**: The **caret (^)** symbol indicates that you can install any version that is **greater than or equal to 0.12.0 but less than 1.0.0**. The latest compatible minor or patch version will be installed, but it will not update to a new major version.
+    - This means that the version can be updated to **0.x.x**, but **not to 1.0.0** since that would be a **major** change.
+    - The reason versioning with symbols like `^` is important is to avoid breaking changes that may occur in newer major versions of a library or dependency.
+
+**Differences between Major, Minor, and Patch:**
+- **Major version** (e.g., 1.0.0) introduces **breaking changes**.
+- **Minor version** (e.g., 0.12.0) adds new functionality but is **compatible with previous versions**.
+- **Patch version** (e.g., 0.12.1) contains **bug fixes** without changing the functionality.
+
+So, for **`^0.12.0`**, it means that you can update to any version that's compatible with **0.12.x** but not to a **major version** like **1.0.0**.
+## Yarn Package Manager
+Yarn is a package manager for JavaScript, similar to npm. It helps manage dependencies, install packages, and automate tasks. Yarn is known for faster performance and better reliability in managing packages, particularly with its lockfile system.
 # Bookmarks
 Забавни списъци с най-често срещаните и значими статуси:
 [HTTP Cats](https://http.cat/)  
 [HTTP Status Dogs API - A dog image for every HTTP Status Code](https://http.dog/)
+
+[REST API - ready to use](https://restful-api.dev/) - предоставя готов сървър за ресурси, върху който може да се упражняват различни REST заявки.
+
+[GitHub REST API documentation - GitHub Docs](https://docs.github.com/en/rest?apiVersion=2022-11-28) - API документацията на GitHub.
+
+[npm | Home](https://www.npmjs.com/) - най-голямото repository за JS пакети.
+
+[Index | Node.js v23.3.0 Documentation](https://nodejs.org/docs/latest/api/) - налични модули.
+
+Completion: 02.12.2024
