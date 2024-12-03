@@ -410,6 +410,16 @@ console.log('Element clicked!');
 `reset` - задейства се при нулиране на форма, връщайки стойностите на полетата им към началните стойности.
 
 https://developer.mozilla.org/en-US/docs/Web/Events - пълен списък с event types.
+## Promises
+`Promise.reject(reason)` – Returns an object that is rejected with the given reason.
+
+`Promise.resolve(value)` – Returns an object that is resolved with the given value.
+
+`Promise.finally()` – The handler is called when the promise is settled (either fulfilled or rejected).
+
+`Promise.all(iterable)` – Returns a promise.
+- Fulfills when all of the promises have fulfilled.
+- Rejects as soon as one of them rejects.
 ## Misc
 `setTimeout(function, delay, param1, param2, ...)` - е асинхронен метод, като кодът вътре в тялото на функцията, ще бъде изпълнен след зададеното време на забавяне. Самото изпълнение на този код обаче не блокира останалия JavaScript код в програмата.
 # RegExp
