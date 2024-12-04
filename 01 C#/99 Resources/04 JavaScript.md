@@ -411,17 +411,15 @@ console.log('Element clicked!');
 
 https://developer.mozilla.org/en-US/docs/Web/Events - пълен списък с event types.
 ## Promises
-`Promise.reject(reason)` – Returns an object that is rejected with the given reason.
+`Promise.reject(reason)` – Връща обект, който е отхвърлен със зададената причина.
 
-`Promise.resolve(value)` – Returns an object that is resolved with the given value.
+`Promise.resolve(value)` – Връща обект, който е изпълнен със зададената стойност.
 
-`Promise.finally()` – The handler is called when the promise is settled (either fulfilled or rejected).
+`Promise.finally()` – Функцията (the handler) се извиква, когато обещанието е приключено (независимо дали е изпълнено или отхвърлено).
 
-`Promise.all(iterable)` – Returns a promise.
-- Fulfills when all of the promises have fulfilled.
-- Rejects as soon as one of them rejects.
+`Promise.all(iterable)` – Връща обещание. Изпълнява се, когато всички обещания са изпълнени. Отхвърля се веднага щом едно от тях бъде отхвърлено. Чрез този метод, може да изпълним паралелно множество промиси. Всички подадени промиси, ще се изпълнят паралелно, което ако са заявки, ще бъдат пуснати едновременно и всяка една ще отговори, когато е готов response-а.
 ## Misc
-`setTimeout(function, delay, param1, param2, ...)` - е асинхронен метод, като кодът вътре в тялото на функцията, ще бъде изпълнен след зададеното време на забавяне. Самото изпълнение на този код обаче не блокира останалия JavaScript код в програмата.
+`setTimeout(function, delay, param1, param2, ...)` - е асинхронен метод, като кодът вътре в тялото на функцията, ще бъде изпълнен след зададеното време на забавяне. Самото изпълнение на този код обаче не блокира останалия JavaScript код в програмата. Ако един от промисите е rejected, всички ще бъдат rejected и хваща грешката на единствения, който е reject-нал.
 # RegExp
 ## Creating RegExp
 Има два основни начина за създаване на регулярни изрази в JavaScript:
