@@ -118,6 +118,73 @@ main();
 5. Последната функция в стека приключва и Garbage Collector-a изчиства целия стек. През това време, worker-a на който сме дали callback функцията я е подал на Event Loop-a, който я е сложил в Event Queue-то. След като стека се опразни, EL взима callback функцията от EQ и я подава към стека. Реално callback функцията бива подадена в EQ веднага, но колко време ще мине до изпразването на стека и EQ, няма гаранция. Гаранцията в примера е че функцията ще се изпълни след поне минимум времето което сме сложили, но няма гаранция че ще е след точно толкова време.
 
 По време на debugging, може да видим, че след като се изпразни стека, чак тогава ще влезнем в `callback()`.
+## AJAX - Asynchronous JavaScript and XML
+Това е принцип на извикване на данни от сървър - методика за зареждане на динамични данни в background-a. Когато са го наименували, са взели неразумното решение да сложат името на технологията в тази методика, защото методиката остава, но технологията в случая XML вече почти не се ползва. С течение на времето, XML до голяма степен е изместен от по-ефективни и удобни за работа формати, като JSON. Към днешно време името Asynchronous JavaScript and Jason би било по-правилно.
+
+При тази методика, след като приложението е стартирало, заредило се е в браузъра и в background-a извикваме данни, които може да зареждаме асинхронно, докато приложението работи. При стандартните multipage applications, ако искаме да заредим нови данни, трябва да натиснем даден линк, който да refresh-не цялата страница.
+След като данните се заредят от сървъра, може да ги рендерираме, да ги облечем в HTML елементи и да ги визуализираме след като са пристигнали асинхронно и потребителя да получи очакваните данни.
+
+Има два начина за използване:
+**1. Partial page rendering** - асинхронно да заредим някаква част от страницата, примерно сървъра да върне готов HTML, който асинхронно да го заредим.
+**2. JSON service** - асинхронно да заредим данните от сървъра и да ги облечем ние на ниво клиент - с JS да създадем елементите и да ги заредим.
+### AJAX: Workflow
+![](Pasted%20image%2020241205154949.png)
+
+![](Pasted%20image%2020241205155539.png)
+
+Клиента (браузъра) - инициира заявката и иска главната страница. Сървъра връща статични файлове - HTML, CSS, JS и тн. Това е първото зареждане. При SPA (Single Page Application) приложения, не се зареждат повече страници освен първата. След като се визуализира статичното съдържание на клиента, потребителя натиска даден бутон, прави интеракция, тогава се изпраща AJAX заявка към сървъра, най-често RESTful. Сървъра връща данни под формата на JSON, handle-ваме ги асинхронно и визуализираме промяната на потребителя. Това е цикъла, който искаме да постигнем и се прави с помощта на Fetch.
+### Fetch
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch API</title>
+</head>
+
+<body>
+    <h1>Fetch API</h1>
+
+    <button id="load-button">Load</button>
+
+    <script>
+        const baseUrl = 'https://api.restful-api.dev/objects';
+        const loadButton = document.querySelector('#load-button');
+
+        loadButton.addEventListener('click', fetchObjects);
+
+            fetch(baseUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        // Error handling
+                        throw Error('Something went wrong');
+                    }
+
+                    return response.json();
+                })
+                .then(result => console.log(result))
+                .catch(err => console.log(err.message))
+        }
+    </script>
+</body>
+
+</html>
+```
+
+Това е готов API, който идва от браузъра и който може да ползваме с цел да правим заявки. Това ни позволява да правим различни request-и, базира се на Promises, и дава лесен начин да правим заявки. 
+`fetch(myUrl)` по default изпраща GET заявка, очаква като параметър URL и връща `Promise<Response>`. Нарочно не връща data-та, защото не знае какви са данните. Ако очакваме JSON върху response-a може да извикаме JSON, с което му казваме - искам да обработиш response-a и да ми върнеш body-то, което е JSON.
+`response.json()` връща промис. 
+В примера първия път сме получили промис, заради response-а на fetch-a, а втория след изпълнение на `response.json()` също връща промис. След като обърнем response-a в JSON, получаваме данните с резултата. В примера, това са различни обекти като response от API-я. Когато resolve-внем един промис, връщаме нов промис и се получава промис chaining. Това се прави когато искаме да имаме последователни операции, примерно да вземем от един сървър данни, после като ги получим, да ги изпратим на друг сървър и тн. Всичко това са асинхронни операции и една след друга ще се изпълняват.
+
+Ако получим response 404, това няма да е грешка и няма да бъде хванато в catch-a, освен ако не хвърлим някаква грешка. Идеята е че сами трябва да решим как да се продължи в такава ситуация.
+
+```
+```
+
+За да сменим типа на заявката от default стойността GET на POST, трябва да ползваме втория параметър на `fetch()` - `RequestInit`. Трябва да посочим метода, header-a и тялото, като данните трябва да са `JSON.stringify()` под формата на JSON.
+
 # Misc
 # ChatGPT
 ## Synchronous vs. Asynchronous in Promises
@@ -535,6 +602,126 @@ The `.then` or `.catch` handlers always run asynchronously to ensure consistent 
 
 - If there’s no asynchronous operation in the executor, the promise is settled immediately during its creation.
 - However, the `.then` or `.catch` callbacks will always be executed in the next event loop tick, ensuring predictable behavior.
+## Understanding the Promise Flow
+When you call `myPromise.then()`, the interpreter will go through the following:
+
+1. **Promise State**: Inside the `then` method, the first thing the interpreter checks is the state of the promise (`this.state`).
+    - If the state is `fulfilled`, it calls the `onFulfilled` callback with the resolved value (`this.value`).
+    - If the state is `rejected`, it calls the `onRejected` callback with the rejection reason (`this.value`).
+2. **Pending State**: If the promise is still in the `pending` state (because there's an asynchronous operation happening inside the promise's executor function), neither `if (this.state === "fulfilled")` nor `else if (this.state === "rejected")` will be satisfied. As a result:
+    - The interpreter won't call either of the callbacks.
+    - The `then` method will effectively **exit** and return `undefined`.
+
+**Example of this Scenario:**
+
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Promise has been resolved!");  // Resolving the promise after 2 seconds
+  }, 2000);
+});
+
+myPromise.then(
+  (result) => {
+    console.log(result);  // This will log the result after the promise is resolved
+  },
+  (error) => {
+    console.log(error);  // This would be called if the promise is rejected
+  }
+);
+```
+
+**How it works step by step:**
+
+1. When `myPromise.then()` is called, the promise is **still in the pending state**.
+    - Since it's not yet fulfilled or rejected, the interpreter goes into the `then()` method, checks the state, and exits because neither condition (`fulfilled` or `rejected`) is met.
+    - **At this point**, the callbacks are not called, and `then()` exits.
+2. After 2 seconds (due to `setTimeout`), the promise is **resolved**, so it transitions to the `fulfilled` state. Now the callbacks will be triggered.
+3. Since the state is now `fulfilled`, the `onFulfilled` callback is executed, and `"Promise has been resolved!"` is logged.
+
+**Key Takeaway:**
+
+- **If the promise is still pending**, calling `.then()` does **nothing** at that point because the state is not yet resolved or rejected. The interpreter just exits the `then()` method without invoking any callbacks.
+- **Once the promise is settled (either fulfilled or rejected)**, the appropriate callback (`onFulfilled` or `onRejected`) is called.
+
+**You said:**
+
+```javascript
+// "After 2 seconds (due to setTimeout), the promise is resolved, so it transitions to the fulfilled state. Now the callbacks will be triggered.
+// but how will this happen when the synchronious code already executed"
+
+myPromise.then(
+  (result) => {
+    console.log(result);  // This will log the result after the promise is resolved
+  },
+  (error) => {
+    console.log(error);  // This would be called if the promise is rejected
+  }
+);
+```
+
+This code block was already executed synchronously while the promise was in a pending state and the condition was not satisfied, it will not be executed again after the promise has changed its status, how does `.then()` retrigger?
+
+**ChatGPT said:**
+You're asking a great question! Let's clarify how this works.
+
+**How Does `.then()` Re-Trigger After State Change?**
+
+When a promise is in the `pending` state, and you call `.then()` on it, **nothing happens immediately** because the promise is still not settled (neither fulfilled nor rejected). However, once the promise resolves (or rejects), the `then()` method **does not get re-executed** directly. Instead, **it adds its handlers (callbacks) to the internal queue** of the promise.
+
+Here’s the key part: the promise internally keeps track of all `.then()` calls (and their callbacks). So even though the initial `.then()` did not execute its callbacks right away, **it will later be triggered automatically when the promise changes state**.
+
+**How Does This Work Behind the Scenes?**
+
+The promise mechanism works as follows:
+
+1. **When `.then()` is called**:
+    
+    - If the promise is already settled (fulfilled or rejected), the appropriate callback is immediately executed.
+    - If the promise is still in the `pending` state, the `then()` method **stores the callbacks** inside an internal queue. These callbacks are waiting to be executed when the promise settles.
+2. **When the promise is settled** (either resolved or rejected):
+    
+    - The promise then **notifies** all the stored `.then()` callbacks in the order they were added.
+    - The appropriate callback (either `onFulfilled` or `onRejected`) is executed based on the state of the promise.
+
+**Example of How This Works:**
+
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Promise has been resolved!");  // Resolving the promise after 2 seconds
+  }, 2000);
+});
+
+myPromise.then(
+  (result) => {
+    console.log(result);  // This will log the result after the promise is resolved
+  },
+  (error) => {
+    console.log(error);  // This would be called if the promise is rejected
+  }
+);
+
+// The 'then' is called right away, but it doesn't do anything because the promise is still pending.
+```
+
+**What happens here:**
+
+- When `myPromise.then()` is called, **if the promise is not yet resolved**, it doesn’t immediately execute the callback.
+- Instead, it **stores** the callback internally.
+- After 2 seconds, when `resolve()` is called inside the `setTimeout()`, the promise transitions to the `fulfilled` state.
+- Now, the internal queue (which has stored the `.then()` callbacks) gets processed. The `onFulfilled` callback is executed and logs `"Promise has been resolved!"`.
+
+**Summary of the Flow:**
+
+1. **`myPromise.then()`** is called, but since the promise is not yet resolved, it just stores the `onFulfilled` callback internally.
+2. After 2 seconds, the promise is **fulfilled** by calling `resolve()`.
+3. The promise's internal mechanism triggers the **stored `.then()` callbacks**, so the `onFulfilled` callback is executed.
+
+**Important Detail:**
+
+- The key point is that the promise mechanism keeps track of all `.then()` calls and their callbacks, even if they are called while the promise is still pending. Once the promise settles, these callbacks will be executed.
+- This is how promises allow you to "chain" multiple `.then()` calls, even if the promise resolves asynchronously.
 ## Understanding `.then()`
 
 In JavaScript, promises are used to handle asynchronous operations. When you call `.then()` on a promise, you provide two callbacks: one for when the promise is resolved (fulfilled) and one for when it is rejected. These callbacks are executed depending on the state of the promise.
@@ -936,5 +1123,206 @@ Promise.resolve(5)
 - It can catch errors from previous promises or from any `.then()` callback that throws an exception.
 - It returns a promise, so you can continue chaining.
 - The error is caught and processed, and the chain can proceed with new values or continue with an alternative flow.
+
+**You said:**
+
+If we have both outcomes rejected and resolve to `.then()` why do we need `.catch()`?
+
+**ChatGPT said:**
+
+Great question! The reason why we need `.catch()` in addition to the `onRejected` callback in `.then()` is for better **error handling** and **chaining** in asynchronous operations.
+
+Let me break it down:
+
+**1. `.then()` with Two Callbacks (onFulfilled and onRejected):**
+
+In the `.then()` method, you can provide two callbacks:
+
+- **`onFulfilled`** – Executes if the promise is resolved (fulfilled).
+- **`onRejected`** – Executes if the promise is rejected.
+
+However, when you use `.then()`, **both callbacks are optional**. That means if you don't want to handle rejection at all in a particular `.then()` call, you can just provide the success callback (i.e., `onFulfilled`), and the promise will only execute that callback if it’s resolved.
+
+**2. `.catch()` for Better Error Handling:**
+
+`.catch()` is essentially a shorthand for adding an `onRejected` callback to a promise chain. It helps you handle errors in a more streamlined way.
+
+**Why use `.catch()` instead of `onRejected` in `.then()`?**
+
+- **Chaining**: If you have a chain of `.then()` calls and you want to handle all possible rejections at the end of the chain, `.catch()` can capture errors from any of the previous `.then()` calls. This is useful for handling errors in a consistent manner.
+- **Separation of Concerns**: `.then()` is focused on handling both success and failure, while `.catch()` is dedicated to handling just the failure cases, improving readability and maintenance of the code.
+- **Handling Multiple Errors**: If you want to handle rejections from multiple promises in a chain, it's easier to use `.catch()` at the end of the chain, rather than adding `onRejected` to every individual `.then()`.
+
+**Example:**
+
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  const isSuccess = Math.random() > 0.5;
+
+  if (isSuccess) {
+    resolve("Success!");
+  } else {
+    reject("Failure!");
+  }
+});
+
+// .then() handles both success and failure explicitly
+myPromise
+  .then(
+    (result) => { console.log("Resolved: " + result); },  // onFulfilled
+    (error) => { console.log("Rejected: " + error); }    // onRejected
+  );
+
+// .catch() handles only rejections in a simpler way
+myPromise
+  .then((result) => {
+    console.log("Resolved: " + result);
+  })
+  .catch((error) => {
+    console.log("Rejected: " + error);
+  });
+```
+
+**Key Points:**
+
+1. `.then(onFulfilled, onRejected)` allows you to handle both fulfillment and rejection inside one `.then()` call.
+2. `.catch()` is just a shorthand for `.then(null, onRejected)`—it catches any rejection that happens in the chain.
+3. If you have many `.then()` calls in a chain, `.catch()` at the end helps you catch any errors from any of those `.then()` calls.
+
+**Conclusion:**
+
+While `.then()` can handle both resolve and reject, `.catch()` simplifies error handling and is more practical when you want to handle rejections at the end of a promise chain, keeping the code clean and readable.
+## Explanation of `fetch`
+When using `fetch()`, it performs an **asynchronous HTTP request** and returns a `Promise<Response>`. This response contains the **headers** of the server's reply and provides a way to access the **body** through additional asynchronous processing. Here’s how it works step-by-step:
+
+1. **Initiating an asynchronous HTTP request**:
+    - `fetch()` sends the request (e.g., a `GET` request by default) and immediately returns a promise that resolves to a `Response` object when the server replies.
+2. **Returning the `Response` object**:
+    - The `Response` object contains information like headers, status codes, and a promise to access the body of the response (`body`).
+3. **Accessing the body with `.json()`**:
+    - To process the body as JSON, we call `response.json()`. This method also returns a promise because extracting and parsing the body is an asynchronous operation.
+4. **Using Promises for chaining operations**:
+    - Both `fetch()` and `response.json()` return promises, allowing us to chain `.then()` blocks to handle sequential operations, such as sending data to another server after receiving it.
+
+**Key Concept:**
+
+All these operations revolve around **one response from the server**, which is encapsulated in a promise. The promise ensures that the browser can execute these actions asynchronously, avoiding any blocking of the main thread.
+
+Here’s the entire flow in code:
+
+```javascript
+fetch('https://api.example.com/data')
+  .then(response => {
+    console.log('Headers:', response.headers); // Access headers
+    return response.json(); // Process body as JSON
+  })
+  .then(data => {
+    console.log('Body:', data); // Access the parsed data
+  })
+  .catch(error => {
+    console.error('Error:', error); // Handle errors
+  });
+```
+
+**Important Observation:**
+
+The main thread in JavaScript is **synchronous and single-threaded**, meaning it handles tasks one at a time. However, when we use `fetch()`, the following happens:
+
+1. The main thread **delegates** the HTTP request to the browser's web API.
+2. The main thread **continues executing** other tasks, like rendering the page or handling user interactions, without waiting for the server response.
+3. Once the server responds, the result (or error) is queued and executed back in the main thread using the **event loop**.
+
+**Key Takeaway:**
+
+The main thread has already completed its execution by the time these asynchronous operations occur. Any interactions with the user or the page remain responsive while the background operations (like `fetch`) proceed asynchronously. This design ensures non-blocking behavior, which is one of JavaScript’s greatest strengths.
+
+In essence, **the fetch operations revolve around one response from the server encapsulated in a promise, enabling the browser to handle everything asynchronously while keeping the main thread free for other tasks.** 
+## Reading Response Body
+When you call `response.json()`, it **does not make another HTTP request** to the server. Instead, it reads and parses the body of the **already fetched response**.
+
+Here's a more detailed explanation:
+
+1. **The HTTP Request**:
+    - When you call `fetch(myUrl)`, the browser sends an HTTP request to the server.
+    - The `fetch()` function returns a `Promise<Response>`, and the server responds with the requested data.
+2. **The `Response` Object**:
+    - The `Response` object returned by `fetch()` contains metadata (like status, headers) and a **readable stream** of the response body (not the body content itself yet).
+    - The body is not immediately available to you because reading and processing the response body is an **asynchronous operation**. The body is read asynchronously to avoid blocking the main thread (the program’s execution flow). This is crucial because reading the response body (especially if it's large) can take time, and we don't want it to block the rest of the code from running while waiting for the data.
+3. **Calling `.json()`**:
+    - When you call `response.json()`, you're telling the browser to read the body of the `Response` and **parse it as JSON**.
+    - This does not trigger a new HTTP request. Instead, it processes the body of the already received response.
+    - The `.json()` method returns a **Promise** because reading and parsing the response body can take time, and you can't access the body synchronously.
+
+**Key Points:**
+
+- **No additional HTTP request** is made when calling `.json()`. The body data is already available in the `Response` object, but it’s in the form of a `ReadableStream`, which needs to be read asynchronously.
+- `.json()` reads the body stream and parses it into a JavaScript object (assuming the server's response is valid JSON).
+- This is why `.json()` returns a `Promise`—it’s an asynchronous operation that resolves when the body is fully read and parsed.
+
+**Example:**
+
+```javascript
+fetch('https://api.example.com/data')
+  .then(response => {
+    // The response has already been fetched at this point.
+    console.log(response); // Logs Response object with body as a ReadableStream.
+
+    // Now we read and parse the body as JSON.
+    return response.json(); // No new HTTP request; just reading and parsing the body.
+  })
+  .then(data => {
+    console.log(data); // Logs the parsed JSON data (e.g., { "key": "value" })
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+```
+
+**Summary:**
+
+- **The `.json()` method doesn't make a new HTTP request**. It simply reads and parses the body of the **already fetched** response.
+- The initial HTTP request happens when you call `fetch()`.
+## How `fetch()` Works
+1. **Parameters**:
+    - **URL**: The first parameter specifies the endpoint (where the request is sent).
+    - **Options (Request Object)**: The second parameter is an object that defines the structure of the HTTP request, including:
+        - **`method`**: The HTTP method (e.g., `GET`, `POST`, `PUT`, `DELETE`). Default: `GET`.
+        - **`headers`**: Key-value pairs specifying HTTP headers, e.g., `{'Content-Type': 'application/json'}`.
+        - **`body`**: The data to send, typically a string (e.g., JSON) or a `FormData` object. Ignored for `GET` and `HEAD` requests.
+        - **Other options**: Includes settings like `mode` (e.g., `cors`), and `credentials` (e.g., `same-origin`).
+2. **Example: Sending a POST Request**:
+    
+```javascript
+const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'John', age: 30 })
+};
+
+fetch('https://example.com/api/data', requestOptions)
+    .then(response => response.json()) // Parses the response body as JSON
+    .then(data => console.log(data))   // Handles the response data
+    .catch(error => console.error('Error:', error)); // Handles errors
+```
+
+3. **Key Features**:
+    - The second parameter encapsulates all request details in one object, allowing flexibility in defining the HTTP request programmatically.
+
+**`fetch()` and Promises**
+
+1. **Promise-Based Workflow**:
+    - `fetch()` returns a **Promise**, enabling asynchronous HTTP requests that do not block the main thread.
+    - The Promise resolves when the HTTP response is ready or rejects if there's an error (e.g., network failure).
+2. **Response Object**:
+    - When the Promise resolves, it provides a `Response` object that represents the server's reply.
+    - The `Response` object includes methods like `.json()` and `.text()`, which also return Promises for processing the response body asynchronously.
+3. **Chaining**:
+    - You can chain `.then()` handlers to process the response in sequence, enabling operations like parsing the body and updating the UI.
+4. **Key Points**:
+    - The **first Promise** resolves when the browser receives response metadata (e.g., status, headers).
+    - Methods like `.json()` create **new Promises** to parse the body asynchronously.
+    - This design ensures the browser remains responsive during the request-response cycle.
+
+By combining a flexible request configuration with a Promise-based API, `fetch()` simplifies asynchronous HTTP operations, allowing developers to focus on handling responses and errors without worrying about blocking the main thread.
 # Bookmarks
-Completion: 04.12.2024
+Completion: 06.12.2024
