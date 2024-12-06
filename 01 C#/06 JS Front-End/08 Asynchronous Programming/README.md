@@ -1631,6 +1631,122 @@ console.log(div.dataset.role);    // "admin"
 ```
 
 This approach keeps the HTML valid and avoids conflicts with future attributes.
+## API in Web Development
+An **API (Application Programming Interface)** is essentially a set of rules and definitions that allow communication between a client (e.g., your browser or app) and a server. In the context of **web development**, an API is commonly accessed over the web via **HTTP requests**, and its structure often revolves around **URLs (endpoints)**.
+
+**Breaking It Down:**
+1. **Parent URL (Base URL)**
+    - This is the primary **entry point** for the API.
+    - For example, if you're working with a GitHub API, the base URL might look like this:
+
+```
+https://api.github.com
+```
+
+2. **Resources**
+    - Resources represent specific data or services that the API exposes.
+    - These are accessed via **endpoints**, which are paths appended to the base URL. For example:
+        - `https://api.github.com/users` → Returns a list of users.
+        - `https://api.github.com/repos` → Returns repositories.
+    - The URL structure often follows **RESTful principles**, meaning each resource corresponds to a **noun** (e.g., `users`, `posts`) and supports HTTP methods like `GET`, `POST`, `PUT`, or `DELETE`.
+3. **Endpoints**
+    - An **endpoint** is a specific URL that performs a specific task.
+    - For example, an endpoint to fetch a user profile might be:
+
+```
+https://api.github.com/users/gerard
+```
+
+4. **Hierarchy of Resources**
+    - Resources often have relationships, so URLs can "build" on top of each other to represent nested data.
+    - For instance:
+
+```
+https://api.github.com/users/gerard/repos
+```
+
+ - Here, `users/gerard` is a parent resource (a specific user), and `repos` is a child resource (repositories belonging to that user).
+
+**Why is This Hierarchical Structure Important?**
+- It provides a **logical, consistent way** to organize data.
+- By using a well-structured API, developers can intuitively guess how to access or modify data without extensive documentation.
+
+In short, the **parent URL** (base URL) serves as the entry point, and **resources** build upon it to form **endpoints** that correspond to specific functionalities or data.
+
+Let me know if you'd like me to dive deeper into RESTful design principles, HTTP methods, or a different aspect of APIs!
+
+**You said:**
+
+So the base URL is not considered an endpoint? Or every URL which holds objects is endpoint on itself? For example if we get the base URL, will this return all the objects provided by the API?
+
+**ChatGPT said:**
+
+Great question! Let's clarify this concept of **base URL** and **endpoint** in the context of APIs.
+
+**1. Is the Base URL an Endpoint?**
+The **base URL** itself is **not always considered an endpoint** because its purpose is to serve as the foundation for constructing other endpoints. However, there are cases where the base URL **can function as an endpoint**, depending on how the API is designed.
+
+**Example 1: The Base URL as a Standalone Endpoint**
+Some APIs are designed so that sending a request to the base URL returns general information about the API or its resources. For instance:
+
+- **Base URL:** `https://api.example.com`
+- **GET [https://api.example.com](https://api.example.com)** → Could return something like:
+
+```json
+{
+  "message": "Welcome to Example API",
+  "version": "1.0",
+  "resources": [
+    "users",
+    "posts",
+    "comments"
+  ]
+}
+```
+
+**Example 2: The Base URL Is Not an Endpoint**
+In other APIs, the base URL doesn’t return any data or perform any action. Instead, you must specify a particular resource (e.g., `/users`, `/posts`) to get meaningful results. For example:
+
+- **Base URL:** `https://api.github.com`
+- A GET request to `https://api.github.com` returns general API info, not actual resources:
+
+```json
+{
+  "current_user_url": "https://api.github.com/user",
+  "repositories_url": "https://api.github.com/repositories",
+  ...
+}
+```
+
+So, whether the base URL is an endpoint depends on the API's design. It’s often just the foundation, but sometimes it can be configured to return general information.
+
+**2. What Makes a URL an Endpoint?**
+An **endpoint** is any URL that can be used to access a specific functionality or resource of the API. For example:
+
+- `https://api.example.com/users` → Endpoint to get a list of users.
+- `https://api.example.com/users/123` → Endpoint to get a specific user by ID.
+
+Endpoints usually return **specific data or actions** associated with a resource. The base URL alone doesn’t always fit this definition unless it’s explicitly configured to do so.
+
+**3. Does the Base URL Return All Objects?**
+No, the base URL typically does **not** return all objects/resources. Instead, you usually need to access specific endpoints for each resource. Here’s why:
+
+- **Scalability:** APIs often deal with large datasets. Returning everything at once would be inefficient.
+- **Purpose:** API endpoints are designed to give you precise control over what data you want to access.
+
+**Example of How Resources Are Organized:**
+- Base URL: `https://api.example.com`
+    - `/users` → All users
+    - `/users/123` → User with ID 123
+    - `/posts` → All posts
+    - `/posts/456` → Post with ID 456
+
+If you want all users, you’d make a request to `https://api.example.com/users`. If the base URL (`https://api.example.com`) returned all objects, it would become unwieldy as the API grows.
+
+**Summary**
+- **Base URL:** Not always an endpoint, but it’s the foundation for all API requests. It might return general API information, depending on the design.
+- **Endpoint:** Any specific URL used to access a resource or perform an action.
+- **Base URL Returning All Objects:** Generally, no. Specific endpoints exist to retrieve specific resources or objects, improving efficiency and clarity.
 # Bookmarks
 [softuni-practice-server/softuni-practice-server](https://github.com/softuni-practice-server/softuni-practice-server) - информация как работи practice server-a на SoftUni.
 
