@@ -134,6 +134,7 @@ main();
 
 Клиента (браузъра) - инициира заявката и иска главната страница. Сървъра връща статични файлове - HTML, CSS, JS и тн. Това е първото зареждане. При SPA (Single Page Application) приложения, не се зареждат повече страници освен първата. След като се визуализира статичното съдържание на клиента, потребителя натиска даден бутон, прави интеракция, тогава се изпраща AJAX заявка към сървъра, най-често RESTful. Сървъра връща данни под формата на JSON, handle-ваме ги асинхронно и визуализираме промяната на потребителя. Това е цикъла, който искаме да постигнем и се прави с помощта на Fetch.
 ### Fetch
+#### GET
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -180,13 +181,141 @@ main();
 
 Ако получим response 404, това няма да е грешка и няма да бъде хванато в catch-a, освен ако не хвърлим някаква грешка. Идеята е че сами трябва да решим как да се продължи в такава ситуация.
 
+За да сменим типа на заявката от default стойността GET, трябва да ползваме втория параметър на `fetch()` - `RequestInit`. За POST, PUT и PATCH, трябва да посочим метода. В зависимост от изискванията на сървъра, е желателно да добавим header и тяло, като данните в него обикновено трябва да са `JSON.stringify()` под формата на JSON.
+#### POST
+```javascript
+fetch('https://api.example.com/users', {
+    method: 'POST',
+    headers: {
+        'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ name: 'Pesho' }) 
+})
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(err => console.log(err.message))
 ```
+#### PUT
+```javascript
+fetch('https://api.example.com/users/1', { // Include the specific resource ID if required
+    method: 'PUT',
+    headers: {
+        'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ name: 'Pesho', age: 30, occupation: 'Developer' }) // Complete resource data
+})
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(err => console.log(err.message));
+```
+#### PATCH
+```javascript
+fetch('https://api.example.com/users/1', { // Include the specific resource ID if required
+    method: 'PATCH',
+    headers: {
+        'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ name: 'Pesho' }) // Partial update, e.g., just the name
+})
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(err => console.log(err.message));
+```
+#### DELETE
+```javascript
+fetch('https://api.example.com/resource', {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: 123 }) // Тяло, ако сървърът изисква
+})
+    .then(response => response.json())
+    .then(data => console.log('Response:', data))
+    .catch(error => console.error('Error:', error));
 ```
 
-За да сменим типа на заявката от default стойността GET на POST, трябва да ползваме втория параметър на `fetch()` - `RequestInit`. Трябва да посочим метода, header-a и тялото, като данните трябва да са `JSON.stringify()` под формата на JSON.
+Обикновено е достатъчно да се посочи само метода.
+## Async / Await
+Това е sugar синтаксис, който улеснява работата с промиси. Асинхронната функция е функция, която връща промис по default. Разликата между асинхронната функция и обикновената е ключовата дума `async`, което я прави асинхронна. Тези функции винаги връщат промис, каквато и стойност да сме посочили да се върне, бива облечена в промис. Ако искаме да вземем резултата, трябва да ползваме `.then()`.
 
+Полезността на тези функции идва от възможността да ползваме `await`. Всички функции, които връщат промиси, дори тези които не са `async`, може да ги resolve-нем, като използваме `await`, който работи само в `async` функции с изключение на top level await,който е добавен в по-новите версии на JS. Това позволява да използваме `await` директно в модули, без да е нужно да ги обвиваме в `async` функции. Когато ползваме `await` вътре във функцията, това което се случва е че кода спира да се изпълнява, докато промиса не бъде resolve-нат или reject-нат и чак тогава продължава асинхронното й изпълнение.
+
+```javascript
+// Basic syntax - always returns promise
+async function asyncFunc(text) {
+    return 'Pesho';
+}
+
+asyncFunc()
+    .then(result => console.log(`Promise - ${result}`));
+
+// Use await
+async function getResult() {
+    const result = await asyncFunc();
+
+    console.log(`Async function - ${result}`);
+}
+
+getResult();
+```
+
+`await` се ползва вместо `then()`. `async` функциите се изпълняват като синхронен код до момента в който се стигне до реда с `await`, където изпълнението се отлага докато промиса не бъде resolve-нат или reject-нат.
+
+Това ни позволява да изпълняваме `fetch` по-лесно:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWAPI</title>
+</head>
+
+<body>
+    <h1>SWAPI</h1>
+
+    <script>
+        // Fetch with async function
+        async function getSwCharacters() {
+            const url = 'https://swapi.dev/api/people';
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+
+                console.log(result);
+            } catch (err) {
+                console.log(err.message);
+            }
+        }
+
+        getSwCharacters(); 
+    </script>
+</body>
+
+</html>
+```
+
+Error handling-a се прави със стандартна try catch конструкция.
 # Misc
+## server
+В упражненията където имаме server и трябва да го стартираме, това се прави през терминала на VS Code, трябва да навигираме до директорията му с командата с `cd server` или да натиснем десен бутон на папката и да изберем опцията `Open in Integrated Terminal`, това отново ще ни отвори директорията на сървъра. След това, трябва да напишем командата `node .\server.js` с което го стартираме и трябва да го оставим да си работи.
+Сървъра, който сме стартирали, работи на порт :3030, това е API-то, а на порт :5500 работи нашия сървър, който дава нашия html file. Реално имаме два работещи сървъра, един предоставящ API-то, другия дава HTML file-овете, които искаме да получим. Това е стандартен setup, ако искаме повече информация как работи, може да отворим [softuni-practice-server/softuni-practice-server](https://github.com/softuni-practice-server/softuni-practice-server).=
+
+Не е задължително, но може да отворим и втори терминал като натиснем `+` в десния ъгъл на TERMINAL таба. Може да преименуваме втория терминал на `client`, за да е по-ясно.
 # ChatGPT
+## Client-Server Data Synchronization
+**Key aspects:**
+1. **Server as the Data Store**: The server acts as a central repository for your data. You send requests (GET, POST, PUT, DELETE) to interact with these objects on the server.
+2. **Editing and Storing Objects**: Whenever you need to modify or add new data (objects) on the server, you use methods like `POST`, `PUT`, or `PATCH`. The server processes these requests and stores the updated data.
+3. **Client-Side Interaction (DOM)**: On the client side, you fetch and manipulate these objects to construct and update your DOM elements dynamically. For instance, once you fetch data from the server using `GET`, you can loop through the response and create DOM elements to display the data.
+4. **Keeping Client and Server in Sync**: Ideally, whenever there’s an update on the server (whether via the client or another source), the client should reflect those changes in real-time. This ensures that the DOM is always in sync with the server's data, so any update, deletion, or addition of data on the server should trigger an update to the client’s view as well.
+5. **Real-Time Updates (Optional)**: In some cases, you can even use **websockets** or **long polling** for real-time synchronization, ensuring the client automatically receives updates whenever the server data changes.
+
+By maintaining this cycle of requesting data from the server and updating the DOM accordingly, your web app can stay consistent with the data on the server while providing a seamless experience to users.
 ## Synchronous vs. Asynchronous in Promises
 
 1. **Code Inside the Executor Function (`new Promise((resolve, reject) => { ... })`)**
@@ -1324,5 +1453,191 @@ fetch('https://example.com/api/data', requestOptions)
     - This design ensures the browser remains responsive during the request-response cycle.
 
 By combining a flexible request configuration with a Promise-based API, `fetch()` simplifies asynchronous HTTP operations, allowing developers to focus on handling responses and errors without worrying about blocking the main thread.
+When you use `fetch`, it internally creates and returns a **Promise**. This Promise represents the eventual completion or failure of an HTTP request. Here's what happens step by step:
+
+1. **Request Initiation**:  
+    The `fetch` function sends an HTTP request to the specified URL.
+2. **Internal Async Operation**:
+    - While the network request is in progress, `fetch` doesn't block your code.
+    - Instead, it immediately returns a **Promise**.
+3. **Resolution or Rejection**:
+    - If the request is successful (e.g., the server responds with a status code), the Promise is **resolved** with a `Response` object.
+    - If there’s a network error or the request fails (e.g., no internet), the Promise is **rejected** with an `Error`.
+
+For example:
+
+```javascript
+fetch('https://api.example.com/data')
+  .then(response => {
+    // The Promise is resolved; we have a Response object
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // This returns another Promise for parsing JSON
+  })
+  .then(data => {
+    console.log(data); // Successfully parsed data
+  })
+  .catch(error => {
+    // The Promise was rejected (e.g., network error or JSON parsing failed)
+    console.error('Fetch error:', error);
+  });
+```
+
+**Key Points:**
+
+- `fetch`'s internal async operation is what determines the state of the Promise.
+- A successful HTTP status code doesn't cause rejection — the Promise resolves regardless, but you need to check the `ok` property in the `Response` object for the actual status.
+## `async/await`
+The `async/await` syntax is specifically designed to simplify working with **Promises** and can only be used **inside** an `async` function. Here's how it works and why it's limited to `async` functions:
+
+**How `async/await` Works:**
+
+- **`async`**: When you mark a function as `async`, it implicitly returns a **Promise**. This means the function will always return a Promise, regardless of whether it explicitly returns one or not.
+- **`await`**: Inside an `async` function, you can use `await` to pause the execution of the function until a **Promise** is resolved. It makes the code look synchronous but still operates asynchronously.
+
+**Why It's Used Only Inside `async` Functions:**
+
+- **`await`** can only be used within `async` functions because the `async` function itself ensures that it always returns a Promise. This is essential because `await` waits for a Promise to resolve or reject before continuing execution.
+
+**Example of Using `async/await`:**
+
+```javascript
+async function fetchData() {
+    try {
+        const result = await getResult(); // wait for the Promise to resolve
+        console.log(result); // now we have the resolved value
+    } catch (err) {
+        console.error('Error:', err); // catch errors if the Promise is rejected
+    }
+}
+
+fetchData();
+```
+
+Here’s what happens:
+
+1. `await getResult()` pauses the execution of `fetchData()` until `getResult()` resolves or rejects.
+2. Once `getResult()` resolves, the `result` is returned, and the function continues.
+3. If the Promise rejects, the `catch` block will handle the error.
+
+**Why Can't You Use `await` Outside of `async` Functions?**
+
+- **Synchronous context**: `await` pauses the function execution, and the execution is only allowed to continue once the Promise resolves. This would block the main thread if used outside an `async` function, and JavaScript doesn’t allow that.
+- **Promise resolution**: Since an `async` function always returns a Promise, JavaScript knows that `await` can be used to ensure that the function execution is paused properly.
+
+**Alternative Without `async/await`:**
+
+If you're not using `async/await`, you would need to rely on `.then()` to handle the resolved value or errors:
+
+```javascript
+getResult().then(result => {
+    console.log(result); // resolved value
+}).catch(err => {
+    console.error(err); // error handling
+});
+```
+
+**Conclusion:**
+
+- **`async/await`** makes working with asynchronous code more readable and manageable, but it can **only** be used inside `async` functions.
+- **If you're outside of an `async` function**, you should use `.then()` and `.catch()` for handling Promises.
+
+So, the core idea is that `async/await` is a syntactic sugar for working with Promises in a more readable, linear style, and it can only be used inside an `async` function because only `async` functions can handle Promises in the first place.
+## Key Points About `async/await` and How It Works
+1. **`async` function**: When you declare a function as `async`, it automatically returns a **Promise**. Inside this function, you can use `await` to pause execution of that function until a **Promise** is resolved or rejected.
+    
+2. **`await`**: When `await` is used inside an `async` function, the function execution is **paused** at that point until the Promise is resolved or rejected. However, **the JavaScript thread is not blocked**; it continues executing other tasks in the event loop while waiting for the Promise to resolve.
+    
+3. **How Execution Works:**
+    - When an `async` function is called, it starts executing.
+    - When the `await` keyword is encountered, the function pauses at that point.
+    - The function **does not block the main thread**. Instead, it hands control back to the event loop, allowing other code (such as other asynchronous tasks) to run while it waits for the Promise.
+    - Once the Promise is resolved or rejected, the execution of the `async` function continues from where it was paused, and the resolved value (or the rejection reason) is used in the next line of code.
+
+**Let's Break Down the Example:**
+
+```javascript
+// Basic syntax
+async function asyncFunc(text) {
+    return 'Pesho';
+}
+
+asyncFunc()
+    .then(result => console.log(`Promise - ${result}`)); // Logs: "Promise - Pesho"
+
+// Use await
+async function getResult() {
+    console.log('Synchronious execution');  // Logs: "Synchronious execution"
+
+    const result = await asyncFunc();  // Execution pauses here until asyncFunc() resolves
+
+    console.log(`Async function - ${result}`);  // Logs: "Async function - Pesho"
+}
+
+getResult();  // Calls getResult(), starts executing it
+```
+
+**Step-by-Step Explanation:**
+
+1. **Calling `getResult()`**:
+    - The `getResult()` function starts executing.
+    - It first logs `'Synchronious execution'`.
+2. **Encountering `await`**:
+    - The `await asyncFunc()` line is encountered.
+    - **At this point, `getResult()` pauses** and waits for `asyncFunc()` to resolve.
+3. **What happens during the pause?**:
+    - The JavaScript **does not block** the main thread. While `getResult()` is paused, the event loop can process other tasks (including handling other asynchronous code, like logging the result of the `.then()` attached to `asyncFunc()`).
+4. **Resuming after Promise resolution**:
+    1. When `asyncFunc()` resolves instantly (returning `'Pesho'`), the execution of the `getResult()` function doesn't immediately resume. Instead:
+        - The **synchronous code** in the current execution stack must finish first.
+        - Any **pending tasks in the event queue** (like other resolved Promises, DOM events, etc.) are processed **before** the `getResult()` function resumes execution.
+        - Only after these steps is the Promise from `asyncFunc()` handled, allowing the `await` keyword to proceed.
+    2. After resuming the result from `asyncFunc()` (which is `'Pesho'`) is stored in `result`, and the line `console.log(`Async function - ${result}`)` is executed, logging `'Async function - Pesho'`.
+
+**To Clarify:**
+- **The main thread continues** while the function is waiting on `await`. This is important because it ensures that **other asynchronous tasks** (like rendering the UI or handling other events) are not blocked.
+- When the Promise is resolved (or rejected), the function picks up execution at the point where it was paused, continuing with the resolved value (or error).
+
+**To summarize:**
+- `await` pauses the function execution, but **only within the `async` function**. It allows other asynchronous tasks to run while waiting.
+- Once the awaited Promise resolves, execution picks up from where it paused, and the resolved value is used.
+## Custom Attributes Naming
+According to the HTML standard, custom attributes on elements should begin with `data-`. This convention is defined to ensure that custom attributes do not interfere with future HTML specifications, as new attributes could be introduced by the standard in the future.
+
+The custom attributes should follow this pattern:
+
+```html
+<div data-my-custom-attribute="value"></div>
+```
+
+**Key Points:**
+
+- The `data-` prefix is required for any custom attribute.
+- After `data-`, you can choose any name for the attribute, but it should only contain lowercase letters, numbers, hyphens, and underscores.
+- These attributes can store extra information that is not part of the standard HTML specification.
+- They are accessible via JavaScript using the `dataset` property.
+
+For example:
+
+```html
+<div data-user-id="123" data-role="admin"></div>
+```
+
+In JavaScript, you can access these values like this:
+
+```javascript
+const div = document.querySelector('div');
+console.log(div.dataset.userId);  // "123"
+console.log(div.dataset.role);    // "admin"
+```
+
+This approach keeps the HTML valid and avoids conflicts with future attributes.
 # Bookmarks
+[softuni-practice-server/softuni-practice-server](https://github.com/softuni-practice-server/softuni-practice-server) - информация как работи practice server-a на SoftUni.
+
+[Code Complete: A Practical Handbook of Software Construction, Second Edition: McConnell, Steve: 0790145196705: Amazon.com: Books](https://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670) - препоръчана от Ивайло Папазов.
+
+[SWAPI - The Star Wars API](https://swapi.dev/) - Star Wars RESTful API Training Tool.
+
 Completion: 06.12.2024
