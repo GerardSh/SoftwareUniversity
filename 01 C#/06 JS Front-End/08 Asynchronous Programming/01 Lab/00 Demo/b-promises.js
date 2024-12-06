@@ -22,3 +22,38 @@ marriagePromise
     .finally(() => {
         console.log('Pay the wedding');
     });
+
+// Promise all - if one rejects all are rejected
+Promise.all([
+    marriagePromise,
+    Promise.resolve('Some promise resolved'),
+    'Pesho',
+    // Promise.reject('failed operation'),
+    20,
+])
+    .then((result) => {
+        console.log(result);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+// Promise allSettled - some may reject
+Promise.allSettled([
+    marriagePromise,
+    Promise.resolve('Some promise resolved'),
+    'Pesho',
+    Promise.reject('failed operation'),
+    20,
+])
+    .then((result) => {
+        console.log(result);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+// Promise.race() - resolves the fastest
+
+
+

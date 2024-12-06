@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch API</title>
+</head>
+
+<body>
+    <h1>Fetch API</h1>
+
+    <button id="load-button">Load</button>
+    <ul class="object-list"></ul>
+
+    <form id="object-form">
+        <label for="object-name">Object Name</label>
+        <input type="text" id="object-name" name="name" />
+        <input type="submit" value="Create" />
+    </form>
+    <script>
+        const baseUrl = 'https://api.restful-api.dev/objects';
+        const loadButton = document.querySelector('#load-button');
+        const ulElement = document.querySelector('.object-list');
+        const objectForm = document.querySelector('#object-form');
+
+        loadButton.addEventListener('click', fetchObjects);
+        objectForm.addEventListener('submit', createObjectHandler)
+
+        function createObjectHandler(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.currentTarget);
+            const name = formData.get('name');
+
+            fetch(baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({ name })
+            })
+                .then(response => response.json())
+                .then(result => {
+                    ulElement.appendChild(createObjectElement(result));
+                })
+        }
+        function createObjectElement(obj) {
+            const liElement = document.createElement('li');
+            liElement.textContent = obj.name;
+
+            return liElement;
+        }
+        function fetchObjects() {
+            // Messy fetch
+            // const responsePromise = fetch(baseUrl);
+
+            // responsePromise
+            //     .then(response => {
+            //         response.json()
+            //             .then(result => {
+            //                 console.log(result);
+            //             })
+            //     });
+
+            // Clean fetch
+            fetch(baseUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        // Error handling
+                        throw Error('Something went wrong');
+                    }
+
+                    return response.json();
+                })
+                .then(result => ulElement.append(...result.map(createObjectElement)))
+                .catch(err => console.log(err.message))
+        }
+    </script>
+</body>
+
+</html>
