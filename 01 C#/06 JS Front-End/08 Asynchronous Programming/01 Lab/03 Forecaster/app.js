@@ -6,7 +6,7 @@ function attachEvents() {
 
     inputTextEl = document.querySelector('#location')
     inputEl = document.querySelector('#submit');
-    inputEl.addEventListener('click', fetchWeather);
+    inputEl.addEventListener('click', forecastHandler);
 
     const iconMap = {
         sunny: '&#x2600',
@@ -16,7 +16,7 @@ function attachEvents() {
         degrees: '&#176',
     }
 
-    function fetchWeather() {
+    function forecastHandler() {
         let locationName = inputTextEl.value;
         inputTextEl.value = '';
         forecastEl.style.display = 'block';
