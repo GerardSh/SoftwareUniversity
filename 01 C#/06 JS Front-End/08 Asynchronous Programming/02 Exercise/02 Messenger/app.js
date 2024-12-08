@@ -29,8 +29,6 @@ function attachEvents() {
     }
 
     function refreshHandler() {
-        textAreaEl.textContent = '';
-
         fetch(BASE_URL)
             .then(res => res.json())
             .then(res => {
