@@ -85,14 +85,3 @@ function solve(input) {
         return chemicals.find(x => x.chemicalName === name);
     }
 }
-
-solve(['3',
-    'Sodium # 300',
-    'Chlorine # 100',
-    'Hydrogen # 200',
-    'Mix # Sodium # Chlorine # 200',
-    'Replenish # Sodium # 250',
-    'Add Formula # Sulfuric Acid # H2SO4',
-    'Add Formula # Sodium # Na',
-    'Mix # Hydrogen # Chlorine # 50',
-    'End']);
