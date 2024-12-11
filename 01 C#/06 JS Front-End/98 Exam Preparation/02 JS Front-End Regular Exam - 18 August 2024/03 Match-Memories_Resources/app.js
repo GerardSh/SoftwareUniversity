@@ -116,6 +116,7 @@ function editHandler() {
         .catch(err => console.log(err.message));
 }
 
+// Delete Handler
 function deleteHandler(liEl) {
     liEl.remove();
     currentObjectId = liEl.getAttribute('_id');
