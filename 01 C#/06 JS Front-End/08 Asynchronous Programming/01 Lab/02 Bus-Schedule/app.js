@@ -8,9 +8,9 @@ function solve() {
     let currentStopName = '';
 
     function depart() {
-        disableOrEnableButtons(departEl, arriveEl);
+        disableOrEnableButtons();
         arriveEl.disabled = false;
-        debugger;
+
         fetch(baseURL + currentStopId)
             .then(response => response.json())
             .then(result => {
@@ -26,13 +26,13 @@ function solve() {
     }
 
     async function arrive() {
-        disableOrEnableButtons(departEl, arriveEl);
+        disableOrEnableButtons();
         infoEl.textContent = `Arriving at ${currentStopName}`;
     }
 
-    function disableOrEnableButtons(button, button2) {
-        button.disabled = !button.disabled;
-        button2.disabled = !button.disabled;
+    function disableOrEnableButtons() {
+        departEl.disabled = !departEl.disabled;
+        arriveEl.disabled = !arriveEl.disabled;
     }
 
     function disableButtons() {
