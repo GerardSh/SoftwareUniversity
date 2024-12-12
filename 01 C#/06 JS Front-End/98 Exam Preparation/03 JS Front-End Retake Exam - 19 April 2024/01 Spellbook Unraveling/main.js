@@ -16,7 +16,7 @@ function solve(input) {
             }
                 break;
             case 'TakePart': {
-                let [startIndex, endIndex] = [Number(arg[0]), Number(arg[1])]
+                let [startIndex, endIndex] = [Number(arg[0]), Number(arg[1])];
 
                 if (startIndex < 0 || endIndex > spell.length || startIndex > endIndex) {
                     continue;
