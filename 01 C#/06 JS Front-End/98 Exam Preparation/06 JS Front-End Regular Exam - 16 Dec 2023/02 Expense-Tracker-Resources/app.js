@@ -20,6 +20,7 @@ function solve() {
     document.querySelector('button.btn.delete').addEventListener('click', () => {
         ulFirstEl.textContent = '';
         ulSecondEl.textContent = '';
+		formEl.reset();
     })
 
     // Add Handler
