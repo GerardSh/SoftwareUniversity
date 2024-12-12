@@ -5,7 +5,7 @@ function solve() {
     const ulFirstEl = document.querySelector('ul#task-list');
     const ulSecondEl = document.querySelector('ul#done-list');
 
-    // Form Elements
+    // Form Element
     const formEl = document.querySelector('form');
 
     const firstInputEl = document.querySelector('input#place');
@@ -13,10 +13,10 @@ function solve() {
     const thirdInputEl = document.querySelector('input#person');
 
     // Button Elements
-    const addBtnEl = document.querySelector('input#add-btn')
+    const addBtnEl = document.querySelector('input#add-btn');
 
-    // Adding Handler
-    addBtnEl.addEventListener('click', addHandler)
+    // Adding Handlers
+    addBtnEl.addEventListener('click', addHandler);
 
     // Add Handler
     function addHandler(e) {
@@ -43,7 +43,7 @@ function solve() {
         const btnDoneEl = createEl('button', divBtnsEl, 'Done', ['done']);
 
         btnEditEl.addEventListener('click', editHandler);
-        btnDoneEl.addEventListener('click', doneHandler)
+        btnDoneEl.addEventListener('click', doneHandler);
 
         // Edit Handler
         function editHandler() {
