@@ -40,7 +40,7 @@ function loadButtonHandler() {
                 createEl('p', divEl, host);
                 createEl('p', divEl, score);
                 createEl('p', divEl, guest);
-                const divBtnEl = createEl('div', liEl, undefined, ['btn-wrapper']);
+                const divBtnEl = createEl('div', liEl, null, ['btn-wrapper']);
                 const btnChangeEl = createEl('button', divBtnEl, 'Change', ['change-btn']);
                 const btnDeleteEl = createEl('button', divBtnEl, 'Delete', ['delete-btn']);
 
@@ -70,13 +70,11 @@ function loadButtonHandler() {
                         }
                     })
                         .then(loadButtonHandler)
-                        .catch(error => console.error(error));
+                        .catch(err => console.log(err));
                 }
             })
         })
-        .catch(err => {
-            console.log(err);
-        })
+        .catch(err => console.log(err));
 }
 
 // Add Handler
@@ -101,7 +99,7 @@ function addHandler() {
         })
     })
         .then(loadButtonHandler)
-        .catch(err => console.error(err));
+        .catch(err => console.log(err));
 }
 
 // Edit Handler
@@ -125,7 +123,7 @@ function editHandler() {
             inputDOMSelectors.form.reset();
         }
         )
-        .catch(err => console.error(err));
+        .catch(err => console.log(err));
 }
 
 // Type = string
