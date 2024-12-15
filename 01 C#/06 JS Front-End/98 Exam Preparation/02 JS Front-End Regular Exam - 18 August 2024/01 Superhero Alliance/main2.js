@@ -13,7 +13,7 @@ function solve(input) {
         return agg;
     }, {})
 
-    while (input != 'Evil Defeated!') {
+    while (input[0] != 'Evil Defeated!') {
         const [command, name, ...arg] = input.shift().split(' * ');
         const currentHero = heroes[name];
 
