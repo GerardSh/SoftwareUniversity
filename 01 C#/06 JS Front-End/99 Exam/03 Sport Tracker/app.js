@@ -34,11 +34,11 @@ function loadButtonHandler() {
             otherDOMSelectors.editBtn.disabled = true;
 
             objects.forEach(({ workout, location, date, _id }) => {
-                const divEl = createEl('li', otherDOMSelectors.list, null, ['container']);
-                createEl('h2', divEl, workout);
-                createEl('h3', divEl, date);
-                createEl('h3', divEl, location, null, null, 'location');
-                const divBtnEl = createEl('div', divEl, null, ['buttons-container']);
+                const liEl = createEl('li', otherDOMSelectors.list, null, ['container']);
+                createEl('h2', liEl, workout);
+                createEl('h3', liEl, date);
+                createEl('h3', liEl, location, null, null, 'location');
+                const divBtnEl = createEl('div', liEl, null, ['buttons-container']);
                 const btnChangeEl = createEl('button', divBtnEl, 'Change', ['change-btn']);
                 const btnDeleteEl = createEl('button', divBtnEl, 'Done', ['delete-btn']);
 
