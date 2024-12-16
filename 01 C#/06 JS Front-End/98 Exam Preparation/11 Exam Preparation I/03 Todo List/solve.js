@@ -31,7 +31,7 @@ function loadButtonHandler(e) {
             const objects = Object.values(res);
 
             objects.forEach(({ name, _id }) => {
-                const liEl = createEl('li', otherDOMSelectors.list, null);
+                const liEl = createEl('li', otherDOMSelectors.list);
                 const buttonEl = createEl('span', liEl, name);
                 const btnRemoveEl = createEl('button', liEl, 'Remove');
                 const btnEditEl = createEl('button', liEl, 'Edit');
@@ -67,7 +67,7 @@ function loadButtonHandler(e) {
                     }
                 }
 
-                // Delete Handler
+                // Remove Handler
                 function removeHandler() {
                     if (e) e.preventDefault();
 

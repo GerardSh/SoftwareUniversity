@@ -57,8 +57,8 @@ function loadButtonHandler(e) {
                     otherDOMSelectors.addBtn.disabled = true;
 
                     inputDOMSelectors.product.value = product;
-                    inputDOMSelectors.price.value = price;
                     inputDOMSelectors.count.value = count;
+                    inputDOMSelectors.price.value = price;
 
                     currentObjectId = _id;
                 }
@@ -100,8 +100,8 @@ function addHandler(e) {
         },
         body: JSON.stringify({
             product,
-            price,
-            count
+            count,
+            price
         })
     })
         .then(() => loadButtonHandler())
