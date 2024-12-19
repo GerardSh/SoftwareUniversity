@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Event Tracker</title>
+  </head>
+  <body>
+    <h1>Event Tracker</h1>
+    <main id="main">
+      <div id="main-container">
+        <div id="form-container">
+          <form class="event-content">
+            <label for="event">Event Name</label>
+            <input type="text" id="event" />
+            <label for="note">Short Note</label>
+            <input type="text" id="note" />
+            <label for="date">Event Date</label>
+            <input type="date" id="date" />
+
+            <button type="button" id="save">Save</button>
+          </form>
+        </div>
+      </div>
+      <div id="right-container">
+        <div id="upcoming">
+          <h2>Upcoming</h2>
+          <ul id="upcoming-list">
+            <!-- <li class="event-item">
+              <div class="event-container">
+                <article>
+                <p>Name: IMAGINE DRAGONS</p>
+                  <p>Note: Vasil Levski National Stadium, Sofia</p>
+                  <p>Date: 2023-07-30</p>
+              </article>
+                <div class="buttons">
+                  <button class="btn edit">Edit</button>
+                  <button class="btn done">Done</button>
+                </div>
+              </div>
+            </li> -->
+          </ul>
+        </div>
+        <div id="events">
+          <h2>Ended</h2>
+          <ul id="events-list">
+            <!-- <li class="event-item">
+              <article>
+                <p>Name: IMAGINE DRAGONS</p>
+                  <p>Note: Sofia - National Stadium</p>
+                  <p>Date: 2023-07-30</p>
+              </article>
+            </li> -->
+          </ul>
+          <button class="btn delete">Delete</button>
+        </div>
+      </div>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
