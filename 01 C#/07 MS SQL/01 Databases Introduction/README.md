@@ -51,12 +51,153 @@ SQL е декларативен език, за разлика от повече�
 
 Една от основните цели при работата с бази данни е оптималното съхранение на възможно най-много данни в минимален обем. Типовете данни играят ключова роля в това – те позволяват информацията да заема точно толкова място, колкото е необходимо. Затова е от съществено значение да се избират правилно типовете данни, за да се минимизира физическото пространство, което базата заема върху диска.
 ## Database Modelling - Data Definition Using SSMS
-За да създадем нова база данни в SSMS, е необходимо да цъкнем с десен бутон върху Databases и да изберем New Database. След това трябва да зададем име на базата данни, собственик, както и местоположението за съхранение на файловете. Може да се конфигурира началният размер на файловете, стъпката на нарастване при достигане на зададените граници, както и да се определи таван за максималния растеж на файловете.
+За да създадем нова база данни в SSMS, е необходимо да цъкнем с десен бутон върху Databases и да изберем New Database. След това трябва да зададем име на базата данни, собственик, както и местоположението за съхранение на файловете. Може да се конфигурира началният размер на файловете, стъпката на нарастване при достигане на зададените граници, както и да се определи таван за максималния растеж на файловете. Ако изберем базата да расте с малки стъпки и това се случва често, ще има значително забавяне. По-добре е да расте по-рядко, но с по-голям обем.
 
+Може да се избере Collation, който в SQL Server определя как се сравняват и сортират текстови данни. То включва:
+Чувствителност към големи и малки букви:
+- CI (Case Insensitive): не разграничават "a" и "A".
+- CS (Case Sensitive): разграничават "a" и "A".
+Чувствителност към акценти:
+- AI (Accent Insensitive): не разграничават "e" и "é".
+- AS (Accent Sensitive): разграничават "e" и "é".
 
+Collation се задава на ниво база данни, таблица или колона и влияе на сортирането и сравняването на текстови стойности.
+
+Recovery model в SQL Server определя как се управляват и записват транзакциите в transaction log файла.
+### Creating Tables
+Когато създадем базата данни, трябва да й добавим таблици. Създават се с десен клик на папката Tables в базата данни  New => Table.
+Името на таблицата се въвежда когато натиснем Save или да го въведем в Properties Window (F4). Добре е да се попълва и description, това помага и при генерирането на документация за базата данни.
+Имената по конвенция, трябва да са в множествено число, защото са колекция. При SQL server се спазва PascalCase.
+
+Когато създаваме колони, трябва да се избере една от тях като primary key. Primary key-a е нещо което идентифицира еднозначно entity-то. По него винаги може да намерим конкретното entity, което ни трябва, защото винаги е уникален. От опциите на колоната, в Identity Specification => Is Identity трябва да изберем yes, като Increment и Seed отговарят от каква стойност да започнат и с колко да се увеличават, при добавяне на нов запис. Това са стъпките за всеки първичен ключ, ако той е цяло число.
+Не може да задаваме стойности на Identity, освен чрез специална команда, но не се препоръчва.
+
+Желателно е да се въвежда description за всяка колона.
+
+При имената на колоните отново са спазва PascalCase.
+Трябва да се избере и типа на колоната, както и дали разрешаваме Nulls.
+
+Създаването на таблиците, може да стане и чрез SQL. Ако натиснем десен бутон върху дадена таблица => Script Table as => CREATE To => New Query Editor Window ще ни генерира необходимия код за създаване на таблицата автоматично.
+
+Когато създаваме нови бази и таблици, понякога може да не се появят в менюто и трябва да се натисне върху Databases папката => refresh, а ако е таблица трябва да се refresh-не папката с таблици.
+### Storing Data
+Ръчното създаването на entity в таблицата става с десен бутон върху нея => Edit Top 200 Rows, въвеждане на данните.
+Типовете данни в базите контролират не само размера на съхраняваните данни, но и каква информация може да бъде записана. Например, опитът да се въведе текст в колона от числов тип ще доведе до грешка, тъй като не е възможно автоматично конвертиране от текст към число. Обратно, числовите стойности могат да бъдат записани в колона от текстов тип, тъй като числата могат да бъдат интерпретирани като стринг.
+Трябва да се има предвид, че в дадени ситуации може да прескочи Id номер, примерно ако се опитаме да въведем запис без цялата задължителна информация, ще даде грешка, но това ще се води като използван Id номер и следващия запис ще започне от следващия номер.
+### Retrieving Data
+С десен бутон върху таблицата => Select Top 1000 Rows.
+### Altering Tables
+С десен бутон върху таблицата => Design.
+Може да се добавят колони, да се сменят типове данни и тн.
+Ако искаме да добавим колони след като сме създали таблица и тя вече съдържа данни, трябва новите колони или да разрешават Null или да имат default стойност.
+## SQL Queries
+Може да комуникираме с database engine-a ползвайки SQL.
+Заявките дават повече контрол и гъвкавост, поради което се използват много повече от ръчното въвеждане в SSMS.
+
+SQL keywords традиционно са с главни букви, въпреки че и с малки букви би работило.
+
+Квадратните скоби около имената на колони и таблици не са задължителни, освен ако името съвпада със служебна дума или съдържа специални символи. Когато имаме дублиране между име на колона и служебна дума, примерно искаме да кръстим колоната Date, но понеже има и тип Date, тогава името на колоната трябва да е задължително в квадратни скоби.
+
+Списък със заявки има в папката с ресурси във файла за SQL.
 # Misc
 
 # ChatGPT
+## SQL
+**SQL (Structured Query Language)** is the standard language used by most relational database servers like **PostgreSQL**, **MySQL**, **SQL Server**, **Oracle**, and others. These databases use SQL as the primary way to interact with and manage the data, but there are some differences in how they implement the SQL standard.
+
+**Key Points About SQL in Different Database Servers:**
+
+1. **SQL is Standardized**:  
+    The SQL language has a standard defined by organizations like ANSI (American National Standards Institute) and ISO. This standard includes basic operations like querying, inserting, updating, and deleting data.
+2. **Dialect Variations**:  
+    Each database server has its own SQL **dialect** with unique extensions or features that go beyond the standard:
+    - **PostgreSQL**: Offers advanced features like window functions, JSON support, and full-text search.
+    - **MySQL**: Known for its simplicity and popularity in web applications, with features like replication.
+    - **SQL Server**: Extends SQL with **Transact-SQL (T-SQL)**, offering features like stored procedures and triggers.
+    - **Oracle**: Uses **PL/SQL**, a powerful procedural language for complex operations.
+3. **Core SQL Features**:  
+    Despite dialect differences, the fundamental SQL operations (like `SELECT`, `INSERT`, `UPDATE`, and `DELETE`) are consistent across most databases.
+4. **Non-Relational Databases**:  
+    While SQL is dominant in relational databases, some non-relational (NoSQL) databases, like MongoDB, use other languages or query methods.
+
+**Example of Differences:**
+
+A simple query like this works almost identically in most databases:
+
+```sql
+SELECT * FROM Employees WHERE Age > 30;
+```
+
+However, advanced queries or features, such as querying JSON data, might differ:
+
+- **PostgreSQL**:
+
+```sql
+SELECT data->>'name' FROM employees WHERE data->>'age' > '30';
+```
+
+- **MySQL**:
+
+```sql
+SELECT JSON_UNQUOTE(JSON_EXTRACT(data, '$.name')) FROM employees WHERE JSON_EXTRACT(data, '$.age') > 30;
+```
+
+**Conclusion:**
+
+SQL is the backbone of relational databases, but understanding the specific dialect of the database server you are using is essential for leveraging its full capabilities.
+## Tables Similar to Arrays with Objects
+When we create tables, can we look at them as objects with properties inside an array?
+
+**ChatGPT said:**
+
+Yes, you can think of database tables as objects with properties (or fields) inside an array when working with programming concepts or ORM (Object-Relational Mapping) systems. Here's how this analogy works:
+1. **Table as an Array**:
+    - A table is conceptually similar to an array (or list in C#).
+    - Each row in the table is equivalent to an element in the array.
+2. **Row as an Object**:
+    - Each row in the table can be represented as an object.
+    - The columns in the table act as properties of the object, with the column values being the property values.
+
+**Table Representation:**
+
+|ID|Name|Age|
+|---|---|---|
+|1|John|30|
+|2|Alice|25|
+
+**JavaScript Equivalent:**
+
+```javascript
+const table = [
+  { ID: 1, Name: "John", Age: 30 },
+  { ID: 2, Name: "Alice", Age: 25 }
+];
+```
+
+**C# Equivalent:**
+
+```csharp
+var table = new List<dynamic>
+{
+    new { ID = 1, Name = "John", Age = 30 },
+    new { ID = 2, Name = "Alice", Age = 25 }
+};
+```
+
+**Why This Analogy Works:**
+
+- **Table = Collection of Rows:** Tables group data in rows, just like an array groups objects or elements.
+- **Row = Object:** Each row encapsulates specific data, just like an object encapsulates properties.
+- **Column = Property:** Columns define the schema (structure) of the data, just like properties define an object's shape.
+
+**Practical Use:**
+
+- **JavaScript with Arrays of Objects**:
+    - When fetching data from a database (e.g., via `SELECT * FROM`), you'll often work with arrays of objects in JavaScript.
+- **C# with Entity Framework**:
+    - Tables map to classes, rows to objects, and columns to class properties.
+
+This perspective is especially useful when working with APIs, ORMs, or modern frameworks, as it aligns the relational data with object-oriented or JSON-based paradigms.
 
 # Bookmarks
 
