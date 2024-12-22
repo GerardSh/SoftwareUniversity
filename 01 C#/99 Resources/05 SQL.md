@@ -15,7 +15,6 @@ LastName VARCHAR(50),
 ```
 
 ---
-
 `SELECT * FROM MyTable` - взимане на всички записи в посочената таблица. Ако искаме определени колони, трябва да ги изредим.
 
 ---
@@ -30,9 +29,7 @@ FROM Employees
 WHERE FirstName = 'Gerard'
 ORDER BY LastName ASC;
 ```
-
 ---
-
 `ALTER TABLE` позволява промени в структурата на съществуваща таблица.
 
 - **Добавяне на колона**
@@ -84,5 +81,4 @@ ALTER TABLE TableName
 ADD CONSTRAINT FK_ConstraintName
 FOREIGN KEY (ColumnName) REFERENCES ReferencedTableName(ReferencedColumnName);
 ```
-
 ---
