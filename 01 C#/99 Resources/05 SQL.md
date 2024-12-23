@@ -1,12 +1,12 @@
 `CREATE DATABASE DatabaseName` - за създаване на база данни.
 
 ---
-Създава таблицa. С `PRIMARY KEY` се прави дадена колона да е primary key-a, а `NOT NULL` означава че искаме полето да е задължително:
+Създава таблицa. С `PRIMARY KEY` се прави дадена колона да е primary key-a, `NOT NULL` означава че искаме полето да е задължително. `IDENTITY` автоматично генерира стойности за тази колона, които започват от 1 и се увеличават с 1 (по подразбиране). Може да сложим и други стойности с `IDENTITY(Seed, Increment)`:
 
 ```sql
 CREATE TABLE People
 (
-Id INT PRIMARY KEY,
+Id INT PRIMARY KEY IDENTITY,
 Email VARCHAR(50) NOT NULL,
 FirstName VARCHAR(50),
 LastName VARCHAR(50),
@@ -91,4 +91,10 @@ VALUES
     (2, 'Plovdiv'),
     (3, 'Varna');
 ```
+---
+`TRUNCATE TABLE MyTable` - изтрива записите, но не изтрива самата таблица.
+
+---
+`DROP TABLE MyTable` - изтрива таблицата.
+
 ---
