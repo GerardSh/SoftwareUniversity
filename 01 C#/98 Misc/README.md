@@ -1856,6 +1856,468 @@ In JavaScript, once a variable is assigned an object, accessing non-existing pro
 In contrast, trying to access a property on an uninitialized (or unassigned) variable triggers a `ReferenceError` because JavaScript can't find a reference to it in memory. C#’s stricter approach reflects its static typing, so attempting to access an undefined property throws an error in both cases to ensure type safety.
 
 This flexibility in JavaScript can be convenient but also requires careful handling to avoid runtime issues, especially in large applications.
+### Key Difference Between JavaScript and C# on Redeclaring Variables:
+
+- **JavaScript (with `let` and `const`)**: Allows redeclaring variables within different blocks (e.g., `if` or `for` loops) because they are block-scoped.
+- **C#**: Does not allow redeclaring variables in the same scope, even within inner blocks like `if` or `for`. Redeclaring a variable in the same scope results in a compiler error.
+
+**JavaScript Example (Valid):**
+
+```javascript
+let movieName = "Inception";
+if (true) {
+    let movieName = "Titanic";  // No error, block-scoped
+    console.log(movieName);  // Output: Titanic
+}
+console.log(movieName);  // Output: Inception
+```
+
+**C# Example (Error):**
+
+```csharp
+public void TestMethod() 
+{
+    string movieName = "Inception";
+
+    if (true) 
+    {
+        string movieName = "Titanic";  // Error: Redeclaration of 'movieName'
+    }
+
+    Console.WriteLine(movieName);
+}
+```
+### PUT Request Id Duplication
+Why the primary ID at the top of the object is not needed, when making a request?
+For example:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "CATAN-Rise of Inkas",
+    "type": "Eurogame",
+    "players": "4",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+```
+
+**ChatGPT said:**
+
+Great question! Here's why the **primary ID on top** (in your JSON object) isn't used in the `PUT` request body and why it's sufficient to include only the `_id` field **inside** the object.
+
+1. **Structure of the Database**
+
+The primary ID (the key on top, like `07f260f4-466c-4607-9a33-f7273b24f1b4`) is part of the **container (collection)** structure, not the specific object being updated. Here's the distinction:
+
+- The key (`07f260f4-466c-4607-9a33-f7273b24f1b4`) identifies **where the object is stored** in the database or JSON store.
+- The object inside the key (e.g., `{"name": "CATAN-Rise of Inkas", ...}`) is **what you are updating**.
+
+Including the `_id` inside the object ensures that the object knows its own identifier, which is necessary for maintaining consistency.
+
+2. **Separation of Concerns**
+
+- **Key (on top)**: Used by the database to locate and access the object.
+- **Object (inside)**: Represents the actual data to be updated.
+
+When making a `PUT` request, the endpoint already specifies **which key to update**. For example:
+
+```javascript
+fetch(`${BASE_URL}/${currentGameId}`, { ... });
+```
+
+Here:
+
+- `currentGameId` tells the server which key (primary ID) to target.
+- The object body (`{name, type, players, _id}`) tells the server what to modify.
+
+3. **Avoiding Redundancy**
+
+Including the primary ID (key) both in the URL and the request body is redundant because:
+
+1. The URL specifies **which key to update**.
+2. The `_id` field inside the body is used only for internal consistency, such as maintaining relational data.
+
+If you try to send the primary ID as part of the body structure, it could create conflicts or unnecessary duplication.
+
+4. **Practical Example**
+
+**Database Structure**
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "CATAN-Rise of Inkas",
+    "type": "Eurogame",
+    "players": "4",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+}
+```
+
+`PUT` Request
+
+You already target the key (`07f260f4-466c-4607-9a33-f7273b24f1b4`) with the URL:
+
+```javascript
+fetch(`${BASE_URL}/${currentGameId}`, { ... });
+```
+
+The body needs only:
+
+```json
+{
+  "name": "Updated Game Name",
+  "type": "Updated Type",
+  "players": "5",
+  "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+}
+```
+
+The server uses the **URL key** to locate the object and the `_id` field inside the body to verify and keep consistency.
+
+5. **Why Not Include the Top-Level ID in the Body?**
+
+If you were to include the full structure (key + object), it would look like this:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "Updated Game Name",
+    "type": "Updated Type",
+    "players": "5",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+}
+```
+
+The issue is:
+
+1. The server would need to parse and extract the key.
+2. It's redundant because the URL already specifies the key.
+
+By using just the inner object:
+
+```json
+{
+  "name": "Updated Game Name",
+  "type": "Updated Type",
+  "players": "5",
+  "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+}
+```
+
+You're simplifying the update process.
+
+**TL;DR**
+
+- The **key on top** (in the JSON structure) is part of the collection and used to locate the object (via the URL).
+- The **object inside** is all you need for the update.
+- Including both is unnecessary and can cause redundancy or parsing errors.
+
+**You said:**
+
+Why when the key on top is always present, even if there is no internal id which was our issue, why the server does not know which object to update?
+
+**ChatGPT said:**
+
+Great follow-up! The key concept you're referring to is the **primary key** (`07f260f4-466c-4607-9a33-f7273b24f1b4`) at the top of the object. The issue comes down to **how the server interprets the request** and how it matches data based on that key. Here's a breakdown of what's happening:
+
+1. **Key as the Identifier**
+
+In your original structure:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "CATAN-Rise of Inkas",
+    "type": "Eurogame",
+    "players": "4"
+  }
+}
+```
+
+The key (`"07f260f4-466c-4607-9a33-f7273b24f1b4"`) uniquely identifies the object in your database or storage. The problem arises when an object **does not have an `_id` field**, like this:
+
+```json
+{
+  "name": "CATAN-Rise of Inkas",
+  "type": "Eurogame",
+  "players": "4"
+}
+```
+
+Here, the object **doesn't include its own `_id` field**, which is often expected by the server to update or validate the object.
+
+2. **Server's Perspective**
+
+When you're making a `PUT` request to update an object:
+
+```javascript
+fetch(`${BASE_URL}/${currentGameId}`, { ... })
+```
+
+The server uses the URL (which contains `currentGameId`, e.g., `07f260f4-466c-4607-9a33-f7273b24f1b4`) to **identify which object to update**.
+
+However, if the body of your `PUT` request is missing the `_id` (e.g., when updating an object that originally lacks an ID), the server might:
+
+- Not find the object correctly during the update operation, because the **ID** field inside the object itself is **missing**.
+- Have trouble verifying that the correct object is being modified, especially if there’s no internal `_id` to match to the URL or reference.
+
+3. **Why Should You Include the `_id` Field Inside the Object?**
+
+The primary reason for including `_id` in the object is for **data integrity** and **validation**:
+
+- The server may use the `_id` to check whether the object in the request body is consistent with the ID expected for the given URL.
+- It helps the server verify that the **correct object** is being modified and prevents errors where data might be accidentally overwritten or updated inappropriately.
+
+When the server sees this:
+
+```json
+{
+  "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4",
+  "name": "Updated Game Name",
+  "type": "Updated Type",
+  "players": "5"
+}
+```
+
+It knows:
+
+- Which object to update (`_id` matches the one in the URL).
+- The data being updated (the name, type, players, etc.).
+
+4. **Scenario Without `_id` in the Object**
+
+Without an `_id`, like this:
+
+```json
+{
+  "name": "Updated Game Name",
+  "type": "Updated Type",
+  "players": "5"
+}
+```
+
+The server might struggle because:
+
+- It **cannot confirm** whether the object in the body matches the correct object in the database.
+- It can’t check whether the request is valid because it doesn’t know what ID it should be looking for in the body.
+
+5. **Why Does the Server Need Both?**
+
+- **URL**: Specifies the object in the collection.
+- **Body (with `_id`)**: Ensures the integrity of the data being updated, confirming you're updating the right object.
+
+Without the `_id`, even if the key exists on the URL, the server can't fully trust the data integrity or know which object to update, because it can't verify the object against the data in the body.
+
+6. **In Summary**
+
+- **The primary ID in the URL** tells the server **where** to find the object to update.
+- The **_id inside the object** ensures **data consistency**, allowing the server to verify that the correct object is being updated, and preventing errors or overwrites.
+
+If the object doesn't have an `_id` but is being used to update a specific object, the server can't confirm that the object you're sending is the correct one. Including the `_id` in the body **allows the server to verify and track the object**, making sure you're modifying the correct data.
+
+**You said:**
+
+so you mean there is possibility for the container to contain more objects?
+
+**ChatGPT said:**
+
+Yes, exactly! When you send a request to update a resource, it's possible for the container (or the data structure) to contain **multiple objects**. This is particularly true when you're working with collections or databases where each object is uniquely identified by its ID.
+
+Here's how it works:
+
+1. **Container with Multiple Objects**
+
+In your case, the container (such as the database or the body of your API request) could contain multiple objects, each identified by a unique ID. For example:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "CATAN-Rise of Inkas",
+    "type": "Eurogame",
+    "players": "4",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  },
+  "bdabf5e9-23be-40a1-9f14-9117b6702a9d": {
+    "name": "Exploding Kittens-Original",
+    "type": "Cards",
+    "players": "5",
+    "_id": "bdabf5e9-23be-40a1-9f14-9117b6702a9d"
+  }
+}
+```
+
+Here, each key (such as `"07f260f4-466c-4607-9a33-f7273b24f1b4"`) represents a unique object, and these objects are stored in a container (the main JSON object).
+
+2. **How the Server Handles This**
+
+When you're updating an object, the server needs to:
+
+- Identify the object to update based on the **ID** in the URL (e.g., `/games/{gameId}`).
+- Then, it needs to match this object against the data provided in the **request body**.
+
+If your request body contains a full collection of objects (rather than just one), you might encounter an issue unless the server is explicitly designed to handle such updates.
+
+3. **Updating Specific Objects**
+
+In a **well-designed system**, the request body should either:
+
+- Include **only the specific object** you want to update, identified by its ID.
+- Or, allow updating **multiple objects** in one request, which typically would require additional logic on the server to handle.
+
+For example:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "Updated CATAN",
+    "type": "Eurogame",
+    "players": "5",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+}
+```
+
+This is essentially an update to a single object in a collection of objects.
+
+If the container has multiple objects, the server can update **just one specific object** if you send the correct ID with the request. So even if there are multiple objects in the database or request body, the server will only update the one that matches the **ID** you're targeting.
+
+4. **Handling Multiple Objects in One Request**
+
+If you want to update **multiple objects** in one request, you'd typically structure the body like this:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "Updated CATAN",
+    "type": "Eurogame",
+    "players": "5",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  },
+  "bdabf5e9-23be-40a1-9f14-9117b6702a9d": {
+    "name": "Updated Exploding Kittens",
+    "type": "Cards",
+    "players": "6",
+    "_id": "bdabf5e9-23be-40a1-9f14-9117b6702a9d"
+  }
+}
+```
+
+In this case, the server needs to handle the logic of updating multiple objects at once, making sure each object is updated individually based on its unique ID.
+
+5. **Why `_id` is Important**
+
+When you send data with an `_id` (whether one object or many), the server uses it to:
+
+- Identify which object(s) in the collection need to be updated.
+- Ensure that it is modifying the correct object(s), especially when there are multiple objects with similar properties but different IDs.
+
+Summary
+
+- Yes, a container can contain multiple objects, and the server needs to know which specific object to update.
+- When sending a request, you either update **one object** by including its ID in the URL and body, or you can update **multiple objects** by including their IDs in the request body.
+- If the body does not contain the ID for an object, the server might not know which object to update or validate, leading to errors.
+
+**You said:**
+
+But why the key of the container is the same as one of the inside object keys?
+
+**ChatGPT said:**
+
+That's a great question! The reason the key of the container is the same as one of the object keys (i.e., the unique ID of the object) is typically to represent **the object in a more accessible and identifiable way** within the container. Here's a breakdown of why this structure is used:
+
+1. **Unique Identification**
+
+In this case, the key of the container (such as `"07f260f4-466c-4607-9a33-f7273b24f1b4"`) is the **unique ID** of the object it represents. By using the unique ID as the key, it becomes easy to:
+
+- **Retrieve** or **update** the specific object when needed, because the key (ID) directly points to the object.
+- Keep track of each object uniquely in the container, ensuring there are no conflicts or duplicates.
+
+For example:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "CATAN-Rise of Inkas",
+    "type": "Eurogame",
+    "players": "4",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+}
+```
+
+Here, the key `"07f260f4-466c-4607-9a33-f7273b24f1b4"` is the ID of the object, and the object itself contains the same `_id` field.
+
+2. **Why Repeat the ID?**
+
+The key and the `_id` field being the same might seem redundant at first, but there are several reasons for this design pattern:
+
+- **Ease of Access**: The key in the container is used to quickly retrieve or reference the object. Having the same `_id` field inside the object makes it clear that the object’s identity is defined by this ID, allowing the server to identify the object uniquely within the collection.
+    
+    For example, you might want to update an object based on its key in the container (`"07f260f4-466c-4607-9a33-f7273b24f1b4"`), but the object itself also carries the `_id` to confirm its identity inside the object.
+    
+- **Consistency**: When working with databases or collections of objects, this pattern is often used to keep things consistent. You can have objects in your system that are structured in a way where the ID is stored both as the key of the container and as a field inside the object, which aligns well with **RESTful API practices** and object-oriented principles.
+
+3. **The Key as the Identifier for the Object**
+
+In your case, the key (`"07f260f4-466c-4607-9a33-f7273b24f1b4"`) is the **primary key** for the object. When you send a PUT request to update an object, you might refer to this ID directly, like so:
+
+```javascript
+fetch(`${BASE_URL}/${currentGameId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    name: nameEl.value,
+    type: typeEl.value,
+    players: playersEl.value,
+    _id: currentGameId,
+  })
+})
+```
+
+This allows the server to know which object you want to update based on the URL parameter (e.g., `/games/${currentGameId}`) and ensures the correct object is updated.
+
+4. **Database and Object Mapping**
+
+In a **database context**, this pattern is very common. For example, a document database like MongoDB uses a **unique identifier** for each document (often called `_id`). When objects are returned from the database, they typically include their unique ID as a field, allowing the application to identify and update the object later. This is very useful when you need to persist changes or track updates to a particular object.
+
+5. **Why It Might Seem Confusing**
+
+It might seem redundant because you're using the same value in two places:
+
+1. The key of the container (used to identify the object in the collection).
+2. The field within the object (used to store the object’s identity inside the object itself).
+
+However, this is just a design choice that ensures both:
+
+- The **key** can be used for **efficient lookups** in collections.
+- The **_id** ensures consistency within the object itself, especially if the data is passed around in other contexts (like APIs or UI).
+
+**Example with Updated Object:**
+
+When you update an object using its ID, you're actually referencing the key (`currentGameId`) to locate the object in the container and then modify its values:
+
+```json
+{
+  "07f260f4-466c-4607-9a33-f7273b24f1b4": {
+    "name": "Updated CATAN",
+    "type": "Eurogame",
+    "players": "5",
+    "_id": "07f260f4-466c-4607-9a33-f7273b24f1b4"
+  }
+}
+```
+
+The key `"07f260f4-466c-4607-9a33-f7273b24f1b4"` is used to locate the object in the container, and the object itself contains the `_id` to keep track of its identity internally.
+
+**Summary:**
+
+- The key of the container being the same as the `_id` field inside the object is a design choice for consistency, clarity, and to facilitate easy access and management of the objects.
+- The server and the system rely on this structure to ensure each object can be uniquely identified and updated without confusion.
+
 ## Bookmarks
 https://jsisweird.com/
 
