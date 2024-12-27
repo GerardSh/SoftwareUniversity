@@ -1,4 +1,5 @@
 # CSharp
+## General
 ## ChatGPT
 ### Internal Types returned by LINQ
 What Happens Internally: When you call a LINQ method like Select, it does not immediately execute the query. Instead, it creates an internal object that describes how to perform the query when needed. This object is an instance of a compiler-generated type that implements `IEnumerable<T>`.
@@ -430,6 +431,7 @@ In essence, these exceptions reflect a balance between strict encapsulation and 
 
 [c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
 # HTML & CSS
+## General
 ## ChatGPT
 ### Pixel Resolution and PPI Relation
 1. **Display PPI (Pixels Per Inch):**
@@ -1714,11 +1716,12 @@ If you need more control over how the image is positioned (e.g., aligning it to 
 
 [PPI vs. DPI: what's the difference? Colette Pomerleau](https://99designs.com/blog/tips/ppi-vs-dpi-whats-the-difference/)
 # JavaScript
-## Code Spell Checker Extension
+## General
+### Code Spell Checker Extension
 Много полезен extension за VS Code, който подчертава правописни грешки.
-## Optional Parameters
+### Optional Parameters
 Когато даден параметър в метод има `?:` след параметъра, това означава че е optional. 
-## `_` As a Placeholder
+### `_` As a Placeholder
 В много езици за програмиране, като JavaScript и Python, долната черта `_` се използва като конвенционален placeholder (или заместител), когато искаме да подчертаем, че даден параметър или променлива няма да бъде използвана.
 
 Това се прави поради две основни причини:
@@ -2322,3 +2325,185 @@ The key `"07f260f4-466c-4607-9a33-f7273b24f1b4"` is used to locate the object in
 https://jsisweird.com/
 
 https://javascriptquiz.com/
+# MS SQL
+## General
+## ChatGPT
+### HTTP Fetch / SQL Relation
+What is the Relationship Between Databases and the `fetch` API in JavaScript? Do We Use `fetch` or SQL to Retrieve Data?
+
+**ChatGPT said:**
+
+The relationship between databases and the `fetch` function in JavaScript involves the following key concepts:
+
+**Databases and SQL**
+
+- Databases like MySQL, PostgreSQL, or MongoDB are where your data is stored.
+- You use **SQL (Structured Query Language)** or similar database query languages to interact with databases. SQL allows you to:
+    - Retrieve data: `SELECT * FROM table_name;`
+    - Insert data: `INSERT INTO table_name (column1, column2) VALUES ('value1', 'value2');`
+    - Update data: `UPDATE table_name SET column1 = 'value' WHERE condition;`
+    - Delete data: `DELETE FROM table_name WHERE condition;`
+
+SQL queries are executed **on the server-side**, typically within a backend application.
+
+**Fetch and Frontend**
+
+- The `fetch` function is a JavaScript method used on the **frontend** to send HTTP requests to a **server** (e.g., via REST APIs or GraphQL).
+- It doesn't interact with the database directly. Instead, it communicates with the backend server, which then interacts with the database.
+
+Example:
+
+```javascript
+fetch('https://example.com/api/data')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+```
+
+Here:
+
+1. The frontend makes an HTTP request (e.g., `GET`, `POST`, `PUT`, `DELETE`) using `fetch`.
+2. The server receives the request, processes it, and uses SQL (or another query language) to interact with the database.
+3. The server sends the requested data (or a response) back to the frontend.
+
+**Backend as a Mediator**
+
+- The backend serves as the **middleman** between the frontend and the database. It:
+    - Receives requests from the frontend.
+    - Executes SQL queries or other database operations.
+    - Formats the results and sends them back to the frontend.
+
+For example:
+
+1. **Frontend fetch request**:
+    
+```javascript
+fetch('/api/users')
+  .then(res => res.json())
+  .then(data => console.log(data));
+```
+    
+2. **Backend handler (Node.js example)**:
+    
+```javascript
+app.get('/api/users', (req, res) => {
+    db.query('SELECT * FROM users', (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+```
+    
+3. **Database operation**: The backend executes the SQL query `SELECT * FROM users`.
+
+**Why Not Use SQL in the Frontend?**
+
+1. **Security**: Allowing direct access to the database from the frontend exposes your database to vulnerabilities like SQL injection.
+2. **Complexity**: Frontends would need to know the database schema and write queries, complicating maintenance.
+3. **Abstraction**: The backend ensures consistent business logic and validation before interacting with the database.
+
+**Summary**
+
+- **SQL** is used on the **server-side** to query the database.
+- **Fetch** is used on the **client-side** to send HTTP requests to the backend, which then interacts with the database.
+
+This separation ensures security, efficiency, and maintainability.
+
+**You said:**
+
+Can we skip SQL and use HTTP directly to query the data base?
+
+**ChatGPT said:**
+
+Yes, it is technically possible to skip SQL and interact with a database directly via HTTP, but this is **not common** and has significant limitations and security concerns. Let's break this down:
+
+1. **Databases That Support HTTP APIs**
+
+Some databases, especially NoSQL databases, provide built-in HTTP APIs that allow you to perform operations without needing a separate backend. Examples include:
+
+**MongoDB Atlas**
+
+MongoDB offers an HTTP-based **Realm API** that allows you to query and manipulate documents in the database.
+
+**Firebase Realtime Database / Firestore**
+
+Firebase is designed for direct client-to-database interaction over HTTP or WebSocket.
+
+**CouchDB**
+
+CouchDB uses a RESTful HTTP interface where you can directly perform CRUD operations on the database.
+
+**Supabase**
+
+Supabase provides an HTTP interface to PostgreSQL, enabling direct API calls to the database.
+
+2. **When Direct HTTP-to-Database Is Possible**
+
+You can use HTTP directly to interact with such databases if:
+
+- The database **explicitly supports HTTP APIs**.
+- Your use case doesn't require complex backend logic (e.g., validation, business rules, authentication beyond what's provided by the database).
+
+Example:
+
+```javascript
+fetch('https://your-database-url.com/data', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+  },
+})
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+```
+
+3. **Why This Is Not Ideal for Most Databases**
+
+Traditional relational databases like MySQL and PostgreSQL do not natively support HTTP for direct client access. To use them, you must:
+
+- Host an API server that acts as a middleware.
+- Use SQL (or ORM libraries) to query the database.
+
+4. **Challenges of Skipping a Backend**
+
+Skipping the backend to directly query a database over HTTP has drawbacks:
+
+**Security**
+
+- Exposing your database directly to the internet makes it vulnerable to attacks like SQL injection or unauthorized access.
+- HTTP APIs from databases often require strict authentication mechanisms like tokens, which can be complex to manage securely.
+
+**Validation**
+
+- A backend layer ensures data validation before interacting with the database.
+- Skipping this layer risks data corruption or inconsistent records.
+
+**Business Logic**
+
+- Backend servers enforce business rules (e.g., "only admins can delete records"). Without them, your frontend must handle these rules, increasing complexity and risk.
+
+**Performance**
+
+- Database APIs may not be optimized for high-traffic environments when accessed directly by multiple clients.
+
+5. **Recommended Architecture**
+
+Instead of skipping the backend entirely:
+
+- Use a **backend API** to communicate securely with your database.
+- Let the frontend use `fetch` to interact with the backend.
+
+This approach ensures:
+
+- **Security**: The backend can enforce authentication and protect the database.
+- **Validation**: Data is checked before entering the database.
+- **Scalability**: The backend can optimize queries and manage caching.
+
+6. **When Skipping Backend Is Appropriate**
+
+- **Serverless Applications**: For small-scale apps, databases like Firebase or Supabase can handle direct interactions.
+- **Prototyping**: During initial development, skipping a backend may be acceptable for simplicity.
+
+For production-grade applications, skipping the backend is generally not recommended unless the database is specifically designed for direct HTTP interaction.
+## Bookmarks
