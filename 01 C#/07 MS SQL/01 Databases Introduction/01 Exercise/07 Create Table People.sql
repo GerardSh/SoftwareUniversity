@@ -1,5 +1,3 @@
-USE Minions
-
 CREATE TABLE People
 (
 [Id] INT PRIMARY KEY IDENTITY,
