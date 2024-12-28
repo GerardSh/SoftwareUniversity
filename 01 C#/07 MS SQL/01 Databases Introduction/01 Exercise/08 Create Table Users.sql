@@ -1,11 +1,7 @@
-CREATE DATABASE Users
-
-USE Users
-
 CREATE TABLE Users 
 (
 	[Id] BIGINT PRIMARY KEY IDENTITY,
-	[Username] VARCHAR(30) NOT NULL,
+	[Username] VARCHAR(30) NOT NULL UNIQUE,
 	[Password] VARCHAR(26) NOT NULL,
 	[ProfilePicture] VARCHAR(MAX),
 	[LastLoginTime] DATETIME,
