@@ -2506,4 +2506,36 @@ This approach ensures:
 - **Prototyping**: During initial development, skipping a backend may be acceptable for simplicity.
 
 For production-grade applications, skipping the backend is generally not recommended unless the database is specifically designed for direct HTTP interaction.
+### Constraints and Properties:
+1. **Constraints**:  
+    Constraints are rules applied to ensure data integrity in SQL tables. Examples include:
+    
+    - **NOT NULL**: Ensures the column cannot have empty values.
+    - **UNIQUE**: Ensures all values in the column are distinct.
+    - **PRIMARY KEY**: Combines `NOT NULL` and `UNIQUE` for unique row identification.
+    - **FOREIGN KEY**: Links tables by referencing columns in another table.
+    - **CHECK**: Ensures column values meet specified conditions.
+    - **DEFAULT**: Provides default values for a column.
+    
+    Constraints can be written:
+    
+    - **Inline** (e.g., `Age INT CHECK (Age > 0)`): Used for single-column constraints.
+    - **At the End of the Table Definition**: Ideal for multi-column or table-wide constraints (e.g., composite primary keys, foreign keys).
+2. **Properties**:  
+    Properties describe how columns behave, but they do not enforce data validation. Examples:
+    
+    - **IDENTITY**: Automatically generates sequential values for a column.
+    - **DEFAULT**: Assigns a predefined value if none is provided.
+3. **Placement of Constraints**:
+    
+    - Constraints can be written **at the end of a column definition** (e.g., `Name NVARCHAR(50) NOT NULL`).
+    - Multi-column constraints (e.g., composite keys or foreign keys) must appear at the end of the table definition.
+4. **Style and Readability**:
+    
+    - Inline constraints make schemas concise for simple cases.
+    - End-of-table constraints improve clarity for complex relationships.
+5. **Key Differences**:
+    
+    - **Constraints** validate or restrict data.
+    - **Properties** define behavior but do not enforce rules.
 ## Bookmarks
