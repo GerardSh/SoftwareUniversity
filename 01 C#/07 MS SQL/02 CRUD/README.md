@@ -138,8 +138,209 @@ SELECT LastName, DepartmentID, Salary
 FROM Employees
 WHERE ManagerID IN (109, 3, 16)
 ```
+### Comparing with NULL
+```sql
+-- Incorrect
+SELECT LastName, DepartmentID
+FROM Employees
+WHERE ManagerID = NULL
+
+-- Correct
+SELECT LastName, DepartmentID
+FROM Employees
+WHERE ManagerID IS NULL
+```
+
+`NULL` е специална стойност, която означава, че липсва стойност. Различна е от 0 или празно пространство. Не може да се ползва `=` за да проверим дали дадена колона е равна на `NULL` правилния начин е да се ползва `IS`. Ако искаме да вземем само записите които не са `NULL` не може да ползваме знака за различие `<>` защото нямаме сравнение между `NULL`и `NULL`. Правилния начин е `IS NOT NULL`. За останалите сравнения, не може да заменим `=` с `IS`, примерно `WHERE ManagerID IS 1`.
+### Sorting Result Sets
+```sql
+SELECT LastName, DepartmentID, Salary
+FROM Employees
+WHERE DepartmentID = 1
+ORDER BY Salary DESC, LastName DESC
+```
+
+Сортирането на редовете става чрез `ORDER BY`, по default е `ASC` ascending order - сортиране във възходящ ред и може да бъде пропуснато. Ако искаме в обратен ред, трябва да се ползва `DESC` descending order. В примера, ако има няколко служителя с еднакви заплати, ще ги подреди по фамилията им. Реално всяка допълнителна колона, която сложим е като `ThenBy` в C# LINQ. `ASC` и `DESC` modifiers се прилагат за всяка колона отделно.
+## Views
+```sql
+CREATE VIEW v_EmployeesByDepartment AS
+SELECT FirstName + ' ' + LastName AS [Full Name],
+       Salary
+  FROM Employees
+
+SELECT * FROM v_EmployeesByDepartment
+```
+
+View-тата улесняват, когато имаме сложни заявки. View-то е именувана заявка, която представлява обект в базата данни и позволява да се използва механизма за достъп.
+
+Ако искаме да го изтрием, това става чрез командата `DROP VIEW viewName`
+Имаме материализирани view-та, които запазват резултатите от заявката на диска, подобно на таблици. Използват се за ускоряване на сложни заявки, като предварително изчисляват и съхраняват данните, но нямат директна поддръжка в T-SQL.
+## Inserting Data
+Използваме командата `INSERT`.  Ако ще вкарваме всички данни в дадената таблица, може да не изреждаме колоните:
+
+```sql
+INSERT INTO Towns 
+     VALUES (33, 'Paris')
+```
+
+Ако ще вкарваме данни, само в част от колоните, трябва да ги посочим и след това в същия ред да подадем стойностите:
+
+```sql
+INSERT INTO Projects ([Name], StartDate)
+     VALUES ('Reflective Jacket', GETDATE())
+```
+
+За да вкараме много данни с една заявка, трябва да ги изредим:
+
+```sql
+INSERT INTO EmployeesProjects
+     VALUES (229, 1),
+            (229, 2),
+	        (229, 3)
+```
+
+Когато имаме съществуваща таблица в която искаме да прехвърлим данни в друга таблица, примерно искаме да прехвърлим само няколко колони в нова таблица, тогава вместо `VALUES`, трябва да направим `SELECT`, който да върне нужните стойности. По този начин, може да прелеем от една таблица в друга:
+
+```sql
+INSERT INTO Projects ([Name], StartDate)
+	 SELECT [Name] + ' Restructuring', GETDATE()
+	   FROM Departments
+```
+
+Ако искаме да прехвърлим данните в нова таблица, която искаме да създадем сега, трябва да ползваме конструкцията в примера долу. В този случай, SQL ще създаде нова таблица, гледайки типовете и размерите на изброените колони:
+
+```sql
+SELECT CustomerID, FirstName, Email, Phone
+  INTO CustomerContacts -- New table name
+  FROM Customers -- Existing source
+```
+## Sequences
+```sql
+CREATE SEQUENCE seq_Customers_CustomerID
+			 AS INT
+     START WITH 1
+   INCREMENT BY 1
+
+SELECT NEXT VALUE FOR seq_Customers_CustomerID
+```
+
+Това са специален обект в SQL Server, който е подобен на `IDENTITY` полетата, с тази разлика, че `IDENTITY` полето е част от самата таблица - специален тип колона с определени свойства, може да генерира поредно число. 
+
+Sequence-a прави същото, но е отделен обект, а не е част от таблицата, може да бъде към някоя таблица, но не е част от нея. При sequence-a има възможност да превърти - като стигне последната стойност, да започне от начало.
+
+В PostgreSQL и Oracle няма `IDENTITY` и там sequence се ползва за идентификаторите. 
+Друго приложение на sequence e, че може да се ползва като брояч.
+## Modifying Existing Records
+### Deleting Data
+Ако искаме да изтрием определени редове, се ползва `DELETE` с `WHERE` като обикновено се посочва id-то.
+
+```sql
+DELETE FROM Employees WHERE EmployeeID = 1
+```
+
+Ако искаме да изтрием всички редове:
+
+```sql
+TRUNCATE TABLE Users
+```
+### Updating Data
+```sql
+UPDATE Employees
+   SET Salary *= 1.10,
+       JobTitle = 'Senior ' + JobTitle
+ WHERE DepartmentID = 3
+```
+
+Казваме коя таблица искаме да update-нем и след това чрез `SET` променяме стойностите в посочените колони.
+Много важно е да имаме `WHERE`, защото ще мине и ще промени всички записи, като обикновено се посочва id-то.
 # Misc
+## IntelliSense
 Когато пишем `SELECT` заявки е добре да пишем първо `FROM` и името на таблицата, защото така ще ни подсказва чрез IntelliSense.
 # ChatGPT
+## Tables as Collection of Objects
+When we say that tables are like a collection of objects each record is like an object with different properties (columns) right? when we use `CONCAT_WS()` its like `string.Join()` in C# but `string.Join()` is for all elements in the collection, however `CONCAT_WS()` is used not for all elements, but to concatenate the property values IN EACH element.
+
+**ChatGPT said:**
+
+Yes, that's an excellent analogy! Let's break it down:
+
+**Tables as Arrays of Objects**
+
+- In a **relational table**, you can think of:
+    - **Rows** as **objects**.
+    - **Columns** as **properties** of those objects.
+
+For example, consider this table:
+
+|FirstName|LastName|Age|
+|---|---|---|
+|John|Doe|30|
+|Jane|Smith|25|
+
+This is conceptually similar to an array of objects in C#:
+
+```csharp
+var people = new[]
+{
+    new { FirstName = "John", LastName = "Doe", Age = 30 },
+    new { FirstName = "Jane", LastName = "Smith", Age = 25 }
+};
+```
+
+`STRING.JOIN` in C#
+
+- **Purpose**: Combines all elements of a collection into a single string, separated by a specified delimiter.
+- **Scope**: Operates on the entire collection.
+
+Example:
+
+```csharp
+var names = new[] { "John", "Jane", "Smith" };
+var result = string.Join(", ", names); // "John, Jane, Smith"
+```
+
+`CONCAT_WS` in SQL
+
+- **Purpose**: Concatenates multiple columns (or expressions) within a **single row** into one string, separated by a specified delimiter.
+- **Scope**: Operates on the properties (columns) of each individual row.
+
+Example:
+
+```sql
+SELECT CONCAT_WS(', ', FirstName, LastName) AS FullName
+FROM Employees;
+```
+
+With this table:
+
+|FirstName|LastName|
+|---|---|
+|John|Doe|
+|Jane|Smith|
+
+The result would be:
+
+|FullName|
+|---|
+|John, Doe|
+|Jane, Smith|
+
+**Key Difference**
+
+1. **`STRING.JOIN` (C#)**:
+    
+    - Joins the elements of a collection (all rows or values from multiple rows).
+    - Operates at the **collection level**.
+2. **`CONCAT_WS` (SQL)**:
+    
+    - Joins the values of specific columns (or expressions) within a **single row**.
+    - Operates at the **row level**.
+
+**Combined Analogy**
+
+If a table is like an array of objects, then:
+
+- **`STRING.JOIN`**: Joins multiple objects' properties across all rows.
+- **`CONCAT_WS`**: Joins the properties **within each individual object** (row).
 # Bookmarks
-Цompletion: 03.01.2025
+Completion: 03.01.2025
