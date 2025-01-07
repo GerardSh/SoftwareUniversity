@@ -420,6 +420,11 @@ CREATE TABLE Towns (
 Ако отворим пропъртис, ще видим повече информация за обекта, като например неговите настройки, атрибути или стойности.
 ### SSMS E/R Diagram: Usage
 Expand a database in Object Explorer -> Right click 'Database Diagrams" -> "New Database Diagram'  -> 'Add'
+# Misc
+## SSMS
+В **SQL Server Management Studio (SSMS)**, е удобно да pin-нем **Object Explorer** и **Properties** за лесен и бърз достъп:
+- **Object Explorer**: Показва структурата на базата данни и позволява навигация през таблици, процедури и други обекти.
+- **Properties**: Показва детайли и настройки за избран обект, като таблици, колони, индекси и т.н.
 # ChatGPT
 ## Comparison: Entities, Tables, and Classes
 Tables in a database are analogous to **classes** in C#, and **entities** in a database usually correspond to tables. Here's the comparison:
