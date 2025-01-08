@@ -588,5 +588,42 @@ Using one-to-one tables in a database is generally about **design decisions** ai
 If the separation doesn't provide any of these benefits—e.g., if all columns are always accessed together and there are no optional or sensitive fields—keeping everything in one table can simplify your design.
 
 In summary, **one-to-one tables are used for clarity, efficiency, security, and maintainability**. However, whether to use them depends on your application's specific requirements.
+## Adding Constraint Difference
+The primary difference between adding a constraint during table creation and altering the table later to add a constraint is the **`ADD` keyword**.
+
+Here’s a breakdown of the differences:
+
+**1. Adding Constraint During Table Creation:**
+
+When creating the table, you define the constraint **within** the `CREATE TABLE` statement. No `ADD` keyword is used here.
+
+**Example:**
+
+```sql
+CREATE TABLE Users (
+    id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    CONSTRAINT unique_name UNIQUE (first_name, last_name)
+);
+```
+
+**2. Altering Table to Add a Constraint:**
+
+If the table already exists, you can **alter** it to add a constraint. In this case, you use the `ALTER TABLE` statement along with the `ADD` keyword to introduce the constraint.
+
+**Example:**
+
+```sql
+ALTER TABLE Users
+ADD CONSTRAINT unique_name UNIQUE (first_name, last_name);
+```
+
+**Key Difference:**
+
+- **Table Creation**: You include the constraint **directly in the `CREATE TABLE` statement**.
+- **Altering Table**: You **add the constraint after the table is created** using `ALTER TABLE` with the `ADD` keyword.
+
+In both cases, the constraint enforces uniqueness on the combination of the two columns (`first_name`, `last_name`), but the method of adding the constraint differs based on whether you're creating the table or modifying an existing one.
 # Bookmarks
 Completion: 07.01.2025
