@@ -491,5 +491,102 @@ var bus2 = new Bus { ID = 2, Number = "456", Brand = "Volvo", Capacity = 60 };
 **Conclusion**
 
 Entities in a database are most often represented as **tables**, while their attributes are modeled as columns. In C#, entities are mirrored by **classes** that define their properties and behavior. This analogy helps connect database design with object-oriented programming.
+## Foreign Key Placement
+**Inline Constraints**
+
+The foreign key is declared directly within the column definition.
+
+**Example 1:**
+
+```sql
+CREATE TABLE Persons (
+    PersonId INT PRIMARY KEY IDENTITY,
+    FirstName VARCHAR(25),
+    Salary MONEY,
+    PassportID INT CONSTRAINT FK_PersonsPassports FOREIGN KEY REFERENCES Passports(PassportID)
+);
+```
+
+**Example 2:**
+
+```sql
+CREATE TABLE Persons (
+    PersonId INT PRIMARY KEY IDENTITY,
+    FirstName VARCHAR(25),
+    Salary MONEY,
+    PassportID INT REFERENCES Passports(PassportID)
+);
+```
+
+**Table-Level Constraints**
+
+The foreign key is defined after all columns are declared.
+
+**Example:**
+
+```sql
+CREATE TABLE Persons (
+    PersonId INT PRIMARY KEY IDENTITY,
+    FirstName VARCHAR(25),
+    Salary MONEY,
+    PassportID INT,
+    CONSTRAINT FK_PersonsPassports FOREIGN KEY (PassportID) REFERENCES Passports(PassportID)
+);
+```
+
+**Position Matters**
+
+- **Inline constraints** must be placed alongside the relevant column.
+- **Table-level constraints** must appear after all columns are defined.
+
+**Key Takeaway**
+
+All three methods achieve the same result, but **table-level constraints** are more flexible for composite keys or complex relationships. The `NOT NULL` constraint is optional for creating foreign keys but ensures that the column cannot contain `NULL` values.
+## One-to-One Purpose
+What's the purpose of having one-to-one tables when we can have all the columns in just one table, there won't be any duplication either way?
+
+**ChatGPT said:**
+
+Using one-to-one tables in a database is generally about **design decisions** aimed at improving flexibility, maintainability, and performance. While it may seem redundant to split data into multiple tables if there is no duplication, there are valid reasons for this approach:
+
+**Separation of Concerns**
+
+- By splitting data into different tables, you keep related data organized. For example:
+    - A `Users` table could store general user information (e.g., name, email).
+    - A `UserDetails` table could store less frequently accessed or sensitive information (e.g., bio, preferences, social security number).
+- This makes the schema cleaner and easier to maintain.
+
+2. **Performance Optimization**
+
+- Having frequently accessed columns in one table and less-used columns in another can improve query performance.
+- For example, if your application mostly queries user names and emails, it avoids scanning through additional columns that are rarely needed.
+
+3. **Optional Data**
+
+- If certain fields are not always required, having a separate table allows you to avoid null values in the main table.
+- Example:
+    - Main table: `Users` with columns like `id`, `name`, `email`.
+    - Optional table: `UserDetails` for optional fields like `profile_photo` or `address`.
+
+4. **Sensitive or Secure Data**
+
+- Storing sensitive data (e.g., payment info or medical records) in a separate table with restricted access can improve security.
+- You can apply different access controls or encryption at the table level.
+
+5. **Future Extensibility**
+
+- If you need to expand or modify certain fields, a separate table reduces the risk of breaking existing relationships or functionality in the main table.
+- It also makes schema migrations easier for specific subsets of data.
+
+6. **Avoiding Table Locking**
+
+- In some databases, large rows can lead to locking and slower performance during updates.
+- Splitting tables reduces row size, improving update performance.
+
+**When Should You Avoid One-to-One Tables?**
+
+If the separation doesn't provide any of these benefits—e.g., if all columns are always accessed together and there are no optional or sensitive fields—keeping everything in one table can simplify your design.
+
+In summary, **one-to-one tables are used for clarity, efficiency, security, and maintainability**. However, whether to use them depends on your application's specific requirements.
 # Bookmarks
 Completion: 07.01.2025
