@@ -6,12 +6,12 @@
 Списък с функции и начина им на работа има във файла за MS SQL в папката с ресурси.
 ### Aggregate
 SQL е език, който не само трябва да се грижи за CRUD операциите в нашата база данни, но до голяма степен да ни дава възможност и да използваме тези данни. Има в себе си вградена функционалност за по-сложни анализи на данните, като агрегацията е една от тях. Когато правим агрегации, трябва да ги правим върху правилните данни.
-Такива агрегиращи функции са: AVG, COUNT, MIN, MAX, SUM и други.
+Такива агрегиращи функции са: `AVG()`, `COUNT()`, `MIN()`, `MAX()`, `SUM()` и други.
 ### Analytic
 Предоставят възможност да се изчисляват стойности въз основа на група редове, но за разлика от стандартните агрегиращи функции, те не свеждат резултата само до една стойност за групата, а запазват оригиналните редове в резултатите. Тези функции са мощни инструменти за анализ на данни. Много рядко са необходими.
 ### Ranking
 Аналитични функции, които подреждат редовете в рамките на дефиниран прозорец.
-Такива функции са: RANK, ROW_NUMBER, DENSE_RANK, NTILE и други, като ROW_NUMBER е най-често използваната.
+Такива функции са: `RANK()`, `ROW_NUMBER()`, `DENSE_RANK()`, `NTILE()` и други, като `ROW_NUMBER()` е най-често използваната.
 ### Rowset
 Връщат набор от редове (result set) и обикновено се използват за работа с таблици, представяне на външни данни или генериране на данни. Те могат да се използват в `FROM` или `JOIN` клаузите на заявките.
 ### Scalar
@@ -20,8 +20,46 @@ SQL е език, който не само трябва да се грижи за
 Функции за обработка на стрингове.
 ### Math
 SQL Server поддържа базовите аритметични операции.
-# Misc
+### Date
+Позволяват извличане на компоненти (като година, месец, ден), изчисления (добавяне или разлика от дати) и форматиране. Често използвани са `GETDATE()` за текуща дата, `DATEPART()` за конкретна част, `DATEDIFF()` за разлика и `FORMAT()` за персонализиран изглед.
+## Wildcards
+**ESCAPE** - позволява да използваме специални символи, като трябва да определим prefix и да укажем кой е той, защото няма стандартен такъв. В примера, това е `!`:
 
+```sql
+SELECT ID, Name
+  FROM Tracks
+ WHERE Name LIKE '%max!%' ESCAPE '!'
+```
+
+Wildcards в SQL са подобни на REGEX, но с по-ограничени възможности. Те се използват за филтриране на текстови стойности, когато не знаем точния текст или когато търсим частични съвпадения. Wildcards могат да се използват с оператора `LIKE`.
+
+Пример за филтриране на служители с имена започващи с `Ro`:
+
+```sql
+SELECT
+    FirstName,
+    LastName
+FROM Employees
+WHERE FirstName LIKE 'Ro%'
+```
+
+**Поддържани символи:**
+
+`%` - всяка последователност от символи, включително нулева дължина.
+`_` - всеки един символ.
+`[...]` - всеки символ в посочен диапазон.
+`[^...]` - всеки символ, който не е в посочения диапазон.
+
+**ESCAPE** - позволява да използваме специални символи, като дефинираме префикс за тях. Пример:
+
+```sql
+SELECT ID, Name
+FROM Tracks
+WHERE Name LIKE '%max!%' ESCAPE '!'
+```
+
+В този случай, символът `!` се използва като escape символ, за да търсим буквално `%` или `_` в имената.
+# Misc
 # ChatGPT
 ## Functions Mostly Used in SELECT
 SQL functions are most commonly used in `SELECT` statements because they allow for the manipulation and transformation of data directly in the database. These functions are applied to each record in a column, making them highly efficient for tasks like formatting, calculations, and conditional logic.
@@ -54,3 +92,4 @@ Using SQL functions directly within the database has several key advantages, eve
 
 In summary, SQL functions can reduce complexity, improve performance, and leverage the full power of the database engine. In conclusion, while it's feasible to handle all data projection and transformation in the backend, using SQL functions in the database can still be an efficient, scalable, and more performance-friendly approach in many cases. It's about finding the right balance for your application’s specific needs. Backend transformations are necessary in many cases, combining both approaches can offer the best of both worlds. 
 # Bookmarks
+Completion: 12.01.2025
