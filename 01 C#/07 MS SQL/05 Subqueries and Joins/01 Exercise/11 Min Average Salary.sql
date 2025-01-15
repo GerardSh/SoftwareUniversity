@@ -1,5 +1,5 @@
 SELECT
-Min(Temp.MinAverageSalary) AS MinAverageSalary
+MIN(Temp.MinAverageSalary) AS MinAverageSalary
 FROM (
 SELECT 
 AVG(Salary) AS MinAverageSalary
