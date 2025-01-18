@@ -190,5 +190,40 @@ GROUP BY Name;
 - To filter the results **after** grouping, **`HAVING`** should be used.
 - **`WHERE`** filters individual rows **before** grouping.
 - **`HAVING`** filters grouped data **after** the grouping.
+## Custom Groupings in SQL
+Custom groupings in SQL allow you to categorize data into specific groups based on defined conditions. This is typically done using the **`CASE`** expression, which evaluates conditions and assigns group labels accordingly.
+
+- **Purpose**: Create meaningful categories (e.g., age ranges, income brackets) for analysis.
+- **How It Works**:
+    1. Use a **`CASE`** expression in the **`SELECT`** clause to define conditions and assign group names.
+    2. Use the same **`CASE`** expression in the **`GROUP BY`** clause to group the data.
+    3. Apply aggregate functions (e.g., **`COUNT`**, **`SUM`**) to analyze the grouped data.
+
+**Example:**
+
+```sql
+SELECT 
+    CASE 
+        WHEN Age < 18 THEN 'Under 18'
+        WHEN Age BETWEEN 18 AND 29 THEN '18-29'
+        ELSE '30+'
+    END AS AgeGroup,
+    COUNT(*) AS PeopleCount
+FROM People
+GROUP BY 
+    CASE 
+        WHEN Age < 18 THEN 'Under 18'
+        WHEN Age BETWEEN 18 AND 29 THEN '18-29'
+        ELSE '30+'
+    END;
+```
+
+**Key Points:**
+
+- **Flexibility**: Custom groupings are not limited to existing column values; they can be dynamic.
+- **Reusability**: The same **`CASE`** expression is used in **`SELECT`** and **`GROUP BY`**.
+- **Aggregate Analysis**: Combine custom groupings with aggregate functions for detailed insights.
+
+Custom groupings are powerful for creating tailored analyses that fit specific business or reporting needs.
 # Bookmarks
 Completion: 18.01.2025
