@@ -44,7 +44,7 @@
 
 Обикновено този подход се използва в системи с голям обем транзакции, където записите са много на брой и основният приоритет е бързото им записване. Индексирането се прави по-късно, за да се осигури по-добра производителност при четене.
 ### Clustered Indexes
-![](Pasted%20image%2020250117131432.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250117131432.png)
 
 Изключително бърз – осигурява директен достъп до данните, тъй като подрежда физическата структура на таблицата по стойностите на колоната (или колоните), които са част от индекса.
 
@@ -62,7 +62,7 @@
 Ако създадем Primary Key върху `ID`, SQL Server автоматично създава `clustered index` върху него.
 В този случай редовете ще бъдат физически подредени по ID. Ако премахнем Primary Key или не зададем clustered index, таблицата ще се държи като heap.
 ### Non-Clustered Indexes
-![](Pasted%20image%2020250117133841.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250117133841.png)
 
 Позволява множество индекси върху една таблица.
 
@@ -101,6 +101,35 @@ ON Employees(FirstName, LastName)
 Целта на тези функции е да се извършва анализ на данните, като те обобщават и изчисляват стойности върху групи или целия набор от записи.
 
 Списък с агрегиращи функции и начина им на работа има във файла за MS SQL в папката с ресурси.
+## HAVING
+**`HAVING`** е предикат, който се използва след **`GROUP BY`** за филтриране на групираните резултати. Той е подобен на **`WHERE`**, но има ключова разлика: **`WHERE`** филтрира редовете преди агрегацията, докато **`HAVING`** филтрира резултатите след групирането.
+
+- **`HAVING`** не може да се използва без да има групиране чрез **`GROUP BY`**.
+- Агрегатните функции (като **`COUNT`**, **`SUM`**, **`AVG`**) се изпълняват само веднъж върху групите, не многократно за всеки ред.
+- Ако не използваме **`HAVING`**, трябва да вложим групата в допълнителен **`SELECT`**, в който да използваме **`WHERE`** за филтриране на резултатите.
+
+Пример:
+
+```sql
+SELECT DepartmentID, COUNT(EmployeeID) AS EmployeeCount
+FROM Employees
+GROUP BY DepartmentID
+HAVING COUNT(EmployeeID) > 5;
+```
+
+Тук **`HAVING`** филтрира отделите, които имат повече от 5 служители след като групирането е извършено.
+
+Пример без `HAVING`
+
+```sql
+SELECT DepartmentID, EmployeeCount
+FROM (
+    SELECT DepartmentID, COUNT(EmployeeID) AS EmployeeCount
+    FROM Employees
+    GROUP BY DepartmentID
+) AS GroupedDepartments
+WHERE EmployeeCount > 5;
+```
 # Misc
 # ChatGPT
 ## GROUP BY
@@ -152,5 +181,14 @@ GROUP BY Name;
 **Simplified Takeaway:**
 
 `GROUP BY` logically organizes rows into unique groups based on the specified columns and enables aggregation on those groups. Each resulting group is represented by a single row in the final output.
+## WHERE / GROUP BY / HAVING
+**`WHERE`** can only be used **before** **`GROUP BY`**. It filters the result set **before** the grouping occurs, removing rows that do not meet the specified conditions. After that, **`GROUP BY`** groups the already filtered data into different groups based on the selected columns.
+
+- **`WHERE`** filters data before aggregation and grouping.
+- **`GROUP BY`** groups the filtered data into different groups.
+
+- To filter the results **after** grouping, **`HAVING`** should be used.
+- **`WHERE`** filters individual rows **before** grouping.
+- **`HAVING`** filters grouped data **after** the grouping.
 # Bookmarks
 Completion: 18.01.2025
