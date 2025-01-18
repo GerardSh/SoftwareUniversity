@@ -635,7 +635,7 @@ FROM Employees;
 
 ---
 ## Aggregating
-`COUNT(ColumnName)` - преброява броя на записите в групата, като взема предвид само редовете, в които колоната има стойност различна от `NULL`. Ако използваме `*` вместо име на колоната, ще преброи всички редове, включително тези с `NULL` стойности.
+`COUNT(ColumnName)` - преброява броя на записите в групата, като взема предвид само редовете, в които колоната има стойност различна от `NULL`. Ако използваме `*` вместо име на колоната, ще преброи всички редове, включително тези с `NULL` стойности. `*` работи само с `COUNT`.
 
 Пример:
 
@@ -645,6 +645,101 @@ SELECT e.DepartmentID,
 FROM Employees AS e
 GROUP BY e.DepartmentID;
 ```
+
+---
+`SUM(ColumnName)` - изчислява сумата на стойностите в колоната, игнорирайки редовете с `NULL` стойности. Ако всички стойности са `NULL`, резултатът ще бъде `NULL`. 
+
+Пример:
+
+```sql
+SELECT e.DepartmentID,
+       SUM(e.Salary) AS TotalSalary
+FROM Employees AS e
+GROUP BY e.DepartmentID;
+```
+
+---
+`MAX(ColumnName)` - намира максималната стойност в колоната, като игнорира `NULL` стойностите. Ако всички стойности са `NULL`, резултатът ще бъде `NULL`.
+
+Пример:
+
+```sql
+SELECT e.DepartmentID,
+       MAX(e.Salary) AS MaxSalary
+FROM Employees AS e
+GROUP BY e.DepartmentID;
+```
+
+---
+`MIN(ColumnName)` - намира минималната стойност в колоната, като игнорира `NULL` стойностите. Ако всички стойности са `NULL`, резултатът ще бъде `NULL`. 
+
+Пример:
+
+```sql
+SELECT e.DepartmentID,
+       MIN(e.Salary) AS MinSalary
+FROM Employees AS e
+GROUP BY e.DepartmentID;
+```
+
+---
+`AVG(ColumnName)` - изчислява средната стойност на колоната, като игнорира записите с `NULL` стойности. Ако всички стойности са `NULL`, резултатът ще бъде `NULL`.
+
+Пример:
+
+```sql
+SELECT e.DepartmentID,
+       AVG(e.Salary) AS AvgSalary
+FROM Employees AS e
+GROUP BY e.DepartmentID;
+```
+
+---
+`STRING_AGG(ColumnName / expression, Separator)` - функцията `STRING_AGG` комбинира стойностите от дадена колона в група в един низ, като ги разделя с указания разделител. Ако колоната съдържа `NULL` стойности, те се игнорират. Нестринговите типове автоматично се преобразуват към стрингове. Стрингът може да бъде сортиран, като се използва `WITHIN GROUP (ORDER BY ...)` за дефиниране на реда на стойностите.
+
+Пример:
+
+```sql
+SELECT e.DepartmentID,
+       STRING_AGG(e.EmployeeName, ', ') AS EmployeeList
+FROM Employees AS e
+GROUP BY e.DepartmentID;
+```
+
+Резултат:
+
+|DepartmentID|EmployeeList|
+|---|---|
+|101|John, Sarah|
+|102|Mike|
+|103|Anna, Bob|
+
+В този пример всички имена на служителите в една и съща група (отдел) се обединяват в един текстов низ, разделен със запетая и интервал.
+
+Пример с expression и сортиране:
+
+```sql
+SELECT
+d.[Name],
+e.Salary,
+STRING_AGG(CONCAT_WS(' ', e.FirstName, e.LastName), ', ') 
+WITHIN GROUP (ORDER BY CONCAT_WS(' ', e.FirstName, e.LastName)) AS Employees
+FROM Employees AS e
+JOIN Departments AS d ON e.DepartmentID = d.DepartmentID
+GROUP BY d.DepartmentID, d.[Name], e.Salary
+ORDER BY d.DepartmentID
+```
+
+Тази SQL заявка извлича информация за отделите, заплатите на служителите и техните имена. Комбинира имената на служителите (първо и последно име) в един низ, разделен със запетаи. Сортира ги по пълното име. `CONCAT_WS` ще бъде изпълнена само веднъж за всеки ред, тъй като SQL сървърът оптимизира заявката и не я изпълнява многократно за същите стойности.
+
+Резултат:
+
+|Name|Salary|Employees|
+|---|---|---|
+|HR|5000|Anna Green, Bob Brown|
+|IT|6000|Sarah White, John Doe, Mike Black|
+|Sales|4500|Emily Clark|
+
 # Wildcards
 **Пример за комбинация с `NOT` и `AND`:**
 
