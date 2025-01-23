@@ -237,6 +237,8 @@ Futterkiste', 'Obere Str. 57', 'Berlin',
 #### Returning Values Using OUTPUT Parameters
 Параметрите могат да бъдат input и output. По default са input, но това може да се промени. При извикването, също трябва да се добавя `OUTPUT`.
 
+**Syntax:**
+
 ```sql
 CREATE PROCEDURE dbo.usp_AddNumbers
  @firstNumber SMALLINT,
@@ -251,7 +253,181 @@ EXECUTE usp_AddNumbers 5, 6, @answer OUTPUT
 SELECT 'The result is: ', @answer
 -- The result is: 11
 ```
+#### Returning Multiple Results
+една процедура може да върне повече от един набор от резултати (result sets) чрез изпълнение на множество `SELECT` изрази в рамките на една процедура. Това позволява извличането на различни данни, които могат да бъдат обработени отделно от клиента или приложението, което изпълнява процедурата.
+
+**Syntax:**
+
+```sql
+CREATE OR ALTER PROC usp_MultipleResults
+AS
+SELECT FirstName, LastName FROM Employees
+SELECT FirstName, LastName, d.[Name] AS Department
+FROM Employees AS e
+JOIN Departments AS d ON e.DepartmentID = d.DepartmentID;
+GO
+
+EXEC usp_MultipleResults
+```
+
+`GO` се слага, когато имаме зависимост от изпълнението на statment-ите и когато искаме да сме сигурни, че първия минава преди втория, трябва да сложим между тях `GO`.
+## Error Handling
+Error handling-ът е от ключово значение както за **сигурността**, така и за **потребителското изживяване (UX)**:
+
+1. **Сигурност**:  
+    Ако приложението хвърля необработени грешки, които достигат до потребители, те могат да съдържат чувствителна информация като структура на базата данни, имена на таблици или вътрешна логика. Това би могло да даде възможност на злонамерени лица да идентифицират слабости в приложението и да го атакуват.
+    
+2. **Потребителско изживяване (UX)**:  
+    Добре обработените грешки гарантират, че потребителите получават ясни, но опростени съобщения, които обясняват проблема без излишни технически детайли. Това подобрява доверието към приложението и помага на потребителите да разберат как да реагират (напр. да опитат отново или да се свържат с поддръжка).
+    
+
+Пример за добро управление на грешки е предоставянето на обобщено съобщение за потребителя, докато детайлите на грешката се записват в логове, достъпни само за администратора.
+
+Error Handling-a се ползва, когато има програмна логика в базата, иначе се ползват инструментите които имаме в backend езика, който ползваме.
+### THROW
+Хвърля грешка и трансферира изпълнението на `CATCH` блок.
+Аргументите: 
+- `error_number` - INT (между 50000 и 2147483647). Microsoft са запазили за себе си кодовете от 1 до 50000.
+- `message` - NVARCHAR(2048)
+- `state` - TINYINT (между 0 и 255)
+
+**Syntax:**
+
+```sql
+IF(@candidateAge < @minimalCandidateAge)
+BEGIN
+ THROW 50001, 'The candidate is too young!', 1;
+END
+```
+### TRY...CATCH
+Може да слагаме SQL изрази в `TRY` блок. Ако се появи грешка в `TRY` блока, контрола се подава на друга група от изрази намиращи се в `CATCH` блок.
+
+**Syntax:**
+
+```sql
+BEGIN TRY
+ { sql_statement | statement_block }
+END TRY
+BEGIN CATCH
+ [ { sql_statement | statement_block } ]
+END CATCH
+[ ; ] 
+```
+
+**Example:**
+
+```sql
+BEGIN TRY
+ -- Generate a divide-by-zero error.
+ SELECT 1/0
+END TRY
+BEGIN CATCH
+ SELECT
+ ERROR_NUMBER() AS ErrorNumber
+ ,ERROR_SEVERITY() AS ErrorSeverity
+ ,ERROR_STATE() AS ErrorState
+ ,ERROR_PROCEDURE() AS ErrorProcedure
+ ,ERROR_LINE() AS ErrorLine
+ ,ERROR_MESSAGE() AS ErrorMessage;
+END CATCH
+GO
+```
+
+Информацията от примера идва от стандартни системни функции, които са предназначени за обработка и диагностициране на грешки.
+### `@@ERROR`
+`@@ERROR` е глобална променлива в SQL Server, която се използва за **проверка на грешки** след изпълнението на SQL заявки. Тя връща стойността на последната възникнала грешка, ако има такава.
+
+**Основни характеристики на `@@ERROR`:**
+
+1. **Връща 0, ако няма грешка**: Ако последният изпълнен SQL израз е завършил успешно, стойността на `@@ERROR` ще бъде 0.
+2. **Връща номера на грешката**: Ако е възникнала грешка при изпълнението на SQL заявка, `@@ERROR` ще съдържа номера на тази грешка.
+3. **Зачиства се и reset-ва след всяка заявка**: След всяка изпълнена SQL заявка, стойността на `@@ERROR` се reset-ва и трябва да бъде проверена веднага след изпълнението на заявката, ако искаме да уловим грешката.
+
+**Важни бележки:**
+
+- `@@ERROR` е **глобална променлива** и е достъпна по всяко време, но нейното значение е свързано със състоянието на последния изпълнен SQL израз.
+- За по-добра обработка на грешки и транзакции е препоръчително да използвате **TRY/CATCH блокове** в SQL Server вместо само `@@ERROR`, тъй като те предоставят по-добро и по-структурирано управление на грешки.
 # Misc
 # ChatGPT
+## Procedures vs Functions
+The distinction between **procedures** and **functions** in SQL lies in their purpose and how they are used, offering flexibility based on the intended operation. Here's a breakdown of the **essence** of their differences:
+
+**1. Purpose and Use Case**
+
+- **Procedures**:
+    
+    - Designed to perform **actions** (e.g., updating tables, inserting rows, managing transactions).
+    - Can contain complex logic with multiple steps.
+    - Typically used for tasks where returning a value is not the primary goal but executing operations is.
+- **Functions**:
+    
+    - Designed to **calculate and return a value** or a table (e.g., computations, formatting, derived data).
+    - Must return a value or table as their result.
+    - Commonly used in SELECT statements, `WHERE` clauses, or `JOIN` conditions.
+
+**2. Return Value**
+
+- **Procedures**:
+    
+    - Can return multiple result sets (using `SELECT` statements) or output parameters.
+    - Can return **nothing** if no results or output parameters are defined.
+- **Functions**:
+    
+    - Always return **a single value** (scalar functions) or a **table** (table-valued functions).
+
+**3. Input Parameters**
+
+- **Procedures**:
+    
+    - Accept input, output, and input-output parameters.
+    - More flexible in how they interact with calling code.
+- **Functions**:
+    
+    - Accept only input parameters (no output parameters).
+
+**4. Usage in SQL Queries**
+
+- **Procedures**:
+    
+    - Cannot be directly used in SQL queries.
+    - Executed using the `EXEC` or `CALL` keyword.
+- **Functions**:
+    
+    - Can be used **inline** within SQL queries (e.g., in `SELECT`, `WHERE`, `GROUP BY`).
+    - Treat them like built-in SQL functions such as `LEN()` or `SUM()`.
+
+**5. Side Effects**
+
+- **Procedures**:
+    
+    - Can perform **side effects** like modifying database state (e.g., inserting, updating, or deleting rows).
+    - Suitable for transactional workflows.
+- **Functions**:
+    
+    - Are **side-effect-free** (pure functions); they cannot modify database state.
+    - This makes them safer for use in queries.
+
+**Analogy**
+
+Think of procedures as **task doers**—like a chef preparing an entire meal in stages, while functions are like **tools**—a specific knife or blender that performs one precise action (e.g., slicing or mixing).
+## `GO`
+**`GO`** is used in SQL Server to separate batches of SQL statements. It is not part of the SQL standard but is a command specific to SQL Server, indicating that the preceding batch of SQL statements should be executed as a separate unit.
+
+**Main purposes of `GO`:**
+
+1. **Batch separation**: When you need to execute different blocks of SQL code as separate batches.
+2. **Re-execution of commands**: If you want to ensure that each statement or group of statements is executed separately.
+3. **Context changes**: For example, if you're creating or altering objects like tables and want to make sure the commands are executed individually.
+
+**Example:**
+
+```sql
+SELECT 'Hello World';  -- First batch
+GO
+SELECT 'Goodbye World';  -- Second batch
+GO
+```
+
+In this example, the two queries will be executed separately because of the **`GO`** command.
 # Bookmarks
 Completion: 23.01.2025
