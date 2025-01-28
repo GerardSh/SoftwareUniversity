@@ -87,14 +87,71 @@ ACID е съкратено от:
 Fire-ват, когато определен тип SQL statement се изпълни към таблицата.
 
 Делят се на два вида:
+### AFTER Triggers
+`AFTER INSERT/UPDATE/DELETE` - изпълнява се след определено действие в SQL.
 
-AFTER INSERT/UPDATE/DELETE - изпълнява се след определено действие в SQL.
+```sql
+CREATE TRIGGER tr_AddToLogsOnAccountUpdate
+ON Accounts FOR UPDATE
+AS
+ INSERT INTO Logs(AccountId, OldAmount, NewAmount, UpdatedOn)
+ SELECT i.Id, d.Balance, i.Balance, GETDATE()
+ FROM inserted AS i
+ JOIN deleted AS d ON i.Id = d.Id
+ WHERE i.Balance != d.Balance
+```
 
-INSTEAD OF INSERT/UPDATE/DELETE - изпълнява се вместо определено действие в SQL, напълно подменя самата операция.
+`inserted` и `deleted` са специални обекти в SQL Server и са за конкретната таблица. В `inserted` се намират новите данни, в `deleted` са старите данни.
+Конвенцията за наименуване е да се добавя `tr_` преди името, което е в PascalCase.
+### INSTEAD OF Triggers
+`INSTEAD OF INSERT/UPDATE/DELETE` - изпълнява се вместо определено действие в SQL, като напълно подменя самата операция.
+
+```sql
+CREATE OR ALTER TRIGGER tr_SetIsDeletedOnDelete
+ON AccountHolders
+INSTEAD OF DELETE
+AS
+ UPDATE AccountHolders SET IsDeleted = 1
+ WHERE Id IN (SELECT Id FROM deleted)
+```
+
+Когато изтрием нещо, ще бъде добавено в `deleted` обектите, от където може да си извадим `Id`.
 ### Events
 Събитието, трябва да е нещо, което променя базата данни, иначе няма смисъл от triggers. Трите събития, при които може да добавим triggers са `INSERT`, `UPDATE` и `DELETE`.
 
 Event-a се указва с ключовата дума `FOR`, трябва да кажем trigger-a за кой event е.
+## Database Security
+SQL Server има две нива на database сигурност, базирани върху роли. Комбинацията от тези роли, определя правата които има всеки един от потребителите на SQL Server.
+В Object Explorer на SQL Server Management Studio (SSMS) можем да намерим папката `Security`, която е налична на две нива:
+1. На ниво Server
+    - Съдържа папката `Logins`, която управлява потребителите, имащи достъп до сървъра.
+    - Чрез нея можем да:
+        - Създаваме нови логини (logins).
+        - Задаваме сървър роли (Fixed Server Roles) за контролиране на правата.
+2. На ниво Database
+    - Съдържа обекти като `Users` и `Roles`, които се използват за управление на достъпа и правата в рамките на конкретна база данни.
+### Fixed Server Roles
+- `sysadmin`
+- `bulkadmin`
+- `dbcreator`
+- `securityadmin`
+
+Тези роли важат за целия сървър.
+### Fixed Database Roles
+- `db_owner`
+- `db_securityadmin`
+- `db_accessadmin`
+- `db_backupoperator`
+- `db_ddladmin`
+- `db_datareader` / `db_datawriter`
+
+Тези роли важат за конкретна база данни.
+### Custom Roles
+В SQL Server можем да създаваме custom роли, които позволяват присвояването на специфични права. Това е особено полезно за организиране на групи потребители с идентични нужди от достъп.
+
+**Предимства:**
+- Улесняват управлението на правата за групи потребители.
+- Правят auditing operations по-лесни и ефективни.
 # Misc
 # ChatGPT
 # Bookmarks
