@@ -1,4 +1,4 @@
-SELECT tns.[Name] AS TownName, COUNT(*) AS PassangerCount
+SELECT tns.[Name] AS TownName, COUNT(DISTINCT p.Id) AS PassengerCount
 FROM Passengers AS p
 	JOIN Tickets AS ti ON ti.PassengerId = p.Id
 	JOIN Trains as t ON t.Id = ti.TrainId
