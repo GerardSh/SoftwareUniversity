@@ -127,6 +127,17 @@ public class Department
 Въпреки че в класа `Department` нямаме изрично дефинирано `FK` пропърти, Entity Framework ще разпознае връзката, като открие `DepartmentId` в класа `Employee`. По този начин EF ще знае кои служители да включи в колекцията `Employees` за съответния департамент. Това ще работи коректно, ако пропъртитата са наименувани правилно.
 
 Обикновено типа на пропъртито е `ICollection<T>`
+### `DbSet<T>`
+Специален тип колекция, която е направена само за работа с базата данни. Това е обектно ориентирания вариант на таблицата в базата данни, където `<T>` е типа на entity-to.
+Entity класовете са единичен запис - един entity клас е един ред от таблицата, докато `DbSet<T>` е обект, който е самата таблица.
+
+`DbSet<T>` е generic collection с допълнителни свойства.
+
+Всеки `DbSet<T>` отговаря точно на една таблица в базата данни.
+
+Наследява от `ICollection<T>` както и `IEnumerable` - може да бъде foreach-нат.
+
+Подържа LINQ операции.
 # Misc
 # ChatGPT
 ## SQL Tables as Both Objects and Collections From OOP Perspective
@@ -284,6 +295,39 @@ In other words - both ADO.NET and ORMs aim to enable object-oriented programming
 
 ORMs like Entity Framework automate most of this, allowing developers to work with objects directly without worrying about SQL syntax and database operations. This makes ORMs more efficient and developer-friendly, though they introduce some performance overhead compared to raw ADO.NET.
 
-In summary, while ADO.NET provides maximum control and might be slightly more performant in very specific, optimized scenarios, the advantages in developer productivity, maintainability, and abstraction make ORMs the preferred choice for most applications. 
+In summary, while ADO.NET provides maximum control and might be slightly more performant in very specific, optimized scenarios, the advantages in developer productivity, maintainability, and abstraction make ORMs the preferred choice for most applications.
+## Understanding the Backend Data Processing Workflow
+The main idea of the **backend** part of a web application revolves around:
+
+1. **Retrieving data** from the database.
+2. **Processing** that data in memory.
+3. **Saving the results** back to the database.
+
+This process relies on **various collections** and **data structures** that are optimized to perform the task efficiently.
+
+**What does this process involve?**
+
+1. **Retrieving data from the database:**
+    
+    - **SQL queries** are used to access data from tables and relationships between them.
+    - **ORM (Object-Relational Mapping)** technologies like **Entity Framework** are used to map data from the relational format into objects (or classes) that can be processed in memory.
+2. **Processing data in memory:**
+    
+    - Once the data is retrieved, it can be **manipulated**, **filtered**, **sorted**, **grouped**, and **modified** using various data structures (like Lists (`List<T>`), Sets (`HashSet<T>`), Dictionaries (`Dictionary<T1, T2>`), Collections (`ICollection<T>`)).
+    - For example, if we want to get a list of all employees in a specific department, we might use `ICollection<Employee>` or` List<Employee>` in memory to work with the data.
+3. **Saving data back to the database:**
+    
+    - After processing the data, the modified results can be saved back to the database using **insert, update, or delete** SQL commands.
+    - ORM typically handles generating the corresponding SQL queries based on changes to the objects.
+
+**What is the main focus of backend programming?**
+
+**Optimizing these processes** is the main focus of backend development because:
+
+- **Quick data retrieval** from the database and **fast processing** in memory is crucial for application performance.
+- **Using the right data structures** and **optimizing queries** is essential for **system efficiency**.
+- **Scalability** is also a key factor – backend applications need to handle large volumes of data and perform efficiently under increased load.
+
+This explains why **collections** and **data structures** are so important in the data processing pipeline and why backend programming involves so much interaction with them. 🎯
 # Bookmarks
 Completion: 08.02.2025
