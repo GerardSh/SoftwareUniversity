@@ -42,15 +42,18 @@ ADO.NET продължава да бъде важен инструмент в .N
 ## SqlClient and ADO.NET Connected Model
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250206131541.png)
 ## ORM (Object-Relational Mapping)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250207112219.png)
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250206133252.png)
 
 Чрез този модел, реално не работим с базата данни, навсякъде виждаме само обекти. ORM-а се грижи, всичко което правим в обектно ориентирания модел, да го изпълнява върху релационния. Всичко се превежда към SQL и се изпълнява в базата данни. Идеята е да се map-не обектния и релационния модел, за да работим с обектния в приложението, а базата да се оправя с релационния модел. Така всяка таблица в базата данни, става клас в нашия обектно ориентиран модел и обект, когато се инстанцира.
 Трябва да се има предвид и casing-a на имената на колоните, в случая няма конфликт, защото .NET и SQL Server, ползват PascalCase. Други бази данни (като PostgreSQL, MySQL) използват snake_case по подразбиране, което може да доведе до несъответствия.
 ### Benefits and Problems
 Предимства:
-- По-малко код.
-- Използваме обекти вместо таблици и SQL.
+- По-малко код, повече продуктивност.
+- Използваме обекти вместо таблици и SQL, чрез абстракция. Тази абстракция позволява лесната подмяна на базата данни.
 - Интегриран механизъм за писане на заявки. ORM-а прави SQL заявки над средното ниво, на голяма част от програмистите.
+- По-лесно управление, когато става въпрос за сложни връзки - примерно вкарва записи в правилния ред, като се съобразява с Foreign Key constraints.
+- По-лесна поддръжка.
 
 Проблеми:
 - Не толкова гъвкави, макар че имаме възможност да пишем и Raw SQL, което ни дава същата гъвкавост, която имаме и без ORM.
@@ -61,6 +64,69 @@ ADO.NET продължава да бъде важен инструмент в .N
 
 Използва `Connection Pooling`, което означава, че повторно използва вече отворени връзки, вместо да създава нови всеки път, тъй като връзката е скъпа операция. Това намалява времето за изпълнение на заявки, пести ресурси на базата данни и намалява натоварването на мрежата.
 Това е едно от предимствата на EF Core, защото се възползва от connection pooling на ADO.NET, без да се налага да го управляваме ръчно.
+
+Поддържа и двата варианта на работа:
+- **Database First** – започваме с вече съществуващи таблици, а ORM-a генерира съответните класове.
+- **Code First** – първо дефинираме класовете, след което ORM-a създава таблици въз основа на тях.
+### ORM Features
+ORM-ите предлагат определени функции, една от които е автоматичното генериране на SQL:
+
+```csharp
+database.Employees.Add(new Employee
+{
+	 FirstName = "George",
+	 LastName = "Peterson",
+	 IsEmployed = true });
+```
+
+ORM-а ще генерира:
+
+```sql
+INSERT INTO Employees
+(FirstName, LastName, IsEmployed)
+VALUES
+('George '
+,
+'Peterson', 1)
+```
+
+- ORM-a може да генерира обектния модел, като анализира схемата на базата данни - (**DB First model**)
+- Може да направи и обратното, ако имаме създаден обектен модел, ORM-a може да създаде базата по него - (**Code First model**)
+- Можем да правим заявки върху обектно ориентирания модел, ORM-а я обръща в SQL и я изпраща към базата. Получавайки отговора от базата, ORM-а го map-ва към обектите в обектно ориентирания модел и получаваме обект - (**e.g., LINQ queries**)
+### Entity Classes - Data Holders
+Това са нормални C# класове.
+
+Когато извличаме данни от базата данни, нашето приложение ги съхранява в паметта. Колкото повече информация дърпаме от базата, толкова повече нараства консумацията на паметта. Поради това се опитваме да дърпаме по-малко информация - когато е възможно правим проекции, слагаме `WHERE` клаузи, ограничаваме информацията, само до тази, която ни е необходима. Това се отразява не само на паметта, но и на мрежовото натоварване, като така печелим по-голяма производителност и скорост. 
+Реално може да дръпнем цялата информация от базата и да вземем само това, което ни трябва, игнорирайки останалото, но това е много лоша практика, заради изброените причини.
+#### Navigation Properties
+По конвенция, EF ще направи `PRIMARY KEY`, всяка една колона, която кръстим `Id`. Все пак е желателно нещата да са експлицитни и затова е добре `PRIMARY KEY` да се отбележи с атрибут `[KEY]`.
+
+```csharp
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int DepartmentId { get; set; }  // Foreign Key (FK)
+    public Department Department { get; set; }  // Навигационно пропърти (Many-to-One)
+}
+
+public class Department
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public ICollection<Employee> Employees { get; set; } = new List<Employee>(); // Навигационно пропърти (One-to-Many)
+}
+```
+
+При `FOREIGN KEY`, се ползват navigation properties. Примерно ако имаме SQL таблица `Employees` с колона `DepartmentId`, която е `FK`, трябва да направим освен нормалното `int` property `public int DepartmentId { get; set; }` то и navigation property-то `public Department Department { get; set; }`. В случая `Department` е инстанция на класа `Department`, който отразява таблицата `Departments` в базата.
+Води се навигационно пропърти, защото ни позволява през него, да отидем в следващата таблица и да прочетем данните от таблица `Department`. Чрез това пропърти, EF ще направи `JOIN` на двете таблици и ще попълни и `Employee` и `Department` обекта с информацията от `Department`.  В обекта `Department` ще имаме само информацията за департамента с посочения номер в `DepartmentId`.
+Реално `FK` е `DepartmentId`, а navigation property-то е `Department`.
+
+Навигационните пропъртита може да са колекции. Например, в класа `Department` можем да имаме колекция `Employees`, защото един департамент може да има много служители. Това съответства на релацията **One-to-Many** между таблиците.
+
+Въпреки че в класа `Department` нямаме изрично дефинирано `FK` пропърти, Entity Framework ще разпознае връзката, като открие `DepartmentId` в класа `Employee`. По този начин EF ще знае кои служители да включи в колекцията `Employees` за съответния департамент. Това ще работи коректно, ако пропъртитата са наименувани правилно.
+
+Обикновено типа на пропъртито е `ICollection<T>`
 # Misc
 # ChatGPT
 ## SQL Tables as Both Objects and Collections From OOP Perspective
@@ -220,4 +286,4 @@ ORMs like Entity Framework automate most of this, allowing developers to work wi
 
 In summary, while ADO.NET provides maximum control and might be slightly more performant in very specific, optimized scenarios, the advantages in developer productivity, maintainability, and abstraction make ORMs the preferred choice for most applications. 
 # Bookmarks
-Completion: 07.02.2025
+Completion: 08.02.2025
