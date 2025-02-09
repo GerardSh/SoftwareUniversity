@@ -1,0 +1,5 @@
+DELETE FROM Orders
+WHERE CustomerId IN (SELECT Id FROM Customers WHERE Email IS NULL)
+
+DELETE FROM Customers
+WHERE Email IS NULL
