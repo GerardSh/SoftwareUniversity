@@ -127,6 +127,8 @@ public class Department
 Въпреки че в класа `Department` нямаме изрично дефинирано `FK` пропърти, Entity Framework ще разпознае връзката, като открие `DepartmentId` в класа `Employee`. По този начин EF ще знае кои служители да включи в колекцията `Employees` за съответния департамент. Това ще работи коректно, ако пропъртитата са наименувани правилно.
 
 Обикновено типа на пропъртито е `ICollection<T>`
+
+Всяка релация в базата данни е navigation property в нашия обектно ориентиран модел.
 ### `DbSet<T>`
 Специален тип колекция, която е направена само за работа с базата данни. Това е обектно ориентирания вариант на таблицата в базата данни, където `<T>` е типа на entity-to.
 Entity класовете са единичен запис - един entity клас е един ред от таблицата, докато `DbSet<T>` е обект, който е самата таблица.
@@ -138,6 +140,26 @@ Entity класовете са единичен запис - един entity к�
 Наследява от `ICollection<T>` както и `IEnumerable` - може да бъде foreach-нат.
 
 Подържа LINQ операции.
+
+Обикновено няколко `DbSet` са част от `DbContext`.
+- Най-ниското ниво в базата данни е колоната, която съдържа единична стойност. В нашия обектно-ориентиран модел, това е съответстващо на пропърти в ентити класовете.
+- Следващото ниво е редът, който съдържа колекция от колони, и това отговаря на нашите ентити класове. Всеки ред в таблицата е представен като един обект от клас.
+- След това е `DbSet`, който е колекция от редове и отговаря на една таблица в базата данни. `DbSet` представлява таблица и позволява CRUD операции върху нея.
+- Колекцията от няколко `DbSet` са част от `DbContext`, който е репрезентацията на базата данни в обектно-ориентирания модел. В `DbContext` се управляват всички таблици (чрез `DbSet`), както и логиката за тяхното взаимодействие с базата данни.
+
+В обобщение, `DbSet<T>` е основният механизъм, чрез който Entity Framework работи с таблиците в базата данни, предоставяйки обектно-ориентиран интерфейс за манипулиране на данните, които се съхраняват в релационните таблици.
+#### Features
+##### Change Tracker
+Всяка таблица си следи редовете, ако възникне промяна, таблицата ще разбере, използвайки Change Tracker. 
+Change Tracker следи обектите, които сме заредили в паметта чрез `DbContext`, и ако направим промени в тях, той ги запомня и при `SaveChanges()` ги пренася в базата данни. Ако са добавени редове, когато запазим промените, ще бъдат генерирани `INSERT` заявки за да ги запишат в базата, ако променяме данни, ще бъдат генерирани `UPDATE` заявки. При изтриване, ще бъде генерирана `DELETE` заявка.
+Чрез този механизъм, можем да проверим кои стойности са променени преди `SaveChanges()`, което ни позволява да валидираме промяната. Вместо да проверява всички данни, EF анализира само промените и генерира съответните SQL заявки.
+##### `ICollection<T>`
+Има всички свойства на `ICollection<T>`:
+- Достъп до отделните елементи, ползвайки LINQ.
+- Добавяне / промяна на елементи.
+- Изтриване на ентитита.
+- Проверка дали даден елемент съществува.
+- Проверка на броя елементи.
 # Misc
 # ChatGPT
 ## SQL Tables as Both Objects and Collections From OOP Perspective
@@ -185,6 +207,23 @@ List<User> users = GetUsersFromDatabase(); // Imagine this method fills a list w
     - **Table as a Collection:** The set of rows can be represented as a collection of these objects (e.g., a `List<T>`).
 
 In SQL, a table serves as both the blueprint for a single record (analogous to an object in C#) and as a collection that holds multiple such records. Each row represents an instance of that blueprint, similar to an object with properties defined by the table's columns. When you retrieve data, you can map these rows to objects and even store them in a collection like a `List<T>` in C#. This analogy helps bridge the gap between relational database design and object-oriented programming, making it easier to conceptualize how data is structured and manipulated across both paradigms.
+## Entity Framework and SQL Server: Mapping Tables to Classes and DbContext
+In SQL Server, you can think of it this way:
+
+- **A column** represents a **property** of a class (like a field in an object).
+- **A row** represents an **instance of a class** (an object with values for each property).
+- **A collection of rows (the entire table)** represents a **DbSet** in Entity Framework, which is a collection of instances of a class.
+- **The database** represents the **DbContext**, which manages multiple `DbSets` and provides a session for querying and saving changes.
+
+So, in object-oriented terms:
+
+- A **table** is like a **class definition** (but also acts as a collection of objects).
+- A **row** is an **instance of that class** (an object).
+- A **column** is a **property** of that object.
+- A **`DbSet<T>`** represents a **table**, allowing you to query and manipulate rows as objects.
+- The **DbContext** acts as the **unit of work**, managing the connection to the database, tracking changes, and persisting them when `SaveChanges()` is called.
+
+This is why ORM tools like Entity Framework map database tables to C# classes—because the structure is quite similar!
 ## ORM
 The **primary idea of an ORM** is to **abstract away SQL** so that developers can focus on **object-oriented programming (OOP)** instead of writing raw SQL queries.
 
@@ -330,4 +369,4 @@ This process relies on **various collections** and **data structures** that are 
 
 This explains why **collections** and **data structures** are so important in the data processing pipeline and why backend programming involves so much interaction with them. 🎯
 # Bookmarks
-Completion: 08.02.2025
+Completion: 11.02.2025
