@@ -107,14 +107,14 @@ public class Employee
     public int Id { get; set; }
     public string Name { get; set; }
     public int DepartmentId { get; set; }  // Foreign Key (FK)
-    public Department Department { get; set; }  // Навигационно пропърти (Many-to-One)
+    public Department Department { get; set; }  // Navigation property (Many-to-One)
 }
 
 public class Department
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public ICollection<Employee> Employees { get; set; } = new List<Employee>(); // Навигационно пропърти (One-to-Many)
+    public ICollection<Employee> Employees { get; set; } = new List<Employee>(); // Navigation property (One-to-Many)
 }
 ```
 
@@ -148,11 +148,6 @@ Entity класовете са единичен запис - един entity к�
 - Колекцията от няколко `DbSet` са част от `DbContext`, който е репрезентацията на базата данни в обектно-ориентирания модел. В `DbContext` се управляват всички таблици (чрез `DbSet`), както и логиката за тяхното взаимодействие с базата данни.
 
 В обобщение, `DbSet<T>` е основният механизъм, чрез който Entity Framework работи с таблиците в базата данни, предоставяйки обектно-ориентиран интерфейс за манипулиране на данните, които се съхраняват в релационните таблици.
-#### Features
-##### Change Tracker
-Всяка таблица си следи редовете, ако възникне промяна, таблицата ще разбере, използвайки Change Tracker. 
-Change Tracker следи обектите, които сме заредили в паметта чрез `DbContext`, и ако направим промени в тях, той ги запомня и при `SaveChanges()` ги пренася в базата данни. Ако са добавени редове, когато запазим промените, ще бъдат генерирани `INSERT` заявки за да ги запишат в базата, ако променяме данни, ще бъдат генерирани `UPDATE` заявки. При изтриване, ще бъде генерирана `DELETE` заявка.
-Чрез този механизъм, можем да проверим кои стойности са променени преди `SaveChanges()`, което ни позволява да валидираме промяната. Вместо да проверява всички данни, EF анализира само промените и генерира съответните SQL заявки.
 ##### `ICollection<T>`
 Има всички свойства на `ICollection<T>`:
 - Достъп до отделните елементи, ползвайки LINQ.
@@ -160,6 +155,97 @@ Change Tracker следи обектите, които сме заредили �
 - Изтриване на ентитита.
 - Проверка дали даден елемент съществува.
 - Проверка на броя елементи.
+### DbContext
+Репрезентация на цялата база. Така както entity класовете съдържат пропъртита, така `DbContext`-а съдържа db сетове.
+
+Отговорен е да попълва db сетовете. Когато искаме да работим с даден сет, това става през контекста, защото сета е негово пропърти. 
+
+Когато създаваме собствен `DbContext`, той трябва да наследи класа `DbContext`:
+
+```csharp
+public class SoftUniDbContext : DbContext
+{
+ public DbSet<Employee> Employees { get; set; }
+ public DbSet<Department> Departments { get; set; }
+ public DbSet<Project> Projects { get; set; }
+}
+```
+#### Reading Data
+Трябва да създадем `DbContext` и да го ползваме, за да достъпим таблиците.
+
+```csharp
+var context = new SoftUniDbContext(); // We can pass a connection string in the constructor
+
+var employees = context.Employees // Employees property in the DbContext
+ .Where(e => e.JobTitle == "Design Engineer")
+ .ToList();
+
+public class SoftUniDbContext : DbContext
+{
+ public DbSet<Employee> Employees { get; }
+ public DbSet<Project> Projects { get; }
+ public DbSet<Department> Departments { get; }
+}
+```
+
+Може да ползваме extension методи, за да създадем заявката:
+
+```csharp
+var context = new SoftUniDbContext()
+var employees = context.Employees
+	 .Where(c => c.JobTitle == "Design Engineering")
+	 .Select(c => c.FirstName)
+	 .ToList();
+ 
+// Find element by ID
+
+Reading Data with LINQ Query
+var context = new SoftUniEntities()
+var project = context.Projects
+	.FirstOrDefault(p => p.Id == 2);
+Console.WriteLine(project.Name);
+```
+#### Change Tracker
+Всеки `DbContext`, следи промените на ентититата в db сетовете. Тези промени, променят данните в базата, когато се извика метода `SaveChanges()`, който отваря транзакция към базата данни и почва да изпълнява всички направени промени по таблиците, които сме направили. 
+
+Ентити инстанциите стават проследявани, когато:
+- Бъдат върнати от заявка, изпълнена срещу базата данни (но само ако се връщат като цели обекти, а не като проекции).
+- Бъдат изрично добавени към `DbContext` чрез методи като `Add`, `Attach`, `Update`.
+- Бъдат открити като нови обекти, свързани със съществуващи проследявани обекти.
+
+Проекциите (DTO, анонимни обекти, селектирани конкретни полета) не могат да се проследяват, защото те не са цели ентити и `DbContext` не ги разпознава като част от модела.
+
+С други думи, всяка таблица си следи редовете, ако възникне промяна, тя ще разбере, използвайки Change Tracker-а. 
+Change Tracker следи обектите, които сме заредили в паметта чрез `DbContext` и ако направим промени в тях, той ги запомня и при `SaveChanges()` ги пренася в базата данни. Ако са добавени редове, когато запазим промените, ще бъдат генерирани `INSERT` заявки за да ги запишат в базата, ако променяме данни, ще бъдат генерирани `UPDATE` заявки. При изтриване, ще бъде генерирана `DELETE` заявка.
+Чрез този механизъм, можем да проверим кои стойности са променени преди `SaveChanges()`, което ни позволява да валидираме промяната. Вместо да проверява всички данни, EF анализира само промените и генерира съответните SQL заявки.
+### CRUD Operations
+Работим така, както работим с обикновени колекции в C#, без да се интересуваме че това е база. Единствената разлика е че трябва да извикаме метода `SaveChanges()` за да персистираме направените промени. 
+Важното е, че не е нужно да се тревожим за детайлите около самата база данни (като написване на SQL заявки), тъй като EF автоматично извършва всичко това за нас, стига да извикаме `SaveChanges()`.
+#### Creating New Entities
+```csharp
+var project = new Project() // Create a new Project object
+{
+ Name = "Judge System"
+};
+context.Projects.Add(project); // Add the object to the DbSet
+context.SaveChanges(); // Execute SQL statements
+```
+#### Updating Existing Entities
+```csharp
+var employee =
+ context.Employees.FirstOrDefault(); // SELECT the first employee
+employee.FirstName = "Alex";
+context.SaveChanges(); // Execute an SQL UPDATE
+```
+
+Ъпдейта става като заредим ентитито, променяме и го персистираме в базата данни, чрез метода `SaveChanges()`.
+#### Deleting Existing Data
+```csharp
+var employee =
+ context.Employees.First();
+context.Employees.Remove(employee); // Mark the entity for deleting at the next save
+context.SaveChanges(); // Execute the SQL DELETE command
+```
 # Misc
 # ChatGPT
 ## SQL Tables as Both Objects and Collections From OOP Perspective
@@ -224,7 +310,50 @@ So, in object-oriented terms:
 - The **DbContext** acts as the **unit of work**, managing the connection to the database, tracking changes, and persisting them when `SaveChanges()` is called.
 
 This is why ORM tools like Entity Framework map database tables to C# classes—because the structure is quite similar!
-## ORM
+
+**You said:**
+
+Can we say that actually an entity class represents just the structure of the table without records and each individual object of that class is a record in the table?
+
+**ChatGPT said:**
+
+Yes, that's a very good way to think about it. In the world of ORMs (Object-Relational Mappers) such as Entity Framework, the entity class serves as a blueprint—defining the structure or schema of the table (i.e. what columns exist, their types, constraints, etc.) without containing any of the actual data (records). Then, each instance (object) of that class represents a specific record (row) in the table.
+
+**Clarifying the Concept**
+
+- **Entity Class as the Structure:**  
+    The class itself defines the mapping between its properties and the columns in the database table. It lays out the “blueprint” for the data structure—similar to how a class in object-oriented programming defines what an object should look like.
+    
+- **Instances as Records:**  
+    When you create an object (an instance of the entity class), you’re essentially creating a record that conforms to that structure. Each object has specific values for each property, which correspond directly to the values in the corresponding row in the table.
+
+**Entity Instances**
+
+- An **entity** is the **database structure**, meaning the definition of a table that represents a real-world concept (like a `User`, `Order`, or `Product`). It defines **columns (attributes)** and relationships.
+- An **entity instance** is a **specific record** in that structure, meaning a single row in the table.
+
+For example, in a `Users` table:
+
+|ID|Name|Email|
+|---|---|---|
+|1|John|john@email.com|
+|2|Alice|alice@email.com|
+
+- **`Users` is the entity** (the table definition).
+- **`{ ID: 1, Name: "John", Email: "john@email.com" }` is an entity instance** (a row in the table).
+
+**In Summary**
+
+- **Entity Class = Table Schema (Structure Only):**  
+    The class tells EF Core how to map properties to columns, defines keys, relationships, and other metadata. It doesn’t contain data itself.
+    
+- **Entity Object = Table Record (Data):**  
+    Each instance of the entity class represents one record in the table. When you query your database, EF Core materializes these objects by filling in the property values from the corresponding row’s data.
+
+This perspective can help clarify why ORMs map tables to classes—because the class defines the structure, and the instances populate that structure with data, mirroring rows in the table.
+
+This explanation aligns well with both common practice and how documentation explains the concepts in Entity Framework Core.
+## ORM Purpose
 The **primary idea of an ORM** is to **abstract away SQL** so that developers can focus on **object-oriented programming (OOP)** instead of writing raw SQL queries.
 
 **Key Benefits of Using an ORM**
@@ -265,7 +394,7 @@ Even though ORM reduces the need for SQL, some **SQL knowledge is still useful**
 
 **Conclusion**
 
-Yes, ORMs **reduce the need for SQL** knowledge because they handle database operations internally. However, understanding **basic SQL** is still valuable for debugging, performance tuning, and handling edge cases. 🚀
+ORMs **reduce the need for SQL** knowledge because they handle database operations internally. However, understanding **basic SQL** is still valuable for debugging, performance tuning, and handling edge cases. 🚀
 ## ORM and ADO.NET Relation
 ORM (Object-Relational Mapping) and ADO.NET are closely related in that ORM frameworks are typically built on top of ADO.NET to simplify data access in .NET applications. Here’s how they relate:
 
