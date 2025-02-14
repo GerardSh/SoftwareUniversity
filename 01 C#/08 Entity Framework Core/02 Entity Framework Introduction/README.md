@@ -178,10 +178,15 @@ Scaffold-DbContext "Server=.;Database=SoftUni;User Id=UserName;Password=Password
 ```
 
 **Connection String** - параметърът за връзка с базата данни: съдържа сървър, база данни и данни за достъп.
+
 **Provider** - `Microsoft.EntityFrameworkCore.SqlServer`: Указва provider-a за SQL Server.
+
 **`-DataAnnotations`** - използва Data Annotations вместо Fluent API при генерирането на класовете.
+
 **`-Context SoftUniDbContext`** - Задава името на генерирания DbContext клас (тук: `SoftUniDbContext`).
+
 **`-ContextDir Data`** - указва директорията за DbContext класа (тук: `Data`).
+
 **`-OutputDir Data/Models`** - указва директорията за моделите (тук: `Data/Models`).
 
 Командата генерира класовете и DbContext за съществуващата база данни, използвайки зададената връзка и Data Annotations.
