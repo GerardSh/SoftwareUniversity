@@ -224,5 +224,34 @@ namespace SoftUni
 
             return sb.ToString().Trim();
         }
+
+        public static string GetEmployee147(SoftUniContext context)
+        {
+            var employee147 = context.Employees
+                .Where(e => e.EmployeeId == 147)
+                .Select(e => new
+                {
+                    e.FirstName,
+                    e.LastName,
+                    e.JobTitle,
+                    Projects = e.EmployeesProjects
+                                .Select(ep => new
+                                {
+                                    ep.Project.Name
+                                })
+                })
+                .FirstOrDefault();
+
+            sb.Clear();
+
+            sb.AppendLine($"{employee147.FirstName} {employee147.LastName} - {employee147.JobTitle}");
+
+            foreach (var project in employee147.Projects.OrderBy(p => p.Name))
+            {
+                sb.AppendLine(project.Name);
+            }
+
+            return sb.ToString().Trim();
+        }
     }
 }
