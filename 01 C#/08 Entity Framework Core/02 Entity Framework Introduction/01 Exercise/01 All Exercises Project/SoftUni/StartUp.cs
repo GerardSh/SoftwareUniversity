@@ -4,6 +4,7 @@ using SoftUni.Models;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace SoftUni
@@ -21,6 +22,18 @@ namespace SoftUni
             // Console.WriteLine(GetEmployeesWithSalaryOver50000(context));
 
             // Console.WriteLine(GetEmployeesFromResearchAndDevelopment(context));
+
+            // Console.WriteLine(AddNewAddressToEmployee(context));
+
+            // Console.WriteLine(GetEmployeesInPeriod(context));
+
+            // Console.WriteLine(GetEmployeesInPeriod2(context));
+
+            // Console.WriteLine(GetAddressesByTown(context));
+
+            // Console.WriteLine(GetEmployee147(context));
+
+            Console.WriteLine(GetDepartmentsWithMoreThan5Employees(context));
         }
 
         public static string GetEmployeesFullInformation(SoftUniContext context)
@@ -43,12 +56,12 @@ namespace SoftUni
         {
             var employees = context.Employees
                 .Where(e => e.Salary > 50000)
-                .OrderBy(e=> e.FirstName)
+                .OrderBy(e => e.FirstName)
                 .Select(e => new
                 {
                     e.FirstName,
                     e.Salary
-                })  
+                })
                 .ToList();
 
             sb.Clear();
@@ -61,7 +74,7 @@ namespace SoftUni
             return sb.ToString().Trim();
         }
 
-       public static string GetEmployeesFromResearchAndDevelopment(SoftUniContext context)
+        public static string GetEmployeesFromResearchAndDevelopment(SoftUniContext context)
         {
             var employees = context.Employees
                 .Where(e => e.Department.Name == "Research and Development")
@@ -85,38 +98,64 @@ namespace SoftUni
 
             return sb.ToString().Trim();
         }
-		
-		public static string AddNewAddressToEmployee(SoftUniContext context)
-        {
-            var employeeNakov = context.Employees
-                .FirstOrDefault(e => e.LastName == "Nakov");
 
-            employeeNakov.Address = new Address
-                {
-                    AddressText = "Vitoshka 15",
-                    TownId = 4,
-                };
+        public static string AddNewAddressToEmployee(SoftUniContext context)
+        {
+            var newAddress = new Address() { AddressText = "Vitoshka 15", TownId = 4 };
+
+            var employees = context.Employees
+                .Include(e => e.Address)
+                .ToList();
+
+            Employee employee = employees.FirstOrDefault(e => e.LastName == "Nakov");
+
+            employee.Address = newAddress;
 
             context.SaveChanges();
 
-            var addresses = context.Employees
-                .OrderByDescending(e => e.AddressId)
+            sb.Clear();
+
+            foreach (var em in employees.OrderByDescending(em => em.AddressId).Take(10))
+            {
+                sb.AppendLine($"{em.Address.AddressText}");
+            }
+
+            return sb.ToString().Trim();
+        }
+
+        public static string GetEmployeesInPeriod(SoftUniContext context)
+        {
+            var employees = context.Employees
+                .Include(e => e.EmployeesProjects)
+                .ThenInclude(ep => ep.Project)
+                .Include(e => e.Manager)
                 .Take(10)
-                .Select(e => new
-                {
-                    AddressId = e.AddressId,
-                    AddressText = e.Address.AddressText,
-                })
                 .ToList();
 
             sb.Clear();
 
-            foreach (var address in addresses)
+            foreach (var employee in employees)
             {
-                sb.AppendLine(address.AddressText);
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} - Manager: {employee.Manager.FirstName} {employee.Manager.LastName}");
+
+                foreach (var project in employee.EmployeesProjects)
+                {
+                    if (project.Project.StartDate.Year < 2001 || project.Project.StartDate.Year > 2003)
+                    {
+                        continue;
+                    }
+
+                    string startDate = project.Project.StartDate.ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+
+                    string endDate = project.Project.EndDate != null
+                                     ? project.Project.EndDate.Value.ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture)
+                                     : "not finished";
+
+                    sb.AppendLine($"--{project.Project.Name} - {startDate} - {endDate}");
+                }
             }
 
-            return sb.ToString().TrimEnd();
+            return sb.ToString().Trim();
         }
     }
 }
