@@ -253,5 +253,36 @@ namespace SoftUni
 
             return sb.ToString().Trim();
         }
+
+        public static string GetDepartmentsWithMoreThan5Employees(SoftUniContext context)
+        {
+            var departments = context.Departments
+                .Where(d => d.Employees.Count > 5)
+                .OrderBy(d=> d.Employees.Count)
+                .ThenBy(d => d.Name)
+                .Select(d => new
+                {
+                    Name = d.Name,
+                    ManagerFirstName = d.Manager.FirstName,
+                    ManagerLastName = d.Manager.LastName,
+                    d.Employees
+                })
+                .ToList();
+
+            sb.Clear();
+
+            foreach (var department in departments)
+            {
+                sb.AppendLine($"{department.Name} - {department.ManagerFirstName} {department.ManagerLastName}");
+
+                foreach (var employee in department.Employees.OrderBy(e => e.FirstName)
+                    .ThenBy(e => e.LastName))
+                {
+                    sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle}");
+                }
+            }
+
+            return sb.ToString().Trim();
+        }
     }
 }
