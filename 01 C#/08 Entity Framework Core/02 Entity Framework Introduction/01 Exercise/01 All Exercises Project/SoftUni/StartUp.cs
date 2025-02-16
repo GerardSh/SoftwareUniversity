@@ -199,5 +199,30 @@ namespace SoftUni
 
             return sb.ToString().TrimEnd();
         }
+
+        public static string GetAddressesByTown(SoftUniContext context)
+        {
+            var addresses = context.Addresses
+                .Select(a => new
+                {
+                    a.AddressText,
+                    TownName = a.Town.Name,
+                    EmployeesCount = a.Employees.Count
+                })
+                .OrderByDescending(a => a.EmployeesCount)
+                .ThenBy(t => t.TownName)
+                .ThenBy(a => a.AddressText)
+                .Take(10)
+                .ToList();
+
+            sb.Clear();
+
+            foreach (var address in addresses)
+            {
+                sb.AppendLine($"{address.AddressText}, {address.TownName} - {address.EmployeesCount} employees");
+            }
+
+            return sb.ToString().Trim();
+        }
     }
 }
