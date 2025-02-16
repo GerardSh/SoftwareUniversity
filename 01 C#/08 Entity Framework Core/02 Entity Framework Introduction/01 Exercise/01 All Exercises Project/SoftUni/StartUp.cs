@@ -39,7 +39,9 @@ namespace SoftUni
 
             // Console.WriteLine(IncreaseSalaries(context));
 
-            Console.WriteLine(GetEmployeesByFirstNameStartingWithSa(context));
+            // Console.WriteLine(GetEmployeesByFirstNameStartingWithSa(context));
+
+            Console.WriteLine(DeleteProjectById(context));
         }
 
         public static string GetEmployeesFullInformation(SoftUniContext context)
@@ -303,7 +305,7 @@ namespace SoftUni
             var projects = context.Projects
                 .OrderByDescending(p => p.StartDate)
                 .Take(10)
-                .OrderBy(p=> p.Name)
+                .OrderBy(p => p.Name)
                 .Select(p => new
                 {
                     p.Name,
@@ -327,12 +329,12 @@ namespace SoftUni
         public static string IncreaseSalaries(SoftUniContext context)
         {
             var employees = context.Employees
-                .Where(e => e.Department.Name == "Engineering" 
+                .Where(e => e.Department.Name == "Engineering"
                          || e.Department.Name == "Tool Design"
                          || e.Department.Name == "Marketing"
                          || e.Department.Name == "Information Services")
                 .OrderBy(e => e.FirstName)
-                .ThenBy(e=> e.LastName)
+                .ThenBy(e => e.LastName)
                 .ToList();
 
             sb.Clear();
@@ -355,7 +357,7 @@ namespace SoftUni
                 .Where(e => e.FirstName.StartsWith("Sa"))
                 .OrderBy(e => e.FirstName)
                 .ThenBy(e => e.LastName)
-                .Select(e=> new
+                .Select(e => new
                 {
                     e.FirstName,
                     e.LastName,
@@ -369,6 +371,40 @@ namespace SoftUni
             foreach (var employee in employees)
             {
                 sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle} - (${employee.Salary:f2})");
+            }
+
+            return sb.ToString().Trim();
+        }
+
+        public static string DeleteProjectById(SoftUniContext context)
+        {
+            var project = context.Projects.Find(2);
+
+            context.Projects.Remove(project);
+
+            var employees = context.Employees
+                .Include(e => e.EmployeesProjects)
+                .Where(e => e.EmployeesProjects.Any(ep => ep.ProjectId == 2))
+                .ToList();
+
+            foreach (var employee in employees)
+            {
+                var projectToRemove = employee.EmployeesProjects.FirstOrDefault(ep => ep.ProjectId == 2);
+                employee.EmployeesProjects.Remove(projectToRemove);
+            }
+
+            context.SaveChanges();
+
+            var projects = context.Projects
+                .Take(10)
+                .Select(p => p.Name)
+                .ToList();
+
+            sb.Clear();
+
+            foreach (var proj in projects)
+            {
+                sb.AppendLine(proj);
             }
 
             return sb.ToString().Trim();
