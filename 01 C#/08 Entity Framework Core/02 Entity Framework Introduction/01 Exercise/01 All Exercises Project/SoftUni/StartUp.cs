@@ -35,7 +35,9 @@ namespace SoftUni
 
             // Console.WriteLine(GetDepartmentsWithMoreThan5Employees(context));
 
-            Console.WriteLine(GetLatestProjects(context));
+            // Console.WriteLine(GetLatestProjects(context));
+
+            Console.WriteLine(IncreaseSalaries(context));
         }
 
         public static string GetEmployeesFullInformation(SoftUniContext context)
@@ -316,6 +318,31 @@ namespace SoftUni
                 sb.AppendLine(project.Description);
                 sb.AppendLine(project.StartDate.ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture));
             }
+
+            return sb.ToString().Trim();
+        }
+
+        public static string IncreaseSalaries(SoftUniContext context)
+        {
+            var employees = context.Employees
+                .Where(e => e.Department.Name == "Engineering" 
+                         || e.Department.Name == "Tool Design"
+                         || e.Department.Name == "Marketing"
+                         || e.Department.Name == "Information Services")
+                .OrderBy(e => e.FirstName)
+                .ThenBy(e=> e.LastName)
+                .ToList();
+
+            sb.Clear();
+
+            foreach (var employee in employees)
+            {
+                employee.Salary *= 1.12m;
+
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} (${employee.Salary:f2})");
+            }
+
+            context.SaveChanges();
 
             return sb.ToString().Trim();
         }
