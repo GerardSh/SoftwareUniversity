@@ -96,7 +96,7 @@ Fluent API (Model Builder) позволява пълен контрол над D
 - Валидации и типове данни. Валидациите, направени чрез Fluent API, ще работят винаги в базата данни, докато валидациите, направени чрез data annotations, могат да не бъдат приложени към базата данни, в зависимост от типа на валидацията. Например, валидации за дължина или диапазон на стойности, направени чрез data annotations, могат да не се прехвърлят директно в SQL скриптовете на базата данни.
 - Дефиниране на сложни връзки между обектите.
 ### Working with Fluent API
-Custom мапингите се извършват в метода `OnModelCreating()`, който е част от класа `DbContext`. Трябва да го override-нем и вътре в него, като използваме `ModelBuilder`, за да конфигурираме базата данни. EF автоматично предоставя `ModelBuilder` като аргумент на метода. Това се случва вътрешно, когато EF инициализира `DbContext`. При стартиране на приложението EF създава инстанция на `DbContext` и извиква `OnModelCreating()`, като подава `ModelBuilder`, който съдържа API за конфигуриране на моделите.
+Mапингите се извършват в метода `OnModelCreating()`, който е част от класа `DbContext`. Трябва да го override-нем и вътре в него, като използваме `ModelBuilder`, да конфигурираме базата данни. EF автоматично предоставя `ModelBuilder` като аргумент на метода. Това се случва вътрешно, когато EF инициализира `DbContext`. При стартиране на приложението EF създава инстанция на `DbContext` и извиква `OnModelCreating()`, като подава `ModelBuilder`, който съдържа API за конфигуриране на моделите.
 #### Mappings
 Мапингите в `OnModelCreating()` изглеждат по следния начин:
 
@@ -109,9 +109,13 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         .HasKey(s => s.StudentKey);
 
 // Explicitly set Primary Key
-    modelBuilder
-        .Entity<Student>() .HasKey("StudentKey");
+    modelBuilder.Entity<Student>() 
+        .HasKey("StudentKey");
 }
+
+// Composite Key
+    modelBuilder.Entity<Car>()
+        .HasKey(c => new { c.State, c.LicensePlate });
 ```
 
 Промяна на имената на DB обекти - таблици, колони, както и схемата, в която се намира дадена таблица. Стандартната схема е `dbo`, но може да се създаде нова схема и да се съхраняват таблиците там. Имената на колоните също могат да бъдат променяни, като често се налага това при използване на запазени думи в SQL, например `Name`. Чрез метода `Property()` можем да променяме различни аспекти на колоната, като име и тип на данните. В project file-a - `.csproj` имаме `<Nullable>enable</Nullable>`, като ако е `enable` това означава, че използваме новия вариант с nullable data types, всички референтни типове не могат да бъдат `null`. Примерно типа `string`, не е nullable (компилатора дава warning, ако опитаме да му присвоим стойност `null`), трябва да кажем че е nullable, като ползваме `?` след типа на пропъртито или променливата - `public string? Name { get; set; }`.
@@ -149,14 +153,202 @@ modelBuilder
 }
 
 // Disabling cascade delete
-// If a FK property is non-nullable, cascade delete is on by default
+// If an FK property is non-nullable, cascade delete is on by default
 
 modelBuilder.Entity<Course>()
- .HasRequired(t => t.Department)
- .WithMany(t => t.Courses)
- .HasForeignKey(d => d.DepartmentID)
+ .HasOne(c => c.Department)
+ .WithMany(d => d.Courses)
+ .HasForeignKey(c => c.DepartmentID)
  .OnDelete(DeleteBehavior.Restrict); // Throws exception on delete
 ```
+#### Specialized Configuration Classes
+В Fluent API съществуват конфигурации, които могат да се прилагат на ниво цялата база данни и такива, които се отнасят само за конкретни таблици. Например, глобалните филтри са валидни за всички записи в базата и обикновено се задават директно в класа `DbContext`.
+
+Когато конфигурираме отделни таблици, е добра практика да изнесем тези настройки в самостоятелни класове, които имплементират интерфейса `IEntityTypeConfiguration<TEntity>`. Обособяването на конфигурационните класове в отделна папка подобрява структурата и четимостта на проекта.
+
+Примерна конфигурация за `Student`:
+
+```csharp
+public class StudentConfiguration
+   : IEntityTypeConfiguration<Student> // Specify target model
+{
+   public void Configure(EntityTypeBuilder<Student> builder)
+   {
+       builder.HasKey(s => s.StudentKey);
+   }
+}
+
+// Include in OnModelCreating
+
+public class StudentDbContext : DbContext
+{
+   protected override void OnModelCreating(ModelBuilder modelBuilder)
+   {
+       modelBuilder.ApplyConfiguration(new StudentConfiguration());
+   }
+}
+```
+
+**Обяснение:**
+
+- Класът `StudentConfiguration` имплементира `IEntityTypeConfiguration<Student>`, което позволява конфигурирането на `Student` модела.
+- Методът `Configure(EntityTypeBuilder<Student> builder)` получава `builder`, чрез който се задават настройките за съответната таблица.
+- В случая определяме `StudentKey` като първичен ключ чрез `HasKey()`.
+- В `OnModelCreating()` метода на `DbContext` класа, трябва да използваме `modelBuilder`, за да прилагаме конфигурациите, и по-конкретно методът `ApplyConfiguration`, за да добавим конфигурацията от `StudentConfiguration`.
+
+**Предимства на този подход**
+
+**По-структуриран код** – Конфигурациите се организират поотделно, вместо да се струпват в `OnModelCreating()`.  
+**По-добра поддръжка** – В големи проекти `OnModelCreating()` може да достигне хиляди редове код, което го прави трудно четим и поддържан.  
+**По-ясна отговорност** – Всяка конфигурация се отнася само за едно ентити, което подобрява разграничението на логиката.
+
+**Заключение:**  
+
+Използването на `IEntityTypeConfiguration<TEntity>` е добър подход за управление на **конкретни таблици**, докато глобалните настройки (като филтри) е препоръчително да останат в `DbContext`.
+## Attributes
+EF Code First ни предоставя набор от `DataAnnotation` атрибути, чрез които до голяма степен можем да извършваме конфигурации, които иначе бихме направили чрез Fluent API. Това обаче остава необходимо, когато искаме да приложим всички възможни конфигурации. Ако има конфликт между конфигурация направена чрез Fluent API и атрибутите, Fluent API има по-голям приоритет и неговите настройки, ще бъдат приложени.
+
+Трябва да ползваме следните using-и:
+
+- Access nullability and size of fields - `using System.ComponentModel.DataAnnotations`
+- Access schema customizations - `using System.ComponentModel.DataAnnotations.Schema`
+
+### Mappings
+`[Key]` -  посочва primary key.
+
+`[PrimaryKey]` - позволява дефиницията на композитен primary key, наличен от EF7.
+
+`[ForeignKey]` - експлицитно свързваме навигационно пропърти и foreign key пропърти. Няма значение върху кое от двете пропъртита го сложим, винаги трябва да реферира към срещуположното пропърти. EF Core разбира към коя таблица се отнася FK-то въз основа на типа на навигационното пропърти.
+`[ForeignKey(NavigationPropertyName)]` – трябва да напишем името на навигационното пропърти в зависимия клас, ако сложим атрибута върху FK пропъртито в зависимия клас.
+`[ForeignKey(ForeignKeyPropertyName)]` – трябва да напишем името на FK пропъртито в зависимия клас, ако сложим атрибута върху навигационното пропърти в зависимия клас.
+`[ForeignKey(ForeignKeyPropertyName)]` – трябва да напишем името на FK пропъртито в зависимия клас, ако сложим атрибута върху навигационното пропърти в основния клас.
+
+`[Table]` - посочване на името на таблицата в базата данни. Слага се на ниво клас.
+
+```csharp
+[Table("StudentMaster", Schema = "Admin")] // Schema is optional
+public class Student
+{
+}
+```
+
+`[Column]` -  посочване на името на колона в таблицата. Слага се на ниво пропърти. Може да изберем, реда, типа на данните както и други настройки. Чрез `Order`, може да променим реда на колоните, по конвенция EF ги подрежда в реда в, който сме ги написали. `Order` работи само и единствено при създаване на таблицата, ако в последствие променяме структурата, атрибута няма да работи.
+
+```csharp
+public class Student
+{
+    [Column("StudentName", 
+              Order = 2, 
+              TypeName = "varchar(50)", 
+              Nullable = false, 
+              MaxLength = 50, 
+              Precision = 18, 
+              Scale = 2, 
+              DefaultValue = "N/A")]
+    public string Name { get; set; }
+}
+```
+
+`[Required]` - задава на колоната да бъде `NOT NULL`. Ако колоната е non-nullable type нaprimer `int`, колоната винаги ще има стойност, дори без да сме сложили този атрибут. Ако не сме сложили стойност, ще бъде сложена стойността по подразбиране за съответния тип.
+
+`[MinLenght]` - задава минималната дължина на колоната от тип `string`. Работи само за client validation.
+
+`[MaxLenght] / [StringLength]` - задават максималната дължина на колоната от тип `string`. Тази настройка е полезна, когато работим с текстови данни и искаме да ограничим дължината на стойностите в колоната. Работи при client и DB validation.
+
+`[Range]` - задава минимален / максимален лимит за числовите пропъртита. Работи само за client validation.
+
+`[Index]` - създава индекс за колона или колони. Primary key винаги има индекс. Това е начинът да направим дадена колона уникална, като използваме параметъра `IsUnique`. Когато в SQL определим дадена колона като `UNIQUE`, автоматично се създава индекс за нея.
+
+```csharp
+[Index(nameof(Url))]
+public class Student 
+{
+   public string Url { get; set; }
+}
+
+// Using optional arguments
+[Index(nameof(Name), IsUnique = true, Name = "ix_TableName_Name_Unique")]
+```
+
+`[NotMapped]` - изключва пропъртито от това да се създаде в базата, примерно поради бизнес причини.
+
+```csharp
+[NotMapped]
+public string FullName => this.FirstName + this.LastName;
+```
+## Migrations
+След като сме описали конфигурацията на базата данни в `OnModelCreating()`, трябва да направим миграция, за да създадем съответните таблици в базата.
+
+**В PowerShell (.NET CLI, извън Visual Studio)**
+
+```powershell
+dotnet ef migrations add MigrationName --context ApplicationDbContext && dotnet ef database update --context ApplicationDbContext
+```
+
+**В Package Manager Console (PMC) (Visual Studio)**
+
+```powershell
+`add-migration MigrationName -Context ApplicationDbContext; update-database -Context ApplicationDbContext`
+```
+
+**Обяснение:**
+
+`Context ApplicationDbContext` се използва, когато имаме повече от един DbContext в проекта, за да уточним върху кой контекст да се извършват миграциите.
+
+`MigrationName` трябва да бъде заменено с ясно, описателно име на миграцията, което обяснява направените промени (например `AddStudentTable` или `UpdateStudentSchema`).
+
+Командата `update-database` прилага всички неизпълнени миграции върху базата данни, което означава, че тя актуализира схемата на базата данни според промените, описани в миграциите.
+
+**Допълнителни команди:**
+
+Списък с всички миграции: В случай на проблеми с миграциите, може да ползваме командата **`dotnet ef migrations list`** или **`Get-Migrations`** в PMC, за да видим списък с всички миграции:
+
+**.NET CLI:**
+
+```powershell
+dotnet ef migrations list --context ApplicationDbContext
+```
+
+**PMC (Visual Studio):**
+
+```powershell
+Get-Migrations -Context ApplicationDbContext
+```
+
+**Премахване на последната миграция**: Ако миграцията не е приложена към базата данни, може да я премахнем с командата **`remove`**:
+
+**.NET CLI:**
+
+```powershell
+dotnet ef migrations remove --context ApplicationDbContext
+```
+
+**PMC (Visual Studio):**
+
+```powershell
+Remove-Migration -Context ApplicationDbContext
+```
+
+Тази команда премахва последната миграция от проекта. Ако миграцията е вече приложена към базата данни, трябва първо да я отменим, чрез командата:
+
+**.NET CLI:**
+
+```powershell
+dotnet ef database update <previous_migration> --context ApplicationDbContext
+```
+
+**PMC (Visual Studio):**
+
+```powershell
+update-database <previous_migration> -Context ApplicationDbContext
+```
+### Model Snapshot File
+Model Snapshot е файл, който се намира в папката `Migrations`, заедно с миграциите и много прилича на Fluent API. Той съдържа информация за структурата на базата данни в момента, когато е създадена миграцията, включително всички промени, които може да са направени в модела (като добавяне или премахване на таблици, колони, индекси и т.н.). 
+Това е начинът, по който EF може да следи промените в базата данни, без да се нуждае от повторно генериране на база от нулата. Всяка миграция, която създава нови промени в базата данни, се отразява в snapshot файла. Този файл е част от проекта и представлява текущото състояние на модела на базата данни, като включва всички променени или добавени таблици, колони, индекси и други елементи.
+
+При всяка нова миграция, Entity Framework обновява този файл, за да отрази актуалното състояние на базата данни, което е дефинирано в моделите. Това позволява на Entity Framework да изчисли разликите между текущото състояние на базата данни и новата миграция, за да генерира необходимите SQL скриптове.
+## Table Relationships
+
 # Misc
 ## `ModelBuilder` Class
 Този клас както и всички builder класове, позволяват да конфигурираме обекта, който build-ваме. `ModelBuilder` класът е много полезен инструмент за конфигуриране на модели в EF Core, като предоставя много опции за конфигурация на базата данни. Той ни позволява да зададем точни настройки за нашите ентитита, да определяме правила за валидация и да изграждаме релации между таблиците в базата данни, използвайки Fluent API.
@@ -399,4 +591,4 @@ EF Core respects the **nullable reference types** setting, but it also allows ad
 - **Error Handling**: If constraints are violated, exceptions like `DbUpdateException` or `SqlException` are thrown during the save process.
 - **No Immediate Errors**: No errors are raised when changes are made, only during the save operation if the constraints are violated.
 # Bookmarks
-Completion: 18.02.2025
+Completion: 19.02.2025
