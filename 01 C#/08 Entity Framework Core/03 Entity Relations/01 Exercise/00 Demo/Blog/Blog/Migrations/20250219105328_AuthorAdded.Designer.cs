@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20250218194748_BlogNameIndexAdded")]
-    partial class BlogNameIndexAdded
+    [Migration("20250219105328_AuthorAdded")]
+    partial class AuthorAdded
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,24 @@ namespace Blog.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("BlogDemo.Author", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"), 1L, 1);
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("AuthorId");
+
+                    b.ToTable("Authors", "blg");
+                });
+
             modelBuilder.Entity("BlogDemo.Blog", b =>
                 {
                     b.Property<int>("BlogId")
@@ -31,6 +49,9 @@ namespace Blog.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlogId"), 1L, 1);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
@@ -52,10 +73,29 @@ namespace Blog.Migrations
 
                     b.HasKey("BlogId");
 
-                    b.HasIndex(new[] { "Name" }, "ix_Blogs_Name_Unique")
+                    b.HasIndex("AuthorId")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "Name" }, "IX_Blogs_Name_Unique")
                         .IsUnique();
 
                     b.ToTable("Blogs", "blg");
+                });
+
+            modelBuilder.Entity("BlogDemo.Blog", b =>
+                {
+                    b.HasOne("BlogDemo.Author", "Author")
+                        .WithOne("Blog")
+                        .HasForeignKey("BlogDemo.Blog", "AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("BlogDemo.Author", b =>
+                {
+                    b.Navigation("Blog");
                 });
 #pragma warning restore 612, 618
         }

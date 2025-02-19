@@ -9,7 +9,7 @@ namespace Blog.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "ix_Blogs_Name_Unique",
+                name: "IX_Blogs_Name_Unique",
                 schema: "blg",
                 table: "Blogs",
                 column: "BlogName",
@@ -19,7 +19,7 @@ namespace Blog.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "ix_Blogs_Name_Unique",
+                name: "IX_Blogs_Name_Unique",
                 schema: "blg",
                 table: "Blogs");
         }

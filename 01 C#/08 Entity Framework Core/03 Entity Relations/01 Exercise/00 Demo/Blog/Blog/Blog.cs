@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace BlogDemo
 {
     [Table("Blogs", Schema = "blg")]
-    [Index(nameof(Name), IsUnique = true, Name = "ix_Blogs_Name_Unique")]
+    [Index(nameof(Name), IsUnique = true, Name = "IX_Blogs_Name_Unique")]
     public class Blog
     {
         [Key]
@@ -28,5 +28,12 @@ namespace BlogDemo
         public DateTime Created { get; set; }
 
         public  DateTime LastUpdated { get; set; }
+
+        public int AuthorId { get; set; }
+
+        [ForeignKey(nameof(AuthorId))]
+        public Author Author { get; set; } = null!;
+
+        public List<Post> Posts { get; set; } = new List<Post>();
     }
 }

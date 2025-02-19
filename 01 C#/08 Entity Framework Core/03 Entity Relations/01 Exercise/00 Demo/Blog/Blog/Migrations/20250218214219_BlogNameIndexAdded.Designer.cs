@@ -4,6 +4,7 @@ using BlogDemo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250218214219_BlogNameIndexAdded")]
+    partial class BlogNameIndexAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +52,7 @@ namespace Blog.Migrations
 
                     b.HasKey("BlogId");
 
-                    b.HasIndex(new[] { "Name" }, "ix_Blogs_Name_Unique")
+                    b.HasIndex(new[] { "Name" }, "IX_Blogs_Name_Unique")
                         .IsUnique();
 
                     b.ToTable("Blogs", "blg");

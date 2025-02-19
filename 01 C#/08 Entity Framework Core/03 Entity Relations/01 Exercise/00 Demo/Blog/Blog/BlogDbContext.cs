@@ -16,9 +16,16 @@ namespace BlogDemo
 
         public DbSet<Blog> Blogs { get; set; }
 
+        public DbSet<Author> Authors { get; set; }
+
+        public DbSet<Post> Posts { get; set; }
+
+        public DbSet<Post> Tags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
+            modelBuilder.ApplyConfiguration(new PostTagConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
