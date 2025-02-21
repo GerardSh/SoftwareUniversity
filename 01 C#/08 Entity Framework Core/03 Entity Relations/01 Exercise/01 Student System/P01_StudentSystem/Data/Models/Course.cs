@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace P01_StudentSystem.Data.Models
 {
+    [Table("Courses")]
     public class Course
     {
         [Key]
@@ -15,18 +17,15 @@ namespace P01_StudentSystem.Data.Models
 
         [MaxLength(80)]
         [Required]
-        [Unicode]
         public string Name { get; set; } = null!;
 
-        [Unicode]
         public string? Description { get; set; }
 
-        [Required]
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        [Required]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
         public int MyProperty { get; set; }

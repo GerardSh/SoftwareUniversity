@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace P01_StudentSystem.Data.Models
 {
+    [Table("StudentsCourses")]
     public class StudentCourse
     {
         public int StudentId { get; set; }
