@@ -13,10 +13,19 @@
 
         [Required]
         [MaxLength(UserNameMaxLength)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Required]
-        [MaxLength(UserNameMaxLength)]
+        [MaxLength(UserPasswordMaxLength)]
         public string Password { get; set; } = null!;
+
+        [Required]
+        [MaxLength(UserEmailMaxLength)]
+        public string Email { get; set; } = null!;
+
+        public decimal Balance { get; set; }
+
+        public virtual ICollection<Bet> Bets { get; set; }
+            = new HashSet<Bet>();
     }
 }

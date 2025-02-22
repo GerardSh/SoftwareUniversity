@@ -43,6 +43,8 @@
         {
             public const int UserUsernameMaxLength = 50;
             public const int UserNameMaxLength = 100;
+            public const int UserPasswordMaxLength = 512;
+            public const int UserEmailMaxLength = 320;
         }
     }
 }

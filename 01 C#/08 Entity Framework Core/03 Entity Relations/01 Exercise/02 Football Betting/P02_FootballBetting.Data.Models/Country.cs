@@ -10,5 +10,8 @@
         [Required]
         [MaxLength(CountryNameMaxLength)]
         public string Name { get; set; } = null!;
+
+        public virtual ICollection<Town> Towns { get; set; }
+            = new HashSet<Town>();
     }
 }
