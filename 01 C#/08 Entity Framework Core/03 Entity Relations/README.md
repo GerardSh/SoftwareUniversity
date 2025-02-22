@@ -107,69 +107,7 @@ Fluent API (Model Builder) позволява пълен контрол над D
 ### Working with Fluent API
 Mапингите се извършват в метода `OnModelCreating()`, който е част от класа `DbContext`. Трябва да го override-нем и вътре в него, като използваме `ModelBuilder`, да конфигурираме базата данни. EF автоматично предоставя `ModelBuilder` като аргумент на метода. Това се случва вътрешно, когато EF инициализира `DbContext`. При стартиране на приложението EF създава инстанция на `DbContext` и извиква `OnModelCreating()`, като подава `ModelBuilder`, който съдържа API за конфигуриране на моделите.
 #### Mappings
-Мапингите в `OnModelCreating()` изглеждат по следния начин:
-
-Посочване на Primary Key, като втория вариант е експлицитен и не е препоръчителен:
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Student>()
-        .HasKey(s => s.StudentKey);
-
-// Explicitly set Primary Key
-    modelBuilder.Entity<Student>() 
-        .HasKey("StudentKey");
-}
-
-// Composite Key
-    modelBuilder.Entity<Car>()
-        .HasKey(c => new { c.State, c.LicensePlate });
-```
-
-Промяна на имената на DB обекти - таблици, колони, както и схемата, в която се намира дадена таблица. Стандартната схема е `dbo`, но може да се създаде нова схема и да се съхраняват таблиците там. Имената на колоните също могат да бъдат променяни, като често се налага това при използване на запазени думи в SQL, например `Name`. Чрез метода `Property()` можем да променяме различни аспекти на колоната, като име и тип на данните. В project file-a - `.csproj` имаме `<Nullable>enable</Nullable>`, като ако е `enable` това означава, че използваме новия вариант с nullable data types, всички референтни типове не могат да бъдат `null`. Примерно типа `string`, не е nullable (компилатора дава warning, ако опитаме да му присвоим стойност `null`), трябва да кажем че е nullable, като ползваме `?` след типа на пропъртито или променливата - `public string? Name { get; set; }`.
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-// Specifying Custom Table name
-modelBuilder.Entity() 
-  .ToTable("OrderRef", "Admin"); // Optional schema name
-
-// Custom Column name/DB Type
-modelBuilder.Entity<Student>()
- .Property(s => s.Name)
- .HasColumnName("StudentName")
- .HasColumnType("varchar");
-
-// Other column attributes
- .HasMaxLength(50)
- .IsRequired();
- .ValueGeneratedOnAdd();
- .ValueGeneratedOnUpdate();
- .ValueGeneratedOnAddOrUpdate();
-}
-```
-
-Може да изключим пропърти от това да се създаде в базата, примерно поради бизнес причини, както и да определяме политиката за cascade:
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-modelBuilder
-	.Entity<Department>()
-    .Ignore(d => d.Budget);
-}
-
-// Disabling cascade delete
-// If an FK property is non-nullable, cascade delete is on by default
-
-modelBuilder.Entity<Course>()
- .HasOne(c => c.Department)
- .WithMany(d => d.Courses)
- .HasForeignKey(c => c.DepartmentID)
- .OnDelete(DeleteBehavior.Restrict); // Throws exception on delete
-```
+Списък с mappings и начина им на работа има във файла за EF Core в папката с ресурси.
 #### Specialized Configuration Classes
 В Fluent API съществуват конфигурации, които могат да се прилагат на ниво цялата база данни и такива, които се отнасят само за конкретни таблици. Например, глобалните филтри са валидни за всички записи в базата и обикновено се задават директно в класа `DbContext`.
 
@@ -222,72 +160,7 @@ EF Code First ни предоставя набор от `DataAnnotation` атр�
 - Access nullability and size of fields - `using System.ComponentModel.DataAnnotations`
 - Access schema customizations - `using System.ComponentModel.DataAnnotations.Schema`
 ### Mappings
-`[Key]` -  посочва primary key.
-
-`[PrimaryKey]` - позволява дефиницията на композитен primary key, наличен от EF7.
-
-`[ForeignKey]` - експлицитно свързваме навигационно пропърти и foreign key пропърти. Няма значение върху кое от двете пропъртита го сложим, винаги трябва да реферира към срещуположното пропърти. EF Core разбира към коя таблица се отнася FK-то въз основа на типа на навигационното пропърти.
-`[ForeignKey(NavigationPropertyName)]` – трябва да напишем името на навигационното пропърти в зависимия клас, ако сложим атрибута върху FK пропъртито в зависимия клас.
-`[ForeignKey(ForeignKeyPropertyName)]` – трябва да напишем името на FK пропъртито в зависимия клас, ако сложим атрибута върху навигационното пропърти в зависимия клас.
-`[ForeignKey(ForeignKeyPropertyName)]` – трябва да напишем името на FK пропъртито в зависимия клас, ако сложим атрибута върху навигационното пропърти в основния клас.
-
-`[Table]` - посочване на името на таблицата в базата данни. Слага се на ниво клас.
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
- {
-     modelBuilder.Entity<Person>()
-         .HasOne(p => p.Passport)  // A person has 0 or 1 passport
-         .WithOne(p => p.Person)   // A passport belongs to exactly one person
-         .HasForeignKey<Passport>(p => p.PersonId)  // Nullable FK (1:0..1)
-         .IsRequired(false);  // Allows null, making it a One-to-Zero-or-One relation
-}
-```
-
-`[Column]` -  посочване на името на колона в таблицата. Слага се на ниво пропърти. Може да изберем, реда, типа на данните както и други настройки. Чрез `Order`, може да променим реда на колоните, по конвенция EF ги подрежда в реда в, който сме ги написали. `Order` работи само и единствено при създаване на таблицата, ако в последствие променяме структурата, атрибута няма да работи.
-
-```csharp
-public class Student
-{
-    [Column("StudentName", 
-              Order = 2, 
-              TypeName = "varchar(50)", 
-              Nullable = false, 
-              MaxLength = 50, 
-              Precision = 18, 
-              Scale = 2, 
-              DefaultValue = "N/A")]
-    public string Name { get; set; }
-}
-```
-
-`[Required]` - задава на колоната да бъде `NOT NULL`. Ако колоната е non-nullable type нaprimer `int`, колоната винаги ще има стойност, дори без да сме сложили този атрибут. Ако не сме сложили стойност, ще бъде сложена стойността по подразбиране за съответния тип.
-
-`[MinLenght]` - задава минималната дължина на колоната от тип `string`. Работи само за client validation.
-
-`[MaxLenght] / [StringLength]` - задават максималната дължина на колоната от тип `string`. Тази настройка е полезна, когато работим с текстови данни и искаме да ограничим дължината на стойностите в колоната. Работи при client и DB validation.
-
-`[Range]` - задава минимален / максимален лимит за числовите пропъртита. Работи само за client validation.
-
-`[Index]` - създава индекс за колона или колони. Primary key винаги има индекс. Това е начинът да направим дадена колона уникална, като използваме параметъра `IsUnique`. Когато в SQL определим дадена колона като `UNIQUE`, автоматично се създава индекс за нея.
-
-```csharp
-[Index(nameof(Url))]
-public class Student 
-{
-   public string Url { get; set; }
-}
-
-// Using optional arguments
-[Index(nameof(Name), IsUnique = true, Name = "ix_TableName_Name_Unique")]
-```
-
-`[NotMapped]` - изключва пропъртито от това да се създаде в базата, примерно поради бизнес причини.
-
-```csharp
-[NotMapped]
-public string FullName => this.FirstName + this.LastName;
-```
+Списък с mappings и начина им на работа има във файла за EF Core в папката с ресурси.
 ## Migrations
 След като сме описали конфигурацията на базата данни в `OnModelCreating()`, трябва да направим миграция, за да създадем съответните таблици в базата.
 Миграциите представляват source control, кога какво сме променяли и можем да revert-нем към предишни версии, ако решим. Трябва да се внимава, защото ако revert-нем към предна версия и премахнем нещо в което вече има данни, ще ги загубим. 
@@ -380,6 +253,9 @@ Model Snapshot е файл, който се намира в папката `Migr
 - Когато експлицитно указваме FK, трябва да използваме `[ForeignKey]` атрибут или Fluent API, ако искаме допълнителна конфигурация.
 
 Дори без атрибути или Fluent API, EF Core ще разпознае Foreign Key, ако класовете са правилно структурирани, като следва конвенциите.
+
+В EF конвенцията е, че външният ключ (Foreign Key) се поставя в таблицата от страната на "много" в релацията "едно към много" (one-to-many).
+ако погледнем от страна на обектите в C#, тогава външният ключ винаги се намира в класа, който съдържа референция (единичен обект), а не колекция.
 ### One-to-Zero-or-One
 Тази релация се използва рядко в базата данни, тъй като не е логически обоснована. Причината е, че реално имаме един ред, който свързваме с друг ред, което би било по-ефективно, ако първоначално съхраняваме всички данни в един ред, вместо да използваме `JOIN`. От гледна точка на базата данни, разделянето на информацията на части е грешка, когато няма дублиране на данни. В обектно-ориентирания модел обаче това е добра практика, тъй като подобрява четимостта и поддръжката.
 
@@ -511,7 +387,9 @@ modelBuilder.Entity<Employee>()
 - Създаваме свързващ клас, като името му е комбинация от имената на двата класа.
 - Този клас има няколко пропъртита - два Foreign Key-a, като е добре да ги направим експлицитно и две навигационни пропъртита за всеки от класовете, с `Id` и типа на класа.
 - Трябва да направим композитен Primary Key, като това може да стане с атрибут на ниво клас, но е наличен като опция от EF7. Другата опция е да се направи чрез Fluent API.
-- Остава да добавим в двата класа колекция от тип свързващия клас. Ако не го направим, в класовете от примера долу `Student` и `Course` нямаме колекции от типа `List<StudentCourse>`, EF Core автоматично създава скрита (implicit) join таблица, без да я представя като отделен клас. В този случай не можем директно да достъпваме записите от `StudentCourse`, а трябва да направим две отделни заявки. Първо, извличаме всички `CourseId`, които са свързани с даден `StudentId`. След това използваме тези `Id`, за да намерим съответните записи в таблицата `Courses`. Това означава, че вместо да навигираме директно през колекции, разчитаме на релационни заявки.  Ако обаче добавим навигационни колекции (`List<StudentCourse>`) към `Student` и `Course`, можем да използваме `Include()`, което ни позволява да извлечем всички данни само с една заявка. Също така, този подход позволява да добавяме допълнителни данни в join таблицата (например дата на записване, статус и т.н.), ноколекциите в `Student` и `Course` са от типа `List<StudentCourse>`.
+- Остава да добавим в двата класа колекция от тип свързващия клас. Ако не го направим, в класовете от примера долу `Student` и `Course` нямаме колекции от типа `List<StudentCourse>`, EF Core автоматично създава скрита (implicit) join таблица, без да я представя като отделен клас. В този случай не можем директно да достъпваме записите от `StudentCourse`, а трябва да направим две отделни заявки. Първо, извличаме всички `CourseId`, които са свързани с даден `StudentId`. След това използваме тези `Id`, за да намерим съответните записи в таблицата `Courses`. Това означава, че вместо да навигираме директно през колекции, разчитаме на релационни заявки.  Ако обаче добавим навигационни колекции (`List<StudentCourse>`) към `Student` и `Course`, можем да използваме `Include()`, което ни позволява да извлечем всички данни само с една заявка. Също така, този подход позволява да добавяме допълнителни данни в join таблицата (например дата на записване, статус и т.н.), но колекциите в `Student` и `Course` са от типа `List<StudentCourse>`, както и получаваме backward compatibility.
+
+Може да се постигне както чрез атрибути, така и чрез Fluent API:
 
 ```csharp
 public class Student
@@ -536,7 +414,7 @@ public class Course
     public List<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
 }
 
-// Explicit join table for the Student-Course relationship
+// Explicit join table for the Student-Course relationship using Attributes
 [Table("StudentsCourses")] // Specifies the table name
 [PrimaryKey(nameof(StudentId), nameof(CourseId))] // Composite Primary Key (introduced in EF Core 7)
 public class StudentCourse
@@ -554,8 +432,7 @@ public class StudentCourse
     public Course Course { get; set; } = null!;
 }
 
-// Optionally
-// Fluent API - configuring the composite key and relationships
+// Explicit join table for the Student-Course relationship using Fluent API
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     // Define the composite primary key using Fluent API
@@ -914,5 +791,46 @@ EF Core respects the **nullable reference types** setting, but it also allows ad
 - **Validation on Save**: Validation occurs only when `SaveChanges()` is called, checking against database constraints (e.g., `NOT NULL`, `UNIQUE`).
 - **Error Handling**: If constraints are violated, exceptions like `DbUpdateException` or `SqlException` are thrown during the save process.
 - **No Immediate Errors**: No errors are raised when changes are made, only during the save operation if the constraints are violated.
+## Table Relations
+When we think about SQL Server table relations for two tables, the right question to ask is how many times the primary key of the first table is referenced in the records of the second table and vice versa. If the primary key of the first table is referenced in more than one record in the second table, then the second table represents the "many" side. If the primary key of the second table is not found in the first table, then it represents the "one" side of the relation.
+
+When we talk about a many-to-many relationship, this means we have two one-to-many relationships where the join table's composite key is not found in the other tables. However, the primary keys of the other two tables are referenced in multiple records in the join table, making it the "many" part.
+
+**ChatGPT:**
+
+Yes, you are on the right track! Let me clarify and refine your explanation a bit for better precision:
+
+1. **One-to-Many (1:M) Relationship:**
+    
+    - If the primary key of the first table appears multiple times as a foreign key in the second table, then the second table represents the "many" side of the relationship.
+    - Conversely, if the primary key of the second table is not referenced in the first table, then it represents the "one" side.
+2. **Many-to-Many (M:M) Relationship:**
+    
+    - This type of relationship exists when both tables' primary keys appear multiple times in a third table (often called a **junction table** or **join table**).
+    - The junction table contains foreign keys referencing the primary keys of the two related tables. Each of these foreign keys can appear multiple times, forming **two one-to-many (1:M) relationships** with the junction table.
+    - The junction table itself does not contain primary keys of the other two tables as its own primary key. Instead, it typically has a **composite primary key** made up of the two foreign keys.
+
+**Example:**
+
+Consider **Students** and **Courses**:
+
+- A student can enroll in multiple courses.
+- A course can have multiple students.
+
+To model this, we introduce a **StudentCourse** junction table:
+
+- It contains `StudentID` (FK) and `CourseID` (FK), forming a **composite primary key** (`StudentID, CourseID`).
+- Each `StudentID` can appear multiple times (for different courses).
+- Each `CourseID` can appear multiple times (for different students).
+
+This establishes two **one-to-many** relationships:
+
+1. **Students (1) → (M) StudentCourse**
+2. **Courses (1) → (M) StudentCourse**
+
+Together, they create a **many-to-many (M:M) relationship** between Students and Courses.
+
+So yes, your understanding is correct! The key idea is that a **many-to-many** relationship consists of **two one-to-many relationships** with a join table, where each of the original tables' primary keys appear multiple times in the join table.
 # Bookmarks
+[Entity Properties - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt) - full Configuration Options for Entity Properties using Data Annotations or Fluent API.
 Completion: 19.02.2025
