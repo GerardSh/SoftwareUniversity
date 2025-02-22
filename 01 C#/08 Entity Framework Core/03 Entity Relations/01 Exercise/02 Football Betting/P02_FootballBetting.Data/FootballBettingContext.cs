@@ -26,7 +26,7 @@
 
         public virtual DbSet<Player> Players { get; set; }
 
-        public virtual DbSet<PlayerStatistic> PlayerStatistic { get; set; }
+        public virtual DbSet<PlayerStatistic> PlayersStatistics { get; set; }
 
         public virtual DbSet<Position> Positions { get; set; }
 
@@ -92,13 +92,11 @@
 
 
             modelBuilder
-       .Entity<Player>(p =>
-       {
-           p.HasOne(p => p.Town)
+            .Entity<Player>()
+            .HasOne(p => p.Town)
             .WithMany(t => t.Players)
             .HasForeignKey(p => p.TownId)
             .OnDelete(DeleteBehavior.Restrict);
-       });
         }
     }
 }

@@ -26,7 +26,7 @@
         [ForeignKey(nameof(Team))]
         public int TeamId { get; set; }
 
-        public virtual Team? Team { get; set; }
+        public virtual Team Team { get; set; } = null!;
 
         [ForeignKey(nameof(Town))]
         public int TownId { get; set; }

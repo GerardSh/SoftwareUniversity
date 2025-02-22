@@ -19,15 +19,15 @@
 
         public virtual Team AwayTeam { get; set; } = null!;
 
-        public short HomeTeamGoals { get; set; }
+        public int HomeTeamGoals { get; set; }
 
-        public short AwayTeamGoals { get; set; }
+        public int AwayTeamGoals { get; set; }
 
         public decimal HomeTeamBetRate { get; set; }
 
         public decimal AwayTeamBetRate { get; set; }
 
-        public decimal DraweBetRate { get; set; }
+        public decimal DrawBetRate { get; set; }
 
         public DateTime DateTime { get; set; }
 
