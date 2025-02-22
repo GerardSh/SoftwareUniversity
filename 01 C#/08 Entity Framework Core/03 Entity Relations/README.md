@@ -742,52 +742,53 @@ So, when nullable reference types are **disabled**, you don't get compile-time w
 
 **In Entity Framework (EF)**
 
-When nullable reference types are enabled or disabled, it can affect how you configure properties in EF, especially regarding the database schema (whether a column allows `NULL` values).
+When **nullable reference types are enabled** in the project, EF Core **automatically uses the nullability information** from the code to determine whether a property should be **nullable** or **non-nullable** in the database.
 
-- With **nullable reference types enabled**, EF can automatically infer the nullability of columns based on whether you declare a property as `string` (non-nullable) or `string?` (nullable).
-- With **nullable reference types disabled**, EF assumes reference types are nullable, unless specified otherwise.
+- If a property is **non-nullable** in the code (because it's declared as `string` and not `string?`), EF Core will generate a **`NOT NULL`** constraint in the SQL schema, **even without explicitly using `IsRequired()` or `[Required]`**.
+- If the property is **nullable** in the code (because it's declared as `string?`), EF Core will generate a **nullable column** in the database.
 
-**Nullable Reference Types Summary**:
+This behavior is tied to how EF Core interprets the **nullable reference types** setting in C#. It **infers** whether a column should be nullable based on whether the property is declared as nullable (`string?`) or non-nullable (`string`), which reflects the nullability rules introduced by nullable reference types.
 
-- **Nullable (`string?`)**: Allows a `null` value to be assigned to a reference type.
-- **Non-nullable (`string`)**: The reference type cannot be assigned `null`. If nullable reference types are **enabled** in the project, this means the compiler will warn you when trying to assign `null` to a non-nullable property.
+**Example:**
 
-**Relation to EF Core**:
+Consider the following class:
 
-EF Core respects the **nullable reference types** setting, but it also allows additional control through configuration.
+```csharp
+public class Student
+{
+    public string Name { get; set; }  // Non-nullable by default when nullable reference types are enabled
+    public string? Address { get; set; }  // Nullable, explicitly declared
+}
+```
 
-- **`IsRequired()` Method**:
-    - **When EF Core creates the database schema**, it checks whether the property is nullable or required.
-    - **If `IsRequired()` is called** on a property, EF Core will create a `NOT NULL` constraint in the SQL database, regardless of whether nullable reference types are enabled at the code level.
-    - **If `IsRequired()` is not called**, EF Core will treat the property as nullable in the database (unless it is explicitly defined as non-nullable via data annotations or Fluent API).
+When **nullable reference types are enabled**, EF Core will generate the following SQL schema:
 
-**When `IsRequired()` Will Create a `NOT NULL` Constraint**:
+```sql
+CREATE TABLE Students (
+    Id INT PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,  -- Non-nullable
+    Address NVARCHAR(100) NULL    -- Nullable
+);
+```
 
-- **Explicitly** called on a property (`.IsRequired()`).
-- **Non-nullable reference types** in C# code: Even if nullable reference types are enabled in the project, EF Core will still enforce the `NOT NULL` constraint when `IsRequired()` is used.
+This happens automatically because:
 
-**When `IsRequired()` Will Not Create a `NOT NULL` Constraint**:
+- `Name` is declared as `string`, which means EF Core treats it as **non-nullable** and applies the `NOT NULL` constraint.
+- `Address` is declared as `string?`, which means EF Core treats it as **nullable** and allows `NULL` values in the database.
 
-- **If `IsRequired()` is not used**.
-- **Nullable reference types**: If the property is defined as nullable (either with `?` or by project-level settings), EF Core will not enforce a `NOT NULL` constraint in the database unless explicitly configured.
+**Key Takeaways:**
 
-**Summary**:
+- **With nullable reference types enabled** in C# 8.0 or later, EF Core will automatically infer **non-nullable** columns for properties declared as non-nullable (`string`, `int`, etc.), and **nullable** columns for properties declared as nullable (`string?`, `int?`, etc.).
+- You do **not need to use `IsRequired()`** or the **`[Required]`** attribute to enforce a `NOT NULL` constraint in the database when nullable reference types are enabled. EF Core does this **automatically** based on the nullability of the property in the code.
 
-- **Nullable**: A property can accept `null`.
-- **Non-nullable**: A property cannot accept `null`, enforced by compiler warning with nullable reference types enabled.
-- **`IsRequired()` in EF Core**: Always generates a `NOT NULL` constraint in the database, regardless of the C# nullability configuration.
-- **`?` (Nullable Reference Type)**: Makes the property nullable in the code, which means the property can hold `null` values. If the property is nullable (`string?`), it will allow `NULL` in the database unless overridden by `IsRequired()`, which enforces the `NOT NULL` constraint.
-    
-- **Project-level Nullable Option (Nullable Reference Types enabled)**:
-    - **If enabled**: Properties are treated as non-nullable by default (e.g., `string`), and nullable reference types (e.g., `string?`) can be assigned `null`.
-    - **Even with nullable reference types enabled**, **EF Core will not automatically generate a `NOT NULL` constraint** in the database unless `IsRequired()` is used.
+However, if you're not using nullable reference types or if the property is explicitly marked as nullable (with `string?`), then EF Core will allow `NULL` in the database unless you manually use `IsRequired()` or `[Required]` to enforce non-nullability.
 
-**Final Conclusion:**
+**In Summary:**
 
-- **`IsRequired()`** will **always** enforce a `NOT NULL` constraint in SQL.
-- The `?` operator makes a property **nullable** in both code and database unless overridden by `IsRequired()`.
-- **Project-level nullable settings** impact how the code behaves, but **EF Core needs `IsRequired()`** to enforce `NOT NULL` constraints in the SQL schema.
-- In essence, the only way to enforce **`NOT NULL`** constraints in the SQL database schema is by using the **`IsRequired()`** method in the Fluent API or by applying the **`[Required]`** attribute from data annotations to the property.
+- With **nullable reference types enabled**, EF Core **automatically enforces `NOT NULL`** constraints in the database based on the nullability of the properties in your C# code, so you don't necessarily need to use `IsRequired()` or `[Required]` for that behavior.
+- The **`IsRequired()`** method or **`[Required]`** attribute are still useful if you need to override this behavior or if you're working in projects where nullable reference types are **disabled**.
+
+EF Core handles this automatically when nullable reference types are enabled!
 ## EF Core Change Tracking and Validation
 - **Tracking Changes**: EF Core tracks entity changes but doesn’t validate against database constraints immediately.
 - **Validation on Save**: Validation occurs only when `SaveChanges()` is called, checking against database constraints (e.g., `NOT NULL`, `UNIQUE`).
