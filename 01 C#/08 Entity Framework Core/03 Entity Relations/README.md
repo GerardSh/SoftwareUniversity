@@ -834,6 +834,161 @@ The diagram showcases a **structured approach** to application design:
 - **Data Layer** → Manages database access efficiently.
 
 This type of architecture **separates concerns**, making applications **scalable, maintainable, and easier to manage**.
+## Best Practices for Using Static Libraries for Constants
+Using static libraries for constant values in your project is a **best practice** for the following reasons:
+
+**1. Avoid Magic Strings and Values**
+
+Magic strings or hardcoded values scattered throughout the code can be difficult to maintain and prone to errors. For example:
+
+```csharp
+public class Team
+{
+    public string Name { get; set; }
+
+    public Team(string name)
+    {
+        if (name.Length > 50) // 50 is a "magic" number here
+        {
+            throw new ArgumentException("Name is too long.");
+        }
+        Name = name;
+    }
+}
+```
+
+Instead of using hardcoded values like `50`, we can place them in a **centralized static library** to improve code readability, maintainability, and reduce duplication.
+
+**2. Centralized Management**
+
+By storing constant values in a **static class**, we ensure that all the constants are defined in a single place. This makes it easier to update or modify them, as they only need to be changed in one location, rather than throughout your entire project.
+
+For example, we can define constants like this:
+
+```csharp
+namespace P02_FootballBetting.Common
+{
+    public static class EntityValidationConstants
+    {
+        public static class Team
+        {
+            public const int NameMaxLength = 50;
+            public const int DescriptionMaxLength = 200;
+        }
+    }
+}
+```
+
+Now, any reference to `NameMaxLength` or `DescriptionMaxLength` will always use the value defined in the `EntityValidationConstants.Team` class.
+
+**3. Stronger Typing and Autocompletion**
+
+Using constants allows the compiler to check for errors and provides **better autocompletion** in your IDE, as opposed to magic strings or numbers which are prone to mistakes due to typos.
+
+For example, instead of:
+
+```csharp
+public string Name { get; set; } = new string(' ', 51); // Using a magic number directly
+```
+
+You can do:
+
+```csharp
+public string Name { get; set; }
+
+public Team(string name)
+{
+    if (name.Length > EntityValidationConstants.Team.NameMaxLength)  // Safer
+    {
+        throw new ArgumentException($"Name exceeds maximum length of {EntityValidationConstants.Team.NameMaxLength}.");
+    }
+    Name = name;
+}
+```
+
+**4. Code Readability**
+
+By using constants, your code becomes **more readable**. Instead of seeing `50` or `"max length"` scattered across methods, you have a meaningful constant name like `EntityValidationConstants.Team.NameMaxLength` that provides context.
+
+**5. Easy to Refactor and Maintain**
+
+If you need to change the maximum length of the team name, you only need to update the constant in one place. Without a centralized static class, you'd have to search for all occurrences of that value and modify them manually, which can lead to errors.
+
+**How to Add and Use the Static Namespace**
+
+To properly use a static class for constants, follow these steps:
+
+**1. Create the Static Class for Constants**
+
+Create a static class that contains constant values, preferably in a common folder or namespace:
+
+```csharp
+namespace P02_FootballBetting.Common
+{
+    public static class EntityValidationConstants
+    {
+        public static class Team
+        {
+            public const int NameMaxLength = 50;
+            public const int DescriptionMaxLength = 200;
+        }
+    }
+}
+```
+
+**2. Use `using static` to Access Constants**
+
+To make it easier to access the constants in other parts of your project, add the `using static` directive.
+
+Place the `using static` **inside** the namespace where you want to use the constants. This way, you don't need to specify the full namespace in the using statement:
+
+```csharp
+namespace P02_FootballBetting.Data.Models
+{
+    using System.ComponentModel.DataAnnotations;
+    using static Common.EntityValidationConstants.Team;  // Imports only static members
+
+    public class Team
+    {
+        [Key]
+        public int TeamId { get; set; }
+
+        [Required]
+        [MaxLength(NameMaxLength)]  // Directly accessible
+        public string Name { get; set; } = null!;
+    }
+}
+```
+
+If you place the `using static` **outside** the namespace, you will still be able to use the constants directly **inside the class** without needing to specify the full namespace. The only inconvenience is that you have to write the full namespace **once** in the `using` statement.
+
+```csharp
+using static P02_FootballBetting.Common.EntityValidationConstants.User; // Full path required here
+
+namespace P02_FootballBetting.Data.Models
+{
+    using System.ComponentModel.DataAnnotations;
+
+    public class Team
+    {
+        [Key]
+        public int TeamId { get; set; }
+
+        [Required]
+        [MaxLength(NameMaxLength)]  // Directly accessible
+        public string Name { get; set; } = null!;
+    }
+}
+```
+
+**Summary of Benefits:**
+
+- **Centralized Constants**: Keep all constant values in one place for better maintainability.
+- **No Magic Strings/Numbers**: Reduce errors caused by scattered hardcoded values.
+- **Improved Readability**: The names of constants provide context and meaning to the code.
+- **Strong Typing and Autocompletion**: Benefits from IDE autocompletion and compiler checks.
+
+By following this approach, your code becomes cleaner, easier to maintain, and less error-prone.
 ## Table Relations
 When we think about SQL Server table relations for two tables, the right question to ask is how many times the primary key of the first table is referenced in the records of the second table and vice versa. If the primary key of the first table is referenced in more than one record in the second table, then the second table represents the "many" side. If the primary key of the second table is not found in the first table, then it represents the "one" side of the relation.
 
