@@ -508,7 +508,7 @@ builder.Entity<Student>()
         });
 ```
 ### Multiple Relations
-Когато две ентитита са свързани с повече от един Foreign Key, например, когато имаме класовете `Person` и `Town`, в класа `Person` може да имаме две пропъртита като `PlaceOfBirth` и `CurrentResidence`. В класа `Town`, от своя страна, ще имаме две колекции, които отразяват тези връзки. В такъв случай, EF Core може да се затрудни да определи коя колекция отговаря на кой Foreign Key, тъй като и двете колекции съдържат елементи от тип `Person`. За да помогнем на EF Core да установи коректните навигационни връзки, използваме атрибута `[InverseProperty("RelatedPropertyName")]`. Важно е да отбележим, че не можем да използваме `nameof()`, тъй като атрибутът се прилага за свойства от друг клас и трябва да посочим името на съответното навигационно пропърти като `string`.
+Когато две ентитита са свързани с повече от един Foreign Key, например, когато имаме класовете `Person` и `Town`, в класа `Person` може да имаме две пропъртита като `PlaceOfBirth` и `CurrentResidence`. В класа `Town`, от своя страна, ще имаме две колекции, които отразяват тези връзки. В такъв случай, EF Core може да се затрудни да определи коя колекция отговаря на кой Foreign Key, тъй като и двете колекции съдържат елементи от тип `Person`. За да помогнем на EF Core да установи коректните навигационни връзки, използваме атрибута `[InverseProperty("RelatedPropertyName")]`. Можем да използваме `nameof()`, за да избегнем грешки при изписване на имена, като посочим класа и съответното навигационно свойство. Това гарантира, че ако името на свойството бъде променено, кодът ще остане коректен.
 
 ```csharp
 public class Person
@@ -518,8 +518,8 @@ public class Person
 
 	 public int PlaceOfBirthTownId { get; set; }
 	 public int CurrentResidenceTownId { get; set; }
-	 public Town PlaceOfBirth { get; set; }
-	 public Town CurrentResidence { get; set; }
+	 public Town PlaceOfBirth { get; set; } = null!;
+	 public Town CurrentResidence { get; set; } = null!;
 }
 
 public class Town
@@ -527,11 +527,11 @@ public class Town
 	 public int Id { get; set; }
 	 public string Name { get; set; }
 
-	 [InverseProperty("PlaceOfBirth")] // Points toward related property
-	 public ICollection<Person> Natives { get; set; }
+	 [InverseProperty(nameof(Person.PlaceOfBirth))] // Points toward related property
+	 public ICollection<Person> Natives { get; set; } = new HashSet<Person>();
 
-	 [InverseProperty("CurrentResidence")]
-	 public ICollection<Person> Residents { get; set; }
+	 [InverseProperty(nameof(Person.CurrentResidence))]
+	 public ICollection<Person> Residents { get; set; } = new HashSet<Person>();
 }
 ```
 # Misc
