@@ -1009,45 +1009,73 @@ public class MyClass
 
 In this case, the property Name is not initialized at the time of declaration, but you are telling the compiler it will be assigned a non-null value later, so it shouldn’t raise any nullable warnings.
 ## Table Relations
-When we think about SQL Server table relations for two tables, the right question to ask is how many times the primary key of the first table is referenced in the records of the second table and vice versa. If the primary key of the first table is referenced in more than one record in the second table, then the second table represents the "many" side. If the primary key of the second table is not found in the first table, then it represents the "one" side of the relation.
+1. **One-to-One (1:1) Relationship:**
 
-When we talk about a many-to-many relationship, this means we have two one-to-many relationships where the join table's composite key is not found in the other tables. However, the primary keys of the other two tables are referenced in multiple records in the join table, making it the "many" part.
+	- A **one-to-one relationship** occurs when a row in the first table is associated with only one row in the second table, and vice versa.
+    
+    - Each record in the first table has exactly one corresponding record in the second table, and each record in the second table has exactly one corresponding record in the first table.
+	- This is typically enforced by ensuring that one of the tables has a **unique foreign key** (which acts as a primary key in the second table).
+    
+	- In practice, this can be represented by:
+    
+    - Having a foreign key in one table referencing the primary key of the other table.
+    - Ensuring that the foreign key is **unique** to establish the one-to-one relationship.
 
-**ChatGPT said:**
+	  **Example:** Consider a **`Person`** and a **`Passport`** table:
 
-Yes, you are on the right track! Let me clarify and refine your explanation a bit for better precision:
+	- A **person** can have **only one passport**.
+	- A **passport** can be assigned to **only one person**.
 
-1. **One-to-Many (1:M) Relationship:**
+	  In this case:
+
+    - The **`Passport`** table will have a **foreign key** (`PersonID`) that references the **`Person`** table's primary key.
+    - This foreign key is **unique** to maintain the one-to-one relationship.
+
+2. **One-to-Many (1:M) Relationship:**
     
     - If the primary key of the first table appears multiple times as a foreign key in the second table, then the second table represents the "many" side of the relationship.
     - Conversely, if the primary key of the second table is not referenced in the first table, then it represents the "one" side.
-2. **Many-to-Many (M:M) Relationship:**
+
+    - The "many" side (child table) has a foreign key referencing the primary key of the "one" side (parent table).
+    - The "one" side (parent table) does not have a reference to the child table (this is why it’s the "one" side).
+
+3. **Many-to-Many (M:M) Relationship:**
+
+	- This type of relationship exists when both tables' primary keys appear **multiple times** in a third table (often called a **junction table** or **join table**).
     
-    - This type of relationship exists when both tables' primary keys appear multiple times in a third table (often called a **junction table** or **join table**).
-    - The junction table contains foreign keys referencing the primary keys of the two related tables. Each of these foreign keys can appear multiple times, forming **two one-to-many (1:M) relationships** with the junction table.
-    - The junction table itself does not contain primary keys of the other two tables as its own primary key. Instead, it typically has a **composite primary key** made up of the two foreign keys.
+	- The junction table contains foreign keys referencing the primary keys of the two related tables. Each of these foreign keys can appear multiple times, forming **two one-to-many (1:M) relationships** with the junction table.
+    
+	- The junction table itself does not contain **its own primary key** but instead typically has a **composite primary key** made up of the two foreign keys.
+	
+	- The junction table establishes two one-to-many relationships by containing the **foreign keys** from the two original tables.
+	- Each primary key from the original tables can appear multiple times in the junction table, thus creating the "many" aspect of the relationship.
 
-**Example:**
+     **Example:**
 
-Consider **Students** and **Courses**:
+     Consider **Students** and **Courses**:
 
-- A student can enroll in multiple courses.
-- A course can have multiple students.
+    - A student can enroll in multiple courses.
+    - A course can have multiple students.
 
-To model this, we introduce a **StudentCourse** junction table:
+     To model this, we introduce a **`StudentCourse`** junction table:
 
-- It contains `StudentID` (FK) and `CourseID` (FK), forming a **composite primary key** (`StudentID, CourseID`).
-- Each `StudentID` can appear multiple times (for different courses).
-- Each `CourseID` can appear multiple times (for different students).
+    - It contains `StudentID` (FK) and `CourseID` (FK), forming a **composite primary key** (`StudentID, CourseID`).
+    - Each `StudentID` can appear multiple times (for different courses).
+    - Each `CourseID` can appear multiple times (for different students).
 
-This establishes two **one-to-many** relationships:
+     This establishes two **one-to-many** relationships:
 
-1. **Students (1) → (M) `StudentCourse`**
-2. **Courses (1) → (M) `StudentCourse`**
+	1. **Students (1) → (M) `StudentCourse`**
+	2. **Courses (1) → (M) `StudentCourse`**
 
-Together, they create a **many-to-many (M:M) relationship** between Students and Courses.
+     Together, they create a **many-to-many (M:M) relationship** between Students and Courses.
 
-So yes, your understanding is correct! The key idea is that a **many-to-many** relationship consists of **two one-to-many relationships** with a join table, where each of the original tables' primary keys appear multiple times in the join table.
+**Final Notes:**
+
+- The **junction table** does not contain a **primary key** of its own, but its **composite primary key** is made up of the two foreign keys (which reference the primary keys of the original tables).
+- The **many-to-many** relationship is **effectively** made up of two one-to-many relationships, but in the context of the **junction table**, it is important to note that it contains both foreign keys to establish the relationship.
+
+The key idea is that a **many-to-many** relationship consists of **two one-to-many relationships** with a join table, where each of the original tables' primary keys appear multiple times in the join table.
 # Bookmarks
 [Entity Properties - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt) - full Configuration Options for Entity Properties using Data Annotations or Fluent API.
 Completion: 19.02.2025
