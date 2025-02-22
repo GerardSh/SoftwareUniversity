@@ -37,6 +37,7 @@ modelBuilder.Entity<Student>()
 // Other column attributes
  .HasMaxLength(50)
  .IsRequired();
+ .HasDefaultValue(true); // Changing the bool default value from false to true
  .ValueGeneratedOnAdd();
  .ValueGeneratedOnUpdate();
  .ValueGeneratedOnAddOrUpdate();
