@@ -1071,12 +1071,12 @@ In this case, the property Name is not initialized at the time of declaration, b
 
      Together, they create a **many-to-many (M:M) relationship** between Students and Courses.
 
-**Final Notes:**
+   **Final Notes:**
 
-- The **junction table** does not contain a **primary key** of its own, but its **composite primary key** is made up of the two foreign keys (which reference the primary keys of the original tables).
-- The **many-to-many** relationship is **effectively** made up of two one-to-many relationships, but in the context of the **junction table**, it is important to note that it contains both foreign keys to establish the relationship.
+	- The **junction table** does not contain a **primary key** of its own, but its **composite primary key** is made up of the two foreign keys (which reference the primary keys of the original tables).
+	- The **many-to-many** relationship is **effectively** made up of two one-to-many relationships, but in the context of the **junction table**, it is important to note that it contains both foreign keys to establish the relationship.
 
-The key idea is that a **many-to-many** relationship consists of **two one-to-many relationships** with a join table, where each of the original tables' primary keys appear multiple times in the join table.
+	  The key idea is that a **many-to-many** relationship consists of **two one-to-many relationships** with a join table, where each of the original tables' primary keys appear multiple times in the join table.
 # Bookmarks
 [Entity Properties - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt) - full Configuration Options for Entity Properties using Data Annotations or Fluent API.
 Completion: 19.02.2025
