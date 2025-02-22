@@ -256,6 +256,8 @@ Model Snapshot е файл, който се намира в папката `Migr
 
 В EF конвенцията е, че външният ключ (Foreign Key) се поставя в таблицата от страната на "много" в релацията "едно към много" (one-to-many).
 ако погледнем от страна на обектите в C#, тогава външният ключ винаги се намира в класа, който съдържа референция (единичен обект), а не колекция.
+
+Винаги трябва да инициализираме навигационните колекции, като е желателно да се използва `HashSet<T>`, тъй като той осигурява по-добра производителност при операциите по добавяне и премахване на елементи, благодарение на своята хеширана структура. Освен това, `HashSet<T>` автоматично предотвратява дублирането на елементи, което може да бъде полезно при навигационни колекции, където не искаме да имаме повторения.
 ### One-to-Zero-or-One
 Тази релация се използва рядко в базата данни, тъй като не е логически обоснована. Причината е, че реално имаме един ред, който свързваме с друг ред, което би било по-ефективно, ако първоначално съхраняваме всички данни в един ред, вместо да използваме `JOIN`. От гледна точка на базата данни, разделянето на информацията на части е грешка, когато няма дублиране на данни. В обектно-ориентирания модел обаче това е добра практика, тъй като подобрява четимостта и поддръжката.
 
@@ -331,7 +333,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 ### One-to-Many
 Това е най-често използваната релация.
 
-Имплементира се чрез създаване на колекция в родителската таблица, като не трябва да забравяме да я инициализираме.
+Имплементира се чрез създаване на колекция в **parent** таблицата, като не трябва да забравяме да я инициализираме, желателно с `HashSet<T>`.
 
 - The **parent** (e.g., `Department`) е таблицата, която може да има много свързани записи в **child** таблица.
 - The **child** (e.g., `Employee`) съдържа външния ключ, който реферира към **parent** таблицата.
@@ -989,6 +991,23 @@ namespace P02_FootballBetting.Data.Models
 - **Strong Typing and Autocompletion**: Benefits from IDE autocompletion and compiler checks.
 
 By following this approach, your code becomes cleaner, easier to maintain, and less error-prone.
+## null! Operator
+The `= null!` syntax is **only used for reference type properties** that do not have a default value. It is a way to tell the compiler that the property will not be `null` at runtime, even though the compiler might not be able to automatically infer this based on your code.
+
+This is particularly useful for **non-nullable reference types** introduced in C# 8.0, where the compiler enforces nullability checks for reference types. By default, these reference types are expected to be initialized and not be `null`, but when a reference type property is not initialized in the constructor or in the property declaration, using `= null!` effectively **suppresses nullable warnings**.
+
+This syntax is commonly used in scenarios where the property will be initialized later, such as when **Entity Framework** or **dependency injection** is used to assign values to the property at runtime.
+
+For example:
+
+```csharp
+public class MyClass
+{
+    public string Name { get; set; } = null!; // Suppresses nullable warning
+}
+```
+
+In this case, the property Name is not initialized at the time of declaration, but you are telling the compiler it will be assigned a non-null value later, so it shouldn’t raise any nullable warnings.
 ## Table Relations
 When we think about SQL Server table relations for two tables, the right question to ask is how many times the primary key of the first table is referenced in the records of the second table and vice versa. If the primary key of the first table is referenced in more than one record in the second table, then the second table represents the "many" side. If the primary key of the second table is not found in the first table, then it represents the "one" side of the relation.
 
