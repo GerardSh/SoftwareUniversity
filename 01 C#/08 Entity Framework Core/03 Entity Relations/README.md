@@ -839,7 +839,7 @@ When we think about SQL Server table relations for two tables, the right questio
 
 When we talk about a many-to-many relationship, this means we have two one-to-many relationships where the join table's composite key is not found in the other tables. However, the primary keys of the other two tables are referenced in multiple records in the join table, making it the "many" part.
 
-**ChatGPT:**
+**ChatGPT said:**
 
 Yes, you are on the right track! Let me clarify and refine your explanation a bit for better precision:
 
