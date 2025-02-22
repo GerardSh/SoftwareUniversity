@@ -791,6 +791,49 @@ EF Core respects the **nullable reference types** setting, but it also allows ad
 - **Validation on Save**: Validation occurs only when `SaveChanges()` is called, checking against database constraints (e.g., `NOT NULL`, `UNIQUE`).
 - **Error Handling**: If constraints are violated, exceptions like `DbUpdateException` or `SqlException` are thrown during the save process.
 - **No Immediate Errors**: No errors are raised when changes are made, only during the save operation if the constraints are violated.
+## Layered Architecture of an Application: UI, Business Logic, and Data Management
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250222134043.png)
+
+The diagram represents a **layered architecture** commonly used in application development, likely following an **MVC (Model-View-Controller)** or **three-tier architecture**. Here’s a clearer breakdown of its structure and function:
+
+1. **Presentation Layer (Views, UX, UI)**
+
+- This is the topmost layer that **users interact with**.
+- It includes **UI components** for Android, iOS, or web applications.
+- Responsible for **displaying data** and **handling user inputs**.
+
+2. **Business Logic Layer (Application Logic)**
+
+- This layer handles the **core functionality** of the application.
+- It processes data, applies business rules, and interacts with the database through queries (e.g., Entity Framework queries for a .NET-based app).
+- Acts as a **bridge between the UI and the database**.
+
+3. **Data Abstraction Layer (ODM/ORM)**
+
+- This layer simplifies **database interactions** by providing a high-level interface.
+- Uses **Object-Relational Mapping (ORM)** to work with database entities as objects, making data retrieval and updates easier.
+- CRUD operations (Create, Read, Update, Delete) happen here.
+
+4. **Database Connection Layer**
+
+- Responsible for establishing a **connection between the application and the database**.
+- Ensures that queries and data transactions are executed properly.
+
+5. **Database Layer (Models, Entities)**
+
+- Defines the **structure of the database** and its tables.
+- Contains **models/entities** that represent how data is stored.
+- Ensures consistency and integrity of stored data.
+
+**Summary**
+
+The diagram showcases a **structured approach** to application design:
+
+- **UI Layer** → Handles user interaction.
+- **Business Logic Layer** → Processes data and enforces rules.
+- **Data Layer** → Manages database access efficiently.
+
+This type of architecture **separates concerns**, making applications **scalable, maintainable, and easier to manage**.
 ## Table Relations
 When we think about SQL Server table relations for two tables, the right question to ask is how many times the primary key of the first table is referenced in the records of the second table and vice versa. If the primary key of the first table is referenced in more than one record in the second table, then the second table represents the "many" side. If the primary key of the second table is not found in the first table, then it represents the "one" side of the relation.
 
