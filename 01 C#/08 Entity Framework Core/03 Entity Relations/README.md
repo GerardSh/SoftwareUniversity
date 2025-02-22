@@ -868,8 +868,8 @@ To model this, we introduce a **StudentCourse** junction table:
 
 This establishes two **one-to-many** relationships:
 
-1. **Students (1) → (M) StudentCourse**
-2. **Courses (1) → (M) StudentCourse**
+1. **Students (1) → (M) `StudentCourse`**
+2. **Courses (1) → (M) `StudentCourse`**
 
 Together, they create a **many-to-many (M:M) relationship** between Students and Courses.
 
