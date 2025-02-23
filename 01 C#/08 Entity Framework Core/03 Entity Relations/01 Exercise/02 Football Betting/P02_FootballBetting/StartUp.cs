@@ -19,7 +19,7 @@ namespace P02_FootballBetting
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Db Creation failed! {e.Message}");
+                Console.WriteLine($"Db Creation failed! - {e.Message}");
             }
         }
     }
