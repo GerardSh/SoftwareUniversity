@@ -181,6 +181,93 @@ var employees = context.Employees
 				.AsNoTracking()
 				.ToList();
 ```
+### Detaching Objects
+Обектът се detach-ва, когато:
+
+- Вземем обект от `DbContext` и след това го dispose-нем:
+
+```csharp
+Employee GetEmployeeById(int id)
+{
+	 using (var SoftUniDbContext = new SoftUniDbContext())
+	 {
+		 return SoftUniDbContext.Employees
+			.First(e => e.EmployeeID == id); // Returned employee is detached
+	 }
+}
+```
+
+- Ръчно зададем `EntityState.Detached`:
+
+```csharp
+var employee = context.Employees.First(e => e.EmployeeID == id);
+context.Entry(employee).State = EntityState.Detached;
+```
+
+Обяснение:
+- `context.Entry(employee)` връща `EntityEntry<Employee>`, който съдържа метаданни за `employee` в `DbContext`.
+- `EntityEntry.State` указва текущото състояние на обекта (Attached, Detached, Modified и т.н.).
+- Когато зададем `EntityState.Detached`, разкачаме обекта от `DbContext`, което означава, че той вече не се проследява от Entity Tracker.
+### Reattaching Objects
+Когато искаме да обновим разкачен (`Detached`) обект, първо трябва да го закачим към контекста, след което да извършим промяната и да я запазим в базата.
+
+```csharp
+void UpdateName(Employee employee, string newName)
+{
+	 using (var softUniDbContext = new SoftUniDbContext())
+	 {
+        var entry = softUniDbContext.Entry(employee); // Create an entry for the object
+        entry.State = EntityState.Modified; // Attach it and mark it as modified (this tracks the object and considers it changed)
+        // entry.State = EntityState.Unchanged; // Alternatively, if we only want to attach the object without considering any previous changes made while untracked:
+        employee.FirstName = newName; // Apply the change
+        softUniDbContext.SaveChanges(); // Persist the change to the database
+	 }
+}
+```
+
+Обяснение:
+- Методът приема разкачен обект, който не се следи от `DbContext`.
+- Чрез `Entry()` получаваме достъп до състоянието на обекта и го маркираме като `Modified`.
+- Маркирането на обекта като `Modified` означава, че EF ще третира всички пропъртита като променени, дори ако е модифицирано само едно. Това може да доведе до изпращане на излишни колони в SQL заявката за актуализация, но по този начин всички промени ще бъдат отразени, дори ако са направени преди обекта да е закачен.
+- Извикваме `SaveChanges()`, което генерира и изпълнява съответната SQL заявка за актуализация.
+- Този подход е полезен, когато разполагаме с обект, който вече не е следен от `DbContext`, но искаме да го актуализираме в базата.
+- Ако искаме да обновим само конкретно променените пропъртита, можем да използваме `Attach(employee)` и да зададем `Modified` само на нужните пропъртита - `softUniDbContext.Entry(employee).Property(e => e.FirstName).IsModified = true;`
+
+Този подход е полезен, когато разполагаме с обект, който вече не е следен от `DbContext`, но искаме да го актуализираме в базата.
+
+Вместо да използваме подхода, при който взимаме мета данните на даден обект чрез метода `Entry()`, можем директно да използваме методите `Attach()` или `Update()` за по-опростена и по-ясна работа с обектите.
+
+```csharp
+void UpdateName(Employee employee, string newName)
+{
+    using (var softUniDbContext = new SoftUniDbContext())
+    {     
+        employee.FirstName = newName; // Change the first name before attaching the object
+
+        // Using Attach()
+        softUniDbContext.Employees.Attach(employee); // Attach the object without marking it as modofied, we can mark it separately
+        softUniDbContext.Entry(employee).Property(e => e.FirstName).IsModified = true; // Mark only the changed property as modified
+    
+        // Using Update()
+        softUniDbContext.Employees.Update(employee); // Attach and mark all properties of the object as modified
+
+        softUniDbContext.SaveChanges(); // Persist the changes to the database
+    }
+}
+```
+
+Обяснение:
+
+- `Attach()` - закача обекта към контекста без да маркира нито едно свойство като променено. Можете по-късно да посочим целия обект или дадени свойства да бъдат маркирани като променени.
+- `Update()` -  закача обекта и маркира всички свойства като променени, което означава, че всяко свойство ще бъде актуализирано в базата данни, когато се извика `SaveChanges()`.
+
+Този подход предлага гъвкавост, ако искаме да актуализираме само конкретни свойства или целия обект.
+## Bulk Operations
+Заявките се изпълняват една по една – когато трябва да направим промяна на 100 обекта, в класическия случай преминаваме през обектите в `foreach`, променяме стойностите и при извикване на `SaveChanges()` се генерират `n` `UPDATE` заявки, където `n` е броят на обектите. Това е проблем, защото в действителност би могло да се извърши всичко с една SQL заявка. Причината за това е, че Entity Framework Tracker не следи обектите като цяло в контекста, а ги следи поотделно. Когато трябва да персистираме промените, той генерира отделни заявки за всеки обект.
+
+EF Core 6 не поддържа bulk операции, но от EF 7 нататък тези операции са добавени. За версия 6 можем да използваме **`Z.EntityFramework.Plus`**, който не използва Entity Tracker и работи по различен начин, позволявайки ни да правим bulk операции (като `UPDATE`, `DELETE`, и `INSERT`) на ентитита. Това е third-party пакет, като проблемът е, че не е безплатен. Ако нямаме лиценз, пакетът спира да работи след 30 дни. Въпреки това, този пакет значително ускорява операции за вмъкване на множество редове (bulk insert), което е много по-бързо от стандартния EF.
+
+[Entity Framework Plus](https://entityframework-plus.net/) библиотека за подобряване на работата с EF6
 # Misc
 # ChatGPT
 ## Nested Select
@@ -386,4 +473,5 @@ var albums = context.Albums
 ## EF Core Limitation: String Interpolation vs. Concatenation in Queries
 EF Core struggles with string interpolation (`$"{sp.Performer.FirstName} {sp.Performer.LastName}"`) because it involves runtime formatting, which may not translate well into SQL. However, simple string concatenation (`sp.Performer.FirstName + " " + sp.Performer.LastName`) works because it is easier for EF Core to convert into SQL. To avoid issues, prefer concatenation over interpolation when constructing strings inside `Select()`.
 # Bookmarks
-Completion: 28.02.2025
+[Entity Framework Plus](https://entityframework-plus.net/)
+Completion: 01.03.2025
