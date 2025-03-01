@@ -15,7 +15,6 @@ var employees = db.Employees
 ```
 
 В този пример правим SQL заявка в стринг и я подаваме на метода `FromSqlRaw()` за изпълнение.
-
 #### Restrictions
 - `JOIN` изрази не работят - когато използваме `FromSqlRaw()`, не можем да използваме `JOIN` изрази или други сложни SQL конструкции, които биха създали резултати, които не могат да бъдат мапнати към съществуващия ентити клас. Това ограничава възможността да правим сложни заявки и проекции.
 - Required колоните трябва да са посочени - когато работим с `FromSqlRaw()`, трябва да сме сигурни, че всички required колони, които не могат да бъдат `NULL`, са включени в заявката. Това е така, защото `FromSqlRaw()` винаги връща entity type и резултатът трябва да съответства на съществуващия `DbSet<>` entity клас. Заявката трябва да съдържа всички задължителни колони в класа, за да може да се създаде обекта.
@@ -267,7 +266,99 @@ void UpdateName(Employee employee, string newName)
 
 EF Core 6 не поддържа bulk операции, но от EF 7 нататък тези операции са добавени. За версия 6 можем да използваме **`Z.EntityFramework.Plus`**, който не използва Entity Tracker и работи по различен начин, позволявайки ни да правим bulk операции (като `UPDATE`, `DELETE`, и `INSERT`) на ентитита. Това е third-party пакет, като проблемът е, че не е безплатен. Ако нямаме лиценз, пакетът спира да работи след 30 дни. Въпреки това, този пакет значително ускорява операции за вмъкване на множество редове (bulk insert), което е много по-бързо от стандартния EF.
 
-[Entity Framework Plus](https://entityframework-plus.net/) библиотека за подобряване на работата с EF6
+[Entity Framework Plus](https://entityframework-plus.net/) библиотека за подобряване на работата с EF6.
+### Entity Framework Plus
+Тази библиотека ни дава extension методи, чрез които да правим bulk операциите:
+
+`Delete()`:
+
+```csharp
+context.Employees
+ .Where(e => e.FirstName == "Pesho")
+ .Delete();
+```
+
+Този метод генерира следната заявка:
+
+```sql
+DELETE [dbo].[Employees]
+FROM [dbo].[Employees] AS j0 INNER JOIN (
+SELECT
+	 [Extent1].[Id] AS [Id]
+	 FROM [dbo].[Employees] AS [Extent1].[Name]
+	 WHERE N’Pesho' = [Extent1].[Name]
+) AS j1 ON (j0.[Id] = j1.[Id])
+```
+
+`Update()`:
+
+```csharp
+// Update all Employees with name "Niki" to "Stoyan"
+context.Employees
+ .Where(t => t.Name == "Niki")
+ .Update(u => new Employee { Name = "Stoyan" });
+
+// Update all Employees' age to 99 who have the name "Plamen"
+context.Employees
+ .Where(employee => employee.Name == "Plamen");
+ .Update(employee => new Employee { Age = 99 });
+```
+### EF8
+В EF8 са добавени методите `ExecuteDeleteAsync()` и `ExecuteUpdateAsync()`, които извършват bulk операции и се изпълняват на момента, не чакат `SaveChanges` метода. Можем да създадем custom метод, който да извършва soft или hard bulk delete, в зависимост от това дали даденият клас имплементира custom интерфейса `ISoftDeletable`, който сме дефинирали:
+
+```csharp
+public interface ISoftDeletable
+{
+  public bool IsDeleted { get; set; }
+  public DateTime? DeletedOn { get; set; }
+}
+
+async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> search) where T : class
+{
+    int result = 0;
+    var context = new SoftUniContext();
+    IQueryable<T> collection = context.Set<T>().Where(search);
+
+    if (typeof(T).IsAssignableTo(typeof(ISoftDeletable)))
+    {
+        DateTime now = DateTime.Now;
+        bool isDeleted = true;
+
+        result = await collection
+            .Select(c => c as ISoftDeletable)
+            .ExecuteUpdateAsync(c => c
+                .SetProperty(p => p.IsDeleted, isDeleted)
+                .SetProperty(p => p.DeletedOn, now));
+    }
+    else
+    {
+        result = await collection.ExecuteDeleteAsync();
+    }
+
+    return result;
+}
+```
+
+1.  `ISoftDeletable` интерфейс – Това е интерфейсът, който се добавя към класовете, които ще поддържат меко изтриване. Класовете, които го имплементират, ще съдържат свойствата `IsDeleted` и `DeletedOn`.
+2. `DeleteAsync<T>` метод – Този метод проверява дали типът `T` имплементира интерфейса `ISoftDeletable`. Ако да, използва `ExecuteUpdateAsync()` за да актуализира полетата `IsDeleted` и `DeletedOn` на записите, които отговарят на условието. Ако не, използва `ExecuteDeleteAsync()` за да премахне записите физически от базата данни.
+## Types of Loading
+EF подържа три типа loading, които се отнасят за свързаните таблици. Примерно всеки `Department` има колекция с `Employee`-та, задачата на loading-a е да реши кога тази колекция ще се напълни.
+
+**Explicit Loading**
+
+Ние решаваме кога да се напълни дадената колекция. Ако не ни трябват, не ги зареждаме, така си спестяваме един `JOIN` и пестим ресурсите. Ако искаме да заредим данните, трябва да ползваме методите - `Reference().Load()` за единичен обект  и `Collection().Load()` за колекция.
+
+```csharp
+var employee = context.Employees.First();
+
+context.Entry(employee)
+ .Reference(e => e.Department)
+ .Load();
+
+context.Entry(employee)
+ .Collection(e => e.EmployeeProjects)
+ .Load();
+```
 # Misc
 # ChatGPT
 ## Nested Select
@@ -431,7 +522,6 @@ As long as the `ToList()` is used **inside a projection (like inside `Select`)**
 
 🚀 This pattern is commonly used in **Entity Framework Core projections** to **control when and where the query is executed** while keeping SQL efficient.
 ## Calculated Properties in EF Core
-
 1. **What Are Calculated Properties?**
 
     - These are **C# properties** that **do not exist in the database** but are computed dynamically based on other properties.
