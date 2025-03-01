@@ -146,5 +146,9 @@ public string FullName => this.FirstName + this.LastName;
 ## Misc
 `ToQueryString()` – извлича SQL заявката, която ще бъде изпълнена в базата, когато използваме `IQueryable`.
 
+`ExecuteDeleteAsync()` – извършва изтриване на записи от базата данни по дадено условие, като оптимизира производителността при масови изтривания. Поддържа асинхронни операции. Работи от EF8.
+
+`ExecuteUpdateAsync()` – извършва обновяване на записи в базата данни по дадено условие, като оптимизира производителността при масови обновявания. Поддържа асинхронни операции. Работи от EF8.
+
 # Bookmarks
 [Entity Properties - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt) - Configuration Options for Entity Properties using Data Annotations or Fluent API.
