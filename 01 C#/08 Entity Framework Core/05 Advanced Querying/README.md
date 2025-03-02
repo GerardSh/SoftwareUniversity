@@ -343,10 +343,8 @@ async Task<int> DeleteAsync<T>(Expression<Func<T, bool>> search) where T : class
 2. `DeleteAsync<T>` метод – Този метод проверява дали типът `T` имплементира интерфейса `ISoftDeletable`. Ако да, използва `ExecuteUpdateAsync()` за да актуализира полетата `IsDeleted` и `DeletedOn` на записите, които отговарят на условието. Ако не, използва `ExecuteDeleteAsync()` за да премахне записите физически от базата данни.
 ## Types of Loading
 EF подържа три типа loading, които се отнасят за свързаните таблици. Примерно всеки `Department` има колекция с `Employee`-та, задачата на loading-a е да реши кога тази колекция ще се напълни.
-
-**Explicit Loading**
-
-Ние решаваме кога да се напълни дадената колекция. Ако не ни трябват, не ги зареждаме, така си спестяваме един `JOIN` и пестим ресурсите. Ако искаме да заредим данните, трябва да ползваме методите - `Reference().Load()` за единичен обект  и `Collection().Load()` за колекция.
+### Explicit Loading
+Ние решаваме кога да заредим дадената колекция. Ако не ни трябват, не ги зареждаме, като така спестяваме излишни `JOIN` операции и пестим ресурси. Ако все пак искаме да заредим данните, трябва да използваме методите `Reference().Load()` за единичен обект и `Collection().Load()` за зареждане на колекция. Реално тези методи не правят `JOIN`, а просто зареждат данните на даден обект (например на даден `Department`). Това е добър начин за оптимизиране на заявките и подобряване на производителността в случаи, когато не е необходимо да зареждаме всички свързани данни наведнъж.
 
 ```csharp
 var employee = context.Employees.First();
@@ -358,6 +356,125 @@ context.Entry(employee)
 context.Entry(employee)
  .Collection(e => e.EmployeeProjects)
  .Load();
+```
+### Eager Loading
+Това е най-често използваният вариант за работа с EF. Данните се зареждат в момента на изпълнение на заявката. При писане на заявката в LINQ обикновено знаем дали дадените данни ще ни трябват и ако е необходимо, указваме на eager loading да ги зареди. Той работи само в момента на зареждане на всички данни. За тази цел се използват методите `Include()` и `ThenInclude()`, като `ThenInclude()` се използва, когато има допълнителни връзки. Тези методи генерират `JOIN` операции в SQL заявката.
+
+```csharp
+context.Towns.Include("Employees");
+
+context.Towns.Include(town => town.Employees);
+
+context.Employees
+ .Include(employee => employee.Address)
+ .ThenInclude(address => address.Town)
+```
+### Lazy Loading
+Възможно е да възникнат множество проблеми с този вид loading. Той работи почти като explicit loading, но разликата е, че lazy loading решава кога да изпълни заявката, а не ние. Обикновено той зарежда само основните данни и когато се опитаме да достъпим навигационно пропърти, извършва допълнителна заявка, за да ги зареди. 
+Проблемът идва, когато използваме `foreach` върху колекция от обекти и се опитаме да достъпим пропърти, което е релация — в този случай lazy loading ще изпълни n+1 заявки, тоест ще генерира 1 + N заявки към базата данни (1 за служителите и N за техните отдели). Това може да доведе до сериозни проблеми с производителността, особено при големи данни.
+
+В дадени случаи предоставя по-добър performance. 
+
+Работи за всяко навигационно пропърти, което е `virtual`, за да може да ги override-не. Другото условие да работи е да инсталираме пакета **`Install-Package Microsoft.EntityFrameworkCore.Proxies`** и да модифицираме `OnConfiguring` метода:
+
+```csharp
+void OnConfiguring (DbContextOptionsBuilder options)
+{
+	options
+		.UseLazyLoadingProxies()
+		.UseSqlServer(myConnectionString);
+}
+```
+
+Ако направим тези неща, lazy loading ще работи по подразбиране, докато не ползваме някой от другите loading-и.
+### N+1 Problem
+- Когато презаредим страницата със списъка на статиите, се изпращат 11 заявки към базата данни.  
+- Първата заявка извлича първите 10 статии.  
+- Следващите 10 заявки извличат коментарите за всяка отделна статия.  
+- Общо 11 заявки (N + 1).
+
+Можем да използваме една заявка, ако заредим данните чрез eager loading. Недостатъкът е, че в някои случаи множество по-малки заявки могат да бъдат по-бързи от една голяма. Преценката кой вариант е по-подходящ зависи от конкретния случай и трябва да се прави внимателно.
+## Concurrency Checks
+### Optimistic Concurrency - Last One Wins
+EF Core работи в `optimistic concurrency` mode (no locking). Това означава, че няма блокиране на записите в базата данни (no locking). Всеки потребител може да зареди данни, да ги промени локално и да ги запише. Ако двама потребители заредят един и същи обект, направят промени и се опитат да го запишат, последният, който запише промените си, ще презапише предходните без предупреждение (т.е. "последният печели"). В повечето случаи потребителите работят със собствени данни, което минимизира риска от конфликти.
+
+За контрол върху конкурентните промени в `optimistic concurrency` използваме конкурентна проверка (Concurrency Check), като добавяме специална колона, върху която поставяме атрибута `[ConcurrencyCheck]`. Тази колона трябва да съдържа стойност, която се променя при всяка актуализация на записа.
+
+Когато двама потребители заредят един и същ обект, колоната за проверка ще има една и съща стойност. При запис EF ще провери дали стойността в базата е останала непроменена. Ако тя е различна (т.е. друг потребител вече е записал промени), EF ще генерира грешка, сигнализираща, че обектът е бил модифициран и трябва да бъде актуализиран.
+
+```csharp
+// First user
+var contextFirstUser = new SoftUniDbContext();
+var lastProjectFirstUser = contextFirstUser.Projects.Last();
+lastProjectFirstUser.Name = "Changed by the First User";
+
+// Second user changes the same record
+var contextSecondUser = new SoftUniDbContext();
+var lastProjectSecondUser = contextSecondUser.Projects.Last();
+lastProjectSecondUser.Name = "Changed by the Second User";
+
+// Conflicting changes: last wins
+contextFirstUser.SaveChanges();
+contextSecondUser.SaveChanges(); // Second user wins
+```
+### Pessimistic Concurrency - First One Wins
+Понякога искаме точно обратното – ако двама потребители направят запис, първият да бъде успешен, а вторият да получи грешка, която го уведомява, че обектът вече е променен и трябва да презареди и актуализира своите данни. Този подход се нарича `pessimistic concurrency`.
+При `pessimistic concurrency` вместо проверки върху стойностите в колоните, се използват блокировки (locks) на ниво база данни, които предотвратяват едновременното изменение на даден запис от повече от един потребител. Това означава, че когато един потребител започне да променя даден обект, той заключва този запис, така че никой друг да не може да го модифицира, докато не приключи операцията.
+
+При `pessimistic concurrency` вторият потребител няма нужда да презарежда обекта ръчно – той просто чака заключването да се освободи (или получава грешка, ако заявката надхвърли времето за изчакване).
+
+При pessimistic concurrency EF Core не предоставя вградена поддръжка за автоматично управление на заключванията, а обикновено се разчита на transaction-level locks чрез `SELECT ... FOR UPDATE` в SQL Server или подобни механизми в други бази.
+
+```csharp
+var contextFirstUser = new SoftUniDbContext();
+var lastTownFirstUser = contextFirstUser.Towns.Last();
+lastTownFirstUser.Name = "First User";
+
+var contextSecondUser = new SoftUniDbContext();
+var lastTownSecondUser = contextSecondUser.Towns.Last();
+lastTownSecondUser.Name = "Second User";
+
+// Saving changes for the first user
+contextFirstUser.SaveChanges(); // Changes for the first user get saved
+
+// Saving changes for the second user
+contextSecondUser.SaveChanges(); // This will throw a DbUpdateConcurrencyException
+```
+## Cascade Operations
+Когато работим с EF Core и използваме Code First подхода за изграждане на база данни, каскадните операции се определят според това как сме дефинирали моделите си. За да контролираме поведението на каскадните операции, можем да зададем стратегията за всяко външно ключово поле (FK) в метода `OnModelCreating`.
+### Cascade Delete Scenarios
+- **Required FK с cascade delete true**: Изтрива всички свързани записи в таблиците при изтриване на основния запис. Ако имаме адреси, които съдържат FK към градове, и се опитаме да изтрием град, например "София", всички адреси, свързани с този град, ще бъдат изтрити автоматично. Това е полезно, ако искаме да премахнем всички записи, свързани с града.
+
+- **Required FK с cascade delete false**: Генерира изключение при опит за изтриване, ако има свързани обекти. Ако имаме адреси, които съдържат FK към градове, ще получим грешка, ако се опитаме да изтрием град, който все още има адреси, свързани с него.
+
+- **Optional FK (nullable) с cascade delete true**: Изтрива всички свързани записи при изтриване на основния запис, работи по същия начин като **Required FK с cascade delete true**, но при този случай е възможно съществуването на записи с `NULL` стойност за FK. Ако имаме адреси, които съдържат FK към градове, и се опитаме да изтрием град, например "Пловдив", всички адреси, свързани с този град, ще бъдат изтрити.
+
+- **Optional FK (nullable) с cascade delete false**: Поставя стойността на FK на `NULL`. Например, ако имаме адреси, които съдържат FK към градове, и изтрием един град, всички адреси, свързани с този град, ще имат стойност `NULL` за съответния FK.
+
+Тези правила могат да бъдат дефинирани в метода `OnModelCreating` с помощта на Fluent API.
+### Cascade Delete with Fluent API
+- **`DeleteBehavior.Cascade`**: Изтрива свързаните записи (по подразбиране за задължителни външни ключове). Това е стандартното поведение при използване на задължителни FK, при което всички свързани записи ще бъдат изтрити при изтриване на основния запис.
+
+- **`DeleteBehavior.Restrict`**: Хвърля изключение при опит за изтриване, ако има свързани обекти. Това е полезно, когато не искаме да позволим изтриване на записи, които имат свързани записи (например, ако има адреси свързани с конкретен град).
+
+- **`DeleteBehavior.ClientSetNull`**: Това е стандартното поведение за опционални външни ключове (не засяга базата данни). Когато се изтрие основният запис, свързаните записи няма да бъдат изтрити, но стойността на FK ще бъде зададена на `NULL` на ниво клиент, а не в базата данни.
+
+- **`DeleteBehavior.SetNull`**: Задава стойността на FK на `NULL` в базата данни при изтриване на свързания запис. Това е полезно за опционални външни ключове, когато искаме да премахнем връзката, но да запазим записите в базата.
+
+**Syntax:**
+
+```csharp
+modelBuilder.Entity<User>()
+ .HasMany(u => u.Replies)
+ .WithOne(a => a.Author)
+ .HasForeignKey(a => a.UserId)
+ .OnDelete(DeleteBehavior.Restrict);
+
+modelBuilder.Entity<User>()
+ .HasMany(u => u.Replies)
+ .WithOne(a => a.Author)
+ .HasForeignKey(a => a.UserId)
+ .OnDelete(DeleteBehavior.Cascade);
 ```
 # Misc
 # ChatGPT
@@ -564,4 +681,4 @@ var albums = context.Albums
 EF Core struggles with string interpolation (`$"{sp.Performer.FirstName} {sp.Performer.LastName}"`) because it involves runtime formatting, which may not translate well into SQL. However, simple string concatenation (`sp.Performer.FirstName + " " + sp.Performer.LastName`) works because it is easier for EF Core to convert into SQL. To avoid issues, prefer concatenation over interpolation when constructing strings inside `Select()`.
 # Bookmarks
 [Entity Framework Plus](https://entityframework-plus.net/)
-Completion: 01.03.2025
+Completion: 02.03.2025
