@@ -4,6 +4,7 @@
     using Data;
     using Initializer;
     using System.Globalization;
+    using System.Security.Cryptography.X509Certificates;
     using System.Text;
 
     public class StartUp
@@ -35,7 +36,13 @@
 
             // Console.WriteLine(CountCopiesByAuthor(context));
 
-            Console.WriteLine(GetTotalProfitByCategory(context));
+            // Console.WriteLine(GetTotalProfitByCategory(context));
+
+            // Console.WriteLine(GetMostRecentBooks(context));
+
+            // IncreasePrices(context);
+
+            // Console.WriteLine(RemoveBooks(context));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -237,6 +244,40 @@
             foreach (var category in categories)
             {
                 sb.AppendLine($"{category.Name} ${category.Sum:f2}");
+            }
+
+            return sb.ToString().Trim();
+        }
+
+        public static string GetMostRecentBooks(BookShopContext context)
+        {
+            var categories = context.Categories
+
+                .Select(c => new
+                {
+                    c.Name,
+                    Books = c.CategoryBooks.
+                            OrderByDescending(cb => cb.Book.ReleaseDate)
+                            .Take(3)
+                            .Select(cb => new
+                            {
+                                cb.Book.Title,
+                                cb.Book.ReleaseDate.Value.Year,
+                            }).ToList()
+                })
+                .OrderBy(c => c.Name)
+                .ToArray();
+
+            var sb = new StringBuilder();
+
+            foreach (var category in categories)
+            {
+                sb.AppendLine($"--{category.Name}");
+
+                foreach (var book in category.Books)
+                {
+                    sb.AppendLine($"{book.Title} ({book.Year})");
+                }
             }
 
             return sb.ToString().Trim();
