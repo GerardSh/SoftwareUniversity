@@ -52,5 +52,16 @@
 
             return string.Join(Environment.NewLine, titles);
         }
+		
+		public static string GetBooksByPrice(BookShopContext context)
+        {
+            var books = context.Books
+                .Where(b => b.Price > 40)
+                .OrderByDescending(b => b.Price)
+                .Select(b => $"{b.Title} - ${b.Price:f2}")
+                .ToArray();
+
+            return string.Join(Environment.NewLine, books);
+        } 
     }
 }
