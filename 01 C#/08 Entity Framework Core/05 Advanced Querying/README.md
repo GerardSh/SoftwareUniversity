@@ -266,7 +266,7 @@ void UpdateName(Employee employee, string newName)
 
 EF Core 6 не поддържа bulk операции, но от EF 7 нататък тези операции са добавени. За версия 6 можем да използваме **`Z.EntityFramework.Plus`**, който не използва Entity Tracker и работи по различен начин, позволявайки ни да правим bulk операции (като `UPDATE`, `DELETE`, и `INSERT`) на ентитита. Това е third-party пакет, като проблемът е, че не е безплатен. Ако нямаме лиценз, пакетът спира да работи след 30 дни. Въпреки това, този пакет значително ускорява операции за вмъкване на множество редове (bulk insert), което е много по-бързо от стандартния EF.
 
-[Entity Framework Plus](https://entityframework-plus.net/) библиотека за подобряване на работата с EF6.
+[Entity Framework Plus](https://entityframework-plus.net/) - библиотека за подобряване на работата с EF6.
 ### Entity Framework Plus
 Тази библиотека ни дава extension методи, чрез които да правим bulk операциите:
 
@@ -679,6 +679,72 @@ var albums = context.Albums
     ✅ **Be cautious when accessing navigation properties inside a projection**, as it can trigger unwanted data loading.
 ## EF Core Limitation: String Interpolation vs. Concatenation in Queries
 EF Core struggles with string interpolation (`$"{sp.Performer.FirstName} {sp.Performer.LastName}"`) because it involves runtime formatting, which may not translate well into SQL. However, simple string concatenation (`sp.Performer.FirstName + " " + sp.Performer.LastName`) works because it is easier for EF Core to convert into SQL. To avoid issues, prefer concatenation over interpolation when constructing strings inside `Select()`.
+## EF Core Queries Are Executed as Parameterized Procedures
+When we execute a query using Entity Framework (EF) Core, SQL Server processes it as a **parameterized query**, which follows this general flow:
+
+1. **EF Core Generates SQL**
+    
+    - EF Core translates the LINQ query into SQL, producing a parameterized SQL statement.
+    - This helps with query plan caching and SQL injection prevention.
+2. **SQL Server Receives the Query**
+    
+    - The SQL Server engine receives the generated SQL text, which includes placeholders (`@p0`, `@p1`, etc.) for the parameters.
+3. **SQL Server Receives the Parameters**
+    
+    - After receiving the SQL text, SQL Server receives the parameter names along with their corresponding types.
+4. **SQL Server Receives the Parameter Values**
+    
+    - Finally, SQL Server receives the actual values for those parameters separately.
+
+**Example Flow**
+
+Consider this EF Core query:
+
+```csharp
+var products = context.Products.Where(p => p.Price > minPrice).ToList();
+```
+
+EF Core translates it into a **parameterized SQL query**:
+
+```sql
+SELECT * FROM Products WHERE Price > @p0
+```
+
+Then SQL Server processes:
+
+- **The SQL text:**
+
+```sql
+SELECT * FROM Products WHERE Price > @p0
+```
+
+- **The parameter name and type:**  
+
+    `@p0` (type: `decimal`)
+
+- **The actual parameter value:**  
+
+    `@p0 = 100`
+
+**How the Generated Procedures Look Like**
+
+While these queries are not stored as permanent procedures, SQL Server internally **treats them like temporary stored procedures** for execution. The internal execution may look something like:
+
+```sql
+EXEC sp_executesql 
+    N'SELECT * FROM Products WHERE Price > @p0', 
+    N'@p0 decimal', 
+    @p0 = 100
+```
+
+This dynamic approach offers several advantages:
+
+- **Security**: Prevents SQL injection.
+- **Performance**: Allows SQL Server to cache execution plans for repeated queries.
+- **Flexibility**: Different values can be substituted without recompiling the query plan.
+
+So, while it is **not exactly a stored procedure**, SQL Server processes EF queries in a structured, **parameterized manner**, similar to how it would execute a stored procedure.
 # Bookmarks
-[Entity Framework Plus](https://entityframework-plus.net/)
+[Entity Framework Plus](https://entityframework-plus.net/) - библиотека за подобряване на работата с EF6.
+
 Completion: 02.03.2025
