@@ -3,6 +3,8 @@
     using BookShop.Models.Enums;
     using Data;
     using Initializer;
+    using System.Globalization;
+    using System.Text;
 
     public class StartUp
     {
@@ -17,9 +19,11 @@
 
             // Console.WriteLine(GetBooksByPrice(context));
 
-           // Console.WriteLine(GetBooksNotReleasedIn(context, 1998));
+            // Console.WriteLine(GetBooksNotReleasedIn(context, 1998));
 
-           // Console.WriteLine(GetBooksByCategory(context, "horror mystery drama"));
+            // Console.WriteLine(GetBooksByCategory(context, "horror mystery drama"));
+
+            // Console.WriteLine(GetBooksReleasedBefore(context, "12-04-1992"));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -52,8 +56,8 @@
 
             return string.Join(Environment.NewLine, titles);
         }
-		
-		public static string GetBooksByPrice(BookShopContext context)
+
+        public static string GetBooksByPrice(BookShopContext context)
         {
             var books = context.Books
                 .Where(b => b.Price > 40)
@@ -79,19 +83,45 @@
         public static string GetBooksByCategory(BookShopContext context, string input)
         {
             string[] searchCategories = input
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Select(c => c.ToLowerInvariant())
-                .ToArray();
+                .ToLower()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
 
             var titles = context.Books
                  .Where(b => b.BookCategories
                             .Any(bc => searchCategories
                             .Contains(bc.Category.Name.ToLower())))
                  .OrderBy(b => b.Title)
-                 .Select(b=>b.Title)
+                 .Select(b => b.Title)
                  .ToArray();
 
             return string.Join(Environment.NewLine, titles);
+        }
+
+        public static string GetBooksReleasedBefore(BookShopContext context, string date)
+        {
+            DateTime inputDateTime = DateTime.ParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+
+            var books = context.Books
+                .Where(b => b.ReleaseDate.HasValue
+                       && b.ReleaseDate.Value.Date < inputDateTime)
+                .OrderByDescending(b => b.ReleaseDate)
+                .Select(b => new
+                {
+                    b.Title,
+                    b.EditionType,
+                    b.Price
+                })
+                .ToArray();
+
+            var sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine($"{book.Title} - {book.EditionType} - ${book.Price:f2}");
+            }
+
+            return sb.ToString().Trim();
         }
     }
 }
