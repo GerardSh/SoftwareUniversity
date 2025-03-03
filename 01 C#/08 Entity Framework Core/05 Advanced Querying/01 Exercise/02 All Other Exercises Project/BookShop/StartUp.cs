@@ -24,6 +24,8 @@
             // Console.WriteLine(GetBooksByCategory(context, "horror mystery drama"));
 
             // Console.WriteLine(GetBooksReleasedBefore(context, "12-04-1992"));
+
+            Console.WriteLine(GetAuthorNamesEndingIn(context, "e"));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -62,10 +64,21 @@
             var books = context.Books
                 .Where(b => b.Price > 40)
                 .OrderByDescending(b => b.Price)
-                .Select(b => $"{b.Title} - ${b.Price:f2}")
+                .Select(b => new
+                {
+                    b.Title,
+                    b.Price
+                })
                 .ToArray();
 
-            return string.Join(Environment.NewLine, books);
+            var sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine($"{book.Title} - ${book.Price:f2}");
+            }
+            
+            return sb.ToString().Trim();
         }
 
         public static string GetBooksNotReleasedIn(BookShopContext context, int year)
@@ -122,6 +135,17 @@
             }
 
             return sb.ToString().Trim();
+        }
+
+        public static string GetAuthorNamesEndingIn(BookShopContext context, string input)
+        {
+            var authors = context.Authors
+                .Where(a => a.FirstName != null && a.FirstName.EndsWith(input))
+                .Select(a => a.FirstName + " " + a.LastName)
+                .OrderBy(a => a)
+                .ToArray();
+
+            return string.Join(Environment.NewLine, authors);
         }
     }
 }
