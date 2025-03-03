@@ -11,7 +11,15 @@
             using var context = new BookShopContext();
             // DbInitializer.ResetDatabase(db);
 
-            Console.WriteLine(GetBooksByAgeRestriction(context, "miNor"));
+            // Console.WriteLine(GetBooksByAgeRestriction(context, "miNor"));
+
+            // Console.WriteLine(GetGoldenBooks(context));
+
+            // Console.WriteLine(GetBooksByPrice(context));
+
+           // Console.WriteLine(GetBooksNotReleasedIn(context, 1998));
+
+           // Console.WriteLine(GetBooksByCategory(context, "horror mystery drama"));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -26,8 +34,20 @@
 
             var titles = context.Books
                 .Where(b => b.AgeRestriction == ageRestriction)
-                .Select(b =>  b.Title)
-                .OrderBy(b=> b)
+                .OrderBy(b => b)
+                .Select(b => b.Title)
+                .ToArray();
+
+            return string.Join(Environment.NewLine, titles);
+        }
+
+        public static string GetGoldenBooks(BookShopContext context)
+        {
+            var titles = context.Books
+                .Where(b => b.EditionType == EditionType.Gold
+                            && b.Copies < 5000)
+                .OrderBy(b => b.BookId)
+                .Select(b => b.Title)
                 .ToArray();
 
             return string.Join(Environment.NewLine, titles);
