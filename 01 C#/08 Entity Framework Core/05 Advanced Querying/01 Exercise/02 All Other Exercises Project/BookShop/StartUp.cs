@@ -25,7 +25,13 @@
 
             // Console.WriteLine(GetBooksReleasedBefore(context, "12-04-1992"));
 
-            Console.WriteLine(GetAuthorNamesEndingIn(context, "e"));
+            // Console.WriteLine(GetAuthorNamesEndingIn(context, "e"));
+
+            // Console.WriteLine(GetBookTitlesContaining(context, "sK"));
+
+            // Console.WriteLine(GetBooksByAuthor(context, "R"));
+
+            // Console.WriteLine(CountBooks(context, 12));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -146,6 +152,17 @@
                 .ToArray();
 
             return string.Join(Environment.NewLine, authors);
+        }
+
+        public static string GetBookTitlesContaining(BookShopContext context, string input)
+        {
+            var titles = context.Books
+                .Where(b => b.Title.ToLower().Contains(input.ToLower()))
+                .Select(b => b.Title)
+                .OrderBy(b => b)
+                .ToArray();
+
+            return string.Join(Environment.NewLine, titles);
         }
     }
 }
