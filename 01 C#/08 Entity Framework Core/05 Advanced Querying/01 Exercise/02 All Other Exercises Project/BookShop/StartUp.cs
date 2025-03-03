@@ -186,5 +186,15 @@
 
             return sb.ToString().Trim();
         }
+
+        public static int CountBooks(BookShopContext context, int lengthCheck)
+        {
+            var titles = context.Books
+                .Where(b => b.Title.Length > lengthCheck)
+                .Select(b=> b.Title)
+                .ToArray();
+
+            return titles.Length;
+        }
     }
 }
