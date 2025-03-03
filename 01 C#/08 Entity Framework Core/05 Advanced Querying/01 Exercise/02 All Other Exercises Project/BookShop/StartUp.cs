@@ -75,5 +75,23 @@
 
             return string.Join(Environment.NewLine, books);
         }
+
+        public static string GetBooksByCategory(BookShopContext context, string input)
+        {
+            string[] searchCategories = input
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(c => c.ToLowerInvariant())
+                .ToArray();
+
+            var titles = context.Books
+                 .Where(b => b.BookCategories
+                            .Any(bc => searchCategories
+                            .Contains(bc.Category.Name.ToLower())))
+                 .OrderBy(b => b.Title)
+                 .Select(b=>b.Title)
+                 .ToArray();
+
+            return string.Join(Environment.NewLine, titles);
+        }
     }
 }
