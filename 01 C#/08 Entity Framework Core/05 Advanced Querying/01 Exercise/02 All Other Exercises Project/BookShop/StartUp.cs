@@ -33,7 +33,9 @@
 
             // Console.WriteLine(CountBooks(context, 12));
 
-            Console.WriteLine(CountCopiesByAuthor(context));
+            // Console.WriteLine(CountCopiesByAuthor(context));
+
+            Console.WriteLine(GetTotalProfitByCategory(context));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -213,6 +215,28 @@
             foreach (var author in authorCopies)
             {
                 sb.AppendLine($"{author.FirstName} {author.LastName} - {author.BookCopies}");
+            }
+
+            return sb.ToString().Trim();
+        }
+
+        public static string GetTotalProfitByCategory(BookShopContext context)
+        {
+            var categories = context.Categories
+                .Select(c => new
+                {
+                    c.Name,
+                    Sum = c.CategoryBooks.Sum(cb => cb.Book.Copies * cb.Book.Price)
+                })
+                .OrderByDescending(c => c.Sum)
+                .ThenBy(c => c.Name)
+                .ToArray();
+
+            var sb = new StringBuilder();
+
+            foreach (var category in categories)
+            {
+                sb.AppendLine($"{category.Name} ${category.Sum:f2}");
             }
 
             return sb.ToString().Trim();
