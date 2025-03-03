@@ -32,6 +32,8 @@
             // Console.WriteLine(GetBooksByAuthor(context, "R"));
 
             // Console.WriteLine(CountBooks(context, 12));
+
+            Console.WriteLine(CountCopiesByAuthor(context));
         }
 
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -83,7 +85,7 @@
             {
                 sb.AppendLine($"{book.Title} - ${book.Price:f2}");
             }
-            
+
             return sb.ToString().Trim();
         }
 
@@ -168,9 +170,9 @@
         public static string GetBooksByAuthor(BookShopContext context, string input)
         {
             var titles = context.Books
-                .Where(b=> b.Author.LastName.ToLower().StartsWith(input.ToLower()))
+                .Where(b => b.Author.LastName.ToLower().StartsWith(input.ToLower()))
                 .OrderBy(b => b.BookId)
-                .Select(b=> new
+                .Select(b => new
                 {
                     b.Title,
                     AuthorName = $"({b.Author.FirstName} {b.Author.LastName})"
@@ -189,12 +191,31 @@
 
         public static int CountBooks(BookShopContext context, int lengthCheck)
         {
-            var titles = context.Books
+            return context.Books
                 .Where(b => b.Title.Length > lengthCheck)
-                .Select(b=> b.Title)
+                .Count();
+        }
+
+        public static string CountCopiesByAuthor(BookShopContext context)
+        {
+            var authorCopies = context.Authors
+                .Select(a => new
+                {
+                    a.FirstName,
+                    a.LastName,
+                    BookCopies = a.Books.Sum(b => b.Copies)
+                })
+                .OrderByDescending(a => a.BookCopies)
                 .ToArray();
 
-            return titles.Length;
+            var sb = new StringBuilder();
+
+            foreach (var author in authorCopies)
+            {
+                sb.AppendLine($"{author.FirstName} {author.LastName} - {author.BookCopies}");
+            }
+
+            return sb.ToString().Trim();
         }
     }
 }
