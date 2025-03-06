@@ -361,7 +361,7 @@ echo $env:MY_VARIABLE
 ```
 
 >[!Warning]
->Когато задаваме имена и стойности на environment variables, трябва да се внимава със специалните символи. Не трябва да има интервали, специални символи и други неподходящи знаци.
+>Когато задаваме имена и стойности на environment variables, трябва да се внимава. Не трябва да има интервали, специални символи и други неподходящи знаци.
 # ChatGPT
 ## `EnsureCreated()` & `EnsureDeleted()` for Bypassing Migrations
 1. **`EnsureDeleted()` + `EnsureCreated()`**
