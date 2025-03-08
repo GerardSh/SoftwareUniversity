@@ -522,5 +522,56 @@ The **Designer file** serves as a way for EF Core to track changes between migra
 - **Designer file**: Contains metadata and is required for EF Core's internal migration management.
 
 Both files work together to ensure EF Core can correctly apply and track migrations. The Designer file helps EF Core understand what changes were made in the migration, even if the schema changes are rolled back or re-applied.
+## `context.Database.Migrate()`
+The `context.Database.Migrate();` method in **EF Core** applies any pending migrations to the database at runtime. It ensures the database schema is updated to match the current model without needing to run the `Update-Database` command manually.
+
+**Key Points:**
+
+- Useful in **production environments** where manual migration execution isn't ideal.
+- Automatically creates the database if it doesn't exist.
+- Best suited for **automated deployment scenarios** or when starting the app for the first time.
+
+**Example Usage:**
+
+```csharp
+using (var context = new AppDbContext())
+{
+    context.Database.Migrate();
+}
+```
+
+This method is generally called in the `Startup` or `Program` class to ensure the database is up to date when the application runs.
+## EF Core Bundles Summary
+EF Core **bundles** are primarily designed for **applying migrations in production environments**, especially within **CI/CD pipelines**. While standard migration commands like `Update-Database` are commonly used during **development** and **testing**, bundles provide a more controlled and secure way to apply migrations in production.
+
+**Key Differences:**
+
+|Aspect|**Standard Commands**|**Bundles**|
+|---|---|---|
+|**Purpose**|Ideal for development and testing.|Intended for production deployment.|
+|**Execution**|Requires `dotnet ef` tools to be installed.|Self-contained executable — no CLI tools needed.|
+|**Deployment**|Manual execution on the developer’s machine or test server.|Automates the process in CI/CD pipelines or remote servers.|
+|**Safety**|Less controlled — risk of accidental updates in production.|Safer for production — bundled migration logic is consistent.|
+
+**Recommended Approach:**
+
+- During **development/testing** → Use `Add-Migration` and `Update-Database`.
+- During **production deployment** → Use `dotnet ef migrations bundle` to create a bundle, then execute it with:
+
+```bash
+./efbundle.exe --connection "YourConnectionString"
+```
+
+This workflow ensures smoother, safer migration management across different environments.
+## Managing EF Core Snapshot Conflicts in Git
+When multiple developers branch off a project and work on features independently, snapshot conflicts may arise if changes in the model are introduced between the two branch-offs.
+
+**Common Practice to Resolve Snapshot Conflicts:**
+
+1. **Branch off** from your colleague's branch (the one with the updated snapshot).
+2. **Merge** your changes into this new branch to align your snapshot with the latest model state.
+3. Once conflicts are resolved, **merge** this branch into the **production branch** to ensure consistency.
+
+This approach helps avoid overwriting critical model changes and ensures the EF Core migration history remains accurate.
 # Bookmarks
 Completion: 06.03.2025
