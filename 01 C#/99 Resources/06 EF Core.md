@@ -136,19 +136,103 @@ public string FullName => this.FirstName + this.LastName;
 
 `FromSqlInterpolated(FormattableString sql)` – позволява SQL интерполация, като автоматично параметризира стойностите.
 ## Change Tracking
-`SaveChanges()` – прилага всички проследени промени върху базата данни, като генерира и изпълнява съответните SQL команди в рамките на транзакция.
+`SaveChanges()` - прилага всички проследени промени върху базата данни, като генерира и изпълнява съответните SQL команди в рамките на транзакция.
 
-`AsNoTracking()` – извлича данни от базата без да ги проследява Entity Tracker, което подобрява производителността при заявки, които не изискват модификация на обектите.
+`AsNoTracking()` - извлича данни от базата без да ги проследява Entity Tracker, което подобрява производителността при заявки, които не изискват модификация на обектите.
 
 `Attach()` - закача обекта към контекста без да маркира нито едно свойство като променено. Можете по-късно да посочим целия обект или дадени свойства да бъдат маркирани като променени.
 
 `Update()` -  закача обекта и маркира всички свойства като променени, което означава, че всяко свойство ще бъде актуализирано в базата данни, когато се извика `SaveChanges()`.
+## JSON
+`JsonSerializer.Serialize(object, options)` - преобразува обект в JSON стринг. Използва се за сериализация на обекти в JSON формат, като поддържа опции за конфигуриране на процеса (например индентиране или игнориране на пропъртита).
+
+`JsonSerializer.Deserialize<T>(jsonString, options)` - преобразува JSON стринг в обект от тип `T`. Извършва десериализация на JSON стринг обратно в обект, като мапира данните към зададения клас или структура.
+
+`JsonSerializerOptions` - клас, който позволява конфигуриране на процеса на сериализация и десериализация. Например, може да се използва за задаване на правила за форматиране на дата, игнориране на пропъртита или дефиниране на специфични поведение при сериализация и десериализация на обекти.
+
+Пример:
+
+```csharp
+var options = new JsonSerializerOptions { WriteIndented = true };
+string jsonString = JsonSerializer.Serialize(person, options);
+var deserializedPerson = JsonSerializer.Deserialize<Person>(jsonString);
+```
+### Extension Class
+Можем да създадем статичен extension клас за типа `string`, което ще ни позволи по-удобно да задаваме настройки и да извикваме методи за сериализация и десериализация:
+
+```csharp
+public static class JsonExtensions
+{
+    private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions()
+    {
+        PropertyNameCaseInsensitive = true,
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+    };
+
+    public static T? FromJson<T>(this string json)
+    {
+        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
+    }
+
+    public static string ToJson<T>(this T obj)
+    {
+        return JsonSerializer.Serialize(obj, jsonSerializerOptions);
+    }
+
+    public static T? FromJson<T>(this string json, JsonSerializerOptions options)
+    {
+        return JsonSerializer.Deserialize<T>(json, options);
+    }
+
+    public static string ToJson<T>(this T obj, JsonSerializerOptions options)
+    {
+        return JsonSerializer.Serialize(obj, options);
+    }
+}
+```
+
+Пример как може да го ползваме:
+
+```csharp
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public int YearOfStudy { get; set; }
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Student student = new Student()
+        {
+            Id = 1,
+            Name = "Pesho",
+            Number = "F1234567890",
+            YearOfStudy = 1
+        };
+
+        string serializedStudentWithExtensionMethod = student.ToJson();
+
+        Console.WriteLine(serializedStudentWithExtensionMethod);
+
+        Student? studentWithExtensionMethod = serializedStudentWithExtensionMethod.FromJson<Student>();
+
+        Console.WriteLine($"Name: {studentWithExtensionMethod.Name}, FakNumber: {studentWithExtensionMethod.Number}");
+    }
+}
+```
+
+Този подход е особено полезен, когато често се работи със JSON данни, защото спестява писане на повтарящ се код и гарантира последователно конфигуриране на сериализацията.
 ## Misc
-`ToQueryString()` – извлича SQL заявката, която ще бъде изпълнена в базата, когато използваме `IQueryable`.
+`ToQueryString()` - извлича SQL заявката, която ще бъде изпълнена в базата, когато използваме `IQueryable`.
 
-`ExecuteDeleteAsync()` – извършва изтриване на записи от базата данни по дадено условие, като оптимизира производителността при масови изтривания. Поддържа асинхронни операции. Работи от EF8.
+`ExecuteDeleteAsync()` - извършва изтриване на записи от базата данни по дадено условие, като оптимизира производителността при масови изтривания. Поддържа асинхронни операции. Работи от EF8.
 
-`ExecuteUpdateAsync()` – извършва обновяване на записи в базата данни по дадено условие, като оптимизира производителността при масови обновявания. Поддържа асинхронни операции. Работи от EF8.
-
+`ExecuteUpdateAsync()` - извършва обновяване на записи в базата данни по дадено условие, като оптимизира производителността при масови обновявания. Поддържа асинхронни операции. Работи от EF8.
 # Bookmarks
 [Entity Properties - EF Core | Microsoft Learn](https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt) - Configuration Options for Entity Properties using Data Annotations or Fluent API.
