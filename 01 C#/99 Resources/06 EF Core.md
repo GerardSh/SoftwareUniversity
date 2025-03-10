@@ -1,6 +1,5 @@
 # Mappings
 ## Fluent API
-
 Посочване на Primary Key, като втория вариант е експлицитен и не е препоръчителен:
 
 ```csharp
@@ -144,6 +143,7 @@ public string FullName => this.FirstName + this.LastName;
 
 `Update()` -  закача обекта и маркира всички свойства като променени, което означава, че всяко свойство ще бъде актуализирано в базата данни, когато се извика `SaveChanges()`.
 ## JSON
+### `System.Text.Json`
 `JsonSerializer.Serialize(object, options)` - преобразува обект в JSON стринг. Използва се за сериализация на обекти в JSON формат, като поддържа опции за конфигуриране на процеса (например индентиране или игнориране на пропъртита).
 
 `JsonSerializer.Deserialize<T>(jsonString, options)` - преобразува JSON стринг в обект от тип `T`. Извършва десериализация на JSON стринг обратно в обект, като мапира данните към зададения клас или структура.
@@ -157,6 +157,10 @@ var options = new JsonSerializerOptions { WriteIndented = true };
 string jsonString = JsonSerializer.Serialize(person, options);
 var deserializedPerson = JsonSerializer.Deserialize<Person>(jsonString);
 ```
+### `JSON.NET`
+`JsonConvert.SerializeObject(object)` - сериализира обект в JSON стринг, като поддържа множество опции за конфигуриране на сериализацията, като форматиране и контрол на пропъртитата.
+
+`JsonConvert.DeserializeObject<T>(jsonString)` - десериализира JSON стринг в обект от тип `T`, като се грижи за правилното преобразуване на данните към съответния тип.
 ### Extension Class
 Можем да създадем статичен extension клас за типа `string`, което ще ни позволи по-удобно да задаваме настройки и да извикваме методи за сериализация и десериализация:
 
