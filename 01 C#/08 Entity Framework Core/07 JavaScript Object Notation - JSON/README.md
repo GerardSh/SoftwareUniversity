@@ -116,16 +116,19 @@ static void Main()
 	 WeatherForecast forecast = new WeatherForecast();
 	 string weatherInfo = JsonSerializer.Serialize(forecast);
 	 Console.WriteLine(weatherInfo);
-	 
-	 File.WriteAllText(file, weatherInfo); // Write the JSON string to file
+
+     // Optionally, we can write the JSON string to a file
+     string file = "weather.json"; // Define the file path
+     File.WriteAllText(file, weatherInfo); // Write the JSON string to file
 }
 ```
 #### Deserializing JSON
-Десериализиране на JSON string към обект, като може да прочетем стринга и от файл:
+Десериализиране на JSON string обратно в обект:
 
 ```csharp
 static void Main()
 {
+     // We can read the string from a file
 	 string jsonString = File.ReadAllText(file);
 	 WeatherForecast forecast =
 	   JsonSerializer.Deserialize<WeatherForecast>(jsonString);
@@ -138,8 +141,266 @@ static void Main()
 
 >[!TIP]
 >Добра идея е да направим статичен extension клас, който да улесни работата със сериализация и десериализация. Така можем директно да извикваме методи за конвертиране на обекти към JSON и обратно, без излишна повторяемост на кода. Примерен такъв клас има във файла за EF Core в папката с ресурси.
-### JSON.NET
+#### Attributes
+Атрибутите са много полезни. Например, можем да посочим какво име да има дадено пропърти при сериализация и десериализация. Това ни позволява в C# да ползваме удобни и ясни имена за пропъртита, а към външния свят да подаваме различни наименования, ако е необходимо.
 
+Също така можем да посочим кои пропъртита да бъдат игнорирани по време на сериализация и десериализация:
+
+```csharp
+public class User
+{
+    [JsonPropertyName("user")]
+    public string Username { get; set; }
+
+    [JsonIgnore]
+    public string Password { get; set; }
+}
+```
+
+Допълнително можем да ползваме:
+
+- **`[JsonInclude]`** – Показва, че дадено поле (не само пропърти) трябва да се включи в сериализацията.
+- **`[JsonConverter]`** – Позволява персонализирано конвертиране на специфични типове данни.
+### JSON.NET
+JSON.NET е open source framework за .NET, който предоставя множество функционалности, като основната му употреба е за парсване на JSON данни, както и сериализация и десериализация на обекти в JSON формат.
+
+Той поддържа `LINQ-to-JSON`, което позволява лесно манипулиране на JSON данни чрез LINQ заявки.
+
+JSON.NET също така предлага възможност за конвертиране на XML към JSON и обратно. Въпреки това, този процес не е особено препоръчителен, защото XML съдържа мета информация, която трябва да бъде прехвърлена към JSON, което може да доведе до загуба на структурирани данни, тъй като JSON не поддържа същия начин на представяне на мета информация.
+
+JSON.NET се инсталира като NuGet пакет - **`Newtonsoft.Json`**.
+#### Serializing JSON
+Сериализиране на обект към JSON string:
+
+```csharp
+var jsonProduct = JsonConvert.SerializeObject(product);
+```
+
+Ако искаме да добавим идентиране (с цел по-добра четимост), можем да добавим аргумент `Formatting.Indented` при сериализацията.
+
+Пример:
+
+```csharp
+JsonConvert.SerializeObject(products, Formatting.Indented);
+```
+
+Result:
+
+```json
+{
+  "pump": {
+  "Id": 0,
+  "Name": "Oil Pump",
+  "Description": null,
+  "Cost": 25.0
+  },
+  "filter": {
+  "Id": 0,
+  "Name": "Oil Filter",
+  "Description": null,
+  "Cost": 15.0
+ }
+} 
+```
+#### Deserializing JSON
+Десериализиране на JSON string обратно в обект:
+
+```csharp
+var objProduct = JsonConvert.DeserializeObject<Product>(jsonProduct);
+```
+
+Можем да десериализираме JSON стринг към анонимен обект. За тази цел създаваме темплейт, който съдържа същите пропъртита като тези в JSON данните, но без стойности. Този подход се ползва понякога, когато ни трябват само част от пропъртитата в обекта.
+
+Пример:
+
+```csharp
+// Incoming JSON
+var json = @"{ 'firstName': 'Svetlin',
+ 'lastName': 'Nakov',
+ 'jobTitle': 'Technical Trainer' }";
+
+// Template objects
+var template = new
+{
+ FirstName = string.Empty,
+ LastName = string.Empty,
+ JobTitle = string.Empty
+};
+
+var person = JsonConvert.DeserializeAnonymousType(json, template);
+```
+#### Features
+Може да се конфигурират, част от настройките:
+- Идентиране на output-а (форматиране с отстъпи).
+- Конвертиране на JSON към анонимни типове.
+- Контролиране на casing-а и на пропъртитата, които да бъдат парсвани.
+- Пропускане на грешки при парсване.
+#### Attributes
+И в `JSON.NET` имаме атрибути, които се ползват по подобен начин на тези в `System.Text.Json`:
+
+```csharp
+public class User
+{
+  [JsonProperty("user")]
+  public string Username { get; set; }
+  [JsonIgnore]
+  public string Password { get; set; }
+}
+```
+
+Важно е да отбележим, че `JSON.NET` предоставя и допълнителни опции за контрол върху сериализацията, като:
+
+- **`[JsonConverter]`** – За персонализирани конвертори
+- **`[JsonRequired]`** – За изискване на стойност при десериализация
+- **`[JsonDefaultValueHandling]`** – За контрол върху стойности по подразбиране
+#### Parsing of Objects
+По подразбиране `JSON.NET` взема всяко пропърти или поле от класа и го парсва.
+
+Това поведение може да се контролира чрез `ContractResolver`, който ни позволява да зададем конкретна стратегия за именуване на пропъртита при сериализация.
+
+Пример за сериализация със `SnakeCaseNamingStrategy`:
+
+```csharp
+DefaultContractResolver contractResolver = 
+    new DefaultContractResolver()
+    {
+        NamingStrategy = new SnakeCaseNamingStrategy()
+    };
+
+var serialized = JsonConvert.SerializeObject(person, 
+    new JsonSerializerSettings()
+    {
+        ContractResolver = contractResolver,
+        Formatting = Formatting.Indented
+    });
+```
+
+В този случай всяко пропърти ще бъде преобразувано в `snake_case` (например `FirstName` → `first_name`).
+
+Този подход е особено полезен при работа с външни API-та, които следват различен стил на именуване.
+
+>[!TIP]
+>Както и при System.Text.Json, може да си направим статичен extension клас.
+#### `LINQ-to-JSON`
+`LINQ-to-JSON` е подход за работа с JSON данни, който се базира на класовете от пространството `Newtonsoft.Json.Linq`. Той позволява директна работа с JSON обекти без нужда от предварително дефинирани класове.
+
+С помощта на класа `JObject` можем лесно да:
+
+- Създаваме обекти от JSON стринг
+- Четем JSON данни от файл
+- Обхождаме JSON структура с `foreach` цикъл
+
+Пример за създаване на `JObject` от JSON стринг:
+
+```csharp
+using using System.Text.Json.Nodes;
+
+JObject obj = JObject.Parse(jsonProduct);
+```
+
+Пример за четене на JSON данни от файл и обхождане на обектите:
+
+```csharp
+using using System.Text.Json.Nodes;;
+
+// Четене на JSON от файл
+var people = JObject.Parse(File.ReadAllText(@"c:\people.json"));
+
+// Обхождане на JSON обекта
+foreach (JToken person in people)
+{
+    Console.WriteLine(person["FirstName"]); // Ivan
+    Console.WriteLine(person["LastName"]);  // Petrov
+}
+```
+
+Този подход е особено полезен, когато структурата на JSON данните не е фиксирана или предварително известна.
+
+Можем да използваме LINQ за извличане на данни от `JObject`. Това ни позволява да манипулираме JSON структури по начин, подобен на използването на LINQ за колекции в .NET.
+
+Пример за използване на LINQ-to-JSON в JSON.NET:
+
+```csharp
+using Newtonsoft.Json.Linq;
+
+// Creating JObject from JSON string
+var json = JObject.Parse(@"{'products': [
+   {'name': 'Fruits', 'products': ['apple', 'banana']},
+   {'name': 'Vegetables', 'products': ['cucumber']}]}"
+);
+
+var products = json["products"]
+    .Select(t =>
+        string.Format("{0} ({1})",
+            t["name"],
+            string.Join(", ", t["products"].Select(p => p.ToString()))
+        )
+    ).ToList();
+
+// Output the result
+foreach (var product in products)
+{
+    Console.WriteLine(product);
+}
+
+// Output:
+// Fruits (apple, banana)
+// Vegetables (cucumber)
+```
+#### `XML-to-JSON`
+Пример:
+
+```csharp
+string xml = @"<?xml version=""1.0"" standalone=""no""?>
+ <root>
+    <person id=""1"">
+        <name>Alan</name>
+        <url>www.google.com</url>
+    </person>
+    <person id=""2"">
+        <name>Louis</name>
+        <url>www.yahoo.com</url>
+    </person>
+</root>";
+
+XmlDocument doc = new XmlDocument();
+doc.LoadXml(xml);
+string jsonText = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
+
+Console.WriteLine(jsonText);
+
+// Output:
+// {
+//   "?xml": {
+//     "@version": "1.0",
+//     "@standalone": "no"
+//   },
+//   "root": {
+//     "person": [
+//       {
+//         "@id": "1",
+//         "name": "Alan",
+//         "url": "www.google.com"
+//       },
+//       {
+//         "@id": "2",
+//         "name": "Louis",
+//         "url": "www.yahoo.com"
+//       }
+//     ]
+//   }
+// }
+```
+
+- XML мета информацията (например `?xml`) се преобразува в JSON обект, като атрибутите се добавят с `@` пред тях.
+- За премахване на мета информацията можем да зададем параметъра `omitRootObject: true` в `SerializeXmlNode`:
+
+```csharp
+string jsonText = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented, omitRootObject: true);
+```
+
+- Ако XML съдържа празни тагове като `<tag />`, те се преобразуват в `"tag": null`.
+- При JSON → XML преобразуване, `@` също указва атрибут в XML структурата.
 # Misc
 ## Browser Wars
 Microsoft с Internet Explorer е имала тотална доминация в началото, но след появата на Netscape Navigator нещата се променят. Основната причина е JavaScript, благодарение на който уеб страниците стават по-интерактивни и интересни.
