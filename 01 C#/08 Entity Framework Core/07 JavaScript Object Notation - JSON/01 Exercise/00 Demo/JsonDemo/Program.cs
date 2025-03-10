@@ -1,13 +1,15 @@
 ﻿namespace JsonDemo
 {
+    using System;
     using System.Text;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
 
     public class Program
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+
             Student student = new Student()
             {
                 Id = 1,
@@ -16,36 +18,20 @@
                 YearOfStudy = 1
             };
 
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.InputEncoding = Encoding.UTF8;
+            Console.WriteLine("*******************************");
+            Console.WriteLine("     System.Text.Json Demo");
+            Console.WriteLine("*******************************");
+            Console.WriteLine();
 
-            string serializedStudent = JsonSerializer.Serialize(student);
-            string serializedStudentWithExtensionMethod = student.ToJson();
+            SystemJson.SystemJsonDemo(student);
 
-            Console.WriteLine(serializedStudent);
-            Console.WriteLine(serializedStudentWithExtensionMethod);
+            Console.WriteLine();
+            Console.WriteLine("*******************************");
+            Console.WriteLine("         JSON.NET Demo");
+            Console.WriteLine("*******************************");
+            Console.WriteLine();
 
-            Student? newStudent = JsonSerializer.Deserialize<Student>(serializedStudent);
-            Student? newStudentWithExtensionMethod = serializedStudent.FromJson<Student>();
-
-            if (newStudent != null && newStudentWithExtensionMethod != null)
-            {
-                Console.WriteLine("Student from string:");
-                Console.WriteLine($"Name: {newStudent.Name}, FakNumber: {newStudent.Number}");
-                Console.WriteLine($"Name: {newStudentWithExtensionMethod.Name}, FakNumber: {newStudentWithExtensionMethod.Number}");
-            }
-
-            File.WriteAllText(@"..\..\..\student.json", serializedStudent);
-
-            string jsonString = File.ReadAllText(@"..\..\..\student.json");
-
-            Student? newStudentFromFileString = JsonSerializer.Deserialize<Student>(jsonString);
-
-            if (newStudentFromFileString != null)
-            {
-                Console.WriteLine("Student from JSON file:");
-                Console.WriteLine($"Name: {newStudentFromFileString.Name}, FakNumber: {newStudentFromFileString.Number}");
-            }
+            JsonNet.JsonNetDemo(student);
         }
     }
 }
