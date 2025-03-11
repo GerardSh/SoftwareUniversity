@@ -16,8 +16,8 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            string jsonString = File.ReadAllText("../../../Datasets/users.json");
-            string result = ImportUsers(dbContext, jsonString);
+            string jsonString = File.ReadAllText("../../../Datasets/products.json");
+            string result = ImportProducts(dbContext, jsonString);
 
             Console.WriteLine(result);
         }
@@ -35,10 +35,7 @@
 
                 foreach (var userDto in userDtos)
                 {
-                    if (!IsValid(userDto))
-                    {
-                        continue;
-                    }
+                    if (!IsValid(userDto)) continue;
 
                     int? userAge = null;
 
@@ -46,10 +43,7 @@
                     {
                         bool isAgeValid = int.TryParse(userDto.Age, out int parsedAge);
 
-                        if (!isAgeValid)
-                        {
-                            continue;
-                        }
+                        if (!isAgeValid) continue;
 
                         userAge = parsedAge;
                     }
@@ -73,7 +67,66 @@
             return result;
         }
 
-        public static bool IsValid(object dto)
+        public static string ImportProducts(ProductShopContext context, string inputJson)
+        {
+            string result = string.Empty;
+
+            ImportProductDto[]? productDtos = JsonConvert
+                .DeserializeObject<ImportProductDto[]>(inputJson);
+
+            if (productDtos != null)
+            {
+                ICollection<Product> validProducts = new List<Product>();
+                //ICollection<int> dbUsers = context.Users
+                //    .Select(u => u.Id)
+                //    .ToArray();
+
+                foreach (var productDto in productDtos)
+                {
+                    if (!IsValid(productDto)) continue;
+
+                    bool isPriceValid = decimal.TryParse(productDto.Price, out decimal productPrice);
+                    bool isSellerValid = int.TryParse(productDto.SellerId, out int sellerId);
+
+                    if (!isPriceValid || !isSellerValid) continue;
+
+                    int? buyerId = null;
+
+                    if (productDto.BuyerId != null)
+                    {
+                        bool isBuyerIdValid = int.TryParse(productDto.BuyerId, out int parsedBuyerId);
+
+                        if (!isBuyerIdValid) continue;
+
+                        buyerId = parsedBuyerId;
+
+                     //   if (!dbUsers.Contains((int)buyerId)) continue;
+                    }
+
+                    // if (!dbUsers.Contains(sellerId)) continue;
+
+                    Product product = new Product()
+                    {
+                        Name = productDto.Name,
+                        Price = productPrice,
+                        SellerId = sellerId,
+                        BuyerId = buyerId,
+                    };
+
+                    validProducts.Add(product);
+                }
+
+                context.Products.AddRange(validProducts);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validProducts.Count}";
+            }
+
+            return result;
+        }
+
+        //Helper method
+        private static bool IsValid(object dto)
         {
             var validateContext = new ValidationContext(dto);
             var validationResults = new List<ValidationResult>();
