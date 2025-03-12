@@ -7,6 +7,7 @@
     using ProductShop.DTOs.Import;
     using ProductShop.Models;
     using System.ComponentModel.DataAnnotations;
+    using Newtonsoft.Json.Serialization;
 
     public class StartUp
     {
@@ -17,7 +18,7 @@
             // Console.WriteLine("Database migrated successfully!");
 
             string jsonString = File.ReadAllText("../../../Datasets/categories-products.json");
-            string result = ImportCategoryProducts(dbContext, jsonString);
+            string result = GetSoldProducts(dbContext);
 
             Console.WriteLine(result);
         }
@@ -195,6 +196,37 @@
 
             return result;
         }
+
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            var products = context.Products
+                .Where(p => p.Price >= 500 &&
+                           p.Price <= 1000)
+                .Select(p => new
+                {
+                    p.Name,
+                    p.Price,
+                    Seller = p.Seller.FirstName + " " + p.Seller.LastName
+                })
+                .OrderBy(p => p.Price)
+                .ToArray();
+
+            DefaultContractResolver camelCaseResolver = new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
+            string jsonResult = JsonConvert
+                .SerializeObject(products, new JsonSerializerSettings()
+                {
+                    ContractResolver = camelCaseResolver,
+                    Formatting = Formatting.Indented
+                });
+
+            return jsonResult;
+        }
+
+
 
         //Helper method
         private static bool IsValid(object dto)
