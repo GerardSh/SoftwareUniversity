@@ -226,7 +226,41 @@
             return jsonResult;
         }
 
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            var usersWithSoldProducts = context.Users
+                .Where(u => u.ProductsSold.Any(p => p.BuyerId.HasValue))
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.FirstName)
+                .Select(u => new
+                {
+                    u.FirstName,
+                    u.LastName,
+                    SoldProducts = u.ProductsSold
+                        .Where(p => p.BuyerId.HasValue)
+                        .Select(p => new
+                        {
+                            p.Name,
+                            p.Price,
+                            BuyerFirstName = p.Buyer!.FirstName,
+                            BuyerLastName = p.Buyer.LastName
+                        }).ToList()
+                }).ToList();
 
+            DefaultContractResolver camelCaseResolver = new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
+            string jsonResult = JsonConvert
+                .SerializeObject(usersWithSoldProducts, new JsonSerializerSettings()
+                {
+                    ContractResolver = camelCaseResolver,
+                    Formatting = Formatting.Indented
+                });
+
+            return jsonResult;
+        }
 
         //Helper method
         private static bool IsValid(object dto)
