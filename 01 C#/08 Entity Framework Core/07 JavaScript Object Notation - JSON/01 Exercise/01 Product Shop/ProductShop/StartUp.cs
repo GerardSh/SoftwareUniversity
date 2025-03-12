@@ -18,7 +18,7 @@
             // Console.WriteLine("Database migrated successfully!");
 
             string jsonString = File.ReadAllText("../../../Datasets/categories-products.json");
-            string result = GetCategoriesByProductsCount(dbContext);
+            string result = GetUsersWithProducts(dbContext);
 
             Console.WriteLine(result);
         }
@@ -285,6 +285,55 @@
                 {
                     ContractResolver = camelCaseResolver,
                     Formatting = Formatting.Indented
+                });
+
+            return jsonResult;
+        }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var usersWithSoldProducts = context.Users
+                .Where(u => u.ProductsSold.Any(p => p.BuyerId.HasValue))
+
+                .Select(u => new
+                {
+                    u.FirstName,
+                    u.LastName,
+                    u.Age,
+                    soldProducts = new
+                    {
+                        Count = u.ProductsSold.Count(p => p.BuyerId != null),
+                        Products = u.ProductsSold
+                            .Where(p => p.BuyerId.HasValue)
+                            .Select(p => new
+                            {
+                                p.Name,
+                                p.Price
+                            }).ToList()
+                    }
+                })
+                .ToList()
+                .OrderByDescending(u => u.soldProducts.Count)
+                .ToList();
+                
+
+            var serializedUsers = new
+            {
+                UsersCount = usersWithSoldProducts.Count,
+                Users = usersWithSoldProducts
+            };
+
+            DefaultContractResolver camelCaseResolver = new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
+            string jsonResult = JsonConvert
+                .SerializeObject(serializedUsers, new JsonSerializerSettings()
+                {
+                    ContractResolver = camelCaseResolver,
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore
                 });
 
             return jsonResult;
