@@ -16,8 +16,8 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            string jsonString = File.ReadAllText("../../../Datasets/products.json");
-            string result = ImportProducts(dbContext, jsonString);
+            string jsonString = File.ReadAllText("../../../Datasets/categories.json");
+            string result = ImportCategories(dbContext, jsonString);
 
             Console.WriteLine(result);
         }
@@ -100,7 +100,7 @@
 
                         buyerId = parsedBuyerId;
 
-                     //   if (!dbUsers.Contains((int)buyerId)) continue;
+                        //   if (!dbUsers.Contains((int)buyerId)) continue;
                     }
 
                     // if (!dbUsers.Contains(sellerId)) continue;
@@ -120,6 +120,39 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {validProducts.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCategories(ProductShopContext context, string inputJson)
+        {
+            string result = string.Empty;
+
+            ImportCategoryDto[]? categoryDtos = JsonConvert
+                .DeserializeObject<ImportCategoryDto[]>(inputJson);
+
+            ICollection<Category> validCategories = new List<Category>();
+
+            if (categoryDtos != null)
+            {
+
+                foreach (var categoryDto in categoryDtos)
+                {
+                    if (!IsValid(categoryDto)) continue;
+
+                    Category category = new Category()
+                    {
+                        Name = categoryDto.Name
+                    };
+
+                    validCategories.Add(category);
+                }
+
+                context.Categories.AddRange(validCategories);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validCategories.Count}";
             }
 
             return result;
