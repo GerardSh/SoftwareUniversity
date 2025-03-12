@@ -16,8 +16,8 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            string jsonString = File.ReadAllText("../../../Datasets/categories.json");
-            string result = ImportCategories(dbContext, jsonString);
+            string jsonString = File.ReadAllText("../../../Datasets/categories-products.json");
+            string result = ImportCategoryProducts(dbContext, jsonString);
 
             Console.WriteLine(result);
         }
@@ -153,6 +153,44 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {validCategories.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCategoryProducts(ProductShopContext context, string inputJson)
+        {
+            string result = string.Empty;
+
+            ImportCategoryProductDto[]? catProdDtos = JsonConvert
+                .DeserializeObject<ImportCategoryProductDto[]>(inputJson);
+
+            if (catProdDtos != null)
+            {
+                ICollection<CategoryProduct> validCatProd = new List<CategoryProduct>();
+
+                foreach (var catProdDto in catProdDtos)
+                {
+                    if (!IsValid(catProdDto)) continue;
+
+                    bool isProductIdValid = int.TryParse(catProdDto.ProductId, out int prodId);
+                    bool isCategoryIdValid = int.TryParse(catProdDto.CategoryId, out int catId);
+
+                    if (!isProductIdValid || !isCategoryIdValid) continue;
+
+                    var catProd = new CategoryProduct()
+                    {
+                        ProductId = prodId,
+                        CategoryId = catId
+                    };
+
+                    validCatProd.Add(catProd);
+                }
+
+                context.CategoriesProducts.AddRange(validCatProd);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validCatProd.Count}"; ;
             }
 
             return result;
