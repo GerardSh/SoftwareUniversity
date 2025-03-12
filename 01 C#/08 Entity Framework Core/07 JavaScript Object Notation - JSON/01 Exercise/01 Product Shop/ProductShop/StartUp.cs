@@ -18,7 +18,7 @@
             // Console.WriteLine("Database migrated successfully!");
 
             string jsonString = File.ReadAllText("../../../Datasets/categories-products.json");
-            string result = GetSoldProducts(dbContext);
+            string result = GetCategoriesByProductsCount(dbContext);
 
             Console.WriteLine(result);
         }
@@ -254,6 +254,34 @@
 
             string jsonResult = JsonConvert
                 .SerializeObject(usersWithSoldProducts, new JsonSerializerSettings()
+                {
+                    ContractResolver = camelCaseResolver,
+                    Formatting = Formatting.Indented
+                });
+
+            return jsonResult;
+        }
+
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context.Categories
+                .OrderByDescending(c => c.CategoriesProducts.Count)
+                .Select(c => new
+                {
+                    Category = c.Name,
+                    ProductsCount = c.CategoriesProducts.Count,
+                    AveragePrice = c.CategoriesProducts.Average(cp => cp.Product.Price).ToString("f2"),
+                    TotalRevenue = c.CategoriesProducts.Sum(cp => cp.Product.Price).ToString("f2")
+                })
+                .ToList();
+
+            DefaultContractResolver camelCaseResolver = new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
+            string jsonResult = JsonConvert
+                .SerializeObject(categories, new JsonSerializerSettings()
                 {
                     ContractResolver = camelCaseResolver,
                     Formatting = Formatting.Indented
