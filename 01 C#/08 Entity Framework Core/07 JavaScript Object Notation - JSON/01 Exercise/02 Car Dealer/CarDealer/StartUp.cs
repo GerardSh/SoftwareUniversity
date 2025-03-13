@@ -22,7 +22,7 @@
             //Console.WriteLine("Database migrated successfully!");
 
             // string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
-            result = GetTotalSalesByCustomer(dbContext);
+            result = GetSalesWithAppliedDiscount(dbContext);
 
             Console.WriteLine(result);
         }
@@ -292,8 +292,8 @@
                     parts = c.PartsCars
                         .Select(p => new
                         {
-                           p.Part.Name,
-                           Price = p.Part.Price.ToString("F2")
+                            p.Part.Name,
+                            Price = p.Part.Price.ToString("f2")
                         })
                         .ToList()
                 })
@@ -323,6 +323,30 @@
             string customersJson = JsonConvert.SerializeObject(customers, Formatting.Indented);
 
             return customersJson;
+        }
+
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            var sales = context.Sales
+                .Take(10)
+                .Select(s => new
+                {
+                    car = new
+                    {
+                        s.Car.Make,
+                        s.Car.Model,
+                        s.Car.TraveledDistance
+                    },
+                    customerName = s.Customer.Name,
+                    discount = s.Discount.ToString("f2"),
+                    price = s.Car.PartsCars.Sum(p => p.Part.Price).ToString("f2"),
+                    priceWithDiscount = (s.Car.PartsCars.Sum(p => p.Part.Price) * (1 - s.Discount / 100)).ToString("f2")
+                })
+                .ToArray();
+
+            string salesJson = JsonConvert.SerializeObject(sales, Formatting.Indented);
+
+            return salesJson;
         }
 
         private static bool IsValid(object dto)
