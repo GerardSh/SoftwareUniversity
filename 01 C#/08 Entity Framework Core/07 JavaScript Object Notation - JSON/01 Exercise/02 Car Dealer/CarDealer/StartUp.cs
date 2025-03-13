@@ -22,7 +22,7 @@
             //Console.WriteLine("Database migrated successfully!");
 
             // string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
-            result = GetCarsFromMakeToyota(dbContext);
+            result = GetLocalSuppliers(dbContext);
 
             Console.WriteLine(result);
         }
@@ -259,6 +259,23 @@
             string carsJson = JsonConvert.SerializeObject(toyotaCars, Formatting.Indented);
 
             return carsJson;
+        }
+
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            var suppliers = context.Suppliers
+                .Where(s => !s.IsImporter)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Name,
+                    PartsCount = s.Parts.Count
+                })
+                .ToArray();
+
+            string suppliersJson = JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+
+            return suppliersJson;
         }
 
         private static bool IsValid(object dto)
