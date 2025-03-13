@@ -317,7 +317,7 @@
                 .ToList();
                 
 
-            var serializedUsers = new
+            var jsonDto = new
             {
                 UsersCount = usersWithSoldProducts.Count,
                 Users = usersWithSoldProducts
@@ -329,7 +329,7 @@
             };
 
             string jsonResult = JsonConvert
-                .SerializeObject(serializedUsers, new JsonSerializerSettings()
+                .SerializeObject(jsonDto, new JsonSerializerSettings()
                 {
                     ContractResolver = camelCaseResolver,
                     Formatting = Formatting.Indented,
