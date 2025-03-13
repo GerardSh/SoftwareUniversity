@@ -20,8 +20,8 @@
             //dbContext.Database.Migrate();
             //Console.WriteLine("Database migrated successfully!");
 
-            string jsonFile = File.ReadAllText(@"../../../Datasets/cars.json");
-            result = ImportCars(dbContext, jsonFile);
+            string jsonFile = File.ReadAllText(@"../../../Datasets/customers.json");
+            result = ImportCustomers(dbContext, jsonFile);
 
             Console.WriteLine(result);
         }
@@ -145,6 +145,42 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {cars.Count}.";
+            }
+
+            return result;
+        }
+
+        public static string ImportCustomers(CarDealerContext context, string inputJson)
+        {
+            string result = string.Empty;
+
+            ImportCustomerDto[]? customerDtos = JsonConvert.DeserializeObject<ImportCustomerDto[]>(inputJson);
+
+            ICollection<Customer> customers = new List<Customer>();
+
+            if (customerDtos != null)
+            {
+                foreach (ImportCustomerDto customerDto in customerDtos)
+                {
+                    if (!IsValid(customerDto))
+                    {
+                        continue;
+                    }
+
+                    Customer customer = new Customer
+                    {
+                        Name = customerDto.Name,
+                        BirthDate = customerDto.BirthDate,
+                        IsYoungDriver = customerDto.IsYoungDriver
+                    };
+
+                    customers.Add(customer);
+                }
+
+                context.Customers.AddRange(customers);
+                context.SaveChanges();
+
+                result = $"Successfully imported {customers.Count}.";
             }
 
             return result;
