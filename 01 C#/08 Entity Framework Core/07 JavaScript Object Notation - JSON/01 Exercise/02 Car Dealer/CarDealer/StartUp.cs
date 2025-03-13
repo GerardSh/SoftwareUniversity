@@ -7,6 +7,7 @@
     using Data;
     using Models;
     using DTOs.Import;
+    using System.Globalization;
 
     public class StartUp
     {
@@ -20,8 +21,8 @@
             //dbContext.Database.Migrate();
             //Console.WriteLine("Database migrated successfully!");
 
-            string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
-            result = ImportSales(dbContext, jsonFile);
+            // string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
+            result = GetOrderedCustomers(dbContext);
 
             Console.WriteLine(result);
         }
@@ -220,6 +221,24 @@
             }
 
             return result;
+        }
+
+        public static string GetOrderedCustomers(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .OrderBy(c => c.BirthDate)
+                .ThenBy(c => c.IsYoungDriver)
+                .Select(c => new
+                {
+                    c.Name,
+                    BirthDate = c.BirthDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    c.IsYoungDriver
+                })
+                .ToArray();
+
+            string customersJson = JsonConvert.SerializeObject(customers, Formatting.Indented);
+
+            return customersJson;
         }
 
         private static bool IsValid(object dto)
