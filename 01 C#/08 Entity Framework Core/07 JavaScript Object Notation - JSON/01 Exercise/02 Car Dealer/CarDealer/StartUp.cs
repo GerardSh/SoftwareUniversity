@@ -58,6 +58,43 @@
             return result;
         }
 
+        public static string ImportParts(CarDealerContext context, string inputJson)
+        {
+            var suppliers = context.Suppliers.Select(s => s.Id).ToList();
+
+            ImportPartDto[]? partsDto = JsonConvert
+               .DeserializeObject<ImportPartDto[]>(inputJson);
+
+            if (partsDto != null)
+            {
+                ICollection<Part> validParts = new List<Part>();
+
+                foreach (var partDto in partsDto)
+                {
+                    if (!IsValid(partDto)) continue;
+
+                    if (!suppliers.Contains(partDto.SupplierId)) continue;
+
+                    Part part = new Part()
+                    {
+                        Name = partDto.Name,
+                        Price = partDto.Price,
+                        Quantity = partDto.Quantity,
+                        SupplierId = partDto.SupplierId
+                    };
+
+                    validParts.Add(part);
+                }
+
+                context.Parts.AddRange(validParts);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validParts.Count}.";
+            }
+
+            return result;
+        }
+
         private static bool IsValid(object dto)
         {
             var validateContext = new ValidationContext(dto);
