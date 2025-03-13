@@ -18,8 +18,8 @@
             string result;
             using CarDealerContext dbContext = new CarDealerContext();
 
-            //dbContext.Database.Migrate();
-            //Console.WriteLine("Database migrated successfully!");
+            // dbContext.Database.Migrate();
+            // Console.WriteLine("Database migrated successfully!");
 
             // string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
             result = GetSalesWithAppliedDiscount(dbContext);
