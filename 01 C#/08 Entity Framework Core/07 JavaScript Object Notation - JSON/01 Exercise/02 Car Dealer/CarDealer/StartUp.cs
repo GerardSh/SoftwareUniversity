@@ -22,7 +22,7 @@
             //Console.WriteLine("Database migrated successfully!");
 
             // string jsonFile = File.ReadAllText(@"../../../Datasets/sales.json");
-            result = GetCarsWithTheirListOfParts(dbContext);
+            result = GetTotalSalesByCustomer(dbContext);
 
             Console.WriteLine(result);
         }
@@ -302,6 +302,27 @@
             var carsJson = JsonConvert.SerializeObject(cars, Formatting.Indented);
 
             return carsJson;
+        }
+
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .Where(cus => cus.Sales.Any())
+                .Select(cus => new
+                {
+                    fullName = cus.Name,
+                    boughtCars = cus.Sales.Count(),
+                    spentMoney = cus.Sales
+                        .SelectMany(sale => sale.Car.PartsCars)
+                        .Sum(pc => pc.Part.Price)
+                })
+                .OrderByDescending(c => c.spentMoney)
+                .ThenByDescending(c => c.boughtCars)
+                .ToArray();
+
+            string customersJson = JsonConvert.SerializeObject(customers, Formatting.Indented);
+
+            return customersJson;
         }
 
         private static bool IsValid(object dto)
