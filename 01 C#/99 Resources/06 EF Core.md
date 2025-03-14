@@ -232,6 +232,46 @@ public class Program
 ```
 
 Този подход е особено полезен, когато често се работи със JSON данни, защото спестява писане на повтарящ се код и гарантира последователно конфигуриране на сериализацията.
+## XML Element Access
+`SetElementValue(string name, string value)` – задава стойност на елемент с дадено име. Ако елементът не съществува, ще бъде добавен; ако стойността е `null`, елементът ще бъде премахнат:
+
+```csharp
+customer.SetElementValue("birth-date", "1990-10-04T00:00:00");
+```
+
+`Element(string name)` – извлича елемент по име. Ако елементът не съществува, връща `null`:
+
+```csharp
+var model = car.Element("model").Value;
+```
+
+`Remove()` – премахва елемент от родителския елемент:
+
+```csharp
+var youngDriver = customer.Element("is-young-driver");
+youngDriver.Remove();
+```
+
+`SetAttributeValue(string name, string value)` – задава стойност на атрибут с дадено име. Ако атрибутът не съществува, ще бъде добавен; ако стойността е `null`, атрибутът ще бъде премахнат:
+
+```csharp
+customer.SetAttributeValue("name", "New Name");
+
+// Alternatively
+customer.Attribute("name").Value = "New Name";
+```
+
+`Attribute(string name)` – извлича атрибут по име. Ако атрибутът не съществува, връща `null`:
+
+```csharp
+customer.Attribute("name").Value
+```
+
+`Attributes()` – връща колекция от всички атрибути на елемента:
+
+```csharp
+var attrs = customer.Attributes();
+```
 ## Misc
 `ToQueryString()` - извлича SQL заявката, която ще бъде изпълнена в базата, когато използваме `IQueryable`.
 
