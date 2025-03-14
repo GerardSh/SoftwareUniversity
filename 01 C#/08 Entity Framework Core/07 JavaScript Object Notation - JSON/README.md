@@ -171,7 +171,78 @@ static void Main()
 Чрез пропъртито `WriteIndented` можем да определим дали сериализираният текст да съдържа интервали и нови редове за по-добра четимост. Ако текстът ще се чете от хора, е препоръчително да се добави. Ако обаче размерът е важен и текстът няма да се чете от хора, по-добре е да не се използва, за да се спести място.
 
 >[!TIP]
->Добра идея е да направим статичен extension клас, който да улесни работата със сериализация и десериализация. Така можем директно да извикваме методи за конвертиране на обекти към JSON и обратно, без излишна повторяемост на кода. Примерен такъв клас има във файла за EF Core в папката с ресурси.
+>Добра идея е да създадем статичен extension клас, който да улесни работата със сериализация и десериализация. Така можем директно да извикваме методи за конвертиране на обекти към JSON и обратно, без излишно повторение на кода. За JSON.NET също може да се създаде такъв клас.
+#### Extension Class
+Можем да създадем статичен extension клас за типа `string`, което ще ни позволи по-удобно да задаваме настройки и да извикваме методи за сериализация и десериализация:
+
+```csharp
+public static class JsonExtensions
+{
+    private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions()
+    {
+        PropertyNameCaseInsensitive = true,
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+    };
+
+    public static T? FromJson<T>(this string json)
+    {
+        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
+    }
+
+    public static string ToJson<T>(this T obj)
+    {
+        return JsonSerializer.Serialize(obj, jsonSerializerOptions);
+    }
+
+    public static T? FromJson<T>(this string json, JsonSerializerOptions options)
+    {
+        return JsonSerializer.Deserialize<T>(json, options);
+    }
+
+    public static string ToJson<T>(this T obj, JsonSerializerOptions options)
+    {
+        return JsonSerializer.Serialize(obj, options);
+    }
+}
+```
+
+Пример как може да го ползваме:
+
+```csharp
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public int YearOfStudy { get; set; }
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Student student = new Student()
+        {
+            Id = 1,
+            Name = "Pesho",
+            Number = "F1234567890",
+            YearOfStudy = 1
+        };
+
+        string serializedStudentWithExtensionMethod = student.ToJson();
+
+        Console.WriteLine(serializedStudentWithExtensionMethod);
+
+        Student? studentWithExtensionMethod = serializedStudentWithExtensionMethod.FromJson<Student>();
+
+        Console.WriteLine($"Name: {studentWithExtensionMethod.Name}, FakNumber: {studentWithExtensionMethod.Number}");
+    }
+}
+```
+
+Този подход е особено полезен, когато често се работи със JSON данни, защото спестява писане на повтарящ се код и гарантира последователно конфигуриране на сериализацията.
 #### Attributes
 Атрибутите са много полезни. Например, можем да посочим какво име да има дадено пропърти при сериализация и десериализация. Това ни позволява в C# да ползваме удобни и ясни имена за пропъртита, а към външния свят да подаваме различни наименования, ако е необходимо.
 
