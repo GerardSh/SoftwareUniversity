@@ -6,6 +6,7 @@
     using System.Xml.Serialization;
     using ProductShop.Dtos.Import;
     using ProductShop.DTOs.Export;
+    using System.ComponentModel.DataAnnotations;
 
     public class StartUp
     {
@@ -19,7 +20,7 @@
 
             // var inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
 
-            string result = GetProductsInRange(dbContext);
+            string result = GetUsersWithProducts(dbContext);
 
             Console.WriteLine(result);
         }
@@ -32,12 +33,14 @@
             if (usersDtos != null)
             {
                 var users = usersDtos
+                    .Where(IsValid)
                     .Select(u => new User()
                     {
                         FirstName = u.FirstName,
                         LastName = u.LastName,
                         Age = u.Age
-                    }).ToList();
+                    })
+                    .ToList();
 
                 context.Users.AddRange(users);
                 context.SaveChanges();
@@ -55,6 +58,7 @@
             if (productsDtos != null)
             {
                 var products = productsDtos
+                    .Where(IsValid)
                     .Select(p => new Product()
                     {
                         Name = p.Name,
@@ -80,6 +84,7 @@
             if (categoryDtos != null)
             {
                 var categories = categoryDtos
+                    .Where(IsValid)
                     .Select(c => new Category
                     {
                         Name = c.Name
@@ -112,6 +117,7 @@
                     .ToList();
 
                 var categoryProducts = categoryProductDtos
+                    .Where(IsValid)
                     .Select(x => new CategoryProduct
                     {
                         CategoryId = x.CategoryId,
@@ -152,6 +158,50 @@
             serializerXml.Serialize(xmlResult, productsInfo, nameSpaces);
 
             return xmlResult.ToString().Trim();
+        }
+
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            var usersInfo = context.Users
+                .Where(u => u.ProductsSold.Count > 0 
+                         && u.ProductsSold.Any(p => p.BuyerId.HasValue))
+                .Select(u => new ExportUserDto()
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    ProductsSold = u.ProductsSold.Select(p => new ExportProductDto()
+                    {
+                        Name = p.Name,
+                        Price = p.Price
+                    })
+                    .ToList()
+                })
+                .OrderBy(s => s.LastName)
+                .ThenBy(s => s.FirstName)
+                .Take(5)
+                .ToList();
+
+            var serializerXml = new XmlSerializer(typeof(List<ExportUserDto>),
+                new XmlRootAttribute("Users"));
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+
+            serializerXml.Serialize(xmlResult, usersInfo, nameSpaces);
+
+            return xmlResult.ToString().Trim();
+        }
+
+        //Helper method
+        private static bool IsValid(object dto)
+        {
+            var validateContext = new ValidationContext(dto);
+            var validationResults = new List<ValidationResult>();
+
+            bool isValid = Validator
+                .TryValidateObject(dto, validateContext, validationResults);
+
+            return isValid;
         }
     }
 }
