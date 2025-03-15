@@ -16,9 +16,9 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            var inputXml = File.ReadAllText("../../../Datasets/categories.xml");
+            var inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
 
-            string result = ImportCategories(dbContext, inputXml);
+            string result = ImportCategoryProducts(dbContext, inputXml);
 
             Console.WriteLine(result);
         }
@@ -71,7 +71,6 @@
 
             return result;
         }
-
         public static string ImportCategories(ProductShopContext context, string inputXml)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(ImportCategoryDto[]), new XmlRootAttribute("Categories"));
@@ -91,6 +90,40 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {categories.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCategoryProducts(ProductShopContext context, string inputXml)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(ImportCategoryProductDto[]), new XmlRootAttribute("CategoryProducts"));
+            var categoryProductDtos = (ImportCategoryProductDto[])serializer.Deserialize(new StringReader(inputXml));
+
+            if (categoryProductDtos != null)
+            {
+                var categories = context.Categories
+                    .Select(c => c.Id)
+                    .ToList();
+
+                var products = context.Products
+                    .Select(p => p.Id)
+                    .ToList();
+
+                var categoryProducts = categoryProductDtos
+                    .Select(x => new CategoryProduct
+                    {
+                        CategoryId = x.CategoryId,
+                        ProductId = x.ProductId
+                    })
+                    .Where(cp => categories.Contains(cp.CategoryId) &&
+                                   products.Contains(cp.ProductId))
+                    .ToList();
+
+                context.CategoryProducts.AddRange(categoryProducts);
+                context.SaveChanges();
+
+                result = $"Successfully imported {categoryProducts.Count}";
             }
 
             return result;
