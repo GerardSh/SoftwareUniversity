@@ -217,6 +217,49 @@
             return xmlResult.ToString().Trim();
         }
 
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var usersWithSoldProducts = context.Users
+                .Where(u => u.ProductsSold.Any(p => p.BuyerId.HasValue))
+                .Select(u => new ExportUserProductDto()
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Age = u.Age,
+                    SoldProducts = new ExportSoldProductDto()
+                    {
+                        Count = u.ProductsSold.Count(p => p.BuyerId.HasValue),
+                        Products = u.ProductsSold
+                            .Where(p => p.BuyerId.HasValue)
+                            .Select(p => new ExportProductDto()
+                            {
+                                Name = p.Name,
+                                Price = p.Price
+                            })
+                            .OrderByDescending(p => p.Price)
+                            .ToList()
+                    }
+                })
+                .ToList()
+                .OrderByDescending(u => u.SoldProducts.Count)
+                .Take(10)
+                .ToList();
+
+            var finalResult = new ExportUserStartDto()
+            {
+                Count = context.Users.Count(x => x.ProductsSold.Count >= 1),
+                Users = usersWithSoldProducts
+            };
+
+            var serializerXml = new XmlSerializer(typeof(ExportUserStartDto),
+                new XmlRootAttribute("Users"));
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+            serializerXml.Serialize(xmlResult, finalResult, nameSpaces);
+
+            return xmlResult.ToString().Trim();
+        }
 
         //Helper method
         private static bool IsValid(object dto)
