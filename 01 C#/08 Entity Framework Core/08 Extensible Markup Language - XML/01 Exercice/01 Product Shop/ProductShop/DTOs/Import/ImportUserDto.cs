@@ -3,7 +3,7 @@
     using System.Xml.Serialization;
 
     [XmlType("User")]
-    public class UserImportDto
+    public class ImportUserDto
     {
         [XmlElement("firstName")]
         public string FirstName { get; set; } = null!;

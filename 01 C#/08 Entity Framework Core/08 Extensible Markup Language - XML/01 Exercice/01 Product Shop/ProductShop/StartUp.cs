@@ -2,48 +2,98 @@
 {
     using ProductShop.Data;
     using Microsoft.EntityFrameworkCore;
-    using Newtonsoft.Json;
-
-    using Data;
-    //using ProductShop.DTOs.Import;
     using ProductShop.Models;
-    using System.ComponentModel.DataAnnotations;
-    using Newtonsoft.Json.Serialization;
     using System.Xml.Serialization;
     using ProductShop.Dtos.Import;
 
     public class StartUp
     {
+        static string result = string.Empty;
+
         public static void Main()
         {
             using ProductShopContext dbContext = new ProductShopContext();
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            var inputXml = File.ReadAllText("../../../Datasets/users.xml");
+            var inputXml = File.ReadAllText("../../../Datasets/categories.xml");
 
-            string result = ImportUsers(dbContext, inputXml);
+            string result = ImportCategories(dbContext, inputXml);
 
             Console.WriteLine(result);
         }
 
         public static string ImportUsers(ProductShopContext context, string inputXml)
         {
-            var serializer = new XmlSerializer(typeof(UserImportDto[]), new XmlRootAttribute("Users"));
-            var deserialUsers = (ICollection<UserImportDto>)serializer.Deserialize(new StringReader(inputXml));
+            var serializer = new XmlSerializer(typeof(ImportUserDto[]), new XmlRootAttribute("Users"));
+            var usersDtos = (ICollection<ImportUserDto>)serializer.Deserialize(new StringReader(inputXml));
 
-            var users = deserialUsers
-                .Select(u => new User()
-                {
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Age = u.Age
-                }).ToList();
+            if (usersDtos != null)
+            {
+                var users = usersDtos
+                    .Select(u => new User()
+                    {
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Age = u.Age
+                    }).ToList();
 
-            context.Users.AddRange(users);
-            context.SaveChanges();
+                context.Users.AddRange(users);
+                context.SaveChanges();
+                result = $"Successfully imported {users.Count}";
+            }
 
-            return $"Successfully imported {users.Count}";
+            return result;
+        }
+
+        public static string ImportProducts(ProductShopContext context, string inputXml)
+        {
+            var serializer = new XmlSerializer(typeof(ImportProductDto[]), new XmlRootAttribute("Products"));
+            var productsDtos = (ICollection<ImportProductDto>)serializer.Deserialize(new StringReader(inputXml));
+
+            if (productsDtos != null)
+            {
+                var products = productsDtos
+                    .Select(p => new Product()
+                    {
+                        Name = p.Name,
+                        Price = p.Price,
+                        SellerId = p.SellerId,
+                        BuyerId = p.BuyerId
+                    })
+                    .ToList();
+
+                context.Products.AddRange(products);
+                context.SaveChanges();
+
+                result = $"Successfully imported {products.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCategories(ProductShopContext context, string inputXml)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(ImportCategoryDto[]), new XmlRootAttribute("Categories"));
+            var categoryDtos = (ImportCategoryDto[])serializer.Deserialize(new StringReader(inputXml));
+
+            if (categoryDtos != null)
+            {
+                var categories = categoryDtos
+                    .Select(c => new Category
+                    {
+                        Name = c.Name
+                    })
+                    .Where(c => c.Name != null)
+                    .ToList();
+
+                context.Categories.AddRange(categories);
+                context.SaveChanges();
+
+                result = $"Successfully imported {categories.Count}";
+            }
+
+            return result;
         }
     }
 }
