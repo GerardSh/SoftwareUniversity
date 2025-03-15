@@ -192,6 +192,32 @@
             return xmlResult.ToString().Trim();
         }
 
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context.Categories
+                .Select(c => new ExportCategoryDto()
+                {
+                    Name = c.Name,
+                    ProductsCount = c.CategoriesProducts.Count,
+                    AveragePrice = c.CategoriesProducts.Average(cp => cp.Product.Price),
+                    TotalRevenue = c.CategoriesProducts.Sum(cp => cp.Product.Price)
+                })
+                .OrderByDescending(c => c.ProductsCount)
+                .ThenBy(c => c.TotalRevenue)
+                .ToList();
+
+            var serializerXml = new XmlSerializer(typeof(List<ExportCategoryDto>),
+                new XmlRootAttribute("Categories"));
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+
+            serializerXml.Serialize(xmlResult, categories, nameSpaces);
+
+            return xmlResult.ToString().Trim();
+        }
+
+
         //Helper method
         private static bool IsValid(object dto)
         {
