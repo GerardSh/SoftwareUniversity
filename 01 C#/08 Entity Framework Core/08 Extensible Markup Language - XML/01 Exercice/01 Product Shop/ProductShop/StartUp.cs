@@ -5,6 +5,7 @@
     using ProductShop.Models;
     using System.Xml.Serialization;
     using ProductShop.Dtos.Import;
+    using ProductShop.DTOs.Export;
 
     public class StartUp
     {
@@ -16,9 +17,9 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated successfully!");
 
-            var inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
+            // var inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
 
-            string result = ImportCategoryProducts(dbContext, inputXml);
+            string result = GetProductsInRange(dbContext);
 
             Console.WriteLine(result);
         }
@@ -127,6 +128,30 @@
             }
 
             return result;
+        }
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            var productsInfo = context.Products
+                .Where(p => p.Price >= 500 && p.Price <= 1000)
+                .Select(p => new ExportProductDto()
+                {
+                    Name = p.Name,
+                    Price = p.Price,
+                    BuyerFullName = string.Join(" ", p.Buyer.FirstName, p.Buyer.LastName)
+                })
+                .OrderBy(s => s.Price)
+                .Take(10)
+                .ToList();
+
+            var serializerXml = new XmlSerializer(typeof(List<ExportProductDto>),
+                new XmlRootAttribute("Products"));
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+
+            serializerXml.Serialize(xmlResult, productsInfo, nameSpaces);
+
+            return xmlResult.ToString().Trim();
         }
     }
 }
