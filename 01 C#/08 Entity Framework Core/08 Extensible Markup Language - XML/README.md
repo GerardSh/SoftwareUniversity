@@ -367,6 +367,93 @@ using (var context = new YourDbContext())
 - **`StringReader(xmlString)`**: Използваме `StringReader` за да предоставим XML низа, който ще бъде десериализиран в обекти.
 
 - **`Deserialize()`**: Метод за преобразуване на XML данни в обект от тип `OrderDto[]`.
+### **`XmlRootAttribute & XmlType`** 
+В C# сериализацията на обекти в XML може да бъде контролирана чрез използване на атрибути, като **`XmlRootAttribute`** и **`XmlType`**. Тези атрибути позволяват да се настроят името на коренния елемент, както и името на елементите за отделни обекти при сериализация.
+
+- **`XmlRootAttribute`**: Използва се, когато искаме да променим името на коренния елемент в генерирания XML. Той се подава като параметър на **`XmlSerializer`**. Това ще направи **`Products`** коренния елемент в XML, вместо да използва стандартното име на класа.
+
+- **`XmlType`**: Този атрибут се прилага върху самия клас и контролира името на елемента, който ще бъде използван при сериализацията на обекти от този тип. Вместо да се сериализира като името на класа, можем да зададем друго име за елемента. Това ще направи името на елемента **`Product`** вместо името на класа **`ProductDTO`**.
+
+Пример:
+
+```csharp
+using System;
+using System.IO;
+using System.Xml.Serialization;
+using System.Collections.Generic;
+
+[XmlType("Product")]
+public class ProductDTO
+{
+    [XmlElement("name")]
+    public string Name { get; set; }
+
+    [XmlElement("price")]
+    public decimal Price { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var products = new List<ProductDTO>
+        {
+            new ProductDTO { Name = "Laptop", Price = 999.99m },
+            new ProductDTO { Name = "Smartphone", Price = 599.99m }
+        };
+        
+        var rootattribute = new XmlRootAttribute("Products");
+
+        var serializer = new XmlSerializer(typeof(List<ProductDTO>), rootattribute);
+
+        using (var stringWriter = new StringWriter())
+        {
+            serializer.Serialize(stringWriter, products);
+            Console.WriteLine(stringWriter.ToString());
+        }
+    }
+}
+```
+
+Резултат:
+
+```xml
+<?xml version="1.0" encoding="utf-16"?>
+<Products> <!-- Changed by XmlRootAttribute in the serializer method -->
+  <Product> <!-- Changed by the XmlType attribute on the class -->
+    <name>Laptop</name> <!-- Changed by XmlElement on the Name property -->
+    <price>999.99</price> <!-- Changed by XmlElement on the Price property -->
+  </Product>
+  <Product> <!-- Changed by the XmlType attribute on the class -->
+    <name>Smartphone</name>
+    <price>599.99</price>
+  </Product>
+</Products>
+```
+
+Без тези атрибути, резултатния XML би изглеждал така:
+
+```xml
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfProductDTO> <!-- Implicitly added root element name by .NET -->
+  <ProductDTO> <!-- Default element name for the class ProductDTO -->
+    <name>Laptop</name>
+    <price>999.99</price>
+  </ProductDTO>
+  <ProductDTO> <!-- Default element name for the class ProductDTO -->
+    <name>Smartphone</name>
+    <price>599.99</price>
+  </ProductDTO>
+</ArrayOfProductDTO>
+```
+
+Обобщение:
+
+- **`XmlRootAttribute`** определя името на коренния елемент в XML, като дава възможност за промяна на самото име на корена.
+
+- **`XmlType`** променя името на елементите на обектите в XML, което може да бъде полезно, ако името на класа не е подходящо за XML структурата.
+
+Тези атрибути се използват заедно или поотделно в зависимост от нуждите на сериализацията и структурата на желания XML.
 ### Exception Handling and Potential Issues
 При работа със сериализация и десериализация на XML може да срещнем различни проблеми, които трябва да обработим правилно. Ето някои от тях:
 
@@ -517,4 +604,4 @@ public class BookDto
 # Misc
 # ChatGPT
 # Bookmarks
-Completion: 14.03.2025
+Completion: 15.03.2025
