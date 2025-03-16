@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using CarDealer.Models;
-
-namespace CarDealer.Data
+﻿namespace CarDealer.Data
 {
+    using Microsoft.EntityFrameworkCore;
+    using Models;
+
     public class CarDealerContext : DbContext
     {
         public CarDealerContext()
@@ -13,13 +13,13 @@ namespace CarDealer.Data
             : base(options)
         {
         }
-      
-        public DbSet<Car> Cars { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Part> Parts { get; set; }
-        public DbSet<PartCar> PartsCars { get; set; }
-        public DbSet<Sale> Sales { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
+
+        public virtual DbSet<Car> Cars { get; set; } = null!;
+        public virtual DbSet<Customer> Customers { get; set; } = null!;
+        public virtual DbSet<Part> Parts { get; set; } = null!;
+        public virtual DbSet<PartCar> PartsCars { get; set; } = null!;
+        public virtual DbSet<Sale> Sales { get; set; } = null!;
+        public virtual DbSet<Supplier> Suppliers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,7 +33,7 @@ namespace CarDealer.Data
         {
             modelBuilder.Entity<PartCar>(e =>
             {
-                e.HasKey(k => new { k.CarId, k.PartId });
+                e.HasKey(pc => new { pc.CarId, pc.PartId });
             });
         }
     }
