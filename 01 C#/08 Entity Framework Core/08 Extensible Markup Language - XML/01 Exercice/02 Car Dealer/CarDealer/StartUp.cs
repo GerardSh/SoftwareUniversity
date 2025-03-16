@@ -57,6 +57,35 @@
             return result;
         }
 
+        public static string ImportParts(CarDealerContext context, string inputXml)
+        {
+            ImportPartDto[]? partDtos = XmlHelper.Deserialize<ImportPartDto[]>(inputXml, "Parts")
+                .Where(IsValid)
+                .ToArray();
+
+            if (partDtos != null)
+            {
+                var dbSupplierIds = context.Suppliers
+                    .Select(s => s.Id)
+                    .ToArray();
+
+                var validParts = new List<Part>();
+
+                foreach (var partDto in partDtos)
+                {
+                    bool isPriceValid = decimal
+                        .TryParse(partDto.Price, out decimal price);
+                    bool isQuantityValid = int
+                        .TryParse(partDto.Quantity, out int quantity);
+                    bool isSupplierValid = int
+                        .TryParse(partDto.SupplierId, out int supplierId);
+
+                    if (!isPriceValid || !isQuantityValid || !isSupplierValid) continue;
+                }
+            }
+
+        }
+
         //Helper method
         private static bool IsValid(object dto)
         {
