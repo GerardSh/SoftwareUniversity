@@ -6,6 +6,7 @@
     using CarDealer.Utilities;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
+    using System.IO;
 
     public class StartUp
     {
@@ -17,8 +18,8 @@
             dbContext.Database.Migrate();
             Console.WriteLine("Database migrated to the latest version successfully!");
 
-            string inputXml = File.ReadAllText("../../../Datasets/suppliers.xml");
-            string result = ImportSuppliers(dbContext, inputXml);
+            string inputXml = File.ReadAllText("../../../Datasets/parts.xml");
+            string result = ImportParts(dbContext, inputXml);
 
             Console.WriteLine(result);
         }
@@ -59,16 +60,17 @@
 
         public static string ImportParts(CarDealerContext context, string inputXml)
         {
+            var dbSupplierIds = context.Suppliers
+                .Select(s => s.Id)
+                .ToArray();
+
             ImportPartDto[]? partDtos = XmlHelper.Deserialize<ImportPartDto[]>(inputXml, "Parts")
                 .Where(IsValid)
+                .Where(p => dbSupplierIds.Contains(int.Parse(p.SupplierId)))
                 .ToArray();
 
             if (partDtos != null)
             {
-                var dbSupplierIds = context.Suppliers
-                    .Select(s => s.Id)
-                    .ToArray();
-
                 var validParts = new List<Part>();
 
                 foreach (var partDto in partDtos)
@@ -81,9 +83,25 @@
                         .TryParse(partDto.SupplierId, out int supplierId);
 
                     if (!isPriceValid || !isQuantityValid || !isSupplierValid) continue;
+
+                    Part part = new Part()
+                    {
+                        Name = partDto.Name,
+                        Price = price,
+                        Quantity = quantity,
+                        SupplierId = supplierId
+                    };
+
+                    validParts.Add(part);
                 }
+
+                context.Parts.AddRange(validParts);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validParts.Count}";
             }
 
+            return result;
         }
 
         //Helper method
