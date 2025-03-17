@@ -1,7 +1,6 @@
 ﻿namespace CarDealer
 {
     using CarDealer.Data;
-    using CarDealer.DTO.ExportDTO;
     using CarDealer.DTOs.Export;
     using CarDealer.DTOs.Import;
     using CarDealer.Models;
@@ -25,15 +24,16 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
-            string inputXml = File.ReadAllText("../../../Datasets/cars.xml");
-            string result = GetSalesWithAppliedDiscount(dbContext);
+            string inputXml = File.ReadAllText("../../../Datasets/customers.xml");
+            string result = ImportCustomers(dbContext, inputXml);
 
             Console.WriteLine(result);
         }
 
         public static string ImportSuppliers(CarDealerContext context, string inputXml)
         {
-            ImportSupplierDto[]? supplierDtos = XmlHelper.Deserialize<ImportSupplierDto[]>(inputXml, "Suppliers")
+            ImportSupplierDto[]? supplierDtos = XmlHelper
+                .Deserialize<ImportSupplierDto[]>(inputXml, "Suppliers")
                 .Where(IsValid)
                 .ToArray();
 
@@ -67,7 +67,8 @@
 
         public static string ImportParts(CarDealerContext context, string inputXml)
         {
-            ImportPartDto[]? partDtos = XmlHelper.Deserialize<ImportPartDto[]>(inputXml, "Parts")
+            ImportPartDto[]? partDtos = XmlHelper
+                .Deserialize<ImportPartDto[]>(inputXml, "Parts")
                 .Where(IsValid)
                 .ToArray();
 
@@ -114,7 +115,8 @@
 
         public static string ImportCars(CarDealerContext context, string inputXml)
         {
-            ImportCarDto[]? carDtos = XmlHelper.Deserialize<ImportCarDto[]>(inputXml, "Cars")
+            ImportCarDto[]? carDtos = XmlHelper
+                .Deserialize<ImportCarDto[]>(inputXml, "Cars")
                 .Where(IsValid)
                 .ToArray();
 
@@ -170,6 +172,43 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {validCars.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCustomers(CarDealerContext context, string inputXml)
+        {
+            ImportCustomerDto[]? customerDtos = XmlHelper
+                .Deserialize<ImportCustomerDto[]>(inputXml, "Customers")
+                .Where(IsValid)
+                .ToArray();
+
+            if (customerDtos != null)
+            {
+                var validCustomers = new List<Customer>();
+
+                foreach (var customerDto in customerDtos)
+                {
+                    bool isBirthDateValid = DateTime.TryParse(customerDto.Birthdate, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);  
+                    bool isYoungDriverValid = bool.TryParse(customerDto.IsYoungDriver, out bool isYoungDriver);
+
+                    if (!isBirthDateValid || !isYoungDriverValid) continue;
+
+                    var customer = new Customer()
+                    {
+                        Name = customerDto.Name,
+                        BirthDate = birthDate,
+                        IsYoungDriver = isYoungDriver
+                    };
+
+                    validCustomers.Add(customer);
+                }
+
+                context.Customers.AddRange(validCustomers);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validCustomers.Count}";
             }
 
             return result;
