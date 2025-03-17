@@ -24,8 +24,8 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
-            string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
-            string result = ImportSales(dbContext, inputXml);
+            // string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
+            string result = GetCarsWithDistance(dbContext);
 
             Console.WriteLine(result);
         }
@@ -254,6 +254,26 @@
 
                 result = $"Successfully imported {validSales.Count}";
             }
+
+            return result;
+        }
+
+        public static string GetCarsWithDistance(CarDealerContext context)
+        {
+            var cars = context.Cars
+                .Where(c => c.TraveledDistance > 2000000)
+                .Select(c => new ExportCarWithOverDistanceDto()
+                {
+                    Make = c.Make,
+                    Model = c.Model,
+                    TraveledDistance = c.TraveledDistance.ToString()
+                })
+                .OrderBy(c => c.Model)
+                .ThenBy(c => c.Model)
+                .Take(10)
+                .ToList();
+
+            result = XmlHelper.Serialize(cars, "cars");
 
             return result;
         }
