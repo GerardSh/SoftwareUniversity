@@ -1,23 +1,23 @@
-﻿using System.Xml.Serialization;
-
-namespace CarDealer.DTOs.Export
+﻿namespace CarDealer.DTOs.Export
 {
-	[XmlType("sale")]
-	public class ExportSaleAppliedDiscountDTO
+    using System.Xml.Serialization;
+
+    [XmlType("sale")]
+	public class ExportSaleAppliedDiscountDto
 	{
 		[XmlElement("car")]
-		public ExportCarWithAttrDTO Car { get; set; }
+		public ExportCarWithAttrDto Car { get; set; } = null!;
 
 		[XmlElement("discount")]
-		public decimal Discount { get; set; }
+		public string Discount { get; set; } = null!;
 
 		[XmlElement("customer-name")]
-		public string CustomerName { get; set; }
+		public string CustomerName { get; set; } = null!;
 
 		[XmlElement("price")]
-		public decimal Price { get; set; }
+		public string Price { get; set; } = null!;
 
 		[XmlElement("price-with-discount")]
-		public double PriceWithDiscount { get; set; }
+		public string PriceWithDiscount { get; set; } = null!;
 	}
 }

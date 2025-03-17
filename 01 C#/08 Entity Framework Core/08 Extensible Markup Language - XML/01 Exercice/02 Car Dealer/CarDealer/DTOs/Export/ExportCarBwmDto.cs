@@ -3,15 +3,15 @@
     using System.Xml.Serialization;
 
     [XmlType("car")]
-    public class ExportCarWithAttrDto
+    public class ExportCarBmwDto
     {
-        [XmlAttribute("make")]
-        public string Make { get; set; } = null!;
+        [XmlAttribute("id")]
+        public string Id { get; set; } = null!;
 
         [XmlAttribute("model")]
         public string Model { get; set; } = null!;
 
         [XmlAttribute("traveled-distance")]
-        public string TraveledDistance { get; set; } = null!;
+        public string TravelledDistance { get; set; } = null!;
     }
 }

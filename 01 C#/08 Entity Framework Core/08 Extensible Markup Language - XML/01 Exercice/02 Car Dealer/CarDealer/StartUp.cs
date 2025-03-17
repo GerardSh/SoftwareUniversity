@@ -25,7 +25,7 @@
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
             // string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
-            string result = GetCarsWithTheirListOfParts(dbContext);
+            string result = GetSalesWithAppliedDiscount(dbContext);
 
             Console.WriteLine(result);
         }
@@ -363,8 +363,8 @@
                 .Select(a => new ExportCustomerDto()
                 {
                     FullName = a.FullName,
-                    CarsBought = a.BoughtCars,
-                    MoneySpent = a.SalesInfo.Sum(b => (decimal)b.Prices)
+                    CarsBought = a.BoughtCars.ToString(),
+                    MoneySpent = a.SalesInfo.Sum(b => (decimal)b.Prices).ToString()
                 })
                 .ToArray();
 
@@ -382,14 +382,14 @@
                     {
                         Make = s.Car.Make,
                         Model = s.Car.Model,
-                        TraveledDistance = s.Car.TraveledDistance
+                        TraveledDistance = s.Car.TraveledDistance.ToString()
                     },
-                    Discount = (int)s.Discount,
+                    Discount = ((int)s.Discount).ToString(),
                     CustomerName = s.Customer.Name,
-                    Price = s.Car.PartsCars.Sum(p => p.Part.Price),
+                    Price = (s.Car.PartsCars.Sum(p => p.Part.Price)).ToString(),
                     PriceWithDiscount =
-                        Math.Round((double)(s.Car.PartsCars
-                            .Sum(p => p.Part.Price) * (1 - (s.Discount / 100))), 4)
+                        (Math.Round((double)(s.Car.PartsCars
+                            .Sum(p => p.Part.Price) * (1 - (s.Discount / 100))), 4)).ToString()
                 })
                 .ToArray();
 
