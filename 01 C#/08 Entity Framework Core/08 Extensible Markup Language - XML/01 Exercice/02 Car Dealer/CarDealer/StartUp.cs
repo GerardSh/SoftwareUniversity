@@ -268,7 +268,7 @@
                     Model = c.Model,
                     TraveledDistance = c.TraveledDistance.ToString()
                 })
-                .OrderBy(c => c.Model)
+                .OrderBy(c => c.Make)
                 .ThenBy(c => c.Model)
                 .Take(10)
                 .ToList();
