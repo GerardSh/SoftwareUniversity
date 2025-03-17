@@ -25,7 +25,7 @@
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
             // string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
-            string result = GetLocalSuppliers(dbContext);
+            string result = GetCarsWithTheirListOfParts(dbContext);
 
             Console.WriteLine(result);
         }
@@ -190,7 +190,7 @@
 
                 foreach (var customerDto in customerDtos)
                 {
-                    bool isBirthDateValid = DateTime.TryParse(customerDto.Birthdate, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);  
+                    bool isBirthDateValid = DateTime.TryParse(customerDto.Birthdate, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
                     bool isYoungDriverValid = bool.TryParse(customerDto.IsYoungDriver, out bool isYoungDriver);
 
                     if (!isBirthDateValid || !isYoungDriverValid) continue;
@@ -314,6 +314,33 @@
             return result;
         }
 
+        public static string GetCarsWithTheirListOfParts(CarDealerContext context)
+        {
+            var carsWithParts = context.Cars
+                .OrderByDescending(c => c.TraveledDistance)
+                .ThenBy(c => c.Model)
+                .Take(5)
+                .Select(c => new ExportCarPartDto()
+                {
+                    Make = c.Make,
+                    Model = c.Model,
+                    TraveledDistance = c.TraveledDistance.ToString(),
+                    Parts = c.PartsCars
+                    .OrderByDescending(p => p.Part.Price)
+                    .Select(cp => new ExportPartDto()
+                    {
+                        Name = cp.Part.Name,
+                        Price = cp.Part.Price.ToString()
+                    })      
+                    .ToArray()
+                })
+                .ToList();
+
+            result = XmlHelper.Serialize(carsWithParts, "cars");
+
+            return result;
+        }
+
         public static string GetTotalSalesByCustomer(CarDealerContext context)
         {
             var temp = context.Customers
@@ -341,24 +368,17 @@
                 })
                 .ToArray();
 
-            var serializerXml = new XmlSerializer(typeof(ExportCustomerDto[]),
-            new XmlRootAttribute("customers"));
+            result = XmlHelper.Serialize(customerSalesInfo, "customers");
 
-            var xmlResult = new StringWriter();
-            var nameSpaces = new XmlSerializerNamespaces();
-            nameSpaces.Add("", "");
-
-            serializerXml.Serialize(xmlResult, customerSalesInfo, nameSpaces);
-
-            return xmlResult.ToString().TrimEnd();
+            return result;
         }
 
         public static string GetSalesWithAppliedDiscount(CarDealerContext context)
         {
-            ExportSaleAppliedDiscountDTO[] sales = context.Sales
-                .Select(s => new ExportSaleAppliedDiscountDTO()
+            ExportSaleAppliedDiscountDto[] sales = context.Sales
+                .Select(s => new ExportSaleAppliedDiscountDto()
                 {
-                    Car = new ExportCarWithAttrDTO()
+                    Car = new ExportCarWithAttrDto()
                     {
                         Make = s.Car.Make,
                         Model = s.Car.Model,
@@ -373,16 +393,9 @@
                 })
                 .ToArray();
 
-            var serializerXml = new XmlSerializer(typeof(ExportSaleAppliedDiscountDTO[]),
-            new XmlRootAttribute("sales"));
+            result = XmlHelper.Serialize(sales, "sales");
 
-            var xmlResult = new StringWriter();
-            var nameSpaces = new XmlSerializerNamespaces();
-            nameSpaces.Add("", "");
-
-            serializerXml.Serialize(xmlResult, sales, nameSpaces);
-
-            return xmlResult.ToString().TrimEnd();   
+            return result;
         }
 
         //Helper method
