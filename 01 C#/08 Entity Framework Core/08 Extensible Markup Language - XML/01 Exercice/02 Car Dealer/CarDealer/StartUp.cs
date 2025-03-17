@@ -1,12 +1,19 @@
 ﻿namespace CarDealer
 {
     using CarDealer.Data;
+    using CarDealer.DTO.ExportDTO;
+    using CarDealer.DTOs.Export;
     using CarDealer.DTOs.Import;
     using CarDealer.Models;
     using CarDealer.Utilities;
+    using Castle.Core.Resource;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
     using System.IO;
+    using System.Text;
+    using System.Xml;
+    using System.Xml.Serialization;
 
     public class StartUp
     {
@@ -16,10 +23,10 @@
         {
             CarDealerContext dbContext = new CarDealerContext();
             dbContext.Database.Migrate();
-            Console.WriteLine("Database migrated to the latest version successfully!");
+            // Console.WriteLine("Database migrated to the latest version successfully!");
 
-            string inputXml = File.ReadAllText("../../../Datasets/parts.xml");
-            string result = ImportParts(dbContext, inputXml);
+            string inputXml = File.ReadAllText("../../../Datasets/cars.xml");
+            string result = GetSalesWithAppliedDiscount(dbContext);
 
             Console.WriteLine(result);
         }
@@ -60,17 +67,16 @@
 
         public static string ImportParts(CarDealerContext context, string inputXml)
         {
-            var dbSupplierIds = context.Suppliers
-                .Select(s => s.Id)
-                .ToArray();
-
             ImportPartDto[]? partDtos = XmlHelper.Deserialize<ImportPartDto[]>(inputXml, "Parts")
                 .Where(IsValid)
-                .Where(p => dbSupplierIds.Contains(int.Parse(p.SupplierId)))
                 .ToArray();
 
             if (partDtos != null)
             {
+                var dbSupplierIds = context.Suppliers
+                    .Select(s => s.Id)
+                    .ToArray();
+
                 var validParts = new List<Part>();
 
                 foreach (var partDto in partDtos)
@@ -83,6 +89,8 @@
                         .TryParse(partDto.SupplierId, out int supplierId);
 
                     if (!isPriceValid || !isQuantityValid || !isSupplierValid) continue;
+
+                    if (!dbSupplierIds.Contains(supplierId)) continue;
 
                     Part part = new Part()
                     {
@@ -99,6 +107,69 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {validParts.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportCars(CarDealerContext context, string inputXml)
+        {
+            ImportCarDto[]? carDtos = XmlHelper.Deserialize<ImportCarDto[]>(inputXml, "Cars")
+                .Where(IsValid)
+                .ToArray();
+
+            if (carDtos! != null)
+            {
+                ICollection<int> dbPartIds = context.Parts
+                    .Select(p => p.Id)
+                    .ToArray();
+
+                var validCars = new List<Car>();
+                var validPartsCars = new List<PartCar>();
+
+                foreach (var carDto in carDtos)
+                {
+                    bool isTraveledDistanceValid = long
+                        .TryParse(carDto.TraveledDistance, out long traveledDistance);
+
+                    if (!isTraveledDistanceValid) continue;
+
+                    Car car = new Car()
+                    {
+                        Make = carDto.Make,
+                        Model = carDto.Model,
+                        TraveledDistance = traveledDistance
+                    };
+
+                    validCars.Add(car);
+
+                    if (carDto.Parts != null)
+                    {
+                        int[] partIds = carDto.Parts
+                            .Where(p => IsValid(p) && int.TryParse(p.Id, out int dummy))
+                            .Select(p => int.Parse(p.Id))
+                            .Distinct()
+                            .ToArray();
+
+                        foreach (var part in partIds)
+                        {
+                            if (!dbPartIds.Contains(part)) continue;
+
+                            var partCar = new PartCar()
+                            {
+                                PartId = part,
+                                CarId = car.Id
+                            };
+
+                            car.PartsCars.Add(partCar);
+                        }
+                    }
+                }
+
+                context.Cars.AddRange(validCars);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validCars.Count}";
             }
 
             return result;
