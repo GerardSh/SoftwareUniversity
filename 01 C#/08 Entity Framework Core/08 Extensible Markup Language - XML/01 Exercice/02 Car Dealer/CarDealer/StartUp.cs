@@ -24,8 +24,8 @@
             dbContext.Database.Migrate();
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
-            string inputXml = File.ReadAllText("../../../Datasets/customers.xml");
-            string result = ImportCustomers(dbContext, inputXml);
+            string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
+            string result = ImportSales(dbContext, inputXml);
 
             Console.WriteLine(result);
         }
@@ -209,6 +209,50 @@
                 context.SaveChanges();
 
                 result = $"Successfully imported {validCustomers.Count}";
+            }
+
+            return result;
+        }
+
+        public static string ImportSales(CarDealerContext context, string inputXml)
+        {
+            ImportSaleDto[]? saleDtos = XmlHelper
+              .Deserialize<ImportSaleDto[]>(inputXml, "Sales")
+              .Where(IsValid)
+              .ToArray();
+
+            if (saleDtos != null)
+            {
+                var dbCarIds = context.Cars
+                    .Select(c => c.Id)
+                    .ToArray();
+
+                var validSales = new List<Sale>();
+
+                foreach (var saleDto in saleDtos)
+                {
+                    bool isCustomerIdValid = int.TryParse(saleDto.CustomerId, out int customerId);
+                    bool isCarIdValid = int.TryParse(saleDto.CarId, out int carId);
+                    bool isDiscountValid = decimal.TryParse(saleDto.Discount, out decimal discount);
+
+                    if (!isCustomerIdValid || !isCarIdValid || !isDiscountValid) continue;
+
+                    if (!dbCarIds.Contains(carId)) continue;
+
+                    var sale = new Sale()
+                    {
+                        CarId = carId,
+                        CustomerId = customerId,
+                        Discount = discount
+                    };
+
+                    validSales.Add(sale);
+                }
+
+                context.Sales.AddRange(validSales);
+                context.SaveChanges();
+
+                result = $"Successfully imported {validSales.Count}";
             }
 
             return result;
