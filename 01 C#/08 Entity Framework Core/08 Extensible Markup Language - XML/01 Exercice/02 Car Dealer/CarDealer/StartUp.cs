@@ -25,7 +25,7 @@
             // Console.WriteLine("Database migrated to the latest version successfully!");
 
             // string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
-            string result = GetCarsWithDistance(dbContext);
+            string result = GetLocalSuppliers(dbContext);
 
             Console.WriteLine(result);
         }
@@ -274,6 +274,42 @@
                 .ToList();
 
             result = XmlHelper.Serialize(cars, "cars");
+
+            return result;
+        }
+
+        public static string GetCarsFromMakeBmw(CarDealerContext context)
+        {
+            var bmwCars = context.Cars
+                .Where(c => c.Make == "BMW")
+                .OrderBy(c => c.Model)
+                .ThenByDescending(c => c.TraveledDistance)
+                .Select(c => new ExportCarBmwDto
+                {
+                    Id = c.Id.ToString(),
+                    Model = c.Model,
+                    TravelledDistance = c.TraveledDistance.ToString()
+                })
+                .ToList();
+
+            result = XmlHelper.Serialize(bmwCars, "cars");
+
+            return result;
+        }
+
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            var localSuppliers = context.Suppliers
+                .Where(s => !s.IsImporter)
+                .Select(s => new ExportSupplierDto()
+                {
+                    Id = s.Id.ToString(),
+                    Name = s.Name,
+                    PartsCount = s.Parts.Count().ToString()
+                })
+                .ToList();
+
+            result = XmlHelper.Serialize(localSuppliers, "suppliers");
 
             return result;
         }
