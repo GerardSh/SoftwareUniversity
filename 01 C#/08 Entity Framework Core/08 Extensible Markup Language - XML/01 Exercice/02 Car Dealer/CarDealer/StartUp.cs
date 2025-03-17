@@ -175,6 +175,45 @@
             return result;
         }
 
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var temp = context.Customers
+                .Where(c => c.Sales.Any())
+                .Select(c => new
+                {
+                    FullName = c.Name,
+                    BoughtCars = c.Sales.Count,
+                    SalesInfo = c.Sales.Select(s => new
+                    {
+                        Prices = c.IsYoungDriver
+                        ? s.Car.PartsCars.Sum(pc => Math.Round((double)pc.Part.Price * 0.95, 2))
+                        : s.Car.PartsCars.Sum(pc => (double)pc.Part.Price)
+                    }).ToArray()
+                }).ToArray();
+
+            var customerSalesInfo = temp
+                .OrderByDescending(x =>
+                    x.SalesInfo.Sum(y => y.Prices))
+                .Select(a => new ExportCustomerDto()
+                {
+                    FullName = a.FullName,
+                    CarsBought = a.BoughtCars,
+                    MoneySpent = a.SalesInfo.Sum(b => (decimal)b.Prices)
+                })
+                .ToArray();
+
+            var serializerXml = new XmlSerializer(typeof(ExportCustomerDto[]),
+            new XmlRootAttribute("customers"));
+
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+
+            serializerXml.Serialize(xmlResult, customerSalesInfo, nameSpaces);
+
+            return xmlResult.ToString().TrimEnd();
+        }
+
         //Helper method
         private static bool IsValid(object dto)
         {
