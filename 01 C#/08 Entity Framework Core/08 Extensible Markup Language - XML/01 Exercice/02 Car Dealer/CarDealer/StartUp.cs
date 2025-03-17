@@ -214,6 +214,38 @@
             return xmlResult.ToString().TrimEnd();
         }
 
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            ExportSaleAppliedDiscountDTO[] sales = context.Sales
+                .Select(s => new ExportSaleAppliedDiscountDTO()
+                {
+                    Car = new ExportCarWithAttrDTO()
+                    {
+                        Make = s.Car.Make,
+                        Model = s.Car.Model,
+                        TraveledDistance = s.Car.TraveledDistance
+                    },
+                    Discount = (int)s.Discount,
+                    CustomerName = s.Customer.Name,
+                    Price = s.Car.PartsCars.Sum(p => p.Part.Price),
+                    PriceWithDiscount =
+                        Math.Round((double)(s.Car.PartsCars
+                            .Sum(p => p.Part.Price) * (1 - (s.Discount / 100))), 4)
+                })
+                .ToArray();
+
+            var serializerXml = new XmlSerializer(typeof(ExportSaleAppliedDiscountDTO[]),
+            new XmlRootAttribute("sales"));
+
+            var xmlResult = new StringWriter();
+            var nameSpaces = new XmlSerializerNamespaces();
+            nameSpaces.Add("", "");
+
+            serializerXml.Serialize(xmlResult, sales, nameSpaces);
+
+            return xmlResult.ToString().TrimEnd();   
+        }
+
         //Helper method
         private static bool IsValid(object dto)
         {
