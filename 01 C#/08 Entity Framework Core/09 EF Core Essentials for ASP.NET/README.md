@@ -142,5 +142,58 @@ DI работи на принципа, че имаме "кутия" (IoC кон�
 Препоръчва се основно да се използва **constructor injection**, а когато това не е възможно, да се премине към **Service Locator**, защото той е достатъчно **експлицитен**, но трябва да се използва с внимание.
 # Misc
 # ChatGPT
+## Transitive Dependency
+A **transitive dependency** in C# occurs when a project references another project that itself has dependencies.
+
+Example:
+
+- **Project A** references **Project B**
+- **Project B** references **Project C**
+
+In this case, **Project A** indirectly depends on **Project C** — this is the **transitive dependency**.
+
+**Key Points:**
+
+- **Transitive dependencies** are automatically included when referencing a project or package.
+- They can introduce version conflicts or unexpected behavior if not managed properly.
+- Tools like `.csproj` files and `.deps.json` help track and resolve these dependencies in .NET projects.
+## ASP.NET Core - `secrets.json` Overview
+The `secrets.json` file in ASP.NET Core is a secure way to manage sensitive information such as API keys, connection strings, or other credentials during development. It is not included in the project itself but is stored locally on the developer's machine.
+
+**Key Points About `secrets.json`:**
+
+- **Location:** Stored outside the project directory, typically in `%APPDATA%\Microsoft\UserSecrets\<user_secrets_id>\secrets.json` on Windows.
+- **User Secrets ID:** Defined in the `.csproj` file under the `<UserSecretsId>` property to link the project to its `secrets.json`.
+- **Purpose:** Helps keep sensitive data out of source control, enhancing security.
+- **Usage:** Accessed via the `.AddUserSecrets<Startup>()` method in the `CreateHostBuilder` or `Program.cs` file.
+
+Example:
+
+**`secrets.json` Content:**
+
+```csharp
+{
+  "ConnectionStrings:DefaultConnection": "Server=localhost;Database=SampleDb;User Id=admin;Password=secret;"
+}
+```
+
+**`Program.cs` Configuration:**
+
+```csharp
+builder.Configuration
+    .AddUserSecrets<Program>()
+    .AddEnvironmentVariables();
+```
+
+**Accessing the Secret in Code:**
+
+```csharp
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+```
+
+Important Notes:
+
+- `secrets.json` is intended **only for development** and should not be used in production.
+- Always exclude secrets from version control to prevent accidental exposure.
 # Bookmarks
 Completion: 19.03.2025
