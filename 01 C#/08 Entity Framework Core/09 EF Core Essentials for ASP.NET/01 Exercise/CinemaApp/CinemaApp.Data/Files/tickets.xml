@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tickets>
+    <Ticket>
+        <Id></Id>
+        <Price>12.50</Price>
+        <CinemaId></CinemaId>
+        <MovieId></MovieId>
+        <UserId></UserId>
+    </Ticket>
+    <Ticket>
+        <Id></Id>
+        <Price>15.00</Price>
+        <CinemaId></CinemaId>
+        <MovieId></MovieId>
+        <UserId></UserId>
+    </Ticket>
+    <Ticket>
+        <Id></Id>
+        <Price>10.00</Price>
+        <CinemaId></CinemaId>
+        <MovieId></MovieId>
+        <UserId></UserId>
+    </Ticket>
+</Tickets>

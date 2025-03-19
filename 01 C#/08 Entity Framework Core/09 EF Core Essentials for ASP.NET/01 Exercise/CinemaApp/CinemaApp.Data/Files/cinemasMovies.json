@@ -1,0 +1,37 @@
+[
+  {
+    "Movie": "Harry Potter and the Goblet of Fire",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 150,
+    "IsDeleted": false,
+    "Showtimes": "01010"
+  },
+  {
+    "Movie": "The Dark Knight",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 120,
+    "IsDeleted": false,
+    "Showtimes": "11000"
+  },
+  {
+    "Movie": "Interstellar",
+    "Cinema": "Cinema city - Plovdiv",
+    "AvailableTickets": 100,
+    "IsDeleted": false,
+    "Showtimes": "00011"
+  },
+  {
+    "Movie": "Avatar",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 200,
+    "IsDeleted": false,
+    "Showtimes": "10001"
+  },
+  {
+    "Movie": "The Shawshank Redemption",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 180,
+    "IsDeleted": false,
+    "Showtimes": "00001"
+  }
+]
