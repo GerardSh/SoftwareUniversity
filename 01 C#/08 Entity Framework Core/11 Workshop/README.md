@@ -209,5 +209,79 @@ builder.Services.AddScoped<IScopedService, ScopedService>();
 След добавянето на необходимите услуги, методът `Build()` се използва за изграждане на конфигурирания `WebApplication`, който е готов за стартиране и изпълнение. Този процес създава финалния обект на приложението, който съдържа всички конфигурации и регистрирани услуги.
 
 Същността на този процес е да се добавят всички необходими услуги за MVC и след това да се създаде приложението чрез `Build()`, което позволява стартирането на уеб приложението.
+## Copy files to Output Directory on Build
+Когато работим върху реален проект, който ще бъде деплойнат, е важно да създадем папка с файловете, които ще използваме и да зададем правилните **Build Action** за тези файлове.
+
+По-точно:
+
+1. **Създаване на папка с файлове**: Тези файлове могат да бъдат ресурси, конфигурационни файлове или други необходими файлове за приложението.
+
+2. **Настройване на Build Action**: За да гарантираме, че файловете ще бъдат включени в build процеса, трябва да отидем в Properties на файловете и да зададем **Build Action** на "Copy Always" или "Copy if newer". Това означава, че файловете ще бъдат копирани в директорията, където се събира крайният output на приложението (работната директория). Това променя `.csproj` файла, като добавя информация за копирането на файловете в изходната директория при билдване на проекта.
+
+3. **Работна директория**: При изграждането на проекта, тези файлове ще бъдат копирани в работната директория на приложението, което е важно за достъпването им чрез относителни пътища. Така когато приложението се изпълнява, ще може да достъпва файловете в работната директория, а не в директорията на изходния код.
+
+4. **Проблем при деплойване**: Когато деплойваме приложението, ние обикновено деплойваме само **работната директория** и нейното съдържание. Ако файловете са част от изходния код (в source code директорията), те няма да бъдат включени в деплоймента и ще възникне проблем, ако се опитваме да ги достъпим по пътя към тях. Затова е важно да ги преместим в работната директория и да ги настроим така, че да се копират по време на build процеса.
 # ChatGPT
+## Using "Paste Special" in Visual Studio to Quickly Create DTO Objects from JSON or XML
+
+In Visual Studio, you can use the **"Paste Special"** feature to quickly generate DTO (Data Transfer Object) classes from JSON or XML data. This allows you to avoid manually defining classes for complex structures.
+
+**Steps to Generate DTO Classes from JSON or XML:**
+
+1. **Copy the JSON or XML data**:
+    
+    - Copy the structure of the JSON or XML that you want to convert into a C# DTO class.
+2. **Paste Special in Visual Studio**:
+    
+    - In Visual Studio, right-click where you want the DTO class to be created (usually in your `Models` or `DTOs` folder).
+    - From the context menu, select **Edit** > **Paste Special** > **Paste JSON as Classes** (for JSON) or **Paste XML as Classes** (for XML).
+3. **Automatically Generated Classes**:
+    
+    - Visual Studio will generate the corresponding C# class or classes with properties that map to the structure of the JSON or XML data.
+4. **Usage**:
+    
+    - You can now use these generated classes to deserialize incoming JSON or XML into C# objects using `JsonSerializer.Deserialize<T>` for JSON or `XmlSerializer.Deserialize<T>` for XML.
+
+**Example:**
+
+For JSON:
+
+1. **JSON data**:
+    
+```json
+{
+  "id": "123",
+  "name": "Movie Title",
+  "genre": "Action",
+  "releaseDate": "2023-01-01"
+}
+```
+    
+2. **Generated DTO class** using **Paste JSON as Classes**:
+    
+```csharp
+public class RootObject
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Genre { get; set; }
+    public DateTime ReleaseDate { get; set; }
+}
+```
+    
+
+Now you can easily deserialize the JSON data into the `RootObject` class:
+
+```csharp
+string jsonString = "{\"id\":\"123\",\"name\":\"Movie Title\",\"genre\":\"Action\",\"releaseDate\":\"2023-01-01\"}";
+RootObject movie = JsonSerializer.Deserialize<RootObject>(jsonString);
+```
+
+Benefits:
+
+- **Saves time**: Automatically generates DTOs based on the structure of JSON/XML data.
+- **Consistency**: Ensures that the class structure matches the data format, reducing human error.
+- **Flexibility**: Easily adapts to any new JSON or XML structure.
+
+This approach is great when working with external APIs or large datasets where defining DTO classes manually can be cumbersome.
 # Bookmarks
