@@ -1,5 +1,9 @@
 ﻿using NetPay.Data;
+using NetPay.Data.Models;
+using NetPay.DataProcessor.ImportDtos;
+using NetPay.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace NetPay.DataProcessor
 {
@@ -12,7 +16,51 @@ namespace NetPay.DataProcessor
 
         public static string ImportHouseholds(NetPayContext context, string xmlString)
         {
-            throw new NotImplementedException();
+            StringBuilder output = new StringBuilder();
+
+            ImportHouseholdDto[]? houseDtos = XmlHelper.Deserialize<ImportHouseholdDto[]>(xmlString, "Households");
+
+            if (houseDtos != null && houseDtos.Length > 0)
+            {
+                ICollection<Household> validHouseholds = new List<Household>();
+
+                foreach (var houseDto in houseDtos)
+                {
+                    if (!IsValid(houseDto))
+                    {
+                        output.AppendLine(ErrorMessage);
+                        continue;
+                    }
+
+                    bool isAlreadyImportHousehold = context.Households
+                        .Any(h => h.ContactPerson == houseDto.ContactPerson
+                        || h.Email == houseDto.Email
+                        || h.PhoneNumber == houseDto.Phone);
+
+                    if (isAlreadyImportHousehold)
+                    {
+                        output.AppendLine(DuplicationDataMessage);
+                        continue;
+                    }
+
+                    Household household = new Household()
+                    {
+                        ContactPerson = houseDto.ContactPerson,
+                        Email = houseDto.Email,
+                        PhoneNumber = houseDto.Phone
+                    };
+
+                    validHouseholds.Add(household);
+
+                    string successMessage = string.Format(SuccessfullyImportedHousehold, houseDto.ContactPerson);
+                    output.AppendLine(successMessage);
+                }
+
+                context.Households.AddRange(validHouseholds);
+               // context.SaveChanges();
+            }
+
+            return output.ToString().Trim();
         }
 
         public static string ImportExpenses(NetPayContext context, string jsonString)
@@ -27,7 +75,7 @@ namespace NetPay.DataProcessor
 
             bool isValid = Validator.TryValidateObject(dto, validationContext, validationResults, true);
 
-            foreach(var result in validationResults)
+            foreach (var result in validationResults)
             {
                 string currvValidationMessage = result.ErrorMessage;
             }

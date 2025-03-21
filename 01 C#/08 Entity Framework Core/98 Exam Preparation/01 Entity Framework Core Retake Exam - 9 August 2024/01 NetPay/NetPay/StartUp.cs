@@ -13,7 +13,7 @@ namespace NetPay
 
             var projectDir = GetProjectDirectory();
 
-            //ImportEntities(context, projectDir + @"Datasets/", projectDir + @"ImportResults/");
+            ImportEntities(context, projectDir + @"Datasets/", projectDir + @"ImportResults/");
             //ExportEntities(context, projectDir + @"ExportResults/");
 
             using(var transaction = context.Database.BeginTransaction())
@@ -29,10 +29,10 @@ namespace NetPay
 
             PrintAndExportEntityToFile(households, exportDir + "Actual-Result-ImportHouseholds.txt");
 
-            var expences = DataProcessor.Deserializer
-                .ImportExpenses(context, File.ReadAllText(baseDir + "expences.json"));
+            //var expences = DataProcessor.Deserializer
+            //    .ImportExpenses(context, File.ReadAllText(baseDir + "expences.json"));
 
-            PrintAndExportEntityToFile(expences, exportDir + "Actual-Result-ImportExpenses.txt");
+            //PrintAndExportEntityToFile(expences, exportDir + "Actual-Result-ImportExpenses.txt");
         }
 
         private static void ExportEntities(NetPayContext context, string exportDir)
