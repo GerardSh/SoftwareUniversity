@@ -1,8 +1,13 @@
-﻿using NetPay.Data;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using NetPay.Data;
 using NetPay.Data.Models;
+using NetPay.Data.Models.Enums;
 using NetPay.DataProcessor.ImportDtos;
 using NetPay.Utilities;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Text;
 
 namespace NetPay.DataProcessor
@@ -37,7 +42,12 @@ namespace NetPay.DataProcessor
                         || h.Email == houseDto.Email
                         || h.PhoneNumber == houseDto.Phone);
 
-                    if (isAlreadyImportHousehold)
+                    bool isToBeImported = validHouseholds
+                        .Any(h => h.ContactPerson == houseDto.ContactPerson
+                        || h.Email == houseDto.Email
+                        || h.PhoneNumber == houseDto.Phone);
+
+                    if (isAlreadyImportHousehold || isToBeImported)
                     {
                         output.AppendLine(DuplicationDataMessage);
                         continue;
@@ -57,7 +67,7 @@ namespace NetPay.DataProcessor
                 }
 
                 context.Households.AddRange(validHouseholds);
-               // context.SaveChanges();
+               context.SaveChanges();
             }
 
             return output.ToString().Trim();
@@ -65,7 +75,58 @@ namespace NetPay.DataProcessor
 
         public static string ImportExpenses(NetPayContext context, string jsonString)
         {
-            throw new NotImplementedException();
+            StringBuilder output = new StringBuilder();
+
+            ImportExpenseDto[]? expenseDtos = JsonConvert.DeserializeObject<ImportExpenseDto[]>(jsonString);
+
+            var validExpenses = new List<Expense>();
+
+            if (expenseDtos != null && expenseDtos.Length > 0)
+            {
+                foreach (var expenseDto in expenseDtos)
+                {
+                    if (!IsValid(expenseDto))
+                    {
+                        output.AppendLine(ErrorMessage);
+                        continue;
+                    }
+
+                    bool householdExists = context.Households
+                        .Any(h => h.Id == expenseDto.HouseholdId);
+
+                    bool expenseExists = context.Services
+                        .Any(s => s.Id == expenseDto.ServiceId);
+
+                    bool isDueDateValid = DateTime.TryParseExact(expenseDto.DueDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, 
+                        DateTimeStyles.None, out DateTime dueDate);
+
+                    bool isPaymentStatusValid = Enum.TryParse(expenseDto.PaymentStatus, out PaymentStatus paymentStatus);
+
+                    if (!householdExists || !expenseExists || !isDueDateValid || !isPaymentStatusValid)
+                    {
+                        output.AppendLine(ErrorMessage);
+                        continue;
+                    }
+
+                    var expense = new Expense()
+                    {
+                        ExpenseName = expenseDto.ExpenseName,
+                        Amount = expenseDto.Amount,
+                        DueDate = dueDate,
+                        PaymentStatus = paymentStatus,
+                        HouseholdId = expenseDto.HouseholdId,
+                        ServiceId = expenseDto.ServiceId,
+                    };
+
+                    validExpenses.Add(expense);
+
+                    output.AppendLine(string.Format(SuccessfullyImportedExpense, expenseDto.ExpenseName, expenseDto.Amount.ToString("f2")));
+                }
+
+                context.Expenses.AddRange(validExpenses);
+                context.SaveChanges();
+            }
+                return output.ToString().Trim();
         }
 
         public static bool IsValid(object dto)

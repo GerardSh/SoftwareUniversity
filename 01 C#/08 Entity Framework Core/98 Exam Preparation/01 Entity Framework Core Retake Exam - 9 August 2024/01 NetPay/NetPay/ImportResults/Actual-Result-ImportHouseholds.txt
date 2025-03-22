@@ -36,15 +36,15 @@ Successfully imported household. Contact person: Petar Kolev
 Successfully imported household. Contact person: Radoslav Rusev
 Successfully imported household. Contact person: Stanislav Tsvetkov
 Successfully imported household. Contact person: Todor Pavlov
-Successfully imported household. Contact person: Todor Pavlov
+Error! Data duplicated.
 Successfully imported household. Contact person: Viktor Hristov
-Successfully imported household. Contact person: Viktor DiffHristov
+Error! Data duplicated.
 Successfully imported household. Contact person: Yordan Stefanov
 Successfully imported household. Contact person: Zdravko Yanev
 Successfully imported household. Contact person: Galin Todorov
 Successfully imported household. Contact person: Hristo Petrov
 Successfully imported household. Contact person: Ivan Dimitrov
-Successfully imported household. Contact person: Ivan DiffDimitrov
+Error! Data duplicated.
 Successfully imported household. Contact person: Teodor Yordanov
 Successfully imported household. Contact person: Valentin Ivanov
 Successfully imported household. Contact person: Yasen Angelov

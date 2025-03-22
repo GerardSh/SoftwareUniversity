@@ -13,6 +13,7 @@ namespace NetPay.DataProcessor.ImportDtos
         [XmlAttribute("phone")]
         public string Phone { get; set; } = null!;
 
+        [Required]
         [MinLength(5)]
         [MaxLength(50)]
         [XmlElement()]
