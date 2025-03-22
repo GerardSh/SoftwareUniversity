@@ -40,14 +40,7 @@ namespace NetPay.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Fluent API here
-            modelBuilder.Entity<SupplierService>(e =>
-            {
-                e.HasKey(ss => new
-                {
-                    ss.SupplierId,
-                    ss.ServiceId
-                });
-            });
+            modelBuilder.Entity<SupplierService>(e => e.HasKey(ss => new { ss.SupplierId, ss.ServiceId }));
 
             //Uncomment the following lines to seed the database with data
 

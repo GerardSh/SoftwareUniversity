@@ -14,7 +14,7 @@ namespace TravelAgency
 
             var projectDir = GetProjectDirectory();
 
-            //ImportEntities(context, projectDir + @"Datasets/", projectDir + @"ImportResults/");
+            ImportEntities(context, projectDir + @"Datasets/", projectDir + @"ImportResults/");
             //ExportEntities(context, projectDir + @"ExportResults/");
 
             using (var transaction = context.Database.BeginTransaction())
