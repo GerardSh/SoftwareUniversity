@@ -7,6 +7,8 @@ Below are some tips and usefull information about Judge behaviour observed in so
 
 `[Range]` и `[Regex]` атрибутите както и всички останали validation атрибути и атрибути задесериализация се поставят в import DTO обектите, а не на ниво база в ентити моделите.
 
+Когато искаме да валидираме типове с Range атрибута, които са различни от int или double, примерно decimal, трябва да ползваме `[Range(typeof(decimal), "0.01", "500")]`
+
 Когато Foreign Key-a е nullable, тогава ползваме `int?` и правим и навигационното пропърти nullable s `?`
 
 Не трябва да забравяме да инициализираме навигационните колекции.
