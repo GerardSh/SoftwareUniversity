@@ -67,7 +67,7 @@ namespace NetPay.DataProcessor
                 }
 
                 context.Households.AddRange(validHouseholds);
-               context.SaveChanges();
+                context.SaveChanges();
             }
 
             return output.ToString().Trim();
@@ -97,7 +97,7 @@ namespace NetPay.DataProcessor
                     bool expenseExists = context.Services
                         .Any(s => s.Id == expenseDto.ServiceId);
 
-                    bool isDueDateValid = DateTime.TryParseExact(expenseDto.DueDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, 
+                    bool isDueDateValid = DateTime.TryParseExact(expenseDto.DueDate, "yyyy-MM-dd", CultureInfo.InvariantCulture,
                         DateTimeStyles.None, out DateTime dueDate);
 
                     bool isPaymentStatusValid = Enum.TryParse(expenseDto.PaymentStatus, out PaymentStatus paymentStatus);
@@ -126,7 +126,7 @@ namespace NetPay.DataProcessor
                 context.Expenses.AddRange(validExpenses);
                 context.SaveChanges();
             }
-                return output.ToString().Trim();
+            return output.ToString().Trim();
         }
 
         public static bool IsValid(object dto)
