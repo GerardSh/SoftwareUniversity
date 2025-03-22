@@ -15,6 +15,42 @@ Below are some tips and usefull information about Judge behaviour observed in so
 
 Когато правим import трябва да следваме три последнователни стъпки:
 
- 1. Defined DTO structure by the file structure.
+ 1. Define DTO structure by the file structure.
  2. Define validation attributes based on the description.
  3. Implement business logic for import.
+ 
+ При export има една стъпка по-малко:
+ 
+ 1. Define ExportDTO structure and describe with XmlAnnotation.
+ 2. Implement business logic for export.
+ 
+Когато сортираме при експорт, винаги е добре да го правим преди проекцията, защото след нея обикновено пропъртитата са стрингове. Но трябва да се внимава, защото има задачи където противно на очакваното, числени стойности трябва да са сортирани като стрингове. Това може да доведе до невъзможност EF Core да преведе заявката към базата данни и тогава трябва да я материализираме в самото начало, като трябва да ползваме eager loading защото lazy loading-a няма да работи и ще хвърля exception-и. 
+Другия вариант, ако трябва да сортираме по стринг, вместо да материализираме заявката и да ползваме eager loading е да извършим сортирането преди селекцията и да извикаме .ToString() метода на пропъртитата:
+
+```csharp
+ExportHouseholdExpensesDto[] households = context.Households
+    .Where(h => h.Expenses.Any(e => e.PaymentStatus != PaymentStatus.Paid))
+    .OrderBy(h => h.ContactPerson)
+    .Select(h => new ExportHouseholdExpensesDto()
+    {
+        ContactPerson = h.ContactPerson,
+        Email = h.Email,
+        PhoneNumber = h.PhoneNumber,
+        Expenses = h.Expenses
+        .Where(e => e.PaymentStatus != PaymentStatus.Paid)
+		// Ordering is done here, calling the ToString() method
+        .OrderBy(e => e.DueDate.ToString())
+        .ThenBy(e => e.Amount.ToString()).ToArray()
+        .Select(e => new ExportExpenseDto
+        {
+            ExpenseName = e.ExpenseName,
+            Amount = e.Amount.ToString("f2"),
+            PaymentDate = e.DueDate.ToString("yyyy-MM-dd"),
+            ServiceName = e.Service.ServiceName
+        })
+        .ToArray()
+    })
+    .ToArray();
+```
+
+В папката с резултатите, най-лесната проверка е ако селектираме двата файла през Visual Studio и с десен бутон на мишката да изберем "Compare Selected".
