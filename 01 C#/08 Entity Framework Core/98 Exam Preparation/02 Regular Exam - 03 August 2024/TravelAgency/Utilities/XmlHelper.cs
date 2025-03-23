@@ -61,7 +61,7 @@ namespace NetPay.Utilities
                 }
             }
 
-                using StringWriter stringWriter = new StringWriter(result);
+            using StringWriter stringWriter = new StringWriter(result);
 
             xmlSerializer.Serialize(stringWriter, obj, xmlNamespaces);
 
