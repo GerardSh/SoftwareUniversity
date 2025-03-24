@@ -34,7 +34,7 @@ namespace Cadastre.DataProcessor
 
             var result = JsonConvert.SerializeObject(properties, Formatting.Indented);
 
-            return result.ToString().Trim();
+            return result;
         }
 
         public static string ExportFilteredPropertiesWithDistrict(CadastreContext dbContext)
@@ -54,7 +54,7 @@ namespace Cadastre.DataProcessor
 
             string result = XmlHelper.Serialize(properties, "Properties");
 
-            return result.ToString().Trim();
+            return result;
         }
     }
 }
