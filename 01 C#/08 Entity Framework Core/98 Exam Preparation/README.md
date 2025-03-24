@@ -54,3 +54,7 @@ ExportHouseholdExpensesDto[] households = context.Households
 ```
 
 В папката с резултатите, най-лесната проверка е ако селектираме двата файла през Visual Studio и с десен бутон на мишката да изберем "Compare Selected".
+
+За да валидираме Enum стойности в DTO обектите, ако идват като думи, тогава може да ползваме Enum.TryParse(dto.Gender, out Gender gender)
+Когато стойностите идват като числа, Enum.TryParse ще ги интерпретира, но ако числото е извън обхвата на дефинираните стойности в енум класа, то все пак ще върне true, което води до невярна проверка.
+Затова, освен Enum.TryParse, трябва да добавим и допълнителната проверка с Enum.IsDefined, за да се уверим, че числото съответства на валидна стойност в енум класа - `if (Enum.TryParse(dto.Gender, out Gender gender) && Enum.IsDefined(typeof(Gender), gender))`
