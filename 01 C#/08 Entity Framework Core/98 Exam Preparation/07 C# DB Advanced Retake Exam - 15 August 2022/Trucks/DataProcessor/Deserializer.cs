@@ -22,11 +22,110 @@
 
         public static string ImportDespatcher(TrucksContext context, string xmlString)
         {
-           
+            var output = new StringBuilder();
+
+            var despDtos = XmlHelper.Deserialize<ImportDespatcherDto[]>(xmlString, "Despatchers");
+
+            if (despDtos == null || despDtos.Count() == 0) return string.Empty;
+
+            var validDespatchers = new List<Despatcher>();
+
+            foreach (var despDto in despDtos)
+            {
+                if (!IsValid(despDto))
+                {
+                    output.AppendLine(ErrorMessage); continue;
+                }
+
+                var despatcher = new Despatcher()
+                {
+                    Name = despDto.Name,
+                    Position = despDto.Position,
+                };
+
+                foreach (var truckDto in despDto.Trucks)
+                {
+                    if (!IsValid(truckDto))
+                    {
+                        output.AppendLine(ErrorMessage); continue;
+                    }
+
+                    var truck = new Truck()
+                    {
+                        RegistrationNumber = truckDto.RegistrationNumber,
+                        VinNumber = truckDto.VinNumber,
+                        TankCapacity = truckDto.TankCapacity,
+                        CargoCapacity = truckDto.CargoCapacity,
+                        CategoryType = (CategoryType)truckDto.CategoryType,
+                        MakeType = (MakeType)truckDto.MakeType
+                    };
+
+                    despatcher.Trucks.Add(truck);
+                }
+
+                validDespatchers.Add(despatcher);
+                output.AppendLine(string.Format(SuccessfullyImportedDespatcher, despatcher.Name, despatcher.Trucks.Count));
+            }
+
+            context.Despatchers.AddRange(validDespatchers);
+            context.SaveChanges();
+
+            return output.ToString().Trim();
         }
         public static string ImportClient(TrucksContext context, string jsonString)
         {
-       
+            var output = new StringBuilder();
+
+            var clientDtos = JsonConvert.DeserializeObject<ImportClientDto[]>(jsonString);
+
+            if (clientDtos == null || clientDtos.Count() == 0) return string.Empty;
+
+            var validClients = new List<Client>();
+
+            var truckIds = context.Trucks
+                .Select(t => t.Id)
+                .ToHashSet();
+
+            foreach (var clientDto in clientDtos)
+            {
+                if (!IsValid(clientDto) || clientDto.Type == "usual")
+                {
+                    output.AppendLine(ErrorMessage);
+                    continue;
+                }
+
+                var client = new Client()
+                {
+                    Name = clientDto.Name,
+                    Nationality = clientDto.Nationality,
+                    Type = clientDto.Type,
+                };
+
+                foreach (var truckId in clientDto.Trucks)
+                {
+                    if (!truckIds.Contains(truckId))
+                    {
+                        output.AppendLine(ErrorMessage);
+                        continue;
+                    }
+
+                    var clientTruck = new ClientTruck()
+                    {
+                        Client = client,
+                        TruckId = truckId
+                    };
+
+                    client.ClientsTrucks.Add(clientTruck);
+                }
+
+                validClients.Add(client);
+                output.AppendLine(string.Format(SuccessfullyImportedClient, client.Name, client.ClientsTrucks.Count));
+            }
+
+            context.Clients.AddRange(validClients);
+            context.SaveChanges();
+
+            return output.ToString().Trim();
         }
 
         private static bool IsValid(object dto)
