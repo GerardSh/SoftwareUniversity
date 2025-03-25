@@ -41,8 +41,8 @@ namespace TravelAgency.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TourPackageGuide>(e => e.HasKey(e => new { e.TourPackageId, e.GuideId }));
-
+            modelBuilder.Entity<TourPackageGuide>().HasKey(eg => new { eg.TourPackageId, eg.GuideId });
+        
             modelBuilder.Entity<Guide>().HasData(
                 new Guide { Id = 1, FullName = "John Doe", Language = Language.Russian },
                 new Guide { Id = 2, FullName = "Jane Smith", Language = Language.English },

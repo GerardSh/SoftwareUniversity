@@ -33,7 +33,7 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PropertyCitizen>(e => e.HasKey(pc => new { pc.PropertyId, pc.CitizenId }));
+            modelBuilder.Entity<PropertyCitizen>().HasKey(pc => new { pc.PropertyId, pc.CitizenId });
         }
     }
 }

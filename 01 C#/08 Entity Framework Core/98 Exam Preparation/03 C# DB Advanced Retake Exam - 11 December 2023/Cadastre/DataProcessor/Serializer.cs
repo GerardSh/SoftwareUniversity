@@ -1,7 +1,7 @@
 ﻿using Cadastre.Data;
 using Cadastre.Data.Enumerations;
 using Cadastre.DataProcessor.ExportDtos;
-using NetPay.Utilities;
+using Cadastre.Utilities;
 using Newtonsoft.Json;
 
 namespace Cadastre.DataProcessor

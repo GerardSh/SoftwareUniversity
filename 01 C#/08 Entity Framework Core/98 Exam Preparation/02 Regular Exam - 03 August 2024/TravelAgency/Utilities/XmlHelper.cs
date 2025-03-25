@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Xml.Serialization;
 
-namespace NetPay.Utilities
+namespace TravelAgency.Utilities
 {
     public class XmlHelper
     {

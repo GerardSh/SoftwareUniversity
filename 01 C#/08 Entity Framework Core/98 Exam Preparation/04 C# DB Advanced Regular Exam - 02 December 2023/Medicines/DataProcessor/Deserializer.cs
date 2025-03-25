@@ -5,7 +5,7 @@
     using Medicines.Data.Models.Enums;
     using Medicines.DataProcessor.ImportDtos;
     using Microsoft.EntityFrameworkCore;
-    using NetPay.Utilities;
+    using Medicines.Utilities;
     using Newtonsoft.Json;
     using System.ComponentModel.DataAnnotations;
     using System.Globalization;

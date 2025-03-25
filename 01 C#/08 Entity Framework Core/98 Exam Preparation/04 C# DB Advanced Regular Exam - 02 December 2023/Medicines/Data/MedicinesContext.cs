@@ -32,7 +32,7 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PatientMedicine>(e => e.HasKey(pm => new { pm.PatientId, pm.MedicineId }));
+            modelBuilder.Entity<PatientMedicine>().HasKey(pm => new { pm.PatientId, pm.MedicineId });
         }
     }
 }

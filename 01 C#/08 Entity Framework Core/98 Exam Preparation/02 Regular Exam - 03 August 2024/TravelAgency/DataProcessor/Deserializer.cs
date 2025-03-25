@@ -1,4 +1,4 @@
-﻿using NetPay.Utilities;
+﻿using TravelAgency.Utilities;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;

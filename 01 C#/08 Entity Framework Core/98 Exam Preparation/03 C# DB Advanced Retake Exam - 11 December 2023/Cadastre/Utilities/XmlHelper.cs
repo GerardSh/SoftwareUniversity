@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Xml.Serialization;
 
-namespace NetPay.Utilities
+namespace Cadastre.Utilities
 {
     public class XmlHelper
     {

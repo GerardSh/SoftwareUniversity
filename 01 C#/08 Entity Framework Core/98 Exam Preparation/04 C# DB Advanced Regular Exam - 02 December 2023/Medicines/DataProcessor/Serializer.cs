@@ -2,7 +2,7 @@
 {
     using Medicines.Data;
     using Medicines.DataProcessor.ExportDtos;
-    using NetPay.Utilities;
+    using Medicines.Utilities;
     using Newtonsoft.Json;
 
     public class Serializer
