@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Users>
+	<User Username="appUser@example.com">
+		<Movies>
+			<Movie Title="Inception" />
+			<Movie Title="The Dark Knight" />
+			<Movie Title="Interstellar" />
+			<Movie Title="Forrest Gump" />
+			<Movie Title="Titanic" />
+			<Movie Title="Pulp Fiction" />
+		</Movies>
+	</User>
+	<User Username="appUser@example.com">
+		<Movies>
+			<Movie Title="Avatar" />
+			<Movie Title="Gladiator" />
+			<Movie Title="The Matrix" />
+			<Movie Title="Lord of the Rings" />
+		</Movies>
+	</User>
+	<User Username="admin@example.com">
+		<Movies>
+			<Movie Title="The Shawshank Redemption" />
+			<Movie Title="The Electric State" />
+			<Movie Title="Daredevil: Born Again" />
+			<Movie Title="Dark Winds" />
+			<Movie Title="Mickey 17" />
+			<Movie Title="Harry Potter and the Goblet of Fire" />
+			<Movie Title="The Dark Knight" />
+			<Movie Title="Inception" />
+			<Movie Title="Titanic" />
+		</Movies>
+	</User>
+</Users>

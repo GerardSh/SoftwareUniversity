@@ -4,9 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>25259885-bd7e-4a1c-9965-bbb9607ec93b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CinemaApp.Data.Models\CinemaApp.Data.Models.csproj" />
     <ProjectReference Include="..\CinemaApp.Data\CinemaApp.Data.csproj" />
   </ItemGroup>
 

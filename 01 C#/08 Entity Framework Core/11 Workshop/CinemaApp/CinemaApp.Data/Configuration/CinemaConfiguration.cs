@@ -35,6 +35,37 @@ namespace CinemaApp.Data.Configuration
             // Ensure that only existing records are used in the business logic
             entity
                 .HasQueryFilter(c => c.IsDeleted == false);
+
+            // Add seeding of data in the Cinema table
+            entity
+                .HasData(this.SeedCinemas());
+        }
+
+        private IEnumerable<Cinema> SeedCinemas()
+        {
+            IEnumerable<Cinema> cinemas = new List<Cinema>()
+            {
+                new Cinema()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Cinema city",
+                    Location = "Sofia"
+                },
+                new Cinema()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Cinema city",
+                    Location = "Plovdiv"
+                },
+                new Cinema()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Cinemax",
+                    Location = "Varna"
+                }
+            };
+
+            return cinemas;
         }
     }
 }

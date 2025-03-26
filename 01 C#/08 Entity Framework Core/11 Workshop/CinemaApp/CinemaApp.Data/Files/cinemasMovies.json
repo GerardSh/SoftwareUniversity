@@ -33,5 +33,82 @@
     "AvailableTickets": 180,
     "IsDeleted": false,
     "Showtimes": "00001"
+  },
+  {
+    "Movie": "Forrest Gump",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 140,
+    "IsDeleted": false,
+    "Showtimes": "01100"
+  },
+  {
+    "Movie": "Titanic",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 160,
+    "IsDeleted": false,
+    "Showtimes": "10100"
+  },
+  {
+    "Movie": "Gladiator",
+    "Cinema": "Cinema city - Plovdiv",
+    "AvailableTickets": 130,
+    "IsDeleted": false,
+    "Showtimes": "01001"
+  },
+  {
+    "Movie": "Inception",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 190,
+    "IsDeleted": false,
+    "Showtimes": "11110"
+  },
+  {
+    "Movie": "Lord of the Rings",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 175,
+    "IsDeleted": false,
+    "Showtimes": "10011"
+  },
+  {
+    "Movie": "Mickey 17",
+    "Cinema": "Cinema city - Plovdiv",
+    "AvailableTickets": 125,
+    "IsDeleted": false,
+    "Showtimes": "01111"
+  },
+  {
+    "Movie": "Dark Winds",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 110,
+    "IsDeleted": false,
+    "Showtimes": "00010"
+  },
+  {
+    "Movie": "Pulp Fiction",
+    "Cinema": "Cinema city - Plovdiv",
+    "AvailableTickets": 155,
+    "IsDeleted": false,
+    "Showtimes": "01101"
+  },
+  {
+    "Movie": "The Matrix",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 170,
+    "IsDeleted": false,
+    "Showtimes": "11010"
+  },
+  {
+    "Movie": "The Electric State",
+    "Cinema": "Cinemax",
+    "AvailableTickets": 135,
+    "IsDeleted": false,
+    "Showtimes": "10101"
+  },
+  {
+    "Movie": "Daredevil: Born Again",
+    "Cinema": "Cinema city - Sofia",
+    "AvailableTickets": 145,
+    "IsDeleted": false,
+    "Showtimes": "01010"
   }
 ]
