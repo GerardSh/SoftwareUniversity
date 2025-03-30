@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Users>
+  <User Friendships="6">
+    <Username>alex_smith</Username>
+    <Posts>
+      <Post>
+        <Content>Had an intense chess match today. Strategy and patience are key!</Content>
+        <CreatedAt>2025-02-22T19:45:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Finally published my first book! A dream come true after years of dedication.</Content>
+        <CreatedAt>2025-03-03T09:45:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Access to clean drinking water should be a fundamental right, not a privilege.</Content>
+        <CreatedAt>2025-04-02T14:30:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="3">
+    <Username>david_jackson</Username>
+    <Posts>
+      <Post>
+        <Content>Practicing guitar has been so rewarding. Music is the soul’s language!</Content>
+        <CreatedAt>2025-02-18T16:40:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>We bought our first house! Finally moving into our dream home.</Content>
+        <CreatedAt>2025-03-07T14:45:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>The rising cost of healthcare is leaving many families behind. We need reforms!</Content>
+        <CreatedAt>2025-04-03T09:15:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="3">
+    <Username>emily_white</Username>
+    <Posts>
+      <Post>
+        <Content>Another great day at the gym! Fitness is not a destination; it’s a way of life.</Content>
+        <CreatedAt>2025-02-19T09:00:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Graduated with my master’s degree today! Hard work and perseverance made this possible.</Content>
+        <CreatedAt>2025-03-06T16:00:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Child labor is still a major issue worldwide. We need stronger laws!</Content>
+        <CreatedAt>2025-04-08T20:00:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="6">
+    <Username>jane_doe</Username>
+    <Posts>
+      <Post>
+        <Content>Spent the weekend painting landscapes. Art is my therapy!</Content>
+        <CreatedAt>2025-02-23T14:15:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Just finished my first marathon! It was an incredible experience and a huge milestone for me.</Content>
+        <CreatedAt>2025-03-02T12:30:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>The world should focus more on mental health awareness and support.</Content>
+        <CreatedAt>2025-04-07T08:30:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="5">
+    <Username>john_doe</Username>
+    <Posts>
+      <Post>
+        <Content>Just finished a fantastic hiking trip in the mountains! Nature is truly refreshing.</Content>
+        <CreatedAt>2025-02-24T08:30:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Exciting news! I just got promoted at work! Hard work truly pays off.</Content>
+        <CreatedAt>2025-03-01T10:00:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Plastic pollution in the oceans is a disaster. We need better waste management.</Content>
+        <CreatedAt>2025-04-05T16:20:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="4">
+    <Username>michael_brown</Username>
+    <Posts>
+      <Post>
+        <Content>Just finished reading a thrilling mystery novel. Books are my escape from reality.</Content>
+        <CreatedAt>2025-02-20T17:10:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>I just adopted a puppy! Meet my new best friend, Max.</Content>
+        <CreatedAt>2025-03-05T11:10:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Climate change is an urgent issue. We must act now to protect our planet.</Content>
+        <CreatedAt>2025-04-01T12:00:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="5">
+    <Username>olivia_taylor</Username>
+    <Posts>
+      <Post>
+        <Content>Photography is my passion! Captured some breathtaking sunset shots today.</Content>
+        <CreatedAt>2025-02-17T18:30:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Just landed my dream job! I’m beyond excited to start this new chapter.</Content>
+        <CreatedAt>2025-03-08T09:30:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Racism and inequality still persist. It’s time to take real action!</Content>
+        <CreatedAt>2025-04-06T11:00:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="4">
+    <Username>sara_miller</Username>
+    <Posts>
+      <Post>
+        <Content>Baking is my passion! Tried a new chocolate cake recipe, and it turned out amazing!</Content>
+        <CreatedAt>2025-02-21T11:20:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>I'm officially engaged! Feeling over the moon and can't wait for this new journey ahead.</Content>
+        <CreatedAt>2025-03-04T15:20:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Hunger and poverty affect millions daily. Let’s make a difference!</Content>
+        <CreatedAt>2025-04-09T15:10:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+  <User Friendships="4">
+    <Username>william_clark</Username>
+    <Posts>
+      <Post>
+        <Content>Tried gardening today and planted some fresh herbs. Can’t wait to see them grow!</Content>
+        <CreatedAt>2025-02-16T07:45:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Celebrating 10 years of marriage today! Feeling grateful for the journey.</Content>
+        <CreatedAt>2025-03-09T18:20:00</CreatedAt>
+      </Post>
+      <Post>
+        <Content>Deforestation is destroying our rainforests. Time to take a stand for nature!</Content>
+        <CreatedAt>2025-04-04T18:45:00</CreatedAt>
+      </Post>
+    </Posts>
+  </User>
+</Users>

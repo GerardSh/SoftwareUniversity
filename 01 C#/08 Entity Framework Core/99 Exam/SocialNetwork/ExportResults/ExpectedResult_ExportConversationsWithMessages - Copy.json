@@ -1,0 +1,380 @@
+[
+  {
+    "Id": 6,
+    "Title": "Study Group",
+    "StartedAt": "2024-08-10T14:00:00",
+    "Messages": [
+      {
+        "Content": "Hey ladies, let's focus on the upcoming exam topics.",
+        "SentAt": "2024-08-10T14:05:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Yes! I was reviewing the lecture on algorithms, it’s tricky.",
+        "SentAt": "2024-08-10T14:10:00",
+        "Status": 1,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "Let’s break it down together. What part is confusing?",
+        "SentAt": "2024-08-10T14:15:00",
+        "Status": 2,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "I struggle with recursion. The call stack gets confusing.",
+        "SentAt": "2024-08-10T14:20:00",
+        "Status": 0,
+        "SenderUsername": "olivia_taylor"
+      },
+      {
+        "Content": "I can explain! Think of it like a nested to-do list.",
+        "SentAt": "2024-08-10T14:25:00",
+        "Status": 1,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "That makes sense! Let’s go over an example step by step.",
+        "SentAt": "2024-08-10T14:30:00",
+        "Status": 2,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "Also, let’s make flashcards for key concepts.",
+        "SentAt": "2024-08-10T14:35:00",
+        "Status": 0,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "Good idea! I’ll prepare some on data structures.",
+        "SentAt": "2024-08-10T14:40:00",
+        "Status": 1,
+        "SenderUsername": "olivia_taylor"
+      },
+      {
+        "Content": "Awesome! Let’s quiz each other in an hour.",
+        "SentAt": "2024-08-10T14:45:00",
+        "Status": 2,
+        "SenderUsername": "jane_doe"
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Title": "BackUp Group",
+    "StartedAt": "2024-08-10T20:11:00",
+    "Messages": [
+      {
+        "Content": "Alright, Secret Society is back in session!",
+        "SentAt": "2024-08-10T20:12:00",
+        "Status": 0,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "Haha, finally! What’s the topic of the day?",
+        "SentAt": "2024-08-10T20:14:00",
+        "Status": 1,
+        "SenderUsername": "michael_brown"
+      },
+      {
+        "Content": "Hey guys, should we meet up this weekend?",
+        "SentAt": "2024-08-10T20:15:00",
+        "Status": 0,
+        "SenderUsername": "alex_smith"
+      },
+      {
+        "Content": "How about crazy work stories? I have a good one.",
+        "SentAt": "2024-08-10T20:16:00",
+        "Status": 2,
+        "SenderUsername": "william_clark"
+      },
+      {
+        "Content": "Oh no... do tell!",
+        "SentAt": "2024-08-10T20:18:00",
+        "Status": 0,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "So, our manager accidentally sent an email to the whole company...",
+        "SentAt": "2024-08-10T20:20:00",
+        "Status": 1,
+        "SenderUsername": "william_clark"
+      },
+      {
+        "Content": "Oh boy. What did it say?",
+        "SentAt": "2024-08-10T20:22:00",
+        "Status": 2,
+        "SenderUsername": "michael_brown"
+      },
+      {
+        "Content": "Something about 'the disaster report'... but it was meant for just HR.",
+        "SentAt": "2024-08-10T20:25:00",
+        "Status": 0,
+        "SenderUsername": "william_clark"
+      },
+      {
+        "Content": "LMAO! That’s gold.",
+        "SentAt": "2024-08-10T20:28:00",
+        "Status": 1,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "I swear, working in this place is pure entertainment.",
+        "SentAt": "2024-08-10T20:30:00",
+        "Status": 2,
+        "SenderUsername": "michael_brown"
+      },
+      {
+        "Content": "That’s why we have this group. Secret Society forever!",
+        "SentAt": "2024-08-10T20:33:00",
+        "Status": 0,
+        "SenderUsername": "william_clark"
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Title": "Movie Night",
+    "StartedAt": "2025-01-31T16:23:00",
+    "Messages": [
+      {
+        "Content": "Hey love, let's plan a movie night this weekend!",
+        "SentAt": "2025-01-31T16:23:00",
+        "Status": 0,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "That sounds great! What movie do you have in mind?",
+        "SentAt": "2025-01-31T16:28:00",
+        "Status": 1,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Maybe something romantic, or a good thriller?",
+        "SentAt": "2025-01-31T16:30:00",
+        "Status": 2,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "Ooooh, a thriller sounds fun! Let’s do that!",
+        "SentAt": "2025-01-31T16:35:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Perfect! We should leave the kids with my parents.",
+        "SentAt": "2025-01-31T16:40:00",
+        "Status": 1,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "Yes, I’ll call them now to ask if they’re free.",
+        "SentAt": "2025-01-31T16:42:00",
+        "Status": 2,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Hey, did you book the tickets for the movie?",
+        "SentAt": "2025-01-31T16:45:00",
+        "Status": 3,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "They said yes! They’ll take care of the kids.",
+        "SentAt": "2025-01-31T16:50:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Awesome! I’ll book the tickets. Popcorn and soda?",
+        "SentAt": "2025-01-31T16:55:00",
+        "Status": 1,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "Yes please! Can’t wait for our date night!",
+        "SentAt": "2025-01-31T17:00:00",
+        "Status": 2,
+        "SenderUsername": "jane_doe"
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Title": "Weekend Plans",
+    "StartedAt": "2025-02-22T18:00:00",
+    "Messages": [
+      {
+        "Content": "Hey, any plans for the weekend?",
+        "SentAt": "2025-02-22T18:00:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "How about a trip to the mountains?",
+        "SentAt": "2025-02-22T18:05:00",
+        "Status": 1,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "That sounds like a great idea! Who else is in?",
+        "SentAt": "2025-02-22T18:10:00",
+        "Status": 2,
+        "SenderUsername": "olivia_taylor"
+      },
+      {
+        "Content": "I’m definitely in! We should decide on the exact place.",
+        "SentAt": "2025-02-22T18:15:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Maybe we can go to Green Valley? It’s a great hiking spot.",
+        "SentAt": "2025-02-22T18:20:00",
+        "Status": 1,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "Sounds perfect! Let’s meet on Saturday morning.",
+        "SentAt": "2025-02-22T18:25:00",
+        "Status": 2,
+        "SenderUsername": "olivia_taylor"
+      },
+      {
+        "Content": "Okay, I’ll bring some snacks and drinks.",
+        "SentAt": "2025-02-22T18:30:00",
+        "Status": 0,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "And I’ll bring the music!",
+        "SentAt": "2025-02-22T18:35:00",
+        "Status": 1,
+        "SenderUsername": "jane_doe"
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "Title": "Team Meeting",
+    "StartedAt": "2025-02-23T10:15:00",
+    "Messages": [
+      {
+        "Content": "Good morning, everyone! Let's start the team meeting.",
+        "SentAt": "2025-02-23T10:20:00",
+        "Status": 0,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "Morning! What's the agenda for today?",
+        "SentAt": "2025-02-23T10:20:25",
+        "Status": 1,
+        "SenderUsername": "alex_smith"
+      },
+      {
+        "Content": "We'll go over project updates and deadlines.",
+        "SentAt": "2025-02-23T10:21:30",
+        "Status": 2,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "I've made progress on the front-end implementation.",
+        "SentAt": "2025-02-23T10:22:10",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Great! How about the backend integration?",
+        "SentAt": "2025-02-23T10:22:40",
+        "Status": 1,
+        "SenderUsername": "sara_miller"
+      },
+      {
+        "Content": "We’ve completed 70% of the API endpoints.",
+        "SentAt": "2025-02-23T10:23:05",
+        "Status": 2,
+        "SenderUsername": "michael_brown"
+      },
+      {
+        "Content": "That’s great! Let's set a deadline for testing.",
+        "SentAt": "2025-02-23T10:25:00",
+        "Status": 0,
+        "SenderUsername": "emily_white"
+      },
+      {
+        "Content": "Agreed! We should have a working version by next week.",
+        "SentAt": "2025-02-23T10:25:20",
+        "Status": 1,
+        "SenderUsername": "david_jackson"
+      },
+      {
+        "Content": "Let’s keep the momentum going!",
+        "SentAt": "2025-02-23T10:25:30",
+        "Status": 2,
+        "SenderUsername": "olivia_taylor"
+      },
+      {
+        "Content": "Alright, let's wrap up and document today’s points.",
+        "SentAt": "2025-02-23T10:26:00",
+        "Status": 0,
+        "SenderUsername": "william_clark"
+      }
+    ]
+  },
+  {
+    "Id": 1,
+    "Title": "Project Discussion",
+    "StartedAt": "2025-02-24T14:30:00",
+    "Messages": [
+      {
+        "Content": "Hey everyone, let's finalize the project scope.",
+        "SentAt": "2025-02-24T14:30:00",
+        "Status": 0,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "I think we should focus on the core functionalities first.",
+        "SentAt": "2025-02-24T14:40:00",
+        "Status": 1,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Agreed! We can add extra features later.",
+        "SentAt": "2025-02-24T14:45:00",
+        "Status": 2,
+        "SenderUsername": "john_doe"
+      },
+      {
+        "Content": "Let's divide tasks accordingly. Who wants to handle what?",
+        "SentAt": "2025-02-24T14:50:00",
+        "Status": 0,
+        "SenderUsername": "david_jackson"
+      },
+      {
+        "Content": "I'll work on the database design.",
+        "SentAt": "2025-02-24T14:55:00",
+        "Status": 1,
+        "SenderUsername": "william_clark"
+      },
+      {
+        "Content": "I'll handle the API development.",
+        "SentAt": "2025-02-24T15:00:00",
+        "Status": 2,
+        "SenderUsername": "alex_smith"
+      },
+      {
+        "Content": "I'll take care of the front-end part.",
+        "SentAt": "2025-02-24T15:05:00",
+        "Status": 0,
+        "SenderUsername": "jane_doe"
+      },
+      {
+        "Content": "Great! Let's keep each other updated.",
+        "SentAt": "2025-02-24T15:10:00",
+        "Status": 1,
+        "SenderUsername": "john_doe"
+      }
+    ]
+  }
+]

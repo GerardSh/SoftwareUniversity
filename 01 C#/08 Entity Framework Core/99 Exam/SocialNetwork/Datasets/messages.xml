@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Messages>
+	<Message SentAt="2025-02-24T14:30:00">
+		<Content>Hey everyone, let's finalize the project scope.</Content>
+		<Status>Sent</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T14:36:00">
+		<Content></Content>
+		<Status>Sent</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T14:40:00">
+		<Content>I think we should focus on the core functionalities first.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T14:45:00">
+		<Content>Agreed! We can add extra features later.</Content>
+		<Status>Seen</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T14:50:00">
+		<Content>Let's divide tasks accordingly. Who wants to handle what?</Content>
+		<Status>Sent</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>7</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T14:55:00">
+		<Content>I'll work on the database design.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T15:00:00">
+		<Content>I'll handle the API development.</Content>
+		<Status>Seen</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>3</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T15:05:00">
+		<Content>I'll take care of the front-end part.</Content>
+		<Status>Sent</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T15:10:00">
+		<Content>Great! Let's keep each other updated.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-24T15:10:00">
+		<Content>Great! Let's keep each other updated.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>1</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:00:00">
+		<Content>Hey, any plans for the weekend?</Content>
+		<Status>Sent</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:05:00">
+		<Content>How about a trip to the mountains?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:10:00">
+		<Content>That sounds like a great idea! Who else is in?</Content>
+		<Status>Seen</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>8</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:15:00">
+		<Content>I’m definitely in! We should decide on the exact place.</Content>
+		<Status>Sent</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:20:00">
+		<Content>Maybe we can go to Green Valley? It’s a great hiking spot.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:25:00">
+		<Content>Sounds perfect! Let’s meet on Saturday morning.</Content>
+		<Status>Seen</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>8</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:30:00">
+		<Content>Okay, I’ll bring some snacks and drinks.</Content>
+		<Status>Sent</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:35:00">
+		<Content>And I’ll bring the music!</Content>
+		<Status>Delivered</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-22T18:50:00">
+		<Content>
+			This is a very long message that exceeds the 200-character limit.
+			We are discussing the weekend plans, but this message is way too long for the system to handle.
+			Let's see if it gets rejected by the validation rules in place.
+		</Content>
+		<Status>Sent</Status>
+		<ConversationId>2</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:20:00">
+		<Content>Good morning, everyone! Let's start the team meeting.</Content>
+		<Status>Sent</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:20:25">
+		<Content>Morning! What's the agenda for today?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>3</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:21:30">
+		<Content>We'll go over project updates and deadlines.</Content>
+		<Status>Seen</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:22:10">
+		<Content>I've made progress on the front-end implementation.</Content>
+		<Status>Sent</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:22:40">
+		<Content>Great! How about the backend integration?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:23:05">
+		<Content>We’ve completed 70% of the API endpoints.</Content>
+		<Status>Seen</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>5</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:25:00">
+		<Content>That’s great! Let's set a deadline for testing.</Content>
+		<Status>Sent</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:25:20">
+		<Content>Agreed! We should have a working version by next week.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>7</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:25:30">
+		<Content>Let’s keep the momentum going!</Content>
+		<Status>Seen</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>8</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:26:00">
+		<Content>Alright, let's wrap up and document today’s points.</Content>
+		<Status>Sent</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2025-02-23T10:30:00">
+		<Content>We should finalize the agenda before the meeting.</Content>
+		<Status>InProgress</Status>
+		<ConversationId>3</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:23:00">
+		<Content>Hey love, let's plan a movie night this weekend!</Content>
+		<Status>Sent</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:28:00">
+		<Content>That sounds great! What movie do you have in mind?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:30:00">
+		<Content>Maybe something romantic, or a good thriller?</Content>
+		<Status>Seen</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:35:00">
+		<Content>Ooooh, a thriller sounds fun! Let’s do that!</Content>
+		<Status>Sent</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:40:00">
+		<Content>Perfect! We should leave the kids with my parents.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:42:00">
+		<Content>Yes, I’ll call them now to ask if they’re free.</Content>
+		<Status>Seen</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:45:00">
+		<Content>Hey, did you book the tickets for the movie?</Content>
+		<Status>Failed</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:50:00">
+		<Content>They said yes! They’ll take care of the kids.</Content>
+		<Status>Sent</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T16:55:00">
+		<Content>Awesome! I’ll book the tickets. Popcorn and soda?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>1</SenderId>
+	</Message>
+	<Message SentAt="2025-01-31T17:00:00">
+		<Content>Yes please! Can’t wait for our date night!</Content>
+		<Status>Seen</Status>
+		<ConversationId>4</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:05:00">
+		<Content>Hey ladies, let's focus on the upcoming exam topics.</Content>
+		<Status>Sent</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:10:00">
+		<Content>Yes! I was reviewing the lecture on algorithms, it’s tricky.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:15:00">
+		<Content>Let’s break it down together. What part is confusing?</Content>
+		<Status>Seen</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:20:00">
+		<Content>I struggle with recursion. The call stack gets confusing.</Content>
+		<Status>Sent</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>8</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:25:00">
+		<Content>I can explain! Think of it like a nested to-do list.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:30:00">
+		<Content>That makes sense! Let’s go over an example step by step.</Content>
+		<Status>Seen</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:35:00">
+		<Content>Also, let’s make flashcards for key concepts.</Content>
+		<Status>Sent</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>6</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:40:00">
+		<Content>Good idea! I’ll prepare some on data structures.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>8</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T14:45:00">
+		<Content>Awesome! Let’s quiz each other in an hour.</Content>
+		<Status>Seen</Status>
+		<ConversationId>6</ConversationId>
+		<SenderId>2</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:12:00">
+		<Content>Alright, Secret Society is back in session!</Content>
+		<Status>Sent</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:14:00">
+		<Content>Haha, finally! What’s the topic of the day?</Content>
+		<Status>Delivered</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>5</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:15:00">
+		<Content>Hey guys, should we meet up this weekend?</Content>
+		<Status>Sent</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>3</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:16:00">
+		<Content>How about crazy work stories? I have a good one.</Content>
+		<Status>Seen</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:18:00">
+		<Content>Oh no... do tell!</Content>
+		<Status>Sent</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:20:00">
+		<Content>So, our manager accidentally sent an email to the whole company...</Content>
+		<Status>Delivered</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:20:00">
+		<Content>Let's set up a backup plan in case someone can't make it.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>99</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:22:00">
+		<Content>Oh boy. What did it say?</Content>
+		<Status>Seen</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>5</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:25:00">
+		<Content>Something about 'the disaster report'... but it was meant for just HR.</Content>
+		<Status>Sent</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:28:00">
+		<Content>LMAO! That’s gold.</Content>
+		<Status>Delivered</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:30:00">
+		<Content>I swear, working in this place is pure entertainment.</Content>
+		<Status>Seen</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>5</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:33:00">
+		<Content>That’s why we have this group. Secret Society forever!</Content>
+		<Status>Sent</Status>
+		<ConversationId>5</ConversationId>
+		<SenderId>9</SenderId>
+	</Message>
+	<Message SentAt="2024-08-10T20:25:00">
+		<Content>Does anyone have updates on the backup strategy?</Content>
+		<Status>Seen</Status>
+		<ConversationId>99</ConversationId>
+		<SenderId>4</SenderId>
+	</Message>
+</Messages>
