@@ -111,7 +111,8 @@ namespace SocialNetwork.DataProcessor
                 };
 
                 validPosts.Add(post);
-                output.AppendLine(string.Format(SuccessfullyImportedPostEntity, dbContext.Users.Find(post.CreatorId).Username, post.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")));
+                output.AppendLine(string.Format(SuccessfullyImportedPostEntity, dbContext.Users.Find(post.CreatorId).Username, 
+				post.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")));
             }
 
             dbContext.Posts.AddRange(validPosts);
