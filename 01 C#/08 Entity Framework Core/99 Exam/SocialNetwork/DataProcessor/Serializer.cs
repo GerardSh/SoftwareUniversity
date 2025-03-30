@@ -45,13 +45,13 @@ namespace SocialNetwork.DataProcessor
                 {
                     c.Id,
                     c.Title,
-                    StartedAt = c.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                    StartedAt = c.StartedAt.ToString("yyyy-MM-ddTHH:mm:ss"),
                     Messages = c.Messages
                                .OrderBy(m => m.SentAt)
                                .Select(m => new
                                {
                                    m.Content,
-                                   SentAt = m.SentAt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                                   SentAt = m.SentAt.ToString("yyyy-MM-ddTHH:mm:ss"),
                                    m.Status,
                                    SenderUsername = m.Sender.Username
                                })

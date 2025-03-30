@@ -42,20 +42,19 @@ namespace SocialNetwork.Data
         {
             modelBuilder.Entity<UserConversation>().HasKey(uc => new { uc.UserId, uc.ConversationId });
 
-            modelBuilder.Entity<Friendship>()
-       .HasKey(f => new { f.UserOneId, f.UserTwoId });
+            modelBuilder.Entity<Friendship>().HasKey(f => new { f.UserOneId, f.UserTwoId });
 
             modelBuilder.Entity<Friendship>()
                 .HasOne(f => f.UserOne)
                 .WithMany()
                 .HasForeignKey(f => f.UserOneId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Friendship>()
                 .HasOne(f => f.UserTwo)
                 .WithMany()
                 .HasForeignKey(f => f.UserTwoId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, Username = "john_doe", Email = "john@example.com", Password = "Pass123" },
@@ -140,3 +139,5 @@ namespace SocialNetwork.Data
 
     }
 }
+
+// Created on: 30/03/2025 09:29:46
