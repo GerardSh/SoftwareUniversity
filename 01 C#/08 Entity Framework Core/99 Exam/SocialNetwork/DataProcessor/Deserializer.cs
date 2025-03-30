@@ -29,10 +29,10 @@ namespace SocialNetwork.DataProcessor
             foreach (var messageDto in messageDtos)
             {
                 bool isDateValid = DateTime.TryParseExact(messageDto.SentAt, "yyyy-MM-ddTHH:mm:ss",
-                    CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+                                   CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
 
                 bool isStatusValid = Enum.TryParse(messageDto.Status, out MessageStatus status)
-                  && Enum.IsDefined(typeof(MessageStatus), status);
+                                     && Enum.IsDefined(typeof(MessageStatus), status);
 
                 var conversation = dbContext.Conversations.Find(messageDto.ConversationId);
                 var sender = dbContext.Users.Find(messageDto.SenderId);
@@ -61,7 +61,8 @@ namespace SocialNetwork.DataProcessor
                 };
 
                 validMessages.Add(message);
-                output.AppendLine(string.Format(SuccessfullyImportedMessageEntity, message.SentAt.ToString("yyyy-MM-ddTHH:mm:ss"), message.Status));
+                output.AppendLine(string.Format(SuccessfullyImportedMessageEntity, message.SentAt.ToString("yyyy-MM-ddTHH:mm:ss"),
+				                                message.Status));
             }
 
             dbContext.Messages.AddRange(validMessages);
@@ -90,7 +91,7 @@ namespace SocialNetwork.DataProcessor
             foreach (var postDto in postDtos)
             {
                 bool isDateValid = DateTime.TryParseExact(postDto.CreatedAt, "yyyy-MM-ddTHH:mm:ss",
-                    CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+                                   CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
 
                 if (!IsValid(postDto) || !isDateValid || !creatorIdsInDb.Contains(postDto.CreatorId))
                 {
@@ -111,8 +112,8 @@ namespace SocialNetwork.DataProcessor
                 };
 
                 validPosts.Add(post);
-                output.AppendLine(string.Format(SuccessfullyImportedPostEntity, dbContext.Users.Find(post.CreatorId).Username, 
-				post.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")));
+                output.AppendLine(string.Format(SuccessfullyImportedPostEntity, dbContext.Users.Find(post.CreatorId).Username,
+				                                post.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")));
             }
 
             dbContext.Posts.AddRange(validPosts);
