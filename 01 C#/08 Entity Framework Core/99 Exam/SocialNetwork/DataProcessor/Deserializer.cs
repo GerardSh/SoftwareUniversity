@@ -40,8 +40,7 @@ namespace SocialNetwork.DataProcessor
 
                 if (!IsValid(messageDto) || !isDateValid || !isStatusValid || conversation == null || sender == null)
                 {
-                    output.AppendLine(ErrorMessage);
-                    continue;
+                    output.AppendLine(ErrorMessage); continue;
                 }
 
                 if (messagesInDb.Any(m => m.Content == messageDto.Content && m.SentAt == date
@@ -49,8 +48,7 @@ namespace SocialNetwork.DataProcessor
                     || validMessages.Any(m => m.Content == messageDto.Content
                     && m.SentAt == date && m.Status == status && m.ConversationId == messageDto.ConversationId))
                 {
-                    output.AppendLine(DuplicatedDataMessage);
-                    continue;
+                    output.AppendLine(DuplicatedDataMessage); continue;
                 }
 
                 var message = new Message()
@@ -102,8 +100,7 @@ namespace SocialNetwork.DataProcessor
                 if (postsInDb.Any(p => p.CreatorId == postDto.CreatorId && p.CreatedAt == date && p.Content == postDto.Content)
                     || validPosts.Any(p => p.CreatorId == postDto.CreatorId && p.CreatedAt == date && p.Content == postDto.Content))
                 {
-                    output.AppendLine(DuplicatedDataMessage);
-                    continue;
+                    output.AppendLine(DuplicatedDataMessage); continue;
                 }
 
                 var post = new Post()
