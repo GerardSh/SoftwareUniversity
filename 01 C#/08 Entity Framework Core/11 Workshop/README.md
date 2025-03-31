@@ -1,7 +1,6 @@
 # General
 ## Entity Framework Core 8
 ### Complex Types
-
 Комплексните типове в Entity Framework Core са концепция, която позволява групиране на свързани пропъртита в отделна структура, без тя да бъде самостоятелна таблица в базата данни. Това е полезно за моделиране на повторяеми данни, които нямат собствен първичен ключ.
 
 **Характеристики на комплексните типове**
@@ -999,7 +998,6 @@ public class RootObject
     public DateTime ReleaseDate { get; set; }
 }
 ```
-    
 
 Now you can easily deserialize the JSON data into the `RootObject` class:
 
@@ -1026,3 +1024,5 @@ Spatial Data External Links:
 [Spatial Mapping with NetTopologySuite | Npgsql Documentation](https://www.npgsql.org/efcore/mapping/nts.html?tabs=ef9-with-connection-string)
 
 [NetTopologySuite | NetTopologySuite](https://nettopologysuite.github.io/NetTopologySuite/)
+
+[A Guide to Using CultureInfo in .NET Applications | Phrase](https://phrase.com/blog/posts/all-you-need-to-know-about-cultureinfo-in-net-applications/) - a guide on using `CultureInfo` in .NET applications to handle localization, date formats, and language settings effectively.
