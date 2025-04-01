@@ -951,9 +951,100 @@ builder.Services.AddScoped<IScopedService, ScopedService>();
 3. **Работна директория**: При изграждането на проекта, тези файлове ще бъдат копирани в работната директория на приложението, което е важно за достъпването им чрез относителни пътища. Така когато приложението се изпълнява, ще може да достъпва файловете в работната директория, а не в директорията на изходния код.
 
 4. **Проблем при деплойване**: Когато деплойваме приложението, ние обикновено деплойваме само **работната директория** и нейното съдържание. Ако файловете са част от изходния код (в source code директорията), те няма да бъдат включени в деплоймента и ще възникне проблем, ако се опитваме да ги достъпим по пътя към тях. Затова е важно да ги преместим в работната директория и да ги настроим така, че да се копират по време на build процеса.
+### Solution Folders
+**Solution Folders** са виртуални папки в **Visual Studio**, които организират проекти и файлове в **Solution**. Те не съществуват физически във файловата система, а служат само за подредба в **Solution Explorer**, за да направят структурата по-четима.
+
+Използват се за:
+
+- Групиране на свързани проекти
+- Организиране на помощни файлове (документация, скриптове и др.)
+- Подобряване на навигацията в големи решения
+
+>[!IMPORTANT]
+> Не влияят на namespace-ите или компилацията на проектите.
+### Auto Mapper
+**AutoMapper** е библиотека, която автоматизира прехвърлянето на данни между обекти с еднакви или сходни пропъртита. Това е особено полезно, когато искаме да преобразуваме **DTO** обект към **ентити** или обратно. Някои компании не харесват **AutoMapper**, защото предпочитат ръчно мапване за по-добър контрол, по-добра производителност и избягване на зависимости.
+
+**Инсталация**
+
+На ниво **Web** се инсталира **AutoMapper** чрез **NuGet**.
+
+**Пример**
+
+Ако имаме **DTO** обект `TicketDto` и искаме да го преобразуваме в **ентити** `Ticket`, може да го направим по следния начин:
+
+```csharp
+mapper.Map<Ticket>(ticketDto);
+```
+
+Това създава нова инстанция на `Ticket` и копира стойностите от `TicketDto`.
+
+**Конфигуриране на AutoMapper**
+
+За да работи **AutoMapper**, трябва да създадем **профил** за мапване, като дефинираме кои обекти как ще се трансформират.
+
+Създаваме клас **`MapperProfile`**, който наследява `Profile`:
+
+```csharp
+using AutoMapper;
+
+public class MapperProfile : Profile
+{
+    public MapperProfile()
+    {
+        CreateMap<TicketDto, Ticket>(); // Auto mapping by name and type
+    }
+}
+```
+
+Това е достатъчно за мапване на пропъртита с **еднакви имена и типове**.
+
+**Игнориране на пропъртита**
+
+Ако искаме да игнорираме дадено пропърти, ползваме `.ForMember`:
+
+```csharp
+CreateMap<TicketDto, Ticket>()
+    .ForMember(dest => dest.Id, opt => opt.Ignore()); // Id will not be mapped
+```
+
+**Регистриране на AutoMapper в ASP.NET Core**
+
+За да добавим **AutoMapper** в **dependency injection контейнера**, го регистрираме в `Program.cs`:
+
+```csharp
+builder.Services.AddAutoMapper(typeof(MapperProfile));
+```
+
+Това позволява **AutoMapper** да бъде използван в контролери и услуги чрез **внедряване на зависимости (dependency injection)**.
+
+**Reverse Mapping** позволява AutoMapper да работи в двете посоки – не само от `TicketDto` към `Ticket`, но и обратно.
+
+За да активираме **обратното мапване**, добавяме `.ReverseMap()`:
+
+```csharp
+CreateMap<TicketDto, Ticket>().ReverseMap();
+```
+
+Това означава, че можем да мапнем както:
+
+```csharp
+Ticket ticket = mapper.Map<Ticket>(ticketDto);
+```
+
+така и в обратната посока:
+
+```csharp
+TicketDto ticketDto = mapper.Map<TicketDto>(ticket);
+```
+
+Ако имаме допълнителни правила за мапване, те ще се приложат и при обратното преобразуване.
+
+С използването на **AutoMapper** и **transformer-based serialization**, позволява абстракция на процеса на мапване. Потребителят не трябва да знае как става мапването. Той само посочва какви данни иска да експортне и в какъв формат. Ние можем да добавим допълнителни елементи като timestamp или защита, но потребителят не се нуждае да е наясно с тях. Единствено веднъж настройваме мапера, а потребителят го използва на готово, като кодът му става по-чист и не се налага да разбира детайлите на мапинга.
+
+[Getting Started Guide — AutoMapper documentation](https://docs.automapper.org/en/stable/Getting-started.html) - `AutoMapper` documentation.
 # ChatGPT
 ## Using "Paste Special" in Visual Studio to Quickly Create DTO Objects from JSON or XML
-
 In Visual Studio, you can use the **"Paste Special"** feature to quickly generate DTO (Data Transfer Object) classes from JSON or XML data. This allows you to avoid manually defining classes for complex structures.
 
 **Steps to Generate DTO Classes from JSON or XML:**
@@ -1026,3 +1117,7 @@ Spatial Data External Links:
 [NetTopologySuite | NetTopologySuite](https://nettopologysuite.github.io/NetTopologySuite/)
 
 [A Guide to Using CultureInfo in .NET Applications | Phrase](https://phrase.com/blog/posts/all-you-need-to-know-about-cultureinfo-in-net-applications/) - a guide on using `CultureInfo` in .NET applications to handle localization, date formats, and language settings effectively.
+
+[Getting Started Guide — AutoMapper documentation](https://docs.automapper.org/en/stable/Getting-started.html) - `AutoMapper` documentation.
+
+Completion: 01.04.2025
