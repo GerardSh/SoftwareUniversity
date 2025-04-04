@@ -215,16 +215,105 @@ MongoDB е документна база данни.
 
 MongoDB е разпределена база данни в основата си.
 
-Може да изтеглим от: [MongoDB Download Center](https://www.mongodb.com/download-center)
+Може да изтеглим от: [Download MongoDB Community Server | MongoDB](https://www.mongodb.com/try/download/community)
 
 След като инсталираме MongoDB, ще е необходим драйвер.
 - Един за използване с Node.js, .NET, Java и други  
-- MongoDB C#/.NET драйвер: [Документация за MongoDB C# драйвер](https://docs.mongodb.com/drivers/csharp)
+- MongoDB C#/.NET драйвер: [MongoDB C# Driver - C#/.NET Driver v3.3 - MongoDB Docs](https://www.mongodb.com/docs/drivers/csharp/current/)
 ### Working with MongoDB GUI
-Може да изберем, като има голям избор, например:  
-Robo 3T → [https://robomongo.org/download](https://robomongo.org/download)  
-NoSQLBooster → [https://nosqlbooster.com](https://nosqlbooster.com)  
-Compass → [https://www.mongodb.com/products/compass](https://www.mongodb.com/products/compass)
+Може да изберем, като има голям избор, например: 
+
+[Robo 3T | Free, open-source MongoDB GUI (formerly Robomongo)](https://robomongo.org/) - Robo 3T
+
+[NoSQLBooster - The Smartest GUI Tool and IDE for MongoDB](https://nosqlbooster.com/) - NoSQLBooster
+ 
+[MongoDB Compass | MongoDB](https://www.mongodb.com/products/tools/compass) - Compass
+### Working with MongoDB Shell Client
+Start the MongoDB Shell from the Command Line Interface (CLI).
+
+Type the following command:
+
+```
+mongo
+```
+
+Once the shell is running, we can execute queries such as:
+
+Display all databases:
+
+```
+show dbs
+```
+
+Select a database:
+
+```
+use mytestdb
+```
+
+Insert a document into a collection:
+
+```
+db.mycollection.insert({"name":"George"})
+```
+
+Find documents with the name "George":
+
+```
+db.mycollection.find({"name":" George"})
+```
+
+Find all documents in the collection:
+
+```
+db.mycollection.find({})
+```
+
+[What is MongoDB? - Database Manual v8.0 - MongoDB Docs](https://www.mongodb.com/docs/manual/)
+### CRUD Operations
+To connect to a MongoDB cluster, use the connection string for your cluster
+
+```csharp
+using MongoDB.Bson;
+using MongoDB.Driver;
+…
+var client = new MongoClient(
+"mongodb+srv://<username>:<password>@<cluster-address>/test?w=majority"
+);
+var database = client.GetDatabase("Example");
+var collection = database.GetCollection<Interactions>("Interactions");
+```
+
+To select a document use LINQ:
+
+```csharp
+var result = IMongoCollectionExtensions
+ .AsQueryable(collection)
+ .FirstOrDefault(s => s.SiteName == "Example");
+```
+
+`FindOneAndUpdate()`
+
+```csharp
+var update = MongoDB.Driver.Builders.Update.Set(s => s.SiteName,
+"New Example");
+collection.FindOneAndUpdate(s => s.SiteName == "Example",
+update);
+```
+
+`DeleteOne()`
+
+```csharp
+// Deletes the first document that meets the filter
+
+collection.DeleteOne(e => e.Name =="Example");
+```
+
+`InsertOne()`
+
+```csharp
+collection.InsertOne(newItem);
+```
 # Misc
 ## Polyglot Persistence
 Не е достатъчно да познаваме само релационните бази данни, за да работим ефективно с всички налични типове данни. Martin Fowler популяризира термина _polyglot persistence_, който подчертава, че една единствена база данни не винаги е достатъчна.
@@ -248,16 +337,18 @@ Compass → [https://www.mongodb.com/products/compass](https://www.mongodb.com/p
 # Bookmarks
 [Polyglot Persistence](https://martinfowler.com/bliki/PolyglotPersistence.html)
 
-MongoDB:
+**MongoDB:**
 
-[MongoDB Download Center](https://www.mongodb.com/download-center)
+[What is MongoDB? - Database Manual v8.0 - MongoDB Docs](https://www.mongodb.com/docs/manual/)
 
-[Документация за MongoDB C# драйвер](https://docs.mongodb.com/drivers/csharp)
+[Download MongoDB Community Server | MongoDB](https://www.mongodb.com/try/download/community)
 
-[https://robomongo.org/download](https://robomongo.org/download)
+[MongoDB C# Driver - C#/.NET Driver v3.3 - MongoDB Docs](https://www.mongodb.com/docs/drivers/csharp/current/)
 
-[https://nosqlbooster.com](https://nosqlbooster.com)
+[Robo 3T | Free, open-source MongoDB GUI (formerly Robomongo)](https://robomongo.org/)
 
-[https://www.mongodb.com/products/compass](https://www.mongodb.com/products/compass)
+[NoSQLBooster - The Smartest GUI Tool and IDE for MongoDB](https://nosqlbooster.com/)
+ 
+[MongoDB Compass | MongoDB](https://www.mongodb.com/products/tools/compass) - Compass.
 
 Completion: 04.04.2025
