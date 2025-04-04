@@ -349,6 +349,6 @@ collection.InsertOne(newItem);
 
 [NoSQLBooster - The Smartest GUI Tool and IDE for MongoDB](https://nosqlbooster.com/)
  
-[MongoDB Compass | MongoDB](https://www.mongodb.com/products/tools/compass) - Compass.
+[MongoDB Compass | MongoDB](https://www.mongodb.com/products/tools/compass)
 
 Completion: 04.04.2025
