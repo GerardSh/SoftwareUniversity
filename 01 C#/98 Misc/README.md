@@ -424,6 +424,355 @@ Why These Exceptions Exist
 In essence, these exceptions reflect a balance between strict encapsulation and practical usage within the confines of inheritance, ensuring that `protected` members remain protected from external access while still being fully usable within the class and its derived types.
 
 [c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
+### NuGet Package, DLLs and EXE Files
+The NuGet packages are basically class libraries?
+
+**ChatGPT said:**
+
+Yes, exactly! NuGet packages are basically **distributable class libraries** or **reusable components** that you can plug into your .NET projects.
+
+Here’s a quick breakdown:
+
+- A **NuGet package** is usually a `.nupkg` file.
+    
+- Inside, it contains compiled assemblies (like `.dll` files), metadata, and sometimes config files or scripts.
+    
+- When you install a NuGet package, you're basically **adding references to prebuilt class libraries** into your project.
+
+For example:
+
+- `Microsoft.EntityFrameworkCore` contains all the core EF features.
+    
+- `Newtonsoft.Json` is a widely-used library for JSON serialization/deserialization.
+    
+- `MongoDB.Driver` contains the official driver classes for working with MongoDB.
+    
+
+So yeah, you can think of NuGet packages as ready-made class libraries you can use without having to reinvent the wheel.
+
+Let me know if you want to peek inside one or create your own 👨‍💻
+
+**You said:**
+
+If i make a class library and build it, is this a NuGet package?
+
+**ChatGPT said:**
+
+You're super close — just one small distinction!
+
+When you **build a class library**, you get a **`.dll` file** (a dynamic link library), but **that by itself is not yet a NuGet package**.
+
+To create a proper NuGet package (a `.nupkg` file), you need to **wrap that DLL** with metadata (like version, description, dependencies, etc.) using a `.nuspec` file or directly from your `.csproj`.
+
+**Here's how it works:**
+
+1. **Create a Class Library (.NET Standard or .NET Class Library)**  
+    → Build it → You get `MyLibrary.dll`.
+    
+2. **Add NuGet-specific metadata**  
+    Either:
+    
+    - Manually create a `.nuspec` file, or
+        
+    - Add metadata in your `.csproj`:
+
+```xml
+<PropertyGroup>
+  <TargetFramework>netstandard2.0</TargetFramework>
+  <PackageId>MyAwesomeLibrary</PackageId>
+  <Version>1.0.0</Version>
+  <Authors>Gerard</Authors>
+  <Description>This is a custom utility library</Description>
+</PropertyGroup>
+```
+
+3. **Pack it into a NuGet package**  
+Use the CLI:
+
+```
+dotnet pack
+```
+
+This generates `MyAwesomeLibrary.1.0.0.nupkg`.
+
+4. (Optional) **Publish it to NuGet.org or a private feed**
+    
+```
+dotnet nuget push MyAwesomeLibrary.1.0.0.nupkg --api-key <key> --source https://api.nuget.org/v3/index.json
+```
+    
+
+So in short:  
+✔️ `.dll` = the built class library  
+✔️ `.nupkg` = a NuGet package that wraps your `.dll` + metadata
+
+Wanna try packing one together?
+
+**You said:**
+
+By creating NuGet packages, we conceal our source code?
+
+**ChatGPT said:**
+
+Exactly — you're spot on. ✅
+
+When you create a **NuGet package**, it typically contains only the **compiled `.dll` files** (IL code), **not your original source code**. That means:
+
+- 🛡️ **Your C# source code (`.cs` files) is hidden**
+    
+- 📦 Others only see the compiled library (just like when you use `Newtonsoft.Json` or `EntityFramework` — you use their API but don’t see their code)
+    
+- 🧠 The consuming projects reference your `.dll`, and IntelliSense works thanks to included metadata (`.xml` for docs, `.pdb` for debugging if provided)
+
+However…
+
+If you **want to share source code**, NuGet also supports **Source Link** or even **source-only NuGet packages** (e.g. [Fody](https://github.com/Fody/Fody)).
+
+But by default:  
+**Yes, creating a NuGet package is a great way to distribute functionality without exposing your source code.**
+
+Let me know if you wanna see how to obfuscate even further, or how people could still decompile `.dll` files if they really wanted.
+
+**You said:**
+
+Is this the only reason, if we ignore the hiding of the source code, why not the NuGet packages consist only of source files?
+
+**ChatGPT said:**
+
+Great question — and you're absolutely thinking in the right direction! Let's break it down:
+
+💡 Why don’t NuGet packages just contain **source files**?
+
+While **they technically _can_**, the **default and preferred method** is to distribute **compiled DLLs**, and here’s why:
+
+✅ **Advantages of using compiled DLLs (instead of raw source files)**
+
+1. **Faster Build Times**
+    
+    - You don't need to compile the same code again and again in every project — the code is already compiled.
+        
+2. **Encapsulation**
+    
+    - Your internal code stays private. You only expose what you want (via `public` types/members).
+        
+3. **Versioning & Dependency Management**
+    
+    - DLLs help ensure consistent behavior across environments — a versioned, compiled assembly won’t change unless you update it.
+        
+4. **Cleaner Integration**
+    
+    - Less file clutter in the consumer project. You don’t see or manage `.cs` files directly.
+        
+5. **Source Compatibility**
+    
+    - Raw source files could conflict with existing code (e.g., naming conflicts, duplicated symbols).
+        
+
+🔄 But yes, there _are_ NuGet packages that include source code
+
+You’ve probably seen:
+
+- Packages with `.targets` files
+    
+- `.props` that inject `.cs` files into your build
+    
+- Or even **Source Generators** (Roslyn-based)
+
+These are used in:
+
+- `AutoMapper.Extensions.Microsoft.DependencyInjection`
+    
+- `xunit.runner.visualstudio`
+    
+- `Fody` (weavers inject IL)
+
+But they’re **special use cases**, not the norm.
+
+🧩 Summary
+
+Using **DLLs in NuGet packages** is mostly about:
+
+- **Efficiency**
+    
+- **Encapsulation**
+    
+- **Convenience**
+    
+- **Avoiding complexity and conflict**
+
+Distributing raw `.cs` files could expose you to:
+
+- Name collisions
+    
+- More complicated dependency trees
+    
+- Slower builds
+    
+- Harder versioning
+
+But if you **want** to share source (e.g., for open-source, or template code), there’s a place for that too — just less common.
+
+Want to see an example of a `.cs`-based NuGet? Or how to make one?
+
+**You said:**
+
+The DLLs are only running during runtime, not compile time?
+
+**ChatGPT said:**
+
+Actually — a small but super important clarification:
+
+🧠 DLLs are used during **both compile time _and_ runtime**, just in different ways.
+
+Let’s break it down:
+
+✅ **At Compile Time:**
+
+When your project **references a DLL**, the compiler:
+
+- Reads the DLL’s **public types, methods, and signatures**
+    
+- Uses this metadata to:
+    
+    - **Check your code for correctness** (e.g., method exists, parameters match)
+        
+    - **Resolve types and members** during build time
+        
+- It doesn’t need the **source code** — just the compiled metadata (from the DLL)
+    
+
+So:  
+🛠️ **Compile-time** = "Do I know what methods and types you offer?"
+
+✅ **At Runtime:**
+
+Once your app is running:
+
+- The .NET runtime **loads the DLL** into memory
+    
+- Executes the IL (Intermediate Language) code that was compiled into the DLL
+    
+- So your app can **use the logic implemented inside the DLL**
+    
+
+So:  
+🚀 **Runtime** = "Actually run the functionality from the DLL"
+
+🔄 Analogy:
+
+Think of a DLL like a **pre-built machine**:
+
+- At compile time: You check the machine’s **manual** to make sure you're using it correctly
+    
+- At runtime: You **turn it on** and it does the actual work
+    
+
+Let me know if you want a quick example using a DLL reference in a .NET project, or how to inspect its metadata with tools like **ILSpy**.
+
+**You said:**
+
+What's the difference between a DLL and EXE?
+
+**ChatGPT said:**
+
+The difference between a **DLL (Dynamic Link Library)** and an **EXE (Executable)** file primarily lies in their purpose, usage, and behavior within a system. Here’s a breakdown:
+
+**1. Purpose and Functionality**
+
+- **DLL (Dynamic Link Library)**:
+    
+    - **Purpose**: Contains code and data that can be used by multiple programs at once. It's typically designed to provide specific functionality or services that can be accessed by other applications or libraries.
+        
+    - **Functionality**: It is not directly executable on its own. It **provides reusable functions** (e.g., a math library, a UI toolkit, etc.) that other programs can call to perform tasks.
+        
+- **EXE (Executable)**:
+    
+    - **Purpose**: An EXE file is a program that can be **executed** directly by the operating system. It contains all the necessary instructions to run an application, from launching the program to interacting with the system.
+        
+    - **Functionality**: It is **self-contained** and **executable** — meaning you can double-click it to start the program. It includes an entry point, often a `Main()` function (in C# or other languages), where the execution begins.
+        
+
+**2. Execution**
+
+- **DLL**:
+    
+    - A DLL cannot be run on its own. It **requires a host application** (like an EXE) to load and call its functions.
+        
+    - Example: A game might have a DLL for rendering graphics, but it can't start the game on its own. The EXE would load the graphics DLL when needed.
+        
+- **EXE**:
+    
+    - An EXE can be **run directly** as an application. It typically has a `Main()` method (in C# or other languages), which is the entry point for the execution of the program.
+        
+    - Example: The **notepad.exe** is an executable, and you can run it directly to open Notepad.
+        
+
+**3. Dependency and Loading**
+
+- **DLL**:
+    
+    - DLLs are **loaded dynamically** during runtime, meaning they are **not self-contained**. The host program must load the DLL and call its functions as needed.
+        
+    - **Multiple programs can share the same DLL** without duplicating the code in each program.
+        
+- **EXE**:
+    
+    - EXEs are **self-contained**. They include everything necessary to run the application (although they can still reference external libraries like DLLs).
+        
+    - An EXE is **launched as a process** by the operating system, which starts the application directly.
+        
+
+**4. Deployment and Sharing**
+
+- **DLL**:
+    
+    - A DLL is often **shared** between multiple applications. For example, a system might have one DLL that provides network functionality, and many different programs might load it when they need to make network requests.
+        
+    - DLLs allow you to **modularize** and share common functionality between different applications without duplicating code.
+        
+- **EXE**:
+    
+    - An EXE is usually **unique to a specific application**. Each EXE is typically bundled with its dependencies and is independent.
+        
+    - EXEs are used for **standalone applications**, and you don't usually share EXEs between programs in the way you would with DLLs.
+        
+
+**5. Examples**
+
+- **DLL Example**:
+    
+    - `kernel32.dll` (handles system-level operations in Windows)
+        
+    - `user32.dll` (provides functions for managing windows and user interface elements)
+        
+- **EXE Example**:
+    
+    - `chrome.exe` (the executable for Google Chrome)
+        
+    - `notepad.exe` (the executable for Notepad)
+
+
+**6. Use in .NET**:
+
+- **DLL**:
+    
+    - In the .NET world, a DLL is often used to share libraries or components between applications. For example, you might create a DLL containing business logic or utility functions, which can then be reused in multiple EXE-based programs.
+        
+- **EXE**:
+    
+    - A .NET EXE is a program that includes a `Main()` method as the entry point. You typically build an EXE when creating a complete application that can run on its own.
+
+**Summary of Key Differences**:
+
+|Feature|DLL (Dynamic Link Library)|EXE (Executable)|
+|---|---|---|
+|**Purpose**|Contains code used by other programs|Contains code to run an application|
+|**Execution**|Cannot be executed directly|Executable directly by the OS|
+|**Dependency**|Requires an EXE or another program to load it|Can run on its own, no external app needed|
+|**Shared Usage**|Can be shared by multiple applications|Usually unique to one program|
+|**Entry Point**|No entry point, no `Main()`|Has an entry point (usually `Main()`)|
+
+So, **DLLs** are for code sharing and modularity, while **EXEs** are for standalone applications.
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
