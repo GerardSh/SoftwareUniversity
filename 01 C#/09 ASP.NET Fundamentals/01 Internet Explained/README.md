@@ -210,5 +210,76 @@ But in decimal (like `10.10.0.1`), you can't visually tell which part belongs to
 **🔸 Key Takeaway:**
 
 Always refer to the **binary representation** to understand how IP addresses are divided between **network** and **host** parts. Decimal form is just a human-readable version, but it can obscure that division.
+## Understanding the Difference Between TCP and UDP
+When transmitting data over a network, two major transport protocols are used: **TCP** and **UDP**. They serve similar purposes but work in very different ways, depending on the priorities of the communication—**reliability vs speed**.
+
+**TCP: Focused on Reliability**
+
+**TCP (Transmission Control Protocol)** is a **connection-oriented** protocol. This means that before data is sent, TCP first establishes a reliable connection using a **handshake process**.
+
+TCP ensures:
+
+- **All packets arrive**
+    
+- **Packets are in the correct order**
+    
+- **Data is complete and error-checked**
+    
+
+TCP does this by using sequence numbers, acknowledgments, and retransmissions when needed.
+
+Because of this, TCP is:
+
+- **Slower**, due to the overhead of checking and confirming packets
+    
+- **Reliable**, making it ideal for applications like:
+    
+    - **Web traffic (HTTP/HTTPS)**
+        
+    - **File transfers (FTP)**
+        
+    - **Email (SMTP, IMAP)**
+        
+
+**UDP: Focused on Speed**
+
+**UDP (User Datagram Protocol)** is a **connectionless** protocol. It simply sends packets to the destination **without checking** if they arrive or are complete.
+
+UDP:
+
+- **Doesn't guarantee delivery**
+    
+- **Doesn’t check for errors**
+    
+- **Doesn’t order packets**
+    
+
+This makes UDP:
+
+- **Much faster**, since there’s no overhead
+    
+- **Less reliable**, but ideal when speed is more important than accuracy
+    
+
+Common use cases include:
+
+- **Video and voice calls**
+    
+- **Online gaming**
+    
+- **Streaming**
+    
+- **DNS lookups**
+
+**Summary**
+
+|Feature|TCP|UDP|
+|---|---|---|
+|Connection|Connection-oriented|Connectionless|
+|Reliability|Guarantees delivery and order|No guarantees|
+|Speed|Slower (more overhead)|Faster (minimal overhead)|
+|Use Cases|Web, FTP, Email|Streaming, Games, VoIP|
+
+> 💡 Newer protocols like **HTTP/3** use **UDP**, combining speed with reliability using higher-layer logic.
 # Bookmarks
-Completion: 07.04.2025
+Completion: 08.04.2025
