@@ -131,12 +131,62 @@ ASP.NET Core MVC предоставя функционалности за изг
 
 Механизмът за свързване на модела (model binding) автоматично картографира данни от HTTP заявки.
 
-Поддържа валидация на модели както от страна на клиента, така и от страна на сървъра.
+ASP.NET поддържа валидация на модели както от страна на клиента, така и от страна на сървъра. Основният принцип, който трябва да спазваме, е че **всички лъжат** — не бива да вярваме на никого, дори на себе си. Затова платформата ни предоставя възможност за двустепенна валидация: първо на клиента, после на сървъра.
+Клиентската валидация служи основно за подобряване на потребителското изживяване (UX), но не е сигурна, защото се изпълнява от самия клиент. Той може да променя HTML и JavaScript кода, да премахне `required` полета или да заобиколи ограничения чрез инструменти като browser developer tools или Postman. Затова сървърната валидация е задължителна и единствената, на която можем да разчитаме за сигурна обработка на данните.
 
 Често го комбинираме с Entity Framework за обектно-релационно съпоставяне (ORM).
+### Features
+ASP.NET Core предоставя **routing механизъм** за съпоставяне на HTTP заявки към контролери и действия. 
+
+**Dependency Injection** се използва за инжектиране на компоненти по време на изпълнение, което улеснява модулността и тестването на приложенията.
+
+С **Razor view engine** можем да създаваме **строго типизирани изгледи**, които комбинират C# код с HTML по ясен и подреден начин. 
+
+**Model binding** автоматично свързва данните от HTTP заявките с C# модели, а **валидацията** се извършва както на клиента, така и на сървъра за по-голяма сигурност.
+
+Чрез **Tag Helpers** можем да вграждаме сървърен код директно в HTML елементи. ASP.NET Core поддържа и мощни инструменти като **филтри**, **зони (Areas)** и **middlewares**, които осигуряват гъвкавост в изграждането на архитектурата.
+
+Вградените **системи за сигурност** включват **ASP.NET Identity**, чрез която можем да управляваме потребители, роли и автентикация. Има още множество възможности, които подпомагат разработката на модерни и сигурни уеб приложения.
+## Creating an ASP.NET Core MVC App
+1. Създаваме нов проект във Visual Studio и избираме шаблона **ASP.NET Core Web App (Model-View-Controller)**.
+
+2. Избираме желаната .NET версия. Ако искаме функционалност за потребителски акаунти, на `Authentication type` избираме **Individual Accounts** и маркираме **Configure for HTTPS**.
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250413171321.png)
+### Static files
+Всички статични ресурси на приложението – JavaScript файлове, CSS стилове, изображения, икони и др.
+### `Program.cs`
+Основният клас, чрез който се конфигурира приложението. Тук се задават настройките за **inversion of control container (IoC)**, конфигурира се **middleware pipeline-а**, и се стартира приложението. Имаме `builder`, който има пропърти `Services` – това е контейнерът за зависимостите (IoC), в който се регистрират услуги, включително `DbContext`. След като всички услуги са регистрирани (независимо в какъв ред), извикваме `builder.Build()`, за да изградим приложението.
+След `Build()` започва конфигурирането на **middleware pipeline-а** – това е поредица от компоненти, които обработват HTTP заявките. Всеки ред в тази конфигурация има значение и редът на изпълнение е важен. Например, `app.UseAuthentication()` трябва да бъде извикан преди `app.UseAuthorization()`, за да може първо потребителят да бъде идентифициран (автентикация), и след това да му бъдат зададени права (авторизация). Ако тези две извиквания се разместят, `Identity` няма да функционира правилно. След като middleware-ите са конфигурирани, приложението се стартира с `app.Run()`.
+### `appsettings.json`
+Съдържа конфигурационни настройки за приложението, като например връзки към бази данни, логване и други параметри. Важно е да не се съхраняват чувствителни данни като пароли или API ключове в този файл, тъй като съдържанието му става публично при качване в GitHub. Разликата между този файл и **`secrets.json`** е, че **`appsettings.json`** се намира в директорията на проекта и се включва в source control системата, докато **`secrets.json`** се намира извън проекта – в потребителска папка на компютъра – и не се качва в source control. Проблемът при **`secrets.json`** е, че другите участници в проекта не разполагат с него по подразбиране, затова е необходимо да се измисли начин да им се предадат необходимите ключове и настройки – например чрез документ с инструкции или чрез използване на защитен vault.
+### Areas 
+Когато създадем ASP.NET Core MVC приложение с **Individual Accounts** (при избиране на тип автентикация), **Identity framework** се добавя автоматично. Той се намира в специална папка **`Areas/Identity`**, която следва архитектурата на Razor Pages. В тази папка се съдържат Razor страници (като Login, Register, Forgot Password и др.), чрез които се управляват потребителите, ролите и процесите по автентикация и авторизация.
+### Controllers 
+Папката, в която се съхраняват всички контролери на приложението. При създаване на проект с шаблона, по подразбиране имаме един контролер – `HomeController`. Контролер е клас, който наследява базовия клас `Controller`, като по конвенция името му завършва на `Controller` (например `ProductController`). Всеки публичен метод в него се нарича action – той обработва входящи HTTP заявки и връща отговор (обикновено HTML чрез View, JSON, redirect и други). Контролерите са отговорни за логиката на приложението – получават данни от модела и избират каква View да върнат на клиента.
+Контролерът избира кое View да върне според името на action метода. По конвенция, в папката `Views` има подпапка с името на контролера (без наставката `Controller`), а в нея се намират `.cshtml` файловете с имената на съответните action-и. Например, `HomeController` с метод `Index()` ще върне View от `Views/Home/Index.cshtml`. Освен това, в метода може да се подаде и стринг с името на конкретното View, което да се върне, ако не следваме конвенцията за имената.
+Ако контролерът не намери съответното View в папката с името на контролера, следващото място, където ще търси, е в папката **Shared**. Тази папка се използва, когато искаме да споделим дадено View между няколко контролера. В случай, че и там не бъде открито, ще бъде хвърлена грешка.
+### Dependencies
+Показват зависимостите на проекта. Имаме **Frameworks**, които включват множество библиотеки, използвани от приложението. Вътре в един framework можем да видим всички включени библиотеки, които той използва. Освен тях, можем да добавим и допълнителни външни библиотеки според нуждите на проекта – те се изтеглят и съхраняват в папката **packages**.
 # Misc
 # ChatGPT
+## .NET as a Platform vs. Frameworks – Key Concepts and Relationship
+**.NET is a platform**, not just a framework. It provides a complete development environment that includes a **runtime** (like the .NET CLR), various **tools** (such as compilers, debuggers, and IDEs), and a rich set of **libraries** (like the Base Class Library - BCL). It supports multiple **frameworks** for building different kinds of applications—such as **ASP.NET Core** for web development, **EF Core** for data access, and **MAUI** for cross-platform mobile and desktop apps.
+
+A **framework** is typically a specialized set of **libraries** designed to help developers build specific types of applications. It operates within the platform. In general, frameworks are **collections of libraries** that enforce certain patterns and conventions. They often provide a structure to the application and call your code as part of the execution flow (inversion of control).
+
+For example:
+
+- **ASP.NET Core** is a web framework built on the .NET platform.
+    
+- **Entity Framework Core** is a framework for working with databases using ORM techniques.
+
+In summary:
+
+- **.NET** is a broad platform with tools, runtime, and libraries.
+    
+- **Frameworks** are focused tools built on top of the platform, essentially structured libraries designed for specific tasks.
 # Bookmarks
 [ASP.NET documentation | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0)
 
-Completion: 13.04.2025
+Completion: 14.04.2025
