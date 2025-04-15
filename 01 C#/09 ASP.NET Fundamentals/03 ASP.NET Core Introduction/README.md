@@ -423,7 +423,7 @@ ViewData["message"] = "Hello!";
 ### Passing Data to a View - Strongly Typed
 В ASP.NET Core можем да създадем **силно типизирано (strongly typed) View**, което получава конкретен модел (клас) от контролера. За целта първо си създаваме C# клас – например `CustomerViewModel`, който описва нужните данни. След това в контролера създаваме обект от този клас и го подаваме на `View()` метода.
 
-Във View-то използваме директивата `@model`, за да укажем какъв тип данни очакваме. Така получаваме пълна IntelliSense поддръжка и компилационна проверка. Това е по-сигурен и структуриран начин за работа спрямо `ViewBag` или `ViewData`.
+Във View-то използваме директивата `@model`, за да укажем какъв тип данни очакваме. Това ни осигурява пълна IntelliSense поддръжка и компилационна проверка, което прави работата по-сигурна и структурирана в сравнение с използването на `ViewBag` или `ViewData`, които не предлагат същото ниво на типова сигурност и валидация. Освен това, използвайки View модели, можем да прилагаме атрибути за валидация върху свойствата, което позволява автоматична валидация на данни както на сървъра, така и на клиента. Това не е възможно с `ViewBag` или `ViewData`, които не поддържат атрибути за валидация.
 
 ```csharp
 // Models\CustomerViewModel.cs
@@ -461,6 +461,22 @@ public IActionResult Show()
 
 Така View-то работи директно с типизиран модел, вместо с динамични обекти. 
 `@Model.Property` във View-то е **аналогично на достъп до инстанция на обект** в C#. `Model` е обектът (инстанцията), който сме подали от контролера чрез `return View(model)`, а `Property` е негово пропърти — например `Name`, `Age`, `Email` и т.н.
+### Architecture and Data Flow in ASP.NET Core MVC
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250415132033.png)
+
+Отляво на screenshot-а е базата данни, в която имаме модели, описващи таблиците ѝ (Entity модели).
+
+View-тата отдясно са HTML файлове с форми, където потребителят може да въвежда информация. В тези форми той иска да създаде Entity.
+
+За да направим ясно разделение между данните от потребителя и реалните модели в базата, използваме View Models. Те ни позволяват да валидираме входа от потребителя или, ако изкарваме информация, да я покажем във форматиран вид.
+
+Когато посоката е **от формата към базата**, ги наричаме **Input Models**, защото служат за въвеждане на данни.
+
+Когато посоката е **от базата към View** и искаме да форматираме тези данни, ги наричаме **View Models**.
+
+Целта на тези модели е да играят ролята на DTO – посредник между Entity моделите и View-тата.
+
+В най-добрия вариант, между Entity моделите и View/Input моделите стои слой със **Services**, които съдържат бизнес логиката и управляват цялата комуникация. В тях може да има допълнителна логика, валидации, трансформации и т.н.
 ## ASP.NET Core MVC Routing
 ASP.NET Core MVC използва middleware за **рутиране на клиентските заявки**.
 
@@ -565,6 +581,68 @@ Query низове – параметри в URL-а.
 Данните от тези източници се съхраняват като двойки **име-стойност**.
 
 Фреймуъркът проверява източниците в този ред, и ако не намери параметъра в един, преминава към следващия.
+
+Ако свързването не успее, фреймуърк-а не хвърля грешка.
+
+Всеки action, който приема входни данни от потребителя, трябва да провери дали свързването е успешно.
+
+Това се прави чрез свойството `ModelState.IsValid`.
+
+Всеки запис в `ModelState` на контролера е `ModelStateEntry`.
+
+Всеки `ModelStateEntry` съдържа свойство `Errors`.
+
+Въпреки това, рядко е необходимо да се прави запитване към тази колекция.
+
+Стандартното свързване на модели работи отлично за повечето сценарии за разработка.
+
+То също така е разширяемо и можете да персонализирате вграденото поведение.
+### `ModelState`
+**ModelState** е специална колекция в ASP.NET Core MVC, достъпна във всеки action метод на контролера. Тя съхранява състоянието на входните данни – дали успешно са били обвързани към модела и дали преминават валидацията. За всяко поле от заявката се създава запис, и ако има грешки, те се запазват вътре. Чрез `ModelState.IsValid` можем лесно да проверим дали всички данни са валидни, преди да продължим с логиката на приложението.
+
+```
+public class UsersController : Controller
+{
+    public IActionResult Register(RegisterUserBindingModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                DoSomething(error);
+            }
+
+            // TODO: Return Error Page
+        }
+
+        return Ok("Success!");
+    }
+}
+```
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250415112507.png)
+## Model Validation
+Валидацията е изключително важна преди записването на данни, тъй като може да има потенциални заплахи за сигурността или неправилно форматирани данни, като невалидни типове, размери или нарушаване на ограничения.
+
+В ASP.NET Core MVC валидацията се извършва както на клиентската, така и на сървърната страна.
+
+.NET предоставя абстракция за валидация чрез атрибути.
+
+Някои атрибути конфигурират валидация на модели чрез ограничения, подобно на валидацията в базите данни (например задължителни полета, диапазони, дължина), докато други прилагат шаблони за данни, които изпълняват бизнес правила, като номера на кредитни карти, телефонни номера или имейл адреси.
+
+Тези атрибути се прилагат на ниво свойства или параметри, което прави валидацията проста и лесна за поддръжка.
+
+| **Attribute**          | **Description**                                                                 |
+|------------------------|---------------------------------------------------------------------------------|
+| **[CreditCard]**        | Validates that the property has a valid credit card format.                    |
+| **[Compare]**           | Validates that two properties in a model match (e.g., for password confirmation).|
+| **[EmailAddress]**      | Validates that the property has a valid email format.                          |
+| **[Phone]**             | Validates that the property has a valid telephone format.                      |
+| **[Range]**             | Validates that the property value falls within the given range.                |
+| **[RegularExpression]** | Validates that the data matches the specified regular expression.              |
+| **[Required]**          | Makes the property required; value cannot be null.                             |
+| **[StringLength]**      | Validates that a string property has at most the given maximum length.        |
+| **[Url]**               | Validates that the property has a valid URL format.                            
 # Misc
 # ChatGPT
 ## .NET as a Platform vs. Frameworks – Key Concepts and Relationship
@@ -740,6 +818,8 @@ else
 - **Merge server-side logic and client-side presentation**, giving you a powerful way to create dynamic web pages.
 
 Razor, the view engine used by **ASP.NET Core MVC**, handles the parsing and execution of C# code in these files, so you can focus on both **design and logic** in the same place.
+## `ModelState`
+**`ModelState`** is a property available in ASP.NET Core MVC controllers that holds the state of model binding and validation for the current HTTP request. It’s rebuilt on every request and stores information about input values and validation errors, allowing developers to check if the incoming data is valid using `ModelState.IsValid`. The data comes from various sources like query strings, form fields, and route parameters, and each key becomes an entry in the `ModelState` dictionary. You can access it directly inside any controller action to handle input validation or display error messages.
 # Bookmarks
 [ASP.NET documentation | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0)
 
