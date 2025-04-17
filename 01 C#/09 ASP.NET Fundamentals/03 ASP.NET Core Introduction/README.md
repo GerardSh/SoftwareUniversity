@@ -296,21 +296,7 @@ Action резултатите **представляват различни HTTP
 | **FilePathResult**        | Returns the contents of a file by file path         | `PhysicalFile()`                                        |
 | **FileStreamResult**      | Returns the contents of a file as a stream          | `File()`                                                |
 #### Action Selectors
-**Атрибути за контрол върху действията в контролерите (Actions):**
-
-| **Атрибут**                      | **Описание**                                                                                       |
-| -------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **`[ActionName(string name)]`**  | Позволява на метода да бъде извикан под различно име в рутинг системата.                           |
-| **`[AcceptVerbs]`**              | Задава кои HTTP методи (GET, POST, PUT и др.) могат да достъпят дадено действие.                   |
-| **`[HttpGet]`**                  | Посочва, че методът обработва **GET** заявки (по подразбиране).                                    |
-| **`[HttpPost]`**                 | Посочва, че методът обработва **POST** заявки – използва се при изпращане на форма.                |
-| **`[HttpDelete]`**               | Позволява на метода да обработва **DELETE** заявки – често използвано за изтриване на ресурси.     |
-| **`[HttpOptions]`**              | Позволява на метода да отговаря на **OPTIONS** заявки, използвани често за конфигуриране на CORS.  |
-| **`[NonAction]`**                | Указва, че методът **не е действие**, въпреки че е public, и не се използва в рутинг системата.    |
-| **`[RequireHttps]`**             | Принуждава достъпа до метода да бъде само чрез HTTPS, осигурявайки защита.                         |
-| **`[Authorize]`**                | Изисква потребителят да бъде автентикиран, за да може да изпълни действието.                       |
-| **`[AllowAnonymous]`**           | Позволява на потребителите без автентикация да достъпват метода (противоположно на `[Authorize]`). |
-| **`[ValidateAntiForgeryToken]`** | Защита срещу CSRF атаки, изисква наличието на валиден токен при изпращане на форма.                |
+**Атрибути за контрол върху действията в контролерите (Actions)**
 
 Тези атрибути осигуряват гъвкавост при управлението на поведението на методите в контролерите и тяхното взаимодействие със заявките в ASP.NET Core MVC.
 
@@ -329,6 +315,8 @@ public class UsersController : Controller
     }
 }
 ```
+
+Списък със селектори и техните описания се намира във файла за ASP.NET в папката с ресурси.
 #### Action Parameters
 ASP.NET Core свързва данни от HTTP заявката с параметри на действия по няколко начина:
 
@@ -632,18 +620,7 @@ public class UsersController : Controller
 ### Validation Attributes
 Тези атрибути се прилагат на ниво свойства или параметри, което прави валидацията проста и лесна за поддръжка.
 
-| **Attribute**          | **Description**                                                                 |
-|------------------------|---------------------------------------------------------------------------------|
-| **[CreditCard]**        | Validates that the property has a valid credit card format.                    |
-| **[Compare]**           | Validates that two properties in a model match (e.g., for password confirmation).|
-| **[EmailAddress]**      | Validates that the property has a valid email format.                          |
-| **[Phone]**             | Validates that the property has a valid telephone format.                      |
-| **[Range]**             | Validates that the property value falls within the given range.                |
-| **[RegularExpression]** | Validates that the data matches the specified regular expression.              |
-| **[Required]**          | Makes the property required; value cannot be null.                             |
-| **[StringLength]**      | Validates that a string property has at most the given maximum length.        |
-| **[Url]**               | Validates that the property has a valid URL format.                            
-
+Списък с валидационни атрибути и техните описания се намира във файла за ASP.NET в папката с ресурси.
 ## Project Layer Architecture Overview
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250416132915.png)
 
@@ -1135,6 +1112,63 @@ public IActionResult Index() => View();
 |Flexibility|Less dynamic on the client|More dynamic (SPA features)|
 
 This distinction defines how modern web apps split the responsibilities between server and client.
+## Form Handling Simplified
+When dealing with forms or any user input, think of the process in two clear steps:
+
+1. **Display the Form**:
+    
+    - First, you need to display the form to the user. This is where the user enters their data.
+    - This step is handled by a **GET request**. The GET method will retrieve the empty form (view).
+    
+    Example:
+    
+```csharp
+[HttpGet]
+public IActionResult Create()
+{
+    return View(); // Displays the empty form
+}
+```
+    
+2. **Handle the Form Submission**:
+    
+    - Once the user submits the form, you need to process the data (validate it, save it, or perform any necessary logic).
+    - This is done by the **POST request**, where the data sent by the user is received and processed. If the data is valid, you can save it and potentially redirect the user. If the data is invalid, you return the same form with error messages, allowing the user to correct their input.
+    
+    Example:
+    
+```csharp
+[HttpPost]
+public IActionResult Create(MyModel model)
+{
+    if (ModelState.IsValid)
+    {
+        // Logic to save the data
+        return RedirectToAction("Success"); // Redirect after success
+    }
+
+    // If invalid, return the form with validation errors
+    return View(model);
+}
+```
+
+**Key Mental Model:**
+
+- **GET** is used to show the form (or input view).
+    
+- **POST** is used to handle the form submission, process the data, and either redirect (if successful) or show the form again with validation errors (if the data is invalid).
+
+**Why Same Action Method for Both?**
+
+- You can have the same action method name (e.g., `Create`) for both the **GET** and **POST** requests. They are differentiated by the HTTP method (GET or POST).
+- This approach makes it easier to think of the process as **"first display the form, then handle the submitted data"** within the same workflow.
+
+**The Big Picture:**
+
+- Think of it as a **two-step interaction** with the user:
+
+    1. Show the form to collect input (GET).
+    2. Process the input and decide what to do with it (POST).
 # Bookmarks
 [ASP.NET documentation | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0)
 
