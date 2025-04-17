@@ -1095,6 +1095,46 @@ else
 Razor, the view engine used by **ASP.NET Core MVC**, handles the parsing and execution of C# code in these files, so you can focus on both **design and logic** in the same place.
 ## `ModelState`
 **`ModelState`** is a property available in ASP.NET Core MVC controllers that holds the state of model binding and validation for the current HTTP request. It’s rebuilt on every request and stores information about input values and validation errors, allowing developers to check if the incoming data is valid using `ModelState.IsValid`. The data comes from various sources like query strings, form fields, and route parameters, and each key becomes an entry in the `ModelState` dictionary. You can access it directly inside any controller action to handle input validation or display error messages.
+## Comparison of Server-Side Rendering (Razor Views) vs Client-Side Rendering (React/Angular)
+✅ **Server-Side Rendering (Razor Views)**
+
+- The server **generates the full HTML** using Razor and sends it to the browser.
+    
+- The browser **renders the page immediately** — no extra JavaScript is needed.
+    
+- Data is passed from controller to view (e.g., via `View()` or `ViewBag`).
+    
+- Example:
+
+```csharp
+public IActionResult Index() => View();
+```
+
+✅ **Client-Side Rendering (APIs + JS Frameworks like React/Angular)**
+
+- The server returns **JSON data** via API endpoints.
+    
+- The browser needs **JavaScript code** to:
+    
+    - Parse the JSON
+        
+    - Create HTML dynamically
+        
+    - Inject it into the DOM
+        
+- No Razor Views involved — all UI is handled by the JS framework on the client.
+
+🔁 Comparison
+
+|Feature|Razor Views (SSR)|React/Angular (SPA)|
+|---|---|---|
+|Server returns|HTML|JSON|
+|Client needs|Only browser|JavaScript + Framework|
+|View generation|Server|Client|
+|Speed (1st load)|Fast|May load JS first|
+|Flexibility|Less dynamic on the client|More dynamic (SPA features)|
+
+This distinction defines how modern web apps split the responsibilities between server and client.
 # Bookmarks
 [ASP.NET documentation | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0)
 
