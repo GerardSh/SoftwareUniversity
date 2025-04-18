@@ -25,4 +25,28 @@
 | **[StringLength]**      | Validates that a string property has at most the given maximum length.            |
 | **[Url]**               | Validates that the property has a valid URL format.                               |
 # Methods
-`RedirectToAction(string actionName, string controllerName = null, object routeValues = null)` – използва се за пренасочване към друга екшън метод в същия или различен контролер след успешна операция, като например изпращане на форма.
+`RedirectToAction(string actionName, string controllerName = null, object routeValues = null)` – използва се за пренасочване към друг екшън метод в същия или различен контролер след успешна операция, като например изпращане на форма.
+
+`Redirect(string url)` – прави пренасочване към зададен URL (външен или вътрешен).
+
+`RedirectToRoute(string routeName)` – пренасочва към определен маршрут (ако ползваш именувани маршрути).
+
+`View()` – връща View, като търси изглед със същото име като метода.
+
+`View(object model)` – връща View, подавайки му модел (напр. view model или DTO).
+
+`View(string viewName)` – връща изглед с конкретно име.
+
+`View(string viewName, object model)` – връща конкретен изглед с подаден модел.
+
+`PartialView(string viewName, object model)` – връща частичен изглед (partial view), обикновено за AJAX или компоненти.
+
+`Json(object data)` – връща отговор в JSON формат – често използван за API или AJAX заявки.
+
+`BadRequest()` – връща HTTP 400 Bad Request, често при невалидни данни.
+
+`NotFound()` – връща HTTP 404 Not Found, ако нещо не е намерено.
+
+`Ok(object result)` – връща HTTP 200 OK с резултат – често ползвано в Web API.
+
+`NoContent()` – връща HTTP 204 No Content – когато няма какво да се върне, но операцията е успешна.
