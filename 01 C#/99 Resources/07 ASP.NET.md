@@ -50,3 +50,21 @@
 `Ok(object result)` – връща HTTP 200 OK с резултат – често ползвано в Web API.
 
 `NoContent()` – връща HTTP 204 No Content – когато няма какво да се върне, но операцията е успешна.
+
+Content(string content) – връща отговор с обикновен текст (например HTML или текстова информация).
+
+StatusCode(int statusCode) – връща отговор с конкретен HTTP статус код и по желание – съдържание.
+
+File(string filePath, string contentType) – връща файл от сървъра като отговор, като задава типа на съдържанието.
+
+File(byte[] fileContents, string contentType) – връща файл с даденото съдържание като масив от байтове.
+
+File(Stream fileStream, string contentType) – връща файл от поток (Stream), задавайки типа на съдържанието.
+
+Challenge(string[] authenticationSchemes) – предизвиква потребителя да се автентикира с конкретни схеми на автентикация.
+
+Forbid() – предотвратява достъпа до даден ресурс за потребителя (например за неупълномощени).
+
+Created(string location, object value) – връща HTTP статус 201 (Created), когато е създаден нов ресурс, като задава URL на местоположението и стойността на създадения ресурс.
+
+Accepted(string location, object value) – връща HTTP статус 202 (Accepted), когато ресурсът е приет, но не е завършен.
