@@ -51,20 +51,60 @@
 
 `NoContent()` – връща HTTP 204 No Content – когато няма какво да се върне, но операцията е успешна.
 
-Content(string content) – връща отговор с обикновен текст (например HTML или текстова информация).
+`Content(string content)` – връща отговор с обикновен текст (например HTML или текстова информация).
 
-StatusCode(int statusCode) – връща отговор с конкретен HTTP статус код и по желание – съдържание.
+`StatusCode(int statusCode)` – връща отговор с конкретен HTTP статус код и по желание – съдържание.
 
-File(string filePath, string contentType) – връща файл от сървъра като отговор, като задава типа на съдържанието.
+`File(string filePath, string contentType)` – връща файл от сървъра като отговор, като задава типа на съдържанието.
 
-File(byte[] fileContents, string contentType) – връща файл с даденото съдържание като масив от байтове.
+`File(byte[] fileContents, string contentType)` – връща файл с даденото съдържание като масив от байтове.
 
-File(Stream fileStream, string contentType) – връща файл от поток (Stream), задавайки типа на съдържанието.
+`File(Stream fileStream, string contentType)` – връща файл от поток (Stream), задавайки типа на съдържанието.
 
-Challenge(string[] authenticationSchemes) – предизвиква потребителя да се автентикира с конкретни схеми на автентикация.
+`Challenge(string[] authenticationSchemes)` – предизвиква потребителя да се автентикира с конкретни схеми на автентикация.
 
-Forbid() – предотвратява достъпа до даден ресурс за потребителя (например за неупълномощени).
+`Forbid()` – предотвратява достъпа до даден ресурс за потребителя (например за неупълномощени).
 
-Created(string location, object value) – връща HTTP статус 201 (Created), когато е създаден нов ресурс, като задава URL на местоположението и стойността на създадения ресурс.
+`Created(string location, object value)` – връща HTTP статус 201 (Created), когато е създаден нов ресурс, като задава URL на местоположението и стойността на създадения ресурс.
 
-Accepted(string location, object value) – връща HTTP статус 202 (Accepted), когато ресурсът е приет, но не е завършен.
+`Accepted(string location, object value)` – връща HTTP статус 202 (Accepted), когато ресурсът е приет, но не е завършен.
+# Tag Helpers
+## Form
+Help with creating forms and binding model properties.
+
+| Tag Helper           | Example                              | Description                 |
+| -------------------- | ------------------------------------ | --------------------------- |
+| `asp-for`            | `<input asp-for="Name" />`           | Binds to a model property   |
+| `asp-validation-for` | `<span asp-validation-for="Name" />` | Shows validation messages   |
+| `asp-action`         | `<form asp-action="Create">`         | Specifies the action method |
+| `asp-controller`     | `<form asp-controller="Product">`    | Specifies the controller    |
+| `asp-route-{value}`  | `<a asp-route-id="5">`               | Adds route values           |
+## Validation
+Used for displaying validation messages linked to model properties or entire forms.
+
+|Tag Helper|Example|Description|
+|---|---|---|
+|`asp-validation-for`|`<span asp-validation-for="Name" class="text-danger" />`|Shows validation message for a specific property|
+|`asp-validation-summary`|`<div asp-validation-summary="All" class="text-danger" />`|Displays a list of all validation errors|
+|`asp-validation-summary="ModelOnly"`|`<div asp-validation-summary="ModelOnly" />`|Shows only model-level (not field-specific) errors|
+|`asp-validation-summary="None"`|`<div asp-validation-summary="None" />`|Prevents rendering a summary|
+## Anchor
+Generates links.
+
+|Tag Helper|Example|Description|
+|---|---|---|
+|`asp-controller`|`<a asp-controller="Home" asp-action="Index">`|Builds link to action|
+|`asp-area`|`<a asp-area="Admin">`|Targets area route|
+## Environment
+Conditionally renders content based on environment.
+
+| Tag Helper                            | Example                  | Description                                                                                                                                                                    |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<environment include="Development">` | Only renders in dev mode | Renders the enclosed content only in specified environments (e.g., Development, Staging, Production). Useful for loading different scripts or styles depending on environment. |
+## Cache
+Caches rendered HTML.
+
+| Tag Helper | Example                   | Description                                                                              |
+| ---------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| `<cache>`  | Wraps content to cache it | Caches the inner content on the server to improve performance and reduce rendering time. |
+## Image & Script
