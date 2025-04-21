@@ -108,3 +108,24 @@ Caches rendered HTML.
 | ---------- | ------------------------- | ---------------------------------------------------------------------------------------- |
 | `<cache>`  | Wraps content to cache it | Caches the inner content on the server to improve performance and reduce rendering time. |
 ## Image & Script
+Help with linking static assets.
+
+|Tag Helper|Example|Description|
+|---|---|---|
+|`asp-src-include` / `asp-src-exclude`|`<script asp-src-include="*.js">`|Loads assets dynamically|
+## Option & Select
+Used for dropdowns.
+
+| Tag Helper  | Example                                                        | Description               |
+| ----------- | -------------------------------------------------------------- | ------------------------- |
+| `asp-items` | `<select asp-for="CategoryId" asp-items="Model.Categories" />` | Generates `<option>` tags |
+## Input, Label & `TextArea`
+Used for binding form fields to model properties.
+
+| Tag Helper           | Example                              | Description             |
+| -------------------- | ------------------------------------ | ----------------------- |
+| `asp-for` (input)    | `<input asp-for="Property" />`       | Binds input to property |
+| `asp-for` (label)    | `<label asp-for="Property" />`       | Generates a label       |
+| `asp-for` (textarea) | `<textarea asp-for="Description" />` | Multiline text input    |
+##  Custom
+ We can also **create our own** by inheriting from `TagHelper` and overriding the `Process` or `ProcessAsync` methods.
