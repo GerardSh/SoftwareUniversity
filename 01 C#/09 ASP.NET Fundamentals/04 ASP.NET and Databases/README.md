@@ -198,6 +198,65 @@ public class ShoppingListDbContext : DbContext
 		// You should update the DB by hand or drop and re-create the DB after each entity change!
 }
 ```
+## Database Migrations
+Обновяване на схемата на базата данни без загуба на данни
+
+ Позволява **добавяне/премахване на таблици, колони** и други промени в схемата.
+
+**Миграциите в EF Core** запазват историята на всички промени във времето.
+
+Различните версии на **ентити класовете** и **DbContext** се проследяват и съхраняват.
+
+Миграциите се **генерират автоматично** чрез инструменти на EF.
+
+Чрез командата `Script-Migration` можем да генерираме **SQL скрипт**, който съдържа всички промени между миграциите. Това е полезно, когато искаме да **прегледаме**, **споделим** или **изпълним ръчно** обновленията на базата данни – особено в production среди, където не използваме директно `database update`.
+Скриптът, генериран чрез `Script-Migration`, включва и команда за добавяне на запис в таблицата `__EFMigrationsHistory`. Това означава, че ако го изпълним ръчно върху базата данни (например в SQL Server Management Studio), тя ще се актуализира по същия начин, както ако бяхме използвали `Update-Database` директно от PMC.
+
+За да добавим миграция в EF Core, можем да използваме:
+
+- **EF CLI инструментите:**
+
+```
+dotnet ef migrations add {MigrationName}
+dotnet ef migrations remove
+dotnet ef database update
+```
+
+- **Package Manager Console (PMC):**
+
+```
+Add-Migration {MigrationName}
+Remove-Migration
+Update-Database
+```
+
+Ако искаме миграциите да се прилагат автоматично при стартиране на приложението, можем да използваме:
+
+```csharp
+db.Database.Migrate();
+```
+
+За да върнем последната миграция, използваме `Remove-Migration`. За да приложим промените към базата – `Update-Database`.
+
+**Auto Run Migration Scripts at Startup**
+
+```csharp
+public class ShoppingListDbContext : DbContext
+{
+    public ShoppingListDbContext(
+        DbContextOptions<ShoppingListDbContext> options)
+        : base(options)
+        => Database.Migrate();
+}
+```
+
+Това извикване на `Database.Migrate()` ще приложи всички миграционни скриптове, които още не са били приложени.
+
+Подходящо е за разработка – улеснява синхронизацията на базата с кода.
+
+**Не се препоръчва in production**, може да предизвика проблеми.
+
+Препоръка: в продукционна среда е по-добре да прилагаме миграциите **ръчно** чрез `Update-Database` или SQL скрипт.
 # Misc
 # ChatGPT
 ## Primary Constructor
@@ -526,6 +585,69 @@ This process is called **model binding** — it works based on matching the `nam
 - On **GET**: it populates form fields with model data.
 - On **POST**: it helps ASP.NET bind form data back into the model.
 - All of this is part of ASP.NET’s **Model-View-Controller (MVC)** pattern, making data handling clean and consistent.
+
+**You said:**
+
+"`asp-for='Name'` saves us from manually writing the `name` and `value` attributes.  
+The tag helper automatically extracts the property's name and value from the model and generates the corresponding HTML for us."
+
+**ChatGPT said:**
+
+Exactly! 💯 That’s **exactly** it — you nailed it.
+
+The `asp-for="Name"` tag helper:
+
+- Looks at your **model's property** called `Name`.
+- Automatically sets the:
+
+    - `name` attribute → to `"Name"` (so it can post data correctly).
+    - `id` attribute → to `"Name"` (so `<label asp-for="Name">` works).
+    - `value` attribute → to the current value of `Model.Name`.
+
+
+**So this:**
+
+```html
+<input asp-for="Name" class="form-control" />
+```
+
+Is equivalent to this manually written HTML:
+
+```html
+<input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" />
+```
+
+Which means:
+
+- You don’t need to repeat yourself.
+- You avoid typos like accidentally writing `name="Nam"` or missing the value.
+- If you rename the property in your model, Razor updates everything.
+
+It’s like having a smart auto-writer that keeps your HTML synced with your model 👌
+
+`asp-for="PropertyName"` is just a smart shortcut for:
+
+```html
+<input 
+  name="PropertyName" 
+  id="PropertyName" 
+  value="@Model.PropertyName"
+/>
+```
+
+That's **all** it's doing (plus the appropriate `type` if used with `<input>`, `<textarea>`, etc.). But that small thing makes a **huge difference** because:
+
+**✅ Benefits of `asp-for`:**
+
+1. **Strongly typed** – it's tied to your model property. Rename your property in C#, and Visual Studio (or Rider) updates the view too.
+
+2. **Avoids typos** – you won’t accidentally mismatch `name="..."` or forget to set `value`.
+
+3. **Improves maintainability** – you don’t have to update the HTML if the property name changes.
+
+4. **Ensures binding works** – the `name` attribute is the key to model binding in ASP.NET Core.
+
+So even though it's simple, `asp-for` helps keep things clean, safe, and in sync with your model.
 ## Model Binding with Different Models and Same Properties
 If **the property names in the Razor model (`@model`) and in the `[HttpPost]` method match**, everything will work perfectly – **even if the classes are different**, as long as the properties have the same names and compatible types.
 
@@ -582,7 +704,7 @@ public class ProductFormModel
 
 **You said:**
 
-In other words, when the form is submitted, the values inside it are matched to the properties or variables in the POST action parameters, and if a match is found, they are automatically bound to those parameters?
+In other words, when the form is submitted, the values inside it are matched to the properties of objects or variables in the POST action parameters, and if a match is found, they are automatically bound to those parameters?
 
 **ChatGPT said:**
 
@@ -610,6 +732,7 @@ Id=123&Name=Product+Name&Price=19.99
 [HttpPost]
 public async Task<IActionResult> Edit(int id, ProductViewModel model)
 {
+    // id will be 123 (from form data)
     // model.Id will be 123 (from form data)
     // model.Name will be "Product Name" (from form data)
     // model.Price will be 19.99 (from form data)
@@ -618,7 +741,7 @@ public async Task<IActionResult> Edit(int id, ProductViewModel model)
 
 ASP.NET Core will:
 
-- **For the `int id` parameter**, it will look for the `id` value in the form or route (in your case, it can come from the query string or route data if specified).
+- **For the `int id` parameter**, ASP.NET Core model binding first tries to bind parameters (like `int id`) from the route, then the query string, then the form data (in that order).
 
 - **For the `ProductViewModel model` parameter**, it will match the form values (like `Name`, `Price`, etc.) to the properties in the `ProductViewModel` class.
 
@@ -643,6 +766,523 @@ It automatically **binds** form data to the matching properties in the `model` o
 So, to clarify your question:
 
 - **Yes**, when you submit the form, **model binding** looks for matching properties in the POST method parameters (either directly or via a model like `ProductViewModel`), and it binds the values from the form to the matching properties in the model or method parameters.
-# Bookmarks
+## Difference Between Query String, Form Data, and `asp-route`
+The key difference between **query string**, **form data**, and **`asp-route`** lies in how data is transmitted during form submission, and how it's bound to controller parameters in ASP.NET Core MVC.
 
-Completion: 23.04.2025
+1. **Query String (GET method)**
+
+- **Data Location**: Data is appended to the URL as key-value pairs.
+
+- **Visibility**: Visible in the browser’s address bar.
+
+- **Method**: Uses `GET` method.
+    
+- **Example**:  
+    `/search?query=mouse&category=accessories`
+
+- **When to Use**: Ideal for retrieving data where no server state is changed (e.g., search, filters, pagination).
+
+2. **Form Data (POST method)**
+
+- **Data Location**: Sent in the **body** of the HTTP request.
+
+- **Visibility**: Not visible in the browser’s address bar.
+
+- **Method**: Uses `POST` method.
+
+- **Example**: Form fields like `<input name="name" value="Mouse" />` are submitted as body content.
+
+- **When to Use**: Preferred for sensitive data (e.g., login, payment) or state-changing actions (e.g., create, update, delete).
+
+3. **`asp-route` Attributes**
+
+- **Purpose**: Appends key-value pairs to the **form’s action URL** during HTML generation.
+
+- **Syntax**:
+
+```html
+<form asp-action="Delete" asp-route-id="5" asp-route-name="test" method="post">
+```
+
+Generates:
+
+```html
+<form action="/Product/Delete?id=5&name=test" method="post">
+```
+
+- **Location**: Always goes into the **query string**, regardless of method (`GET` or `POST`).
+
+- **Note**:
+
+- These values are not part of the form’s body (`form-data`).
+
+- If the controller is expecting data in the request **body** (for `POST`), these won't be bound unless model binding explicitly maps query strings too (which it often does).
+
+**✅ How They All Work Together**
+
+|Source|Method|Where It Ends Up|Bound To Controller|
+|---|---|---|---|
+|`asp-route-*`|GET/POST|Query string (URL)|Yes (query binding)|
+|Form input controls|GET|Query string (URL)|Yes (query binding)|
+|Form input controls|POST|Request body|Yes (form binding)|
+
+**✅ Practical Example:**
+
+```html
+<form asp-action="Delete" asp-route-id="5" method="post">
+    <input type="hidden" name="name" value="Keyboard" />
+    <input type="submit" value="Delete" />
+</form>
+```
+
+Result:
+
+- `POST` to: `/Product/Delete?id=5`
+- In request body: `name=Keyboard`
+
+In controller:
+
+```csharp
+[HttpPost]
+public IActionResult Delete(int id, string name)
+{
+    // id from asp-route (query string)
+    // name from form body (input field)
+}
+```
+
+**🔑 Key Takeaways**
+
+- **GET** → query string → visible in URL.
+
+- **POST** → form data → hidden in body.
+
+- `asp-route-*` → always appends to the **URL**, regardless of method.
+
+- If your controller needs a value in POST and you're using `asp-route-*`, it’s better to **also use hidden input fields** for consistency.
+
+**You said:**
+
+So we can build the query string using form controls, which are basically different input elements, or we can use the `asp-route` in the `<form>`, `<a`> or `<button>`, or even hard-code it in the action attribute. However, if it's sent using a GET request, the query string will get ignored. We have to either send it as a POST request, or—if we're using a GET request—instead of building the query string with `asp-route`, we should build it using form controls. That way, the values will not be ignored even in a GET request. Am I correct?
+
+**ChatGPT said:**
+
+Yes, Gerard — you're **spot on**. Here's a breakdown to reinforce and clarify everything you just said:
+
+✅ **Options to pass query string parameters in a form:**
+
+🔹 1. **Form controls** (e.g., `<input name="...">`)
+
+- These are your actual input elements — textboxes, hidden fields, dropdowns, etc.
+
+- When the form is submitted (GET or POST), the browser **generates the query string from them**.
+
+- ✅ **Works reliably with both GET and POST.**
+
+- Example:
+
+```html
+<form method="get" action="/Product/Delete">
+    <input type="hidden" name="name" value="Phone" />
+    <input type="submit" />
+</form>
+```
+
+➜ Results in: `/Product/Delete?name=Phone`
+
+🔹 2. **asp-route-... attributes**
+
+- This is Razor's syntax for **building the `action` URL with route/query parameters**.
+
+- They don’t generate input fields — they just produce a URL with the right query string when the page is rendered.
+
+- ✅ Great when you don’t want to rely on user input (e.g., hardcoded parameters).
+
+- ❗ **Only useful when the browser uses the full action URL** during submission.
+
+✅ Works for:
+    
+- `<a>` links
+
+- Forms with `asp-action` and **POST** requests
+
+❌ Problem:
+
+- When the form is `method="get"` and **you rely only on `asp-route-*`**, the browser **does not include them again when submitting** — it just takes form controls.
+
+🔹 3. **Hardcoding the full URL in `action`**
+
+- You can manually set `action="/Product/Delete?id=5&name=Phone"`
+
+- ❗But if you don’t have form inputs named `"id"` and `"name"`, nothing new gets added — the browser just uses the URL as-is.
+
+**🔥 So to summarize your conclusion:**
+
+> ✅ You're **correct** that when submitting a `GET` form, the browser will ignore any query string in the action and build a new one **only** from form controls.
+
+> ✅ If you want to pass data in a GET form **reliably**, use:
+
+- `<input type="hidden" name="...">` or other form inputs
+
+- **Don’t rely solely on `asp-route-*`** unless the method is POST
+
+> ✅ On `POST` forms, `asp-route-*` works because Razor builds the `action` with query string, and the browser keeps it.
+## Route Parameter / Query String / asp-route-*
+The difference between using a **route parameter** or a **query string** depends on how your routes are configured in your `MapControllerRoute` in `Startup.cs` (or `Program.cs` for .NET 6+).
+
+Here's a breakdown:
+
+**1. Query String** (using `asp-route-*`):
+
+When you use `asp-route-*`, the value gets added as a **query string** parameter. This happens when your route doesn't explicitly define a parameter in the URL pattern (path).
+
+For example, if you have a route like this:
+
+```csharp
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}");
+});
+```
+
+And you use `asp-route-*` in the anchor tag like this:
+
+```html
+<a asp-controller="Product" asp-action="Add" asp-route-name="gadgets" class="btn btn-primary">Add Product</a>
+```
+
+It will generate a URL like:
+
+```
+/Product/Add?name=gadgets
+```
+
+Here, the value (`gadgets`) is part of the **query string**.
+
+**2. Route Parameter** (path in URL):
+
+If you want the value to be part of the **URL path** (as a route parameter), your route pattern needs to explicitly define the parameter in the path.
+
+For example:
+
+```csharp
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "productRoute",
+        pattern: "Product/Add/{name}");
+});
+```
+
+In this case, the `{name}` part in the route is a **route parameter**, and it will be part of the URL path.
+
+Then, you can link to it like this:
+
+```html
+<a asp-controller="Product" asp-action="Add" asp-route-name="gadgets" class="btn btn-primary">Add Product</a>
+```
+
+This will generate a URL like:
+
+```
+/Product/Add/gadgets
+```
+
+Here, the value (`gadgets`) is part of the **URL path**, not the query string.
+
+**Key Point:**
+
+In both cases, the `asp-route-*` tag helper is responsible for generating the correct `href` link in the resulting HTML. It dynamically builds the URL based on the route configuration and any parameters you specify in the Razor page.
+
+- **If the route is defined with a path parameter** (e.g., `/Product/Add/{name}`), `asp-route-*` will insert the parameter value directly into the URL path.
+
+- **If the route uses a query string**, the tag helper will create a URL with the parameter as a query string (e.g., `/Product/Add?name=gadgets`).
+
+**Summary:**
+
+- **Query String**: If you use `asp-route-*` and there's **no route parameter** in your route pattern (or the parameter doesn't match the route configuration), the value gets added as a **query string** in the URL (e.g., `/Product/Add?name=gadgets`).
+
+- **Route Parameter**: If you have a **route pattern** that defines a parameter (like `/Product/Add/{name}`), and the `asp-route-*` value matches the name of that route parameter, the value will be part of the **URL path** (e.g., `/Product/Add/gadgets`).
+
+- Whether it's part of the path or a query string, the `asp-route-*` tag helper ensures that the correct URL is generated based on the parameters and the route configuration you have in your controller.
+
+In short, whether you get a query string or a route parameter depends on how your route is defined in the routing configuration and whether the `asp-route-*` matches the route parameter in the URL path.
+## `<a>` vs `<input>`
+If you want your `<a>` tag (which generates a **GET** request) to send **multiple query string parameters**, just add multiple `asp-route-*` attributes — one for each key-value pair. ASP.NET will convert them into a query string automatically.
+
+**✅ Example: Passing multiple parameters**
+
+```html
+<a asp-controller="Product" 
+   asp-action="Add" 
+   asp-route-name="test" 
+   asp-route-price="999" 
+   asp-route-category="Phones" 
+   class="btn btn-primary">
+   Add Product
+</a>
+```
+
+**🔍 Resulting HTML:**
+
+This will render as:
+
+```html
+<a href="/Product/Add?name=test&price=999&category=Phones" class="btn btn-primary">Add Product</a>
+```
+
+And your controller can catch those like this:
+
+```csharp
+[HttpGet]
+public IActionResult Add(string name, decimal price, string category)
+{
+    // name = "test"
+    // price = 999
+    // category = "Phones"
+    return View();
+}
+```
+
+So just repeat `asp-route-` for every value you want to send 🎯 Let me know if you want to try the same thing but using **routes** instead of query strings.
+
+**🟦 1. HTML `<input>` elements in forms**
+
+These are used in **POST** requests (usually), and each `<input>` creates **one name-value pair** that goes into the form body.
+
+✅ For example:
+
+```html
+<form method="post">
+    <input name="Name" value="Phone" />
+    <input name="Price" value="999" />
+    <input name="Category" value="Electronics" />
+    <button type="submit">Submit</button>
+</form>
+```
+
+This creates a **POST body** like:
+
+```
+Name=Phone&Price=999&Category=Electronics
+```
+
+Each `input` provides **one** pair. You can’t put two pairs in one input — that’s why you need separate inputs.
+
+**🟦 2. `<a>` tag using `asp-route-*`**
+
+These generate **GET** requests with query strings. And in this case, you're not limited by HTML rules — you're just building a URL.
+
+✅ For example:
+
+```html
+<a asp-action="Add" asp-route-name="Phone" asp-route-price="999">Add Product</a>
+```
+
+This becomes:
+
+```html
+<a href="/Product/Add?name=Phone&price=999">Add Product</a>
+```
+
+So here, the `asp-route-*` attributes are just **Razor helpers** that let you attach multiple query string parameters into the generated link.
+
+**⚖️ In summary:**
+
+- `<input>` is **form data**, 1 input = 1 name-value pair.
+- `asp-route-*` is for **building URLs** on `<a>` or `<form>` actions, and you can add as many as you want.
+
+They serve different purposes and follow different rules, but both eventually become name-value pairs in different parts of the HTTP request (form body vs query string).
+
+**ASP.NET Core Tag Helpers Cheat Sheet**
+
+|Feature|`asp-for`|`asp-route-*`|
+|---|---|---|
+|**Purpose**|Binds input fields to model properties|Adds query string parameters to links or form actions|
+|**Works on**|`<input>`, `<textarea>`, `<select>`, etc.|`<a>`, `<form>`, `<button>` (used for URL generation)|
+|**Generates**|`name` and `value` attributes for inputs|Adds `?key=value` to the `href` or `action`|
+|**Example**|`<input asp-for="Name" />`|`<a asp-route-id="5" asp-route-name="item" />`|
+|**Output**|`<input name="Name" value="..." />`|`<a href="/controller/action?id=5&name=item">`|
+|**Usage**|Used in forms for POST/GET binding|Used in links to send values via query string|
+|**Not Valid On**|`<a>`, `<button type="submit">`|`<input>`, `<textarea>`, `<select>`|
+
+If you're ever not sure:
+
+- Think **model binding** = `asp-for`
+- Think **URL building** = `asp-route-*`
+## Data Transmission in Web Requests: URL vs. Body Based on HTTP Method and Form Elements
+To simplify thinking about data transmission in web requests, it's key to focus on **where the data is sent** and **how it's transmitted**, depending on:
+
+1. **HTTP Method** (GET vs POST)
+    
+    - **GET**: Data is usually sent **in the URL** as query string parameters. This means the data is visible in the browser's address bar.
+        
+    - **POST**: Data is sent **in the request body**, which is not visible in the browser's address bar. However, query string parameters can still be added to the URL (e.g., with `asp-route-*`).
+        
+2. **Form Elements** (form controls vs `asp-route-*`)
+    
+    - **Form Controls**: When you use form elements like `<input>`, `<select>`, or `<textarea>`, the data is sent as part of the **body** in a **POST** request.
+        
+        - **For `GET` requests**, form data **is automatically added to the URL as query string parameters**. This happens because `GET` request data is **sent in the URL**.
+
+    - **`asp-route-*`**: These **always add data to the URL** as query string parameters, regardless of whether it's a GET or POST request.
+
+**Key Concepts:**
+
+- **GET Method**: Data in the URL (query string). Only **query string parameters** are visible.
+    
+- **POST Method**: Data in the body of the request, **form data** is hidden from the URL but still visible in the request body.
+    
+    - You can **combine form data with query string parameters** (via `asp-route-*`) for **POST** requests, but the query string is still visible in the URL.
+
+**In summary:**
+
+- When designing forms or links, it's important to know:
+    
+    - **Where your data will appear**: in the **URL** (query string) or in the **body** of the request.
+        
+    - **Which HTTP method** will be used (GET vs POST).
+        
+    - Whether you're using **form controls** or **asp-route attributes** to add parameters.
+
+This helps ensure you understand **where your data is going** and **how it's visible** to the browser and server, depending on your choices.
+
+**You said:**
+
+Basically, the whole idea of the POST and GET methods is to send data from the client to the server, where this data is structured as key-value pairs.
+
+**ChatGPT said:**
+
+Yes, exactly — you're right on point!
+
+At the core, **HTTP GET and POST methods** are just two ways of **sending key-value pairs between the client and the server**, but they differ mainly in **how** and **where** the data is sent.
+
+✅ **GET Method** – _Data in the URL (query string)_
+
+- Sends **key-value pairs** in the **URL**, after a `?`, like:
+
+```
+/products?category=books&page=2
+```
+
+- Data is **visible** in the address bar.
+    
+- **Limited length** due to URL size limits.
+    
+- Typically used for:
+    
+    - Searching
+    - Filtering
+    - Navigation
+    - Anything that doesn’t change server state (i.e., is safe/idempotent)
+
+✅ **POST Method** – _Data in the Request Body_
+
+- Sends **key-value pairs** in the **body** of the request.
+
+- Data is **not visible** in the address bar.
+
+- **No practical size limit** for most use cases.
+
+- Used when:
+
+    - Submitting forms (login, register, upload)
+    - Changing data on the server (creating/editing/deleting)
+
+**👀 Example Comparison**
+
+**GET Example:**
+
+```html
+<form method="get" action="/search">
+  <input type="text" name="query" value="shoes">
+  <input type="submit">
+</form>
+```
+
+➡️ Submits as:  
+`/search?query=shoes`
+
+POST Example:
+
+```html
+<form method="post" action="/checkout">
+  <input type="text" name="productId" value="123">
+  <input type="submit">
+</form>
+```
+
+➡️ Submits to `/checkout`, but the data (`productId=123`) is in the body.
+
+**🎯 Summary**
+
+|Feature|GET|POST|
+|---|---|---|
+|Data Location|URL query string|Request body|
+|Visibility|Visible in address bar|Hidden from user|
+|Size Limit|Yes|Not really|
+|Used For|Read/query/filter actions|Create/update/delete actions|
+|Bookmarkable|Yes|No|
+
+So yes — **both methods are about transferring key-value pairs**, but the main difference is where those pairs travel and how they are handled.
+## Choosing Between GET and POST in HTML Forms: Usage, Behavior, and Best Practices
+Forms are typically used with the **POST** method when submitting data that should modify the server's state or when dealing with sensitive information, like passwords. This is because **POST** requests send the data in the **body** of the request, making it more secure for sensitive data and allowing larger amounts of data to be submitted.
+
+However, forms **can** be used with the **GET** method, although it's less common. In this case, the form data is sent as part of the **query string** in the URL, which can be visible in the browser's address bar. This is usually used for **retrieving** data without changing the server's state. Some examples might include:
+
+- **Search forms**: Where the parameters are passed in the URL to filter results.
+- **Navigation**: For example, selecting a category from a list of products and showing the filtered results.
+
+**When to Use GET vs POST in Forms**
+
+- **GET**: Use when you're **retrieving** data or performing **non-state-changing operations**, such as:
+    
+    - Displaying results from a search query.
+    - Navigating between pages.
+    - Filtering data.
+    
+    Since the form data is appended to the URL as a query string, it's visible and limited in length (usually 2048 characters). For **non-sensitive** data and **simple queries**, GET is fine.
+    
+- **POST**: Use when you need to **send data that might change the server's state**, such as:
+    
+    - Submitting a form to create or update a record (e.g., a product, user profile).
+    - Sending sensitive information (e.g., login credentials).
+    - Uploading files.
+    
+    With POST, the form data is sent in the body of the request, and it's **not visible in the URL**, making it more suitable for larger and more sensitive data.
+
+**Example Scenarios:**
+
+1. **GET Form**: (e.g., Search or Filter)
+
+```html
+<form method="get" action="/Search">
+    <input type="text" name="query" placeholder="Search for a product" />
+    <input type="submit" value="Search" />
+</form>
+```
+
+
+This would result in a URL like `/Search?query=laptop`, which can be bookmarked or shared.
+
+2. **POST Form**: (e.g., Submitting a Product)
+
+```html
+<form method="post" action="/Products/Create">
+    <input type="text" name="name" placeholder="Product name" />
+    <input type="submit" value="Create Product" />
+</form>
+```
+
+This would send the product data in the body of the request to be processed by the server.
+
+**Summary:**
+
+- **GET** is more commonly used for forms that **retrieve** data (e.g., search, filters), where the parameters are passed as part of the URL.
+- **POST** is more commonly used for forms that **create, update, or delete** data, where the data is sent in the body of the request for better security and larger payloads.
+
+While using forms for **GET** requests is valid, it's less typical since **GET** is generally used for operations where the data is not modifying the server's state.
+# Bookmarks
+Completion: 24.04.2025
