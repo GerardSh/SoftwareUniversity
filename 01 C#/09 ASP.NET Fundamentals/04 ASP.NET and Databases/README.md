@@ -390,8 +390,6 @@ This ensures that:
     
 - Validation errors are shown automatically
 ### What Happens When Validation Fails on POST in ASP.NET MVC
-**You said:**
-
 Okay, help me understand how the view is rebuilt on POST when validation fails. The `[HttpPost]` action is returning the Razor view, and the tag helper `asp-validation-for` checks each field to see if the corresponding property failed validation. If it did, ASP.NET adds a CSS class and also inserts content into the `<span>` tag. This is the main difference between GET and POST, right?
 
 **ChatGPT said:**
@@ -1522,5 +1520,39 @@ For example, for a URL like `/Product/Details?id=123&name=test`, the **query str
 - **Troubleshooting Binding Issues**: If there's an issue with **model binding** in the controller (e.g., a mismatch between the parameter names or missing data), the network tab will confirm whether the server is receiving the data in the expected format.
 
 In short, the **network tab** is an excellent tool for debugging, as it gives you a clear view of what data is being sent to the server and allows you to easily spot issues with **parameter names**, **missing data**, or **incorrect values** in both **GET** and **POST** requests.
+## HTTP Request-Response Model: Client-Driven Communication
+When the application is loaded on the client, and the user accesses the server IP, is the communication entirely dictated by the client? Are all GET and POST methods always initiated by the client, with the server simply responding? Even the initial loading of the web app—does the client make a GET request to the server IP and then receive the application as a response?
+
+Yes, you're exactly right — the **client** always initiates the communication.
+
+Here's how it works step by step:
+
+**✅ Initial Page Load**
+
+- The user enters the **server IP or domain** in the browser.
+- The browser sends a **GET request** to the server (e.g., `GET /`).
+- The server responds with the HTML (MVC View or static HTML file).
+- The browser parses the HTML and issues additional GET requests for CSS, JS, images, etc.
+
+**✅ Further Communication**
+
+- All interactions (clicking buttons, submitting forms, AJAX calls, etc.) are **client-initiated requests**:
+
+    - `GET` → fetch data or pages.
+    - `POST` → submit data (forms, API calls).
+    - `PUT`, `DELETE`, etc. (for APIs) → used in RESTful design.
+
+**🧠 Important Concept:**
+
+**The server never initiates a connection to the client** under normal HTTP/HTTPS behavior.
+
+**🔁 Exception: Real-Time Apps (`SignalR` / `WebSockets`)**
+
+- In real-time apps (e.g., chat, notifications), after an initial client request:
+
+    - A **persistent connection** is established.
+    - The server can then **push** messages to the client, but **only after** the client opens the channel.
+
+So yes — even the first request for loading the app is the **client asking the server for content**. The server just responds.
 # Bookmarks
 Completion: 24.04.2025
