@@ -1011,6 +1011,472 @@ In both cases, the `asp-route-*` tag helper is responsible for generating the co
 - Whether it's part of the path or a query string, the `asp-route-*` tag helper ensures that the correct URL is generated based on the parameters and the route configuration you have in your controller.
 
 In short, whether you get a query string or a route parameter depends on how your route is defined in the routing configuration and whether the `asp-route-*` matches the route parameter in the URL path.
+## Routing
+✅ `MapControllerRoute` and **routing** in ASP.NET Core **only deal with the path part of the URL** — the part **before** the `?` (question mark), which is divided by `/`.
+✅ The **query string** (everything after the `?`) is **NOT** involved in route matching.  
+It is **handled separately**, **after** the route is matched.
+
+**Here's how it works in order:**
+
+1. **Routing system** matches the **path** part like `/Product/Delete/5/abc/xyz`
+
+2. **Once it matches a route**, it maps the values from the URL to the action's parameters (by name).
+
+3. **If there are extra values in the query string**, they are **bound separately** into action parameters (if needed).
+
+**Example:**
+
+URL:
+
+```
+/Product/Delete/5/abc/xyz?something=123&another=hello
+```
+
+Path part:
+
+```
+/Product/Delete/5/abc/xyz
+```
+
+This is what routing tries to match using `MapControllerRoute` or `[Route]` attributes.
+
+Query string part:
+
+```
+?something=123&another=hello
+```
+
+- These values (`something`, `another`) are **NOT** part of routing.
+
+- They are only **model-bound** (automatically populated into action parameters **after** routing is done).
+
+**Another simple example:**
+
+Suppose you have:
+
+```csharp
+[HttpGet("Product/Delete/{id}/{test}/{test2}")]
+public IActionResult Delete(int id, string test, string test2, string something)
+{
+    // id, test, test2 come from the route (path)
+    // something comes from the query string
+}
+```
+
+URL:
+
+```
+/Product/Delete/5/abc/xyz?something=42
+```
+
+Binding:
+
+- `id = 5`
+- `test = "abc"`
+- `test2 = "xyz"`
+- `something = "42"` (from the query string)
+
+**🔥 Final summary:**
+
+| Part                       | Who handles it?                   |
+| -------------------------- | --------------------------------- |
+| `/controller/action/5/abc` | **Routing**                       |
+| `?key=value&key2=value2`   | **Model binding** (after routing) |
+
+**You said:**
+
+The `asp-route` attributes, along with `asp-action` and `asp-controller`, are used to create the path in the URL, which is then compared against the route pattern?
+
+**ChatGPT said:**
+
+Exactly, you are 100% right! 🔥  
+Let me rephrase it **very clearly**:
+
+
+✅ When you use **`asp-route-*`**, **`asp-action`**, and **`asp-controller`** on a tag helper (like `<form>` or `<a>`),  
+ASP.NET Core **tries to build the URL path** based on the **available routes** (your patterns from `MapControllerRoute` or `[Route]` attributes).
+
+✅ Here's the internal logic:
+
+1. **It looks at all available route patterns** (both attribute routes and global routes like `MapControllerRoute`).
+    
+2. **It finds a matching pattern** where:
+    
+    - `controller` matches (if specified),
+    - `action` matches (if specified),
+    - all required `asp-route-*` parameters can fill placeholders in the pattern.
+
+3. **It then assembles the URL path** using the route **pattern** and the provided `asp-route-*` **values**.
+
+4. If **some parameters** don't fit into the pattern, they are **added as query strings**.
+
+**⚡ Example:**
+
+Suppose you have:
+
+```csharp
+app.MapControllerRoute(
+    name: "product_delete",
+    pattern: "{controller=Product}/{action=Delete}/{id}/{test}/{test2}");
+```
+
+And in your view:
+
+```html
+<form asp-controller="Product" asp-action="Delete" asp-route-id="5" asp-route-test="abc" asp-route-test2="xyz" method="post">
+```
+
+✅ ASP.NET Core:
+
+- Looks at `product_delete` pattern → matches `Product` controller and `Delete` action
+
+- Fills `{id}` = 5, `{test}` = abc, `{test2}` = xyz
+
+- Generates URL:
+
+```
+/Product/Delete/5/abc/xyz
+```
+
+📌 Important detail:
+
+- If the **`asp-route-*`** values **cannot fill** a pattern properly, ASP.NET Core **falls back** to building URL with **query strings**.
+
+- If both `asp-controller` and `asp-action` are specified, it uses them to **find the correct route pattern** (or default fallback).
+
+**🧠 So short answer to your question:**
+
+> **Does the path creation happen by comparing the asp- attributes to the patterns?**
+
+✅ YES — ASP.NET Core **compares your provided `asp-` attributes to the available route patterns** and builds the path accordingly.
+### Patterns
+**✨ Why Route Parameters Are Useful:**
+
+Route parameters are a core part of how ASP.NET Core maps incoming URLs to controller actions.  
+They allow your application to:
+
+- Dynamically extract values from the URL (like IDs, names, or categories).
+- Build **RESTful** and **clean** URLs (e.g., `/Product/Details/5` instead of `/Product/Details?id=5`).
+- Pass multiple pieces of data directly through the URL without query strings.
+- Make your app easier to navigate, SEO-friendly, and more intuitive for users and developers.
+- Customize the behavior of actions based on the URL structure.
+
+Without route parameters, every dynamic value would have to go through messy query strings, which would make URLs longer and harder to manage.
+
+**🛤️ Basic Route Pattern Syntax:**
+
+The route pattern defines how URL segments are matched to controller, action, and parameters.
+
+Example:
+
+```csharp
+pattern: "{controller=Home}/{action=Index}/{id?}"
+```
+
+Meaning:
+
+- `controller` = default is `Home`
+- `action` = default is `Index`
+- `id` = optional (`?`)
+
+**🧩 Multiple Parameters in Route Pattern:**
+
+You can have **multiple parameters** in your route:
+
+```csharp
+pattern: "{controller=Product}/{action=Index}/{id?}/{name?}/{number?}"
+
+```
+
+- All parameters can be **optional** (`?`) if you want.
+- They are matched **in order** — left to right.
+
+❗Important Rule About Skipping Parameters:
+
+Even if parameters are marked as optional (`?`), **you can only omit parameters at the end**.
+
+✅ Allowed:
+
+- Provide `id` only → skip `name` and `number`
+- Provide `id` and `name` → skip `number`
+
+❌ Not Allowed:
+
+- Provide `id` and `number`, but **skip `name`** → **This will break** route generation!
+
+**Example:**
+
+```html
+<!-- Invalid: Skipped 'name', provided 'number' -->
+<a asp-controller="Product" asp-action="Edit" asp-route-id="1" asp-route-number="3" class="btn btn-warning">Edit</a>
+```
+
+The URL **won't be generated** properly because `name` is missing in the middle.
+
+When constructing URLs with multiple parameters:
+
+- **Even if all parameters are optional**, you **cannot skip any random parameter** when creating the URL.
+
+- You must provide values for all required parameters first, and if any optional parameters precede a required one, they must also be included.
+
+- When including optional parameters, you **must include all preceding parameters** in the correct order.
+
+This behavior **applies only when you are constructing URLs** (e.g., using the `href` or `action` attributes).
+
+However, if you set default values in the route pattern, like:
+
+```csharp
+pattern: "{controller=Product}/{action=Index}/{id=1}/{name?}/{number=3}"
+```
+
+Then the **route will correctly hit the `Index` action** and bind the parameters as expected, even if you omit the optional parameters (`name` in this case).
+
+But, **if you try to create a URL** (e.g., in an `href` or `action` attribute) by including only the `id` and `number`, **the URL will fail** and the `href` or `action` attribute will be created empty. This is an important detail: **you can't skip parameters in the middle** when creating the URL; you must provide values for all preceding parameters.
+
+```html
+// Skipping the optional "name" parameter 
+<a asp-controller="Product" asp-action="Edit" asp-route-id="1" asp-route-number="2" class="btn btn-warning">Edit</a>
+```
+
+**Default Parameters: URL Generation and Binding**
+
+- **Default-valued parameters always provide a value**  - If a route parameter has a default value (e.g., `{id=1}`), that value is automatically used even if the parameter is missing from the URL.
+
+- **They are omitted from the generated URL**  - When building links (using tag-helpers or `Url.Action`), contiguous parameters with defaults are collapsed — the URL looks shorter and doesn’t include them unless explicitly provided.
+
+- **Defaults are still injected at runtime**  - Even if the parameters don’t appear in the URL, the routing system adds their default values into `RouteData.Values`, so your controller action will receive them as if they were passed.
+
+**Example**
+
+```csharp
+pattern: "{controller=Product}/{action=Index}/{id=1}/{name=2}/{number=3}"
+```
+
+- **Generated URL** (no values supplied):
+
+```
+/Product/Index
+```
+
+- **RouteData.Values** (inside the action):
+    
+```csharp
+controller == "Product"
+action     == "Index"
+id         == 1
+name       == "2"
+number     == 3
+
+```
+
+**Summary:**
+
+In summary, when constructing URLs with multiple parameters in ASP.NET Core:
+
+- Ensure that all required parameters are provided first, and any optional parameters before a required one must also be included in the URL.
+
+- **When constructing URLs** (such as in `href` or `action` attributes), remember that you can't skip parameters in the middle of the route pattern, even if they are optional. You must provide values for all parameters before the one you want to omit.
+
+- When all route parameters have default values, the generated link will include only the segments up to the last parameter explicitly given a value, while the rest will still bind with their defaults inside the action, and if no values are changed, the URL will remain clean without showing any parameters, but all defaults will still be available at runtime.
+
+This behavior ensures that routes are properly matched and parameters are correctly bound to their corresponding values in the controller. Always pay attention to the order of parameters and their required or optional status to avoid URL generation issues.
+### `RouteData`
+Basically, when we use `asp-route-`, it fills a dictionary-like structure (`RouteData`) that holds both the names and values from the last part of the helper tag. For example, `asp-route-id="5"` is saved in `RouteData` as `id = 5`. The URL is built using only the value, but later, during model binding, the name is checked against the route attribute to ensure it matches the parameter expected by the action.
+
+**ChatGPT said:**
+
+Yes! 🔥  
+You understood it **perfectly**. Let’s say it in a clean way:
+
+**✅ When you use `asp-route-*` in a form or anchor tag:**
+
+- It **adds a key-value pair** to an internal `RouteValues` dictionary.
+
+```
+asp-route-id="5"
+```
+
+becomes:
+
+```csharp
+RouteValues["id"] = "5";
+```
+
+ **✅ When generating the URL:**
+
+- Only the **values** (not the keys) are used to fill the segments (like `/Delete/5`).
+- It **does not show** the key (`id`) in the URL — only the value (`5`).
+
+
+**✅ When the request is handled (model binding stage):**
+
+- ASP.NET Core **matches** the route template (for example `[HttpGet("Delete/{name}")]`) and expects a **specific key**.
+- It looks in `RouteData.Values["name"]` for the value.
+- If `name` is missing, the route **won't match** → you get **404 Not Found**.
+
+**✅ So:**
+
+|Phase|What happens|
+|---|---|
+|URL generation|Only **values** are inserted into URL segments (`/Delete/5`)|
+|Request matching|**Key names** are important — must match the route template!|
+
+**Short way to say it:**
+
+> `asp-route-*` controls both **what value is in the URL** and **what key is available for binding** — the URL shows only values, but routing cares about names too!
+
+Let’s imagine your example in a visual way:
+
+Suppose you have:
+
+```html
+<form asp-controller="Product" asp-action="Delete" asp-route-name="5" method="get">
+    <input type="submit" />
+</form>
+```
+
+And your action method:
+
+```csharp
+[HttpGet("Delete/{name}")]
+public IActionResult Delete(int id, string name)
+{
+    // ...
+}
+```
+
+**🔵 At URL generation:**
+
+- The form will generate this URL:
+
+```
+/Product/Delete/5
+```
+
+- In the background, `RouteValues` will look like:
+
+```csharp
+RouteValues = {
+    ["name"] = "5"
+}
+```
+
+**🔵 When the server receives the request:**
+
+- Routing **looks at the template** `Delete/{name}`.
+- It **needs** a `name`.
+- It finds `RouteValues["name"] = "5"`.
+- Success!  
+    Then **model binding** will fill your action parameters:
+
+```csharp
+id = 0 (default int)
+name = "5"
+number = null
+test = null
+```
+
+**✅ If you used `asp-route-id="5"` instead (wrong key):**
+
+- URL would still be `/Product/Delete/5`.
+- But now:
+
+```csharp
+RouteValues = {
+    ["id"] = "5"
+}
+```
+
+- Routing looks for `name`, **but finds only `id`**, so → **404 Not Found**.
+
+**Quick diagram:**
+
+| Phase          | Data/Action                                                |
+| -------------- | ---------------------------------------------------------- |
+| URL generated  | `/Product/Delete/5`                                        |
+| RouteData      | `["name"] = "5"`                                           |
+| Route matching | Matches `[HttpGet("Delete/{name}")]` because key is `name` |
+| Model binding  | Binds `name = "5"`, `id = 0`                               |
+### Debugging
+Here’s how you can **see `RouteData` live** in your ASP.NET Core controller or action method:
+
+▶ Inside any controller action, you can add this:
+
+```csharp
+var routeData = HttpContext.GetRouteData();
+
+foreach (var kvp in routeData.Values)
+{
+    Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+}
+```
+
+Or if you want to just quickly inspect it in Debugger:
+
+```csharp
+var routeData = HttpContext.GetRouteData();
+```
+
+- Then **hover** over `routeData.Values` in **debugging mode** (VS / Rider / etc).
+- You'll see something like:
+
+```csharp
+Values:
+[ "controller" ] = "Product"
+[ "action" ] = "Delete"
+[ "name" ] = "5"
+```
+
+**🔵 Even cleaner:**
+
+You can also put a simple breakpoint, then **add** `HttpContext.GetRouteData().Values` to the **Watch** window.
+
+- It's a `RouteValueDictionary`
+- You can see all the parameters that the system is using at that moment.
+- It will show **what names exist**, **what values exist**, and **what's missing**.
+
+**Tiny full example:**
+
+```csharp
+[HttpGet("Delete/{name}")]
+public IActionResult Delete(int id, string name, string number, string test)
+{
+    var routeData = HttpContext.GetRouteData();
+    
+    foreach (var kvp in routeData.Values)
+    {
+        Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+    }
+
+    return View();
+}
+```
+
+Then try different forms with `asp-route-name` or `asp-route-id` and you’ll **immediately** see why routing succeeds or fails 🔥
+###  Building the URL
+When ASP.NET Core **builds the URL** (for a link, a form, etc.):
+
+1. It **knows** the selected controller and action (`asp-controller`, `asp-action`).
+
+2. It **looks up** all route patterns registered in the app (like those from `MapControllerRoute`, `MapDefaultControllerRoute`, or `[HttpPost("...")]`, `[Route("...")]` attributes).
+
+3. It **tries to find a matching route template** where:
+    
+    - The controller name matches.
+    - The action name matches.
+    - The **required parameters** from the route pattern (like `{name}`, `{id}`) are **available** from `asp-route-*` attributes.
+
+4. **If a match is found**, it **generates the URL** based on that pattern and fills the placeholders with the supplied values.
+    
+5. This way, when the user clicks the link or submits the form, **the request will hit the correct action** because the URL fits perfectly to the route definition.
+
+✅ So yes — it **guarantees** that the link will be valid and will match the routing system when used.
+
+✅ If any required part is missing, **link generation can fail** (it might throw an error, or create an incomplete/broken URL depending on the situation).
+
+**One-sentence version:**
+
+> ASP.NET Core matches the selected controller, action, and available `asp-route-*` values to an existing route pattern, and if everything fits, it generates the URL based on that pattern to ensure a valid match at runtime.
 ## `<a>` vs `<input>`
 If you want your `<a>` tag (which generates a **GET** request) to send **multiple query string parameters**, just add multiple `asp-route-*` attributes — one for each key-value pair. ASP.NET will convert them into a query string automatically.
 
