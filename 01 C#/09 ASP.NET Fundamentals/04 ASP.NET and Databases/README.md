@@ -1092,7 +1092,6 @@ The `asp-route` attributes, along with `asp-action` and `asp-controller`, are us
 Exactly, you are 100% right! 🔥  
 Let me rephrase it **very clearly**:
 
-
 ✅ When you use **`asp-route-*`**, **`asp-action`**, and **`asp-controller`** on a tag helper (like `<form>` or `<a>`),  
 ASP.NET Core **tries to build the URL path** based on the **available routes** (your patterns from `MapControllerRoute` or `[Route]` attributes).
 
