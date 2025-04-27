@@ -1306,7 +1306,6 @@ RouteValues["id"] = "5";
 - Only the **values** (not the keys) are used to fill the segments (like `/Delete/5`).
 - It **does not show** the key (`id`) in the URL — only the value (`5`).
 
-
 **✅ When the request is handled (model binding stage):**
 
 - ASP.NET Core **matches** the route template (for example `[HttpGet("Delete/{name}")]`) and expects a **specific key**.
@@ -1396,6 +1395,477 @@ RouteValues = {
 | RouteData      | `["name"] = "5"`                                           |
 | Route matching | Matches `[HttpGet("Delete/{name}")]` because key is `name` |
 | Model binding  | Binds `name = "5"`, `id = 0`                               |
+### Conventional and Attribute Routing Templates
+When the attribute route is:
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+```
+
+then the produced URL in the button:
+
+```html
+<form class="mt-2" asp-route-id="1" asp-action="Delete" method="get">
+    <div class="d-grid gap-2">
+        <input type="submit" value="Delete" class="btn btn-danger mb-2" />
+    </div>
+</form>
+```
+
+is:
+
+```
+/Product/Delete/1
+```
+
+However, if I change the attribute to default parameter:
+
+```csharp
+[HttpGet("Product/Delete/{name?}")]
+```
+
+then the URL becomes:
+
+```
+/Product/Delete?id=1
+```
+
+the default routing is:
+
+```csharp
+app.
+    MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Product}/{action=Index}/{id?}");
+```
+
+**ChatGPT said:**
+
+When you have both attribute routes and the default conventional route, ASP.NET Core’s URL generation system (part of Endpoint Routing) will try each endpoint in the order they were registered and pick the first one whose route template can be satisfied by the provided route values.
+
+- If your attribute route has a **required** parameter (e.g. `{name}`), link generation **cannot** satisfy it without a value, so it skips your attribute route and falls back to the conventional `{controller}/{action}/{id?}` route—producing `/Product/Delete/1`.
+    
+- If your attribute route has an **optional** parameter (e.g. `{name?}`), link generation **can** satisfy it (omitting the optional segment) and thus binds your provided `asp-route-id="1"` as a **leftover** value, placing it in the query string—producing `/Product/Delete?id=1`.
+
+Understanding this priority and how “leftover” route values become query strings will clear up why you see different URL formats depending on whether your `{name}` placeholder is optional or required.
+
+**1. How URL Generation Works in ASP.NET Core**
+
+ASP.NET Core’s routing system not only matches incoming requests to endpoints but also **generates** URLs for links based on the same set of route templates.
+When generating a link, the framework:
+
+- **Collects** all your provided route values (from `asp-controller`, `asp-action`, and `asp-route-{value}`).
+
+-  **Attempts** to apply each endpoint’s template **in registration order**, inserting values into placeholders if they exist, and checking “required vs optional” rules.
+
+- **Consumes** route values that match placeholders in the template; any **leftover** values are appended as query string parameters.
+
+**2. Attribute Routing vs. Conventional Routing Order**
+
+- **Attribute routes** (via `[HttpGet("…")]` or `[Route("…")]`) are registered when `app.MapControllers()` is called.
+
+- **Conventional routes** (via `app.MapControllerRoute("default", "{controller}/{action}/{id?}")`) are registered later.
+    Because registration order matters for link generation, attribute routes are **tried first**, then the default conventional route is used if no attribute route template can be satisfied.
+
+**3. Required vs. Optional Route Parameters**
+
+- A **required** placeholder `{name}` must have a corresponding route value to generate a link; otherwise, that endpoint is **skipped**.
+
+- An **optional** placeholder `{name?}` can be omitted; link generation can still use that endpoint, leaving the placeholder empty and moving any unmatched values to the query string.
+
+For example:
+
+```csharp
+[HttpGet("Product/Delete/{name}")]   // required
+[HttpGet("Product/Delete/{name?}")]  // optional
+```
+
+- With `{name}`, no supplied `name` value → **skip** attribute route.
+
+- With `{name?}`, no supplied `name` value → **use** attribute route, and treat `id=1` as leftover → query string.
+
+**4. Your Exact Scenario**
+
+|Attribute Route Template|Link Generation Outcome|
+|---|---|
+|`[HttpGet("Product/Delete/{name}")]` (required)||
+
+- No `asp-route-name` provided → attribute route cannot be used
+
+- Falls back to `{controller}/{action}/{id?}`  
+    → `/Product/Delete/1`
+    | | `[HttpGet("Product/Delete/{name?}")]` (optional) |
+
+- No `asp-route-name` provided → attribute route **can** be used
+
+- Provided `asp-route-id="1"` is **not** consumed (no `{id}` placeholder) → becomes query string  
+    → `/Product/Delete?id=1`
+    |
+
+**5. Why the Default Route Doesn’t Always Win**
+
+Even though your default route includes `{id?}`, it only produces `/Product/Delete/1` **when** attribute routes are skipped—i.e., when the attribute route’s template **cannot** be satisfied (as with a required `{name}`). When the attribute route **can** be satisfied (optional `{name?}`), it takes precedence, and the default route is never considered for link generation.
+
+**6. How to Align Route Tokens and Link Generation**
+
+- **Match token names** exactly.
+    
+    - If you want to use `id`, use `{id}` in your attribute route:
+        
+```csharp
+[HttpGet("Product/Delete/{id}")]
+public IActionResult Delete(string id) { … }
+```
+        
+    - Then `<form asp-route-id="1" …>` will feed `id` into the required `{id}` placeholder → `/Product/Delete/1`.
+        
+- **Or use the token name** in your form.
+    
+    - Keep `[HttpGet("Product/Delete/{name?}")]`
+        
+    - Change your form to `<form asp-route-name="1" …>` → attribute route consumes `name` → `/Product/Delete/1` (or query string if optional and you omit it).
+
+Aligning the placeholder names in your route templates with the `asp-route-{parameter}` attributes ensures predictable URL generation.
+
+**You said:**
+
+Ok, I understand, but the point I still can't understand is how the button is satisfying the
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+```
+
+when its `asp-route-id` is having a different key — it's `id`, not `name`. The link is generated based on the default routing which has `id` as a parameter, thus the value of the `id` is in the route, not the query string. How is it entering the Delete action?
+
+**ChatGPT said:**
+
+**Overview of How Routing and Link Generation Work**
+
+ASP.NET Core’s routing system has two distinct phases:
+
+- **Link generation** – when Razor helpers like `asp-route-id` build URLs
+
+- **Endpoint matching** – when the incoming HTTP request is routed to a controller action
+
+Crucially, the **values you supply** via `asp-route-…` only affect **link generation**. Once the browser requests that URL, **endpoint matching** ignores how you generated it and solely considers the URL path against your registered route templates.
+
+**1. Endpoint Matching Only Sees URL Templates**
+
+ASP.NET Core uses **Endpoint Routing** to dispatch incoming requests. Endpoints (your controller actions) are registered with either:
+
+- **Attribute routes** (via `[HttpGet("…")]`, `[Route("…")]`, etc.)
+    
+- **Conventional routes** (via `app.MapControllerRoute("default", "{controller}/{action}/{id?}")`)
+
+At runtime, **each incoming path** is tested against the pool of endpoints. **Attribute-routed** actions and **conventionally-routed** actions coexist, but an action decorated with an attribute route **can’t** be reached through the conventional route.
+
+However as soon as you mark a controller or action with an attribute route, then you cannot route to that controller or action at all using conventional routes.
+
+**2. Your Attribute Route Takes Precedence**
+
+You defined:
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+public async Task<IActionResult> Delete(string id, string name, string test2)
+```
+
+This action is **attribute-routed only**. The conventional `{controller}/{action}/{id?}` default route **will not** match it because once an attribute route exists, the conventional routing system ignores that action [Stack Overflow](https://stackoverflow.com/questions/51174699/asp-net-attribute-routes-and-default-routes-can-work-together?utm_source=chatgpt.com).
+
+When the browser navigates to `/Product/Delete/1`, the routing middleware:
+
+-  **Parses** the path segments
+
+-  **Builds** a route-value dictionary:
+
+```csharp
+{
+  ["controller"] = "Product",
+  ["action"]     = "Delete",
+  ["name"]       = "1"
+}
+```
+
+-  **Finds** that the attribute route template `Product/Delete/{name}` matches
+
+-  **Binds** `name = "1"` to your action’s `name` parameter; `id` & `test2` stay `null`.
+
+ASP.NET Core controllers use the Routing middleware to match the URLs of incoming requests and map them to actions. Route templates… are defined at startup in `Program.cs` or in attributes.
+
+**3. Why `asp-route-id` Doesn’t Matter at Runtime**
+
+Your form:
+
+```html
+<form asp-route-id="1" asp-action="Delete" method="get">
+  <input type="submit" value="Delete1" />
+</form>
+```
+
+– during **link generation**, Razor sees no matching `{id}` in your attribute route, so it falls back to the **conventional** `{controller}/{action}/{id?}` route and emits `/Product/Delete/1`.
+
+– at **runtime**, ASP.NET Core does **not** care that you used `asp-route-id`. It only sees the path `/Product/Delete/1` and matches it against **all** endpoint templates. The attribute route `Product/Delete/{name}` is the first (and only) match, so it wins.
+
+In contrast to conventional routes which execute in a defined order, attribute routing builds a tree and matches all routes simultaneously. The most specific routes have a chance to execute before the more general routes.
+
+**4. Default Route Is a Fallback, Not a Catch-All**
+
+Because your action is **attribute-routed**, the conventional default route exists only to serve **other** actions that lack attributes:
+
+```csharp
+app.MapControllerRoute(
+  name: "default",
+  pattern: "{controller}/{action}/{id?}",
+  defaults: new { controller = "Product", action = "Index" }
+);
+```
+
+- **Link generation** uses the default route if no attribute route can be satisfied.
+
+- **Runtime matching** skips conventional routes for actions that have attribute routes.
+
+Hence, **even though** your button URL was generated via the default `{id}` route, the **incoming** `/Product/Delete/1` is still dispatched to your `[HttpGet("Product/Delete/{name}")]` action.
+
+**5. Align Route Tokens to Avoid Confusion**
+
+To make your routing predictable:
+
+- **Match token names** between your attribute and form:
+
+```csharp
+<form asp-route-name="1" asp-action="Delete" method="get">
+```
+
+pairs with
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+public IActionResult Delete(string name) { … }
+```
+
+- **Or** switch your attribute to use `{id}`:
+
+```csharp
+[HttpGet("Product/Delete/{id}")]
+public IActionResult Delete(string id) { … }
+```
+
+This way, **link generation** and **endpoint matching** will always agree on which parameter you’re sending.
+
+**You said:**
+
+Basically there is no difference if the `href` / `action` attributes were hardcoded or created using asp helper tags, as what matters is the end URL which will be used for the HTTP request?
+
+**ChatGPT said:**
+
+Yes, you're spot on!
+
+Once the final URL is produced (whether manually or through helper tags), it **becomes just plain text** inside the HTML. The browser sends the HTTP request **based only on that URL**. The server **does not care** _how_ the URL was generated — it only tries to match the incoming URL against the routing system.
+
+Here's a refined explanation based on what you've said:
+
+What’s happening here is a matter of **two distinct processes** in ASP.NET Core routing:
+
+- **Link Generation**: When you write `<form asp-route-id="1" …>`, Razor’s Link Generator tries to satisfy **available route templates** in registration order, and because your attribute route `[HttpGet("Product/Delete/{name}")]` **cannot** be satisfied without a `name`, it **skips** that and falls back to the **conventional** `{controller}/{action}/{id?}` route—producing `/Product/Delete/1`.
+    
+- **Endpoint Matching**: When the browser requests `/Product/Delete/1`, the endpoint matcher considers **all** endpoints. Your attribute-routed action `Product/Delete/{name}` is a valid match (and has higher priority) so it is selected—and its pattern only defines a `{name}` token. ASP.NET Core therefore builds `RouteData.Values["name"] = "1"` and **never** sets `id`.
+
+**1. Link Generation vs. Endpoint Matching**
+
+**1.1 Link Generation**
+
+- ASP.NET Core’s **Link Generator** collects the values you supply (e.g. `asp-route-id="1"`) and tries each **endpoint’s route template** in the order they were registered.
+
+- A **required** attribute route (`{name}`) without a corresponding `name` value is **skipped** during generation.
+
+- The Link Generator then falls back to the **conventional** `{controller}/{action}/{id?}` route and consumes your `id=1` value there, yielding `/Product/Delete/1`
+
+**1.2 Endpoint Matching**
+
+- On incoming requests, ASP.NET Core’s **Endpoint Routing** matches **URL paths** against the pool of endpoints, independently of how they were generated earlier.
+
+- **Attribute-routed** actions (those with `[HttpGet("…")]`) and **conventional** routes coexist, but once an attribute route matches, it wins—even if a conventional route could also match.
+
+- Your action `[HttpGet("Product/Delete/{name}")]` matches `/Product/Delete/1` first and foremost, binding `name = "1"` into the `RouteData`.
+
+**2. Why `id` Is Missing from `RouteData`**
+
+- **Only the matched endpoint’s tokens** populate `RouteData.Values`.
+
+- Because the attribute route template only declares `{name}`, `RouteData.Values` ends up as:
+
+```
+{
+  ["controller"] = "Product",
+  ["action"]     = "Delete",
+  ["name"]       = "1"
+}
+```
+
+There is **no** `id` slot in that template, so `id` remains unset.
+
+- **Conventional route values are ignored** for this action at matching time.
+
+- Even though link generation used the conventional `{id}` slot, the **runtime** matching does **not** apply the conventional route for this attribute-routed action.
+
+**3. Resolving the Mismatch**
+
+To ensure your route values line up predictably:
+
+- **Align placeholder names** between your route template and your form:
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+public IActionResult Delete(string name) { … }
+```
+
+```html
+<form asp-route-name="1" asp-action="Delete" method="get">
+    …
+</form>
+```
+
+→ Generates `/Product/Delete/1` and binds `name = "1"`.
+
+- **Or** change your attribute route to use `{id}` if you want to keep `asp-route-id`:
+
+```csharp
+[HttpGet("Product/Delete/{id}")]
+public IActionResult Delete(string id) { … }
+```
+
+→ `<form asp-route-id="1" …>` produces `/Product/Delete/1` and binds `id = "1"`.
+
+By **matching token names** exactly, you guarantee that both link generation and endpoint matching agree on which parameter you’re supplying.
+
+**You said:**
+
+Are there different templates for the attributes and for the defaults?
+
+**ChatGPT said:**
+
+Yes—there really _are_ two separate route templates in play:
+
+1. **Your attribute-routed endpoint**
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+public IActionResult Delete(string id, string name, string test2) { … }
+```
+
+This registers _one_ endpoint whose **only** URL template is
+
+```
+Product/Delete/{name}
+```
+
+It has **no** `{id}` placeholder at all.
+
+2. **Your conventional “default” route**
+
+```csharp
+app.MapControllerRoute(
+  name: "default",
+  pattern: "{controller}/{action}/{id?}",
+  defaults: new { controller = "Product", action = "Index" }
+);
+```
+
+This registers a _different_ endpoint (or set of endpoints) using the template
+
+```
+{controller}/{action}/{id?}
+```
+
+which _does_ include an `{id}` slot.
+
+**Why `id` never shows up in `RouteData.Values`**
+
+- **At link-generation time**, because your attribute route’s required `{name}` can’t be satisfied by `asp-route-id="1"`, the URL helper falls back to the _conventional_ `{controller}/{action}/{id?}` route and emits `/Product/Delete/1`.
+
+- **At request-matching time**, the routing system looks at the incoming path `/Product/Delete/1` and tries _all_ endpoints. Your attribute-routed action **does** match (it binds `name = "1"`), and once an endpoint is selected **its own** template (`Product/Delete/{name}`) is used to populate `RouteData.Values`. There is simply no `{id}` in that template, so `RouteData.Values["id"]` is never set—only `["name"]` gets the value `"1"`. 
+
+**Key takeaway**
+
+**Attribute-routed** and **conventionally-routed** actions live in separate “pools” of endpoints, each with its _own_ route template. At runtime, only the chosen endpoint’s template defines which keys appear in `RouteData.Values`. .
+
+To avoid confusion, make sure the token names in your `[HttpGet(...)]` template match the ones you use in `asp-route-…`.
+
+**Summary**
+
+In ASP.NET Core, there are **two different kinds of templates**:
+
+1. **Conventional routing templates**
+
+- Set globally in `app.MapControllerRoute(...)`.
+    
+- Example:
+
+```csharp
+"{controller}/{action}/{id?}"
+```
+
+- Matches controllers and actions **that are _not_ decorated** with attribute routes.
+
+- Used at **startup** to register many actions at once based on naming patterns.
+
+2. **Attribute routing templates**
+
+- Set directly **on the controller or action** with `[HttpGet(...)]`, `[Route(...)]`, etc.
+
+- Example:
+
+```csharp
+[HttpGet("Product/Delete/{name}")]
+```
+
+- Each action defines its **own** route.
+
+- **Overrides** conventional routing if present.
+
+When a request comes in:
+
+- **Routing tries to match all attribute routes first.**
+
+- **If no match is found, it tries the conventional routes.**
+
+And very important: 
+
+🔹 **Only the matched route's template** is used to fill `RouteData.Values` — _not_ the other one.
+
+**You said:**
+
+"Since id was part of the default route (which might be declared elsewhere), it doesn’t get included in the route template as name does."
+
+Basically at that point there is no difference if we wrote the action manually - `<form class="mt-2" action="/Product/Delete/1" method="get">` or if it was created by the `asp` helper tag elements, in both cases the link ends as `/Product/Delete/1` and there is no key parameter saved in the `RouteData`?
+
+**ChatGPT said:**
+
+Yes, you're spot on!
+
+**Here's a refined explanation based on what you've said:**
+
+Since `id` is part of the **default conventional route** (which might be declared elsewhere, like in `app.MapControllerRoute(...)`), it's **not explicitly included in the route template** for the `[HttpGet("Product/Delete/{name}")]` action. The URL generated by ASP.NET Core in this case (whether manually written or generated by the `asp-route-*` elements) ends with `/1`, and **there's no key named `id`** in `RouteData.Values` for that action.
+
+Here’s the breakdown:
+
+1. **Default Routing Behavior**  
+    When a URL is generated (whether by the form or elsewhere), it uses the default **conventional routing** (`{controller}/{action}/{id?}`). So even if you didn't specify `id` in the action's attribute, the URL still ends with `/1` — matching that default `{id?}` part of the route.
+
+2. **No Key Saved for `id`**  
+    Since the action doesn't expect an `id` (it expects `name`), **`id` doesn't get added to `RouteData.Values`**. The value `1` from the URL is matched against the `name` parameter, and only that gets populated in `RouteData`.
+
+3. **Key Difference Between Default and Attribute Routing**  
+    The key takeaway is that the route **uses the template from the action** (which expects `{name}`) to match parameters, not the conventional `{id?}`. This means `id` isn't part of `RouteData` because it's not part of the **attribute-defined route template**.
+
+4. **No Special Parameter Handling for `id`**  
+    Even though the URL ends with `/1`, the **parameter matching** only happens based on the attributes, so `id` isn’t recognized as a parameter. It just "gets lost" in the process, as it's not included in the action’s routing template.
+
+**To Summarize:**
+
+- **Even though** the default route uses `id`, **it is not included in the template** for the action (`[HttpGet("Product/Delete/{name}")]`), so it's not mapped to any parameter in `RouteData`.
+
+- Both the manually written URL and the one generated by the `asp` elements eventually produce the **same URL** (e.g., `/Product/Delete/1`), but the **key parameter** (`name` vs `id`) is determined **by the route template** (attribute or convention).
 ### Debugging
 Here’s how you can **see `RouteData` live** in your ASP.NET Core controller or action method:
 
@@ -1527,6 +1997,35 @@ Segments are:
 
 - **Segments** = **pieces of the path** separated only by slashes `/`.
 - ASP.NET Routing always **works with segments first**, then goes deeper if needed.
+### Summary
+1. **How `RouteData` is Created per Request**
+
+- When a request comes in, ASP.NET Core **analyzes the URL path**.
+- It tries to **match the URL** against all known route patterns (from attributes and conventional routes).
+- If a match is found, it **fills the `RouteData` dictionary** with the values extracted from the URL (like controller, action, id, etc.).
+- `RouteData` exists **only for the lifetime of that single request** and is rebuilt for every new request.
+
+2. **How Each Action Has Routing (Default or Attribute)**
+
+- Every action automatically has a route:
+    - If there’s an `[HttpGet]`, `[Route]`, etc. — **it defines an explicit attribute route**.
+    - If there’s no attribute, the action **follows the conventional route** (usually `{controller}/{action}/{id?}`).
+- ASP.NET Core keeps a **collection of all route patterns** and compares the incoming URL against them to find a match.
+
+3. **Once URL is Created, It Doesn’t Matter How**
+
+- Whether a URL is:
+    - Created manually by writing `<a href="/Product/Delete/1">`
+    - Or generated dynamically by `asp-controller`, `asp-action`, `asp-route-id`, etc.
+- Once created, **it's just a flat text URL.**
+- The server treats any valid URL **the same way**, no matter how it was generated.
+
+4. **How URL Creation Happens**
+
+- When using tag helpers (`asp-controller`, `asp-action`, etc.), ASP.NET Core **tries to find a matching route pattern** to generate the correct URL.
+- It first tries **attribute routes** on the target action.
+- If it can’t match an attribute route, it **falls back to conventional routing**.
+- If parameters (like `id`) are given through `asp-route-*`, it tries to insert them into the URL path if possible, otherwise into the query string.
 ## `<a>` vs `<input>`
 If you want your `<a>` tag (which generates a **GET** request) to send **multiple query string parameters**, just add multiple `asp-route-*` attributes — one for each key-value pair. ASP.NET will convert them into a query string automatically.
 
