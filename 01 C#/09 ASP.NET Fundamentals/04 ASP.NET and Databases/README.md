@@ -1476,6 +1476,57 @@ When ASP.NET Core **builds the URL** (for a link, a form, etc.):
 **One-sentence version:**
 
 > ASP.NET Core matches the selected controller, action, and available `asp-route-*` values to an existing route pattern, and if everything fits, it generates the URL based on that pattern to ensure a valid match at runtime.
+### Segments
+**In ASP.NET Core (and in web standards generally):**
+
+👉 A **segment** is **each part of the URL path between two slashes `/`**.
+
+**🔵 Example:**
+
+URL:
+
+```
+https://example.com/products/details/5
+```
+
+Path part:
+
+```
+/products/details/5
+```
+
+Segments are:
+
+1. `products`
+2. `details`
+3. `5`
+
+**🔵 More examples:**
+
+|URL Path|Segments|
+|---|---|
+|`/home/index`|`home`, `index`|
+|`/blog/post/42`|`blog`, `post`, `42`|
+|`/api/products/list`|`api`, `products`, `list`|
+
+**📌 Important notes:**
+
+- **Query string** (`?name=value`) is **NOT part of the path** — it’s handled separately.
+- **Fragments** (`#section1`) are also **NOT part of the path**.
+- Only the **stuff between slashes** is considered **path segments**.
+- **Static web pages**: Path segments represent the actual **folder structure** on the server.
+- **ASP.NET Core**: Path segments represent a **logical routing structure** designed by the developer based on defined patterns (like `{controller}/{action}/{id}`), not tied to physical folders.
+
+🧠 **In web standards (RFC 3986)** and in **ASP.NET Core routing**:
+
+- **Segments are separated only by `/`.**
+- You **cannot** change the segment separator to something else (like `-` or `,`) at the path level.
+- Inside a **single segment**, you can have whatever you want (dashes `-`, dots `.`, commas `,`, etc.) — **but they don't split segments**, they are just normal characters **inside** a segment.
+
+**✅ Summary:**
+
+- **Segments** = **pieces of the path** separated only by slashes `/`.
+- ASP.NET Routing always **works with segments first**, then goes deeper if needed.
 ## `<a>` vs `<input>`
 If you want your `<a>` tag (which generates a **GET** request) to send **multiple query string parameters**, just add multiple `asp-route-*` attributes — one for each key-value pair. ASP.NET will convert them into a query string automatically.
 
