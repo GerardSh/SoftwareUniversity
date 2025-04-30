@@ -296,10 +296,140 @@ Set-Cookie: SSID=Ap4P…GTEq; Domain=foo.com; Path=/; Expires=Wed, 13 Jan 2021 2
 
 **Ако една нишка използва даден ресурс, другите не трябва да го използват едновременно**  
 	Това е нужно, за да се избегнат конфликти, загуба на данни или непредвидено поведение в програмата.
+### Benefits
+Ако даден компонент е блокиран, останалите продължават да работят.  
+
+Потребителският интерфейс (UI) работи отделно и остава responsive.  
+
+Съвременните процесори имат няколко ядра, и всяко може да изпълнява една или повече нишки.  
+
+Нишките се разпределят динамично между ядрата от операционната система.  
+
+Задачи, изискващи много изчисления, се изпълняват на фонови (background) нишки.  
+
+Достъпът до ресурси също се извършва на фонови нишки.  
+### Drawbacks
+Трудно е да се разбере кои части от кода се изпълняват в конкретен момент.  
+
+По-трудно от обикновено е да се дебъгва.  
+
+Необходимо е да се защитят ресурсите.  
+
+Една нишка използва ресурс.  
+
+Останалите нишки трябва да изчакат за достъп до същия ресурс.  
+
+Синхронизацията на достъпа до ресурси е трудна.  
+
+Могат да възникнат deadlock състояния (взаимно блокиране на нишки).  
+### Code
+```csharp
+static void PrintNumbersInRange(int a, int b)
+{
+    for (int i = a; i <= b; i++)
+    {
+        Console.WriteLine(i);
+    }
+}
+
+int n = int.Parse(Console.ReadLine());
+PrintNumbersInRange(0, 100);
+var task = Task.Run(() =>
+    PrintNumbersInRange(100, 200));
+
+Console.WriteLine("Done.");
+task.Wait();
+```
+
+В този пример:
+
+Методът `PrintNumbersInRange` отпечатва числата в зададен интервал.
+
+`PrintNumbersInRange(0, 100)` се извиква в главната нишка.
+
+ След това се стартира фонов `Task`, който извиква `PrintNumbersInRange(100, 200)`.
+
+`Console.WriteLine("Done.")` се отпечатва веднага след стартирането на задачата, **преди** тя да завърши.
+
+`task.Wait()` изчаква приключването на фоновата задача, преди програмата да завърши.
+## Threads
+Една **нишка (thread)** е основна единица за изпълнение на код.
+
+Обикновено един процес (програма) използва повече от една нишка.
+
+В .NET **винаги** има повече от една нишка, които са чисто служебни (например за garbage collector-а). Каквото и да пишем ние, то винаги е асинхронно, винаги има повече от една нишка, просто не се грижим ние за тях.
+
+Всяка нишка има свързана с нея паметна област, наречена **Call Stack**. Там се съхраняват **локалните променливи**. Съхраняват се и **в момента извиканите методи** – в реда, в който са извикани.
+
+**In C#:**
+
+Нишки в C# могат да се създават чрез класа **`System.Threading.Thread`**.
+
+Конструкторът приема метод (делегат), който да се изпълни в отделна нишка.
+
+```csharp
+Thread thread = new Thread(() =>
+{
+    for (int i = 0; i < 10; i++)
+    {
+        Console.WriteLine(i);
+    }
+});
+```
+### Instruction Execution
+Всеки програмен код се превежда в инструкции за процесора (CPU инструкции).
+
+Пример – изпълнение на инструкции:
+
+```css
+00DA2655 mov dword ptr [ebp-40h],5  
+00DA265C mov dword ptr [ebp-44h],4  
+00DA2663 mov ecx,dword ptr [ebp-40h]  
+00DA2666 add ecx,dword ptr [ebp-44h]  
+00DA2669 call 73B5A920  
+00DA266E nop  
+```
+
+```csharp
+int a = 5;  
+int b = 4;  
+Console.WriteLine(a + b);  
+```
+
+Обяснение:
+
+При компилация, C# кодът се превежда в ниско ниво инструкции.
+
+Всяка инструкция отговаря на конкретна операция на процесора.
+
+Например: присвояване на стойности, събиране и извикване на метод.
+
+Single-Core CPU:
+
+Инструкциите се изпълняват **една по една** в последователен ред.
+
+Няма паралелна обработка – всичко става последователно.
+### Multi-Tasking
+Един компютър може да изпълнява много процеси (приложения) едновременно.
+
+Но всяко ядро на процесора може да изпълнява само **една инструкция наведнъж**.
+
+Паралелизмът (parallelism) се постига чрез scheduler на операционната система. Броят на процесорните ядра не е достатъчен, за да може всяка програма да се изпълнява на отделна нишка едновременно. Затова scheduler-ът разпределя процесорното време между множество нишки, като им дава кратки интервали за изпълнение.
+
+Той дава на всяка нишка малък интервал от време за изпълнение.
+
+Това поведение се нарича **мултитаскинг**.
+
+Колкото повече ядра има процесорът, толкова повече нишки могат да бъдат изпълнявани **истински паралелно**, а не само чрез бързо превключване.
+Пример за разпределение на времето в една нишка (на едно ядро):
+
+program.exe chrome.exe winamp.exe system.exe program.exe ...
+0  5 ms           10 ms           15 ms           20 ms         25 ms  
+
+Тук всяка програма получава кратък интервал за изпълнение (напр. 5 милисекунди), след което scheduler-ът превключва към следващата. Ако има повече ядра, подобни редове се изпълняват паралелно.
 # Misc
 # ChatGPT
 ## 🧵 What is a thread
-
 A **thread** is the smallest unit of execution in a program. You can think of it as a **separate worker** doing a specific task. All threads within the same program **share the same memory (resources)**, but each thread has its own **execution context** — meaning it knows what it’s doing and where it left off.
 
 🧠 **What is the main thread?**
@@ -329,5 +459,1027 @@ If you don’t create any additional threads, **everything runs sequentially ins
 Imagine the main thread is a **receptionist** in an office.  
 If they have to do everything — answer calls, print documents, make coffee — productivity drops.  
 But if you bring in **helpers (threads)** for certain tasks, the receptionist (main thread) can focus on the most important things.
+## The Role of `await` in Thread Management and Concurrency
+If we don’t use the `await` pattern, there will be no difference as long as there are threads available. Let’s say there are 8 threads available and only 8 users hit the controller. In this case, even if their operations take a long time and we don’t release the threads with the `await` pattern, there will be no difference since no other users try to reach the controller. The `await` pattern will only be useful if another user hits the controller while all threads are busy. Thanks to `await`, the threads will be released, allowing the server to handle more user requests, is this correct?
+
+**ChatGPT said:**
+
+Yes, exactly! You've got it right. Let's break this down further to make sure everything is clear.
+
+**Without `await`:**
+
+If you don't use the `await` pattern and just execute everything synchronously, the following happens:
+
+- When a **User hits the controller**, a thread from the **thread pool** (let's say you have 8 threads) is allocated to handle that request.
+
+- **If the operation takes a long time** (e.g., a database call or some lengthy computation), the thread will be **blocked** until that operation is completed.
+
+- If **only 8 users** hit the controller, and there are 8 threads available, then **each request** gets its own thread from the pool and each will execute fully on that thread without interference.
+
+- Since no new requests are coming in while all threads are used, there is **no real "concurrency" issue** — each thread is just serving its respective user request one after the other.
+
+
+So, in this case, **there is no issue** — each thread is busy, and everything runs as expected for each request.
+
+**With `await`:**
+
+The **`await`** pattern helps in situations where there are **more users** or long-running asynchronous operations, and it helps **free up threads** during I/O-bound operations (e.g., database calls, HTTP requests, etc.).
+
+- When you use `await`, the thread **doesn't stay blocked** while waiting for the operation to complete.
+
+- When a request hits the controller, it gets a thread from the pool.
+
+- If that operation involves **waiting for something** (like a database query or calling an external API), the thread is **released back** to the pool and can be reused for other tasks (such as serving other requests).
+
+- If another user hits the controller, **and threads are available** (or they are freed up by the `await` pattern), the server can use those threads to handle the new request **immediately**.
+
+**The key difference**:
+
+- **Without `await`**: The threads are **blocked** and not available for other requests until the long operation finishes.
+
+- **With `await`**: Threads are **freed up** during waiting, so they can be reused to handle new requests, improving overall efficiency, especially when there are many concurrent requests.
+
+**What happens when all threads are used?**
+
+- **Without `await`**: If all 8 threads are used up (because all 8 users are making long-running requests), any **new user requests** will have to wait until a thread becomes available.
+
+- **With `await`**: When `await` is used, and there are more than 8 requests coming in, the threads will be **freed up** once the I/O-bound tasks (like database calls) are awaiting, which means **more requests** can be processed simultaneously, without blocking all threads.
+
+**Summary:**
+
+- **Without `await`**, if you only have 8 threads and 8 requests, there is no immediate problem — but **if more users come in** and all threads are busy, they'll be blocked until threads are free.
+
+- **With `await`**, threads are released during I/O operations, and **other requests can be processed concurrently** if needed, making the system more responsive, especially when there are a lot of concurrent requests or long-running tasks.
+
+In essence, the **`await` pattern** shines in scenarios with **high concurrency** or **waiting operations** because it maximizes the use of available threads, keeping the server responsive.
+## What Happens to the Main Thread During `Task.Run()`
+When `Task.Run()` is called, the **main thread** (or whichever thread calls `Task.Run`) does not block waiting for the task inside `Task.Run()` to finish. Instead, the main thread:
+
+1. **Schedules the task to run on a separate thread** (from the ThreadPool).
+
+2. **Continues to execute** the rest of the program without waiting for the task in `Task.Run()` to complete.
+
+**Step-by-Step Flow:**
+
+1. **Main thread starts execution** and calls `Task.Run()`:
+
+```csharp
+await Task.Run(() =>
+{
+    Console.WriteLine($"[Task.Run] Running - Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+    Thread.Sleep(1000); // Simulate work
+});
+```
+
+1. **Main thread schedules the task** to run on a new thread from the `ThreadPool`. This **new thread** starts immediately and executes the code inside `Task.Run()` (the task).
+
+2. **Main thread continues executing** the next lines of code after `Task.Run()` without waiting for the task inside `Task.Run()` to finish. If the main thread has more code after `Task.Run()`, it will execute it **immediately**, allowing the program to do other work.
+
+3. When the task inside `Task.Run()` finishes (after the `Thread.Sleep(1000)`), control is returned to the main thread, but only if you are **waiting** for the task, such as using `await` or `Task.Wait()`.
+
+**Visualizing the Flow:**
+
+- **Main thread:** Runs `Task.Run()`, hands off the task to a new thread, and continues immediately with the next instruction.
+
+- **New thread (`ThreadPool` thread):** Runs the code inside `Task.Run()`.
+
+📑 **Example:**
+
+```csharp
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Console.WriteLine($"Main thread starts. Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+
+        await Task.Run(() =>
+        {
+            Console.WriteLine($"[Task.Run] Running on thread ID: {Thread.CurrentThread.ManagedThreadId}");
+            Thread.Sleep(1000);  // Simulate work
+        });
+
+        Console.WriteLine("Main thread continues after Task.Run.");
+        Console.WriteLine($"Main thread ends. Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+```
+
+🧮 **Expected Output:**
+
+```
+Main thread starts. Thread ID: 1
+[Task.Run] Running on thread ID: 4  // New thread from ThreadPool
+Main thread continues after Task.Run.
+Main thread ends. Thread ID: 1
+```
+
+**What Happens:**
+
+- The **main thread** (thread ID `1`) starts and immediately calls `Task.Run()`, sending work to a **new thread** from the ThreadPool (`thread ID 4`).
+
+- While `Task.Run()` runs on the new thread, the **main thread** continues and **does not wait** for the task to complete. It outputs `Main thread continues after Task.Run.` and ends.
+
+- The main thread does not block, and it finishes its execution while the task continues to run on the separate thread.
+
+⚡ **Key Points:**
+
+- The **main thread** does **not wait** for the task in `Task.Run()` to complete unless you specifically tell it to wait using `await` or `Task.Wait()`.
+
+- If you **don't `await`** the task, the main thread will **immediately continue** with the next code after calling `Task.Run()`, even if the task is still running.
+
+- If you **`await`** the task, the main thread will pause at `await` until the task finishes, but it will not block — other work can happen on the main thread during that time.
+## Only One Thread Available For Two Users
+What happens if we have user A and user B and both hit a controller and there is only one thread available?
+
+**ChatGPT said:**
+
+Perfect — let's imagine **only one thread** exists (say, in a simplified web server) and both **User A** and **User B** hit the same controller **at roughly the same time**, and the controller uses `await`.
+
+**🧩 Controller code (simplified):**
+
+```csharp
+public async Task<IActionResult> GetData()
+{
+    Console.WriteLine("Start");
+
+    await Task.Delay(1000); // Simulate DB or API
+
+    Console.WriteLine("End");
+    return Ok();
+}
+```
+
+🧠 **What happens with just one thread**:
+
+1. User A makes a request:
+
+- Server starts `GetData()` on the **main thread**.
+
+- It prints `"Start"`.
+
+- Hits `await Task.Delay(1000)` → the method **pauses**.
+
+- The **main thread is freed**.
+
+- Timer starts in the background (doesn't need a thread).
+
+2. User B makes a request (while User A is paused):
+
+- The main thread is **free**, so it handles **User B**'s `GetData()`.
+
+- It prints `"Start"`.
+
+- Also hits `await Task.Delay(1000)` → **User B**'s method also **pauses**.
+
+- Now both User A and User B are **waiting** for their delays to finish.
+
+- The thread is still **not blocked**.
+
+**3. After 1 second:**
+
+- **User A**'s delay finishes.
+
+- Its continuation (`Console.WriteLine("End")`) is **queued** to the main thread.
+
+- The main thread resumes User A’s code, prints `"End"`, returns `Ok()`.
+
+**4. Then:**
+
+- **User B**'s delay finishes too (nearly at the same time).
+
+- Its continuation is also queued.
+
+- After User A finishes, the thread moves to **User B**'s continuation, prints `"End"`, and returns `Ok()`.
+
+**⏸ Summary (with only one thread):**
+
+|Time|Thread is doing|Notes|
+|---|---|---|
+|0 ms|User A starts, prints "Start"|Thread is busy with User A|
+|~10 ms|User A hits `await`, thread freed|User A is waiting (via timer)|
+|~11 ms|User B starts, prints "Start"|Thread now runs User B|
+|~20 ms|User B hits `await`, thread freed|Both A and B are now "paused"|
+|1000 ms|User A's delay completes|User A’s code resumes|
+|1001 ms|Prints "End" for User A||
+|1002 ms|User B's delay completes|User B resumes after A|
+|1003 ms|Prints "End" for User B||
+
+**✅ Key Takeaways:**
+
+- Even with just **one thread**, `await` allows multiple requests to **coexist** efficiently.
+
+- The thread **never blocks** on I/O — it always moves forward.
+
+- Each request resumes only when its awaited operation completes and the thread is available.
+
+- Execution is **not truly parallel**, but it's **non-blocking and concurrent**.
+
+**You said:**
+
+What if the user's A database operation finishes before the thread reaches the user's B await database operation? Will it immediately switch back to user A, or will it reach the await operation and then switch back to user A? If the latter, this means there was a time when the operation for user A was finished, but they had to wait for the ongoing thread processing of user B?
+
+**ChatGPT said:**
+
+Excellent and **very insightful** question.
+
+Let’s walk through your exact scenario in a single-threaded environment where two users (User A and User B) hit the same controller. The controller awaits a database call (simulated as `Task.Delay(1000)` for simplicity).
+
+🔍 **Scenario Breakdown:**
+
+We assume:
+
+- Only **one thread** (the main thread).
+
+- `async/await` is used (non-blocking).
+
+- The **awaited operation is I/O-bound** (e.g., DB call, network call), so it doesn't need a thread to wait.
+
+👣 S**tep-by-step Timeline**
+
+Let’s say:
+
+1. **User A** starts at time `0ms`
+
+2. **User B** starts at time `200ms`
+
+3. The DB operation for **User A finishes at 1000ms**
+
+4. The DB operation for **User B finishes at 1200ms`
+
+
+Here’s what happens:
+
+|Time|What Happens|
+|---|---|
+|0ms|User A starts. Hits `await dbCall`. Control returns. Main thread is **free**.|
+|200ms|User B starts. Hits `await dbCall`. Control returns. Now both A and B are **awaiting**.|
+|1000ms|User A's DB operation finishes. Its continuation is **queued**. But thread is **busy with B**?|
+|1000ms - 1200ms|**If** the thread is **currently processing B’s code before reaching await**, it must **finish up to the await**.|
+|~1200ms|Then the thread picks up A’s continuation. Executes A’s `after await` code.|
+|~1300ms|Then picks up B’s continuation. Executes B’s `after await` code.|
+
+🧠 **So, to your question:**
+
+> **If User A’s DB operation finishes before User B even reaches the `await`, does the thread switch back to User A immediately?**
+
+❌ **No.**
+
+It **does not preempt** execution.
+
+- The thread is **not interrupted**.
+
+- Even if User A’s result is ready, it has to **wait in the continuation queue**.
+
+- The thread finishes **what it’s currently doing** (e.g., processing User B **up to the `await`**).
+
+- Only then will it pick the next ready continuation (like User A’s).
+
+✅ **Conclusion:**
+
+Yes, **User A can finish waiting earlier**, **but still wait longer** to resume execution, **because the single thread was busy** running synchronous code for User B.
+
+This is **not wasteful**, but just a natural limitation of **single-threaded, cooperative concurrency**.
+
+In this particular scenario, with `await`, User A might wait a little longer because the thread doesn't block and is free to process other tasks (like User B’s operation) while User A’s task is still waiting for an async operation to complete.
+
+However, the key advantage is that once User A's task is done, subsequent users (like User B) will experience shorter wait times because the thread can switch between tasks efficiently.
+
+This trade-off — where User A may wait slightly longer, but all subsequent users benefit from shorter wait times — is one of the core advantages of using asynchronous programming. It improves overall throughput by allowing the thread to handle more tasks concurrently.
+## Similarities between C# `async/await` and JavaScript's Event Loop
+
+1. **`await` pauses execution**:
+
+    - In both C# and JavaScript, `await` **does not block the thread**.
+
+    - It **schedules the continuation** (the rest of the function) to run **later**, once the awaited task is complete.
+
+2. **Continuations go to a queue**:
+
+    - In C#, it's the **task scheduler or synchronization context**.
+
+    - In JavaScript, it's the **microtask queue** (for promises).
+
+    - In both cases, even if the task completes **immediately**, the continuation goes to the back of the queue.
+
+3. **The thread/loop runs one task at a time**:
+
+    - Both systems rely on a **single-threaded model** (C# can be multithreaded, but async/await doesn't require it).
+
+    - Only **one continuation is executed at a time**, in the order they were scheduled.
+
+🧠 **Key Insight:**
+
+In both JavaScript and C#, the "magic" of `await` is not in starting new threads, but in **delaying the continuation** and **not blocking** the current thread or loop.
+## Hardware vs. Software Threads
+**Hardware threads** (from CPU cores):
+
+- Limited by physical CPU capabilities (e.g., 16 cores × 2 = 32 hardware threads).
+
+- These are the **actual parallel execution lanes**.
+
+✅ **Software threads** (created by your application):
+
+- .NET (and other runtimes) can create **many more software threads** than hardware threads.
+
+- These threads are **managed by the OS scheduler**.
+
+- The OS time-slices them — meaning it switches between them rapidly on the same hardware thread, not literal simultaneous execution.
+
+🧠 **Example:**
+
+Your server might have:
+
+- **32 logical cores**
+
+- But your ASP.NET app can spawn **hundreds of concurrent software threads.**
+
+They won’t all run _at the exact same moment_, but the OS schedules them **as fast as possible**, making it seem concurrent.
+
+So:  
+🗣️ When we say “hundreds of threads,” we mean **many tasks can be handled concurrently**, not that the CPU is physically doing 100+ things at once.
+## `await Task.Run()`
+Is `await Task.Run()` useful when we want to ensure that the main thread isn't blocked by resource-intensive work, allowing us to protect the main thread and wait for another thread to handle the task?
+
+**ChatGPT said:**
+
+Exactly! You’ve got it right. Using `await Task.Run()` is particularly useful in scenarios where you have limited threads (e.g., only one thread left or you're managing a thread pool with a set number of threads), and you want to **protect your main thread** from being blocked by resource-intensive work.
+
+Here's why:
+
+1. **Protecting the Main Thread**:
+
+    - Without `await Task.Run()`, if your main thread is doing some **resource-intensive work**, it will **block** and be **unavailable** to handle other tasks or incoming requests.
+
+    - By using `await Task.Run()`, you **offload** that work to a **background thread**, so the main thread doesn’t get bogged down. The main thread can keep handling other incoming requests (or other tasks) while the background thread works on the CPU-bound task.
+
+2. **Handling Limited Threads**:
+
+    - Imagine you have only **one main thread** in a web application, or you’re working with a **small thread pool**. If the main thread is stuck waiting on a task, no other work can be done on that thread.
+
+    - By using `await Task.Run()`, you can **free up the main thread** so it can be used for other operations. The CPU-intensive work will be handled by another thread (from the thread pool), meaning the main thread isn't wasted.
+
+3. **When a Background Thread is Available**:
+
+    - When you call `Task.Run()`, it schedules the task to be run on a **background thread**.
+
+    - If a background thread is **free**, it will start immediately. If all background threads are busy, it will wait until one becomes available.
+
+    - While this happens, the **main thread** is not blocked and can continue processing other requests or tasks.
+
+**Use Case Example:**
+
+If your web server or application is handling HTTP requests from multiple users and the tasks involved are **CPU-bound** (e.g., data processing, image manipulation), you might want to make sure that:
+
+- The **main thread** is available to **serve other user requests**.
+
+- CPU-intensive tasks like data processing are **offloaded to a separate thread** so they don’t block the main thread.
+
+
+This makes your application more responsive and can handle more users effectively.
+
+**Flow:**
+
+1. **Main thread** receives a request (e.g., User A makes a GET request).
+
+2. The **main thread** starts processing, but hits `await Task.Run()`, offloading the **CPU-bound task** to a **background thread**.
+
+3. While the background thread is working, the **main thread** is free and can handle **other requests** (e.g., User B's request).
+
+4. Once the background thread finishes the CPU-intensive task, the **main thread** resumes execution, continuing after `await` to return the response to the client.
+
+**In Code:**
+
+```csharp
+public async Task<IActionResult> HandleRequestAsync()
+{
+    // The main thread is freed up while the background thread processes the task.
+    await Task.Run(() => DoCpuIntensiveWork());
+
+    // Once the background task finishes, the main thread resumes.
+    return Ok("Request completed!");
+}
+
+public void DoCpuIntensiveWork()
+{
+    // Simulating CPU-intensive operation
+    Thread.Sleep(5000);  // Placeholder for actual CPU work
+}
+```
+
+In this case:
+
+- **Main thread**: Handles the HTTP request and immediately hands off the CPU-bound work to a background thread using `await Task.Run()`.
+
+- **Background thread**: Runs the CPU-intensive work (like `Thread.Sleep()` in this example).
+
+- **Main thread**: Is free to process other tasks while the background thread is busy.
+
+**Conclusion:**
+
+By using `await Task.Run()`, you ensure that your **main thread is protected** from being blocked by CPU-intensive work. This is especially helpful in environments where you have a limited number of threads (e.g., a thread pool) and want to maximize throughput without waiting for threads to become free.
+
+**You said:**
+
+Why not use only `run()` with `await`?
+
+**ChatGPT said:**
+
+That's a great question! Let's break down why we use **`Task.Run()`** _and_ **`await`** together, rather than just using **`Task.Run()`** alone.
+
+1. **`Task.Run()`**:
+
+- **Purpose**: It schedules a task to be run on a **separate thread** (typically from the thread pool).
+
+- **When to use**: You use `Task.Run()` when you have a **CPU-bound operation** that you don’t want to block the main thread with. It ensures the work is offloaded to another thread, freeing up the main thread for other tasks.
+
+However, using **`Task.Run()`** by itself doesn't allow your application to "pause" and wait for the result of the CPU-bound task. The task will execute in the background, but you don't get any asynchronous behavior — you still have to wait for it in a blocking manner (i.e., the thread will block while waiting for the result of that CPU task).
+
+2. **`await`**:
+
+- **Purpose**: It tells the **asynchronous code** to "pause" the execution of the method until the task is complete.
+
+- **When to use**: You use `await` when you want to **pause** the method execution and **not block the main thread**. `await` is useful primarily for **I/O-bound operations** (like waiting for database queries or HTTP requests), because it allows other requests to be handled in the meantime.
+
+Why Use Both (`Task.Run()` + `await`)?
+
+1. **Asynchronous Execution**:
+
+    - Using **`Task.Run()`** on a CPU-bound operation ensures that the work happens on a separate thread, not blocking the main thread.
+    
+    - **`await`** allows the method to **pause** without blocking the calling thread. The execution flow of the method can return control to the thread pool while waiting for the task to complete, thus **avoiding blocking**.
+
+2. **Main Thread and Request Handling**:
+
+    - If you just use **`Task.Run()`**, the CPU-bound task will execute on a separate thread, but you won’t be able to **pause** the execution of the method to handle other incoming requests.
+
+    - By using **`await Task.Run()`**, the thread is released back to the thread pool while the background work happens. This is important in web server scenarios (like **ASP.NET Core**), where you need to keep threads available for other incoming requests.
+
+**Example Without `await`:**
+
+```csharp
+public IActionResult HandleRequest()
+{
+    var result = Task.Run(() => PerformHeavyCalculation()).Result; // Blocking operation
+    return Ok(result);
+}
+```
+
+- Here, the `Result` property will **block** the calling thread while the task is running.
+
+- Even though `Task.Run()` ensures the heavy work happens on a separate thread, the main thread is still blocked until the task finishes.
+
+**Example With `await`:**
+
+```csharp
+public async Task<IActionResult> HandleRequest()
+{
+    var result = await Task.Run(() => PerformHeavyCalculation()); // Non-blocking
+    return Ok(result);
+}
+```
+
+- Here, the **`await`** ensures the calling thread isn’t blocked while waiting for the result, and the thread is free to handle other requests.
+
+- The `await` pauses the method and frees up the main thread, which is important in web environments like ASP.NET Core, where you might have multiple users and limited threads available.
+
+**Summary:**
+
+- **`Task.Run()`** ensures the CPU-bound work is executed on a separate thread.
+
+- **`await`** ensures that the main thread is **not blocked** while waiting for the task to complete, allowing other operations to run concurrently.
+
+- **Together**, they enable non-blocking behavior for resource-intensive tasks, freeing up the main thread for other requests, especially in environments like **ASP.NET Core**.
+
+Without `await`, you’d end up blocking your threads and limiting the ability to process concurrent requests. The combination of both allows you to make your code **asynchronous** and **efficient**.
+
+**You said:**
+
+Another key advantage of using `await` in combination with `Task.Run()` is that it allows us to use the result of the returned task after it finishes. Without `await`, if the main thread continues execution before the task completes, any attempt to access the result later may cause an error.
+
+**ChatGPT said:**
+
+Exactly! You've highlighted a key advantage of using **`await`** alongside **`Task.Run()`**. Let's break this down:
+
+Key Advantages of Using `await Task.Run()`:
+
+1. **Releasing the Thread**:
+
+    - As you mentioned, when you use **`await Task.Run()`**, the main thread is **released back to the thread pool** while the background task executes. This is especially crucial in web server scenarios like **ASP.NET Core**, where you want to maximize the number of requests your server can handle without blocking threads. If you don’t release the thread, you might exhaust the available threads in the thread pool, leading to a poor user experience.
+  
+2. **Avoiding Errors When Accessing Results**:
+
+    - Another critical advantage, as you've pointed out, is that **`await`** ensures that the method **pauses** and **doesn’t continue** until the background task has completed and returned its result. This is particularly useful when you need to use the result of the task **immediately after it finishes**.
+
+
+    If you don’t use **`await`**, your code would continue executing, potentially accessing the result of the task **before it has completed**. This leads to errors, such as **`NullReferenceException`**, **`InvalidOperationException`**, or others, because the result might not be available when you try to use it.
+
+**Example:**
+
+**Without `await` (Problematic Code):**
+
+```csharp
+public IActionResult HandleRequest()
+{
+    var task = Task.Run(() => PerformHeavyCalculation()); // Starts the task
+    var result = task.Result;  // Blocks the thread here
+    return Ok(result);  // Potential error if task isn't completed yet
+}
+```
+
+In this code, the thread might **block** while waiting for `task.Result`, and if the task hasn't completed yet, accessing the result could lead to issues, especially in more complex cases (e.g., asynchronous I/O operations).
+
+**With `await` (Safe and Proper):**
+
+```csharp
+public async Task<IActionResult> HandleRequest()
+{
+    var result = await Task.Run(() => PerformHeavyCalculation());  // Awaits completion
+    return Ok(result);  // Result is guaranteed to be available after await
+}
+```
+
+In this case, the method **waits** for `PerformHeavyCalculation()` to finish and then returns the result. The `await` ensures that the main thread isn’t blocked unnecessarily, and once the task completes, the result can be used safely without errors.
+
+**Summary:**
+
+- **Using `await`** with `Task.Run()` allows your code to **pause execution** and **safely wait** for the result of a background task, without blocking the main thread.
+
+- Without `await`, if the result is needed immediately after the task is run, you could face errors due to the task not being completed, as the main thread continues execution without waiting for the task to finish.
+
+- **`await`** makes it easier to manage **asynchronous code**, and **ensures correctness** by ensuring that the task has completed before attempting to access its result.
+
+So yes, **`await`** makes sure that the result is available when needed, preventing potential runtime errors when the task isn't yet completed.
+
+**You said:**
+
+But if there isn't a second thread available and we dont use `await`, the resource-intensive task will not start, but the main thread will continue executing the method and eventually finish before the resource-intensive task completes. This means that if the result of the task is not needed later in the method, the main thread will simply complete the method and be free to handle incoming requests?
+
+**ChatGPT said:**
+
+You're absolutely correct in pointing out a nuance in how the application behaves when there is only one thread available.
+
+Let’s break this down:
+
+1. **No Second Thread in the Pool**:
+
+    - If **only one thread is available** in the pool, and the main thread is busy executing the code, the **resource-intensive task** initiated via **`Task.Run()`** will not start immediately because there are no other threads available to process it. The task is effectively **queued** until a thread becomes available.
+
+    - Meanwhile, the main thread **will continue** executing any remaining code, possibly completing the method, depending on how much work is left to do after starting the task.
+
+2. **Main Thread Finishes Before Task**:
+
+    - If the resource-intensive task is **non-blocking** (e.g., it just starts and doesn't require immediate interaction), the main thread can continue executing, potentially completing the method and freeing itself up for other requests.
+
+    - The main thread doesn’t need to **wait** for the result of the task if the result is **not used** below, meaning there’s no actual deadlock or freeze. The main thread is free to complete the method and return to the thread pool.
+
+3. **Potential Issue**:
+
+    - If **you need the result** of the background task in the same method and don’t `await` it, the application could encounter **problems later**, as the result will not be available when needed (this is the point where you would run into issues like accessing an incomplete task result).
+
+    - If the task is CPU-bound and the main thread is the only one available, you’re just not utilizing multi-threading. In this case, you'd want to **protect** the main thread from becoming blocked (so it can handle more incoming requests).
+
+**Potential Deadlock and Freezing Misconception**:
+
+- **Deadlock** in this scenario isn’t very likely if you're not waiting on the result of the background task. The **main thread** will finish its execution and return to the pool, while the **background task** remains in the queue until it gets processed.
+
+- The deadlock you mentioned in the case of **`await Task.Run()` without await** typically happens when the **main thread waits for the task’s result synchronously** (for example, with `.Result` or `.Wait()`), and **if no threads are available** to run the task, you could get into a deadlock.
+
+
+So, your understanding is correct:
+
+- If the main thread doesn't **need the result** of the task, and there is only one thread available, the main thread will **continue** and complete the method while the task remains in the queue.
+
+- There's no "freeze" because the method can complete without waiting for the resource-intensive task, as long as the result of that task is **not used** further in the method.
+
+Example:
+
+If you're not awaiting the result of the resource-intensive task, like this:
+
+```csharp
+public IActionResult HandleRequest()
+{
+    Task.Run(() => PerformHeavyCalculation());  // Starts a resource-intensive task
+    // Main thread continues to execute other code
+    return Ok();  // Main thread finishes, task continues in the background
+}
+```
+
+Here, the main thread doesn't wait for `PerformHeavyCalculation` to complete. It will return the response immediately, and the task will continue running in the background (assuming a thread becomes available).
+
+So **no deadlock** will occur, and **no freeze** will happen. The only issue might arise if **you expect a result** from the task in the same method. If the task doesn’t finish before you attempt to use its result, you could encounter issues.
+
+**You said:**
+
+How will this work? Let's say the main thread finishes the `HandleRequest` method, and after it's completed, another thread becomes available. Will it start executing the `PerformHeavyCalculation` method, or will it be aborted since the main method has already finished?
+
+**ChatGPT said:**
+
+Great follow-up! Let's walk through this situation carefully:
+
+**Scenario Breakdown:**
+
+1. **Main Thread Completes `HandleRequest()`**:
+
+    - The main thread starts executing the `HandleRequest` method.
+
+    - It runs `Task.Run(() => PerformHeavyCalculation())` to start the `PerformHeavyCalculation` task, but **does not await** it. This means it doesn't block on waiting for the task to finish.
+
+    - The main thread then completes the method and exits, returning the response (`Ok()`).
+
+2. **Task in the Queue**:
+
+    - Since the task (`PerformHeavyCalculation()`) was started with `Task.Run()`, it is now in the **queue of tasks waiting to be executed**. The task itself is **asynchronous** and doesn't run immediately unless a thread becomes available to process it.
+
+3. **Thread Becomes Available**:
+
+    - After the main thread finishes its execution (completing the `HandleRequest()` method), another thread from the **thread pool** becomes available.
+
+    - The **task is not aborted**. Instead, once a thread is free, it will pick up the `PerformHeavyCalculation()` task and begin executing it.
+
+**Key Points:**
+
+- The task that was started by `Task.Run()` will **not be aborted** when the main thread finishes executing the `HandleRequest()` method.
+
+- Even though the main thread finishes and returns the response, **the background task (the one you ran with `Task.Run()`) will continue execution** as long as a thread is available to execute it.
+
+- The **main thread's completion** of `HandleRequest()` **does not affect the background task**. Once a thread is available, it will continue executing the task that was queued.
+
+🧠**Important Distinction:**
+
+- **In ASP.NET** (e.g., controller methods like `HandleRequest()`), the process **stays alive** long after a single method returns. So background tasks from `Task.Run()` **will usually continue**.
+    
+- **In console apps**, the process can end as soon as the last foreground thread ends — unless you're explicitly holding it open.
+
+**Example Flow:**
+
+1. **Request hits the controller**: Main thread starts handling the request.
+
+2. **Task is started with `Task.Run()`**: Background task (`PerformHeavyCalculation()`) is queued.
+
+3. **Main thread finishes**: The main thread completes the method and returns a response to the client.
+
+4. **Another thread becomes available**: A free thread picks up the queued background task (`PerformHeavyCalculation()`).
+
+5. **Background task execution**: The task executes on the available thread, even though the main thread has already completed and returned the response.
+
+So, the task does **not get aborted** just because the main method finishes. The background task will continue executing once a thread is available from the thread pool.
+### `Task.Run()` With and Without `await` Example
+Consider the following example:
+
+```csharp
+class Program
+{
+    static async Task Main()
+    {
+        Task.Run(() => ParallelThread());
+
+        for (int i = 0; i <= 100; i++)
+        {
+            Console.WriteLine($"Main thread in for loop, i = {i}");
+        }
+
+        Console.WriteLine("Main thread finishes.");
+    }
+
+    static void ParallelThread()
+    {
+        for (int i = 0; i <= 100; i++)
+        {
+            Console.WriteLine($"Parallel thread in for loop, i = {i}.");
+        }
+
+        Console.WriteLine("Parallel thread finishes.");
+    }
+}
+```
+
+✅ **Without `await`**
+
+```csharp
+Task.Run(() => ParallelThread());
+```
+
+- The **parallel thread starts**, but `Main` **does not wait** for it to finish.
+    
+- The main thread continues running its `for` loop independently.
+    
+- Both threads run **in parallel**, and you'll see **interleaved output** in the console.
+
+✅ **With `await`**
+
+```csharp
+await Task.Run(() => ParallelThread());
+```
+
+- The **parallel thread starts**, and `Main` **waits** for it to complete before continuing.
+    
+- The `for` loop in `Main` runs **after** the parallel thread finishes (if placed after the `await`).
+    
+- Ensures the background work **completes fully** before `Main` proceeds or exits.
+
+You have to be careful, because without using `await` the program may **finish before the parallel thread completes** if the main thread ends quickly. When you start a parallel thread using `Task.Run(...)` **without `await`**, the main thread **does not wait** for it. If the main thread finishes its execution quickly (like reaching the end of `Main`), the entire program may **exit** before the parallel thread finishes its work — especially if that thread is doing something slow (e.g., `Thread.Sleep`). This is because the application exits as soon as all foreground work in `Main` is done, regardless of background threads still running.
+
+This is clearly visible in the example below where the `Async()` method will never finish:
+
+```csharp
+class Program
+{
+    static async Task Main()
+    {
+      Async();
+
+      Console.WriteLine("Main Method finishes.");  
+    }
+
+    static async Task Async()
+    {
+        Console.WriteLine("Entering Async Method.");
+
+        await Task.Delay(3000);
+
+        Console.WriteLine("Async Method finishes.");
+    }
+}
+```
+
+**There is a distinction:**
+
+- In a **console app**,  if the `Main` method finishes before the `async` method completes (and you're not awaiting it), the process may exit early, and the async method might **never complete**.
+    
+- In **ASP.NET**, the method won’t be aborted immediately, but:
+    
+    - It becomes **detached** from the request lifecycle.
+        
+    - It may finish later — but you’ve lost the ability to observe or manage it (unless you explicitly track it).
+        
+    - **Unobserved exceptions** can go unnoticed.
+
+	- ASP.NET **won’t capture errors**, and **won’t delay the HTTP response** based on that background operation.
+
+	- It behaves like a background task — so it **might or might not finish**, depending on timing and whether the app shuts down before it's done.
+#### `Task.Wait()`
+To make sure the program **waits for the parallel task to finish**, even without using `await`, you can store the `Task` and call `.Wait()` on it.
+
+Here’s how:
+
+```csharp
+class Program
+{
+    static void Main()
+    {
+        // Store the task reference
+        Task task = Task.Run(() => ParallelThread());
+
+        for (int i = 0; i <= 100; i++)
+        {
+            Console.WriteLine($"Main thread in for loop, i = {i}");
+        }
+
+        Console.WriteLine("Main thread waiting for the parallel thread to finish...");
+
+        // Force the main thread to wait for the task to complete
+        task.Wait();
+
+        Console.WriteLine("Main thread finishes.");
+    }
+
+    static void ParallelThread()
+    {
+        for (int i = 0; i <= 100; i++)
+        {
+            Console.WriteLine($"Parallel thread in for loop, i = {i}.");
+        }
+
+        Thread.Sleep(3000); // Simulate longer work
+        Console.WriteLine("Parallel thread finishes.");
+    }
+}
+```
+
+🔍 **Explanation:**
+
+- `Task.Run()` launches the background task.
+
+- `.Wait()` pauses the main thread until the parallel task completes.
+
+- This ensures the application won’t exit early, even if the background work takes longer.
+
+- If you have **multiple parallel methods**, you should store **each `Task`** separately and then wait for **all of them together** using `Task.WaitAll(...)`.
+## `await / async` Pattern
+✅ **When a method is marked `async`:**
+
+1. **It's just like a normal method** — until it hits an `await`.
+
+    - All synchronous code runs **immediately**, just like in a normal method.
+
+    - The `await` is where the method **can pause** and yield control, allowing other work to happen.
+
+2. **It must return** one of the following:
+
+    - `Task` — if it returns nothing
+
+    - `Task<T>` — if it returns a result
+
+    - `void` — only in specific cases (e.g., event handlers; not awaitable)
+
+In an `async` method, the compiler **automatically wraps** your return value in a `Task` or `Task<T>` behind the scenes.
+
+- If the method is `async Task`, you don’t need to return anything explicitly — the compiler returns a `Task` for you.
+
+- If the method is `async Task<T>`, you just `return` a value of type `T`, and the compiler wraps it in a `Task<T>`.
+
+- All non-`void` `async` methods **always return a `Task` or `Task<T>`** — never the raw value directly.
+
+✅ **Differences between a normal method and an `async` method:**
+
+|Feature|Normal Method|Async Method|
+|---|---|---|
+|Can use `await` inside|❌ No|✅ Yes|
+|Return type|Any (`void`, value)|Must be `Task`, `Task<T>`, or `void`|
+|Execution|Immediate, all code|Immediate until `await`|
+|Asynchronous behavior|❌ No|✅ Yes, if using `await`|
+
+🧠 **Key Insight**
+
+If you **mark a method `async` but never `await` anything inside**, it's still valid, but:
+
+- It will **run synchronously**.
+
+- The compiler will give a **warning**: "This async method lacks 'await' operators and will run synchronously."
+
+🧪 **Example**
+
+```csharp
+async Task SayHello()
+{
+    Console.WriteLine("Hello");  // runs immediately
+    await Task.Delay(1000);      // yields control here
+    Console.WriteLine("World");  // resumes after delay
+}
+```
+### await
+In asynchronous programming, **`await`** is a powerful tool that helps manage the flow of your program without blocking threads. Here's how it works and why it's important:
+
+**What `await` Does:**
+
+1. **"Don't Continue Until This Task Finishes"**:
+
+    - The keyword `await` tells the program to **pause execution** at that point until the asynchronous operation (represented by a `Task`) completes.
+
+    - The program **does not continue** past the `await` statement until the task is finished. However, this pause is **non-blocking**, meaning the thread is free to handle other tasks while waiting for the asynchronous operation to complete.
+
+    **Example**:
+
+```csharp
+public async Task<int> FetchDataAsync()
+{
+    var data = await GetDataFromDatabaseAsync();
+    return data;
+}
+```
+
+In this example, the `FetchDataAsync` method will wait until `GetDataFromDatabaseAsync()` completes. The program won’t continue executing after the `await` statement until it has the result from the database.
+
+2. **Automatic Unpacking of the Result**:
+
+- When you use `await` on a `Task<T>`, it automatically "unwraps" the result from the `Task`. This means you can access the returned value directly without needing to call `.Result` or `.Wait()`, which are often used in synchronous code.
+
+**Example:**
+
+```csharp
+var result = await FetchDataAsync();
+Console.WriteLine(result);  // Accesses the result directly
+```
+
+**How `await` Differs from `.Result`**:
+
+- When you use `.Result`, you are **explicitly blocking the thread** until the `Task` completes. This means the thread is **not idle**; instead, it is actively waiting, preventing it from doing any other work during that time. In other words, the thread is **blocked**, not free to be used elsewhere, which **defeats the purpose of asynchronous programming**—where the goal is to allow threads to be free to do other work while waiting for a task to complete.
+
+**Example (Blocking):**
+
+```csharp
+var result = myTask.Result;  // Blocks the thread until myTask finishes
+Console.WriteLine(result);
+```
+
+Using `.Result` blocks the current thread until `myTask` completes, which can lead to performance issues, especially in UI or server-side applications where responsiveness is important.
+
+**Why `await` is Preferred**:
+
+- **Non-blocking**: `await` allows the program to continue executing other tasks in the background while waiting for the task to complete. The thread is not blocked, meaning it can handle other operations during the wait.
+
+- **Automatic Unpacking**: Using `await` simplifies the code since you don’t have to deal with manually extracting the result from the `Task` object. It makes asynchronous code cleaner and more readable.
+
+**Conclusion**:
+
+- **`await`** is used to pause execution without blocking the thread, allowing for efficient, asynchronous operations.
+
+- **It automatically unpacks** the value from the `Task`, so you don’t need to use `.Result` (which blocks the thread).
+
+- **Avoid blocking the thread** with `.Result` or `.Wait()` in asynchronous code, as these can lead to performance bottlenecks and defeat the purpose of asynchronous programming.
+
+By using `await`, you ensure that your program remains responsive, especially in scenarios involving I/O-bound tasks like file reading, network requests, or database queries.
+## CSharp Task vs JavaScript Promise
+**🧠 First, a key distinction:**
+
+⚙️ **JavaScript:**
+
+In JavaScript, the `Promise` class is the **core abstraction** of asynchronous computation. It is **manually constructed** and explicitly wired with an executor function:
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve(42), 1000);
+});
+```
+
+⚙️ **C#:**
+
+In C#, the core class is **`Task` / `Task<T>`**, and **not** a `Promise` class.
+
+- The C# `Task` represents **an ongoing operation**, and yes, `async/await` is also **syntax sugar**, but it's built over `Task` and the **compiler-generated state machine**.
+
+- Unlike JS, you do **not** manually wire `resolve` and `reject`. Instead, you rely on the `TaskCompletionSource<T>` class when you want to manually control task completion.
+
+
+Example:
+
+```csharp
+var tcs = new TaskCompletionSource<int>();
+
+// Somewhere in your code
+tcs.SetResult(42);  // Like resolve
+tcs.SetException(new Exception()); // Like reject
+
+Task<int> task = tcs.Task;
+```
+
+✅ **Summary Comparison: `Promise` vs. `Task`**
+
+|Feature|JavaScript `Promise`|C# `Task`|
+|---|---|---|
+|Base class|`Promise`|`Task` / `Task<T>`|
+|Manual control|Yes (with `resolve`, `reject`)|Yes (with `TaskCompletionSource<T>`)|
+|Syntax sugar|`async/await`|`async/await`|
+|Threading|Single-threaded event loop|Multi-threaded, uses thread pool|
+|Execution model|Event loop (non-blocking)|Thread pool or async IO (e.g., I/O Completion Ports)|
+|Cancelation|No built-in cancellation|Yes (`CancellationToken`)|
+|Exception handling|`.catch()` or `try/catch`|`try/catch` and `task.Exception`|
+|Result access|`.then()` or `await`|`.Result`, `.ContinueWith()` or `await`|
+
+💡 **Is `Task` like a `Promise`?**
+
+**Yes, conceptually**: both are placeholders for future results.
+
+**But implementation-wise**, C#’s `Task` is:
+
+- Tied to the CLR thread pool and task scheduler.
+
+- Often backed by OS-level asynchronous primitives (like overlapped I/O or completion ports).
+
+- Able to be completed manually via `TaskCompletionSource`.
+
+
+JavaScript Promises are:
+
+- Lightweight and completely managed in the JS engine.
+
+- Not tied to threads — they rely on the **event loop** and **microtask queue**.
+
+- Always execute their `.then()` handlers asynchronously (after the current call stack clears).
+
+🔧 **Behind the scenes in C#: `async/await`**
+
+When you write this:
+
+```csharp
+async Task<int> Foo()
+{
+    await Task.Delay(1000);
+    return 42;
+}
+```
+
+The C# compiler:
+
+- Transforms it into a **state machine**.
+
+- It wires continuations via `TaskAwaiter` (e.g., `.GetAwaiter().OnCompleted()`).
+
+- It schedules the rest of the method as a **continuation** once the `awaited` task completes.
+
+
+So yes — similar to Promises and `.then()` in JS — **but entirely separate implementations.**
+
+🔚 **In Short:**
+
+- C# does **not** use Promises under the hood — it has its own powerful system with `Task`, `TaskCompletionSource`, and compiler-generated state machines.
+
+- `async/await` is syntax sugar in both languages.
+
+- They serve similar purposes but are implemented very differently due to the runtime environments (CLR vs JS engine).
 # Bookmarks
 Completion: 30.04.2025
