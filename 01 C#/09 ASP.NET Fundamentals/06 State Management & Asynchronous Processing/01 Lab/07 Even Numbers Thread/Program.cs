@@ -10,7 +10,7 @@
         evens.Start();
         evens.Join();
 
-        Console.WriteLine("Thread finished work");   
+        Console.WriteLine("Thread finished work");
     }
 
     static void PrintEvenNumbers(int start, int end)
