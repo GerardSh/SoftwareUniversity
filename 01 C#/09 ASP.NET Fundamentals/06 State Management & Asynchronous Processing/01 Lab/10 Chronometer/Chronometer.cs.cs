@@ -1,58 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Diagnostics;
 
 public class Chronometer : IChronometer
 {
-    private Stopwatch stopwatch;
-    private List<string> laps;
-    private bool isRunning;
+    private Stopwatch _stopwatch;
+    private List<string> _laps;
 
     public Chronometer()
     {
-        this.stopwatch = new Stopwatch();
-        this.laps = new List<string>();
-        this.isRunning = false;
+        _stopwatch = new Stopwatch();
+        _laps = new List<string>();
     }
 
-    public string GetTime
-    {
-        get
-        {
-            var elapsed = this.stopwatch.Elapsed;
-            return $"{elapsed.Minutes:D2}:{elapsed.Seconds:D2}:{elapsed.Milliseconds:D3}";
-        }
-    }
+    public string GetTime => _stopwatch.Elapsed.ToString(@"mm\:ss\.ffff");
 
-    public IReadOnlyList<string> Laps => this.laps.AsReadOnly();
+    public List<string> Laps => _laps;
 
     public void Start()
     {
-        if (!isRunning)
-        {
-            isRunning = true;
-            this.stopwatch.Start();
-        }
+        _stopwatch.Start();
     }
 
     public void Stop()
     {
-        this.stopwatch.Stop();
-        this.isRunning = false;
+        _stopwatch.Stop();
     }
 
     public string Lap()
     {
-        var currentTime = this.GetTime;
-        this.laps.Add(currentTime);
-        return currentTime;
+        string result = GetTime;
+        _laps.Add(result);
+        return result;
     }
 
     public void Reset()
     {
-        this.stopwatch.Reset();
-        this.laps.Clear();
-        this.isRunning = false;
+        _stopwatch.Reset();
+        _laps.Clear();
     }
 }

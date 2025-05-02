@@ -1,27 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 public class StartUp
 {
-    public static async Task Main()
+    public static void Main()
     {
-        IChronometer chronometer = new Chronometer();
+        var chronometer = new Chronometer();
+        string command;
+
         Console.WriteLine("Chronometer started. Awaiting commands...");
 
-        while (true)
+        while ((command = Console.ReadLine()) != "exit")
         {
-            string command = Console.ReadLine();
-
-            if (command == "exit")
-            {
-                chronometer.Stop();
-                break;
-            }
-
             switch (command)
             {
                 case "start":
-                    await Task.Run(() => chronometer.Start());
+                    Task.Run(() =>
+                    {
+                        chronometer.Start();
+                    });
                     break;
 
                 case "stop":
@@ -29,8 +25,7 @@ public class StartUp
                     break;
 
                 case "lap":
-                    string lapTime = chronometer.Lap();
-                    Console.WriteLine($"Lap: {lapTime}");
+                    Console.WriteLine($"Lap: {chronometer.Lap()}");
                     break;
 
                 case "laps":
@@ -41,7 +36,7 @@ public class StartUp
                     }
                     else
                     {
-                        Console.WriteLine("Laps:");
+                        Console.WriteLine("Laps: ");
                         for (int i = 0; i < laps.Count; i++)
                         {
                             Console.WriteLine($"{i}. {laps[i]}");

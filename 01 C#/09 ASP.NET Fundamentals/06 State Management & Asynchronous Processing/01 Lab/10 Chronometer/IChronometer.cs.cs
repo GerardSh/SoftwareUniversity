@@ -2,7 +2,7 @@
 {
     string GetTime { get; }
 
-    IReadOnlyList<string> Laps { get; }
+    List<string> Laps { get; }
 
     void Start();
 
