@@ -772,6 +772,137 @@ public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, s
 This pattern is common in .NET to balance **customization** with **ease of use**.
 
 Want to see the same idea applied in other .NET types too (like `Dictionary`, `Task`, etc.)?
+## Services Lifecycle
+In .NET (and many other DI frameworks), services can be registered with different **lifetimes**, which determine whether a new instance is created each time or not.
+
+Here are the common lifetimes in .NET:
+
+🔁 **Transient**
+
+- **Behavior:** A new instance is created **every time** the service is requested.
+    
+- **Effect:** Yes, two classes will get **two different instances**.
+    
+- **Register with:** `services.AddTransient<IMyService, MyService>();`
+
+♻️ **Scoped**
+
+- **Behavior:** A single instance is created per **request** (in web apps).
+    
+- **Effect:** Two classes in the **same HTTP request** will share the **same instance**. In **different requests**, they get different instances.
+    
+- **Register with:** `services.AddScoped<IMyService, MyService>();`
+
+🛑 **Singleton**
+
+- **Behavior:** Only **one instance** is created for the **entire application lifetime**.
+    
+- **Effect:** All classes that depend on this service get the **same instance**, even across requests.
+    
+- **Register with:** `services.AddSingleton<IMyService, MyService>();`
+
+**In Summary:**
+
+If you register your service as `Transient` each class gets its own instance.  
+If it's `Scoped` or `Singleton`, the same instance can be reused depending on scope.
+
+**You said:**
+
+These injections mainly happen in the controller classes? That's why we can have different instances across different requests?
+
+**ChatGPT said:**
+
+Exactly — injections _typically_ happen in **controller classes**, **middleware**, or **services** that are registered in the DI container. Here's the key idea:
+
+✅ **Where injections happen**
+
+- **Controllers** (most common): injected via constructor when a request comes in
+    
+- **Services**: injected into other services or controllers
+    
+- **Middleware components**: also can receive services via constructor
+
+🔁 **Why instances can differ across requests**
+
+Each HTTP request creates a **new controller instance**, and depending on the **lifetime** of the injected service:
+
+- **Transient**: a _new instance every time it's injected_, even within the same request
+    
+- **Scoped**: _one instance per request_, shared among everything in that request
+    
+- **Singleton**: _one instance for the entire app lifetime_, shared across all requests
+
+🧠 **Example scenario**
+
+```csharp
+// Registered as Scoped
+services.AddScoped<IMyService, MyService>();
+```
+
+- Request A: Controller gets `MyService` with `ID = X`
+    
+- Request B: Controller gets `MyService` with `ID = Y`
+    
+- Same request (e.g., multiple services injected): all use `ID = X`
+
+**You said:**
+
+Is the controller object recreated each time in our app when a different HTTP request hits?
+
+**ChatGPT said:**
+
+Yes, the **controller object** is recreated for each HTTP request that hits your application.
+
+When a new request comes in, the **ASP.NET Core framework** creates a new instance of the controller class to handle that request. This ensures that each request is handled independently, and controllers can manage their own state across requests.
+
+**Key details:**
+
+- **New Controller Per Request**: Every time a request comes in, a new instance of the controller is created to handle that request.
+    
+- **Dependency Injection (DI)**: While the controller is recreated for each request, the **services** injected into the controller (such as scoped or singleton services) may have different lifetimes, depending on their registration in the DI container.
+    
+    - **Scoped services**: Created once per request, shared within that request across the controller and other services.
+        
+    - **Singleton services**: Created once when the application starts and used across all requests.
+
+**Example:**
+
+Let's say we have a controller and a scoped service:
+
+```csharp
+public class MyController : Controller
+{
+    private readonly IMyService _myService;
+
+    public MyController(IMyService myService)
+    {
+        _myService = myService;
+    }
+
+    public IActionResult Index()
+    {
+        var result = _myService.GetData();
+        return View(result);
+    }
+}
+```
+
+And the `IMyService` is registered as scoped:
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddScoped<IMyService, MyService>();
+}
+```
+
+**What happens when a request comes in?**
+
+- A **new instance of `MyController`** is created for each request.
+    
+- The **`IMyService`** is injected and a **new instance of `MyService`** is created once per request and shared within the request.
+
+This allows each request to have its own instance of the controller and ensures that scoped services (like `IMyService`) are created and managed independently for each request.
 # Bookmarks
 [Introduction to Identity on ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio)
 
