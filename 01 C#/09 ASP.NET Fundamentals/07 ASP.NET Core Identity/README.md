@@ -903,6 +903,164 @@ public void ConfigureServices(IServiceCollection services)
 - The **`IMyService`** is injected and a **new instance of `MyService`** is created once per request and shared within the request.
 
 This allows each request to have its own instance of the controller and ensures that scoped services (like `IMyService`) are created and managed independently for each request.
+## `UserStore`
+The **`UserStore`** in ASP.NET Core Identity is a class that provides the **persistence logic** for user-related data. It's the bridge between the `UserManager<TUser>` and your **data source** (like a database).
+
+**🔧 What it does:**
+
+`UserStore` implements interfaces like `IUserStore<TUser>`, `IUserPasswordStore<TUser>`, `IUserEmailStore<TUser>`, etc., which define methods for CRUD operations on user properties.
+
+For example:
+
+- `CreateAsync()` → adds a user to the database.
+    
+- `FindByNameAsync()` → fetches a user by username.
+    
+- `SetPasswordHashAsync()` → sets a hashed password.
+    
+- `GetRolesAsync()` → gets user roles.
+
+🧱 **Where is it used?**
+
+It's typically registered with dependency injection during Identity setup:
+
+```csharp
+services.AddIdentity<ApplicationUser, IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+```
+
+In this example:
+
+- `AddEntityFrameworkStores<ApplicationDbContext>()` registers `UserStore<ApplicationUser>` and `RoleStore<IdentityRole>` using EF Core under the hood.
+    
+- `UserManager` then uses this registered `UserStore` to save and retrieve user data.
+
+📝 **Custom `UserStore`?**
+
+You can implement your own `IUserStore<TUser>` if you're **not using Entity Framework** or want to persist users in:
+
+- MongoDB
+    
+- Azure Table Storage
+    
+- A web API
+    
+- Flat files, etc.
+
+✅ **Why we need `UserStore` in ASP.NET Core Identity**
+
+Think of **`UserManager<TUser>`** like a manager that handles higher-level user operations (like creating users, changing passwords, adding roles), but **it doesn’t know how to actually talk to the database**. That's the job of the `UserStore`.
+
+**Analogy:**
+
+Imagine `UserManager` is a **hotel receptionist**, and the `UserStore` is the **key cabinet** where the room keys (data) are actually stored. The receptionist knows how to handle a guest but always uses the cabinet to get or set anything.
+
+👇 **What would happen without a `UserStore`?**
+
+Without `UserStore`, `UserManager` wouldn’t know **how to fetch a user**, **how to save one**, or even **how to update their password**. It delegates those low-level operations to the `UserStore`, which contains **database-specific logic**.
+
+So:
+
+- `UserManager.CreateAsync(user, password)`  
+    → Calls `UserStore.CreateAsync(user)`  
+    → Saves the user in the DB (via EF Core or other)
+
+- `UserManager.FindByNameAsync(username)`  
+    → Calls `UserStore.FindByNameAsync(username)`  
+    → Retrieves the user from the DB
+
+⚙️ **Why is this separation useful?**
+
+It allows ASP.NET Identity to:
+
+- Be **storage-agnostic**: it doesn't care if you're using EF Core, MongoDB, or something else.
+    
+- Be **testable**: you can mock the store in unit tests.
+    
+- Be **extensible**: you can write a custom `UserStore` for any kind of data source.
+
+Let’s walk through what happens internally when you call:
+
+```csharp
+await userManager.CreateAsync(user, "Password123!");
+```
+
+🧠 **Step-by-step breakdown**
+
+1. **Password gets hashed**
+
+`UserManager.CreateAsync(user, password)` first hashes the password using a configured password hasher:
+
+```csharp
+var hash = _passwordHasher.HashPassword(user, password);
+user.PasswordHash = hash;
+```
+
+So now your user object has a `PasswordHash`.
+
+2. **Validation is performed**
+
+It checks:
+
+- Is the username unique?
+    
+- Does the password meet the policy?
+    
+- Are all required fields filled?
+
+```csharp
+var errors = ValidateUser(user);
+var pwdErrors = ValidatePassword(password);
+```
+
+If any validations fail, the method returns `IdentityResult.Failed(...)`.
+
+3. **User is saved using the `UserStore`**
+
+If validation passes, `UserManager` calls:
+
+```csharp
+await _userStore.CreateAsync(user, cancellationToken);
+```
+
+This is where the real storage happens.
+
+🔍 **And what is `_userStore`?**
+
+Usually, it’s an instance of:
+
+```csharp
+UserStore<IdentityUser> : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUser>, ...
+```
+
+That means it knows how to:
+
+- Insert a user into your database (usually with Entity Framework Core)
+    
+- Set and retrieve passwords, emails, roles, etc.
+
+Under the hood, this line typically looks like:
+
+```csharp
+_context.Users.Add(user); // _context is your EF DbContext
+await _context.SaveChangesAsync();
+```
+
+4. **Final result is returned**
+
+After the store saves the user, `UserManager` returns:
+
+```csharp
+IdentityResult.Success
+```
+
+💡** Summary**
+
+|Layer|Responsibility|
+|---|---|
+|`UserManager`|Handles rules, validation, workflows|
+|`UserStore`|Handles database logic (Create, Find, Update, etc.)|
+|`DbContext`|The actual EF Core connection to your SQL Server|
 # Bookmarks
 [Introduction to Identity on ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio)
 
