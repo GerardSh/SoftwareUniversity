@@ -590,6 +590,59 @@ return View(model);
 |Code + View separation|Mixed (code-behind + view)|Separated (Controller + View)|
 
 _Conceptually_ they do the same thing, but Razor Pages streamline the pattern by tightly coupling the model and view into one unit.
+## Razor Pages Routing
+**Razor Pages do _not_ use the `MapControllerRoute` mapping**.
+
+Here’s the breakdown:
+
+✅ **Razor Pages**
+
+- **Routing is file- and folder-based**.
+    
+- Defined by:
+    
+    - The physical location of `.cshtml` files inside the `Pages` or `Areas/.../Pages` folder.
+        
+    - The `@page` directive (which can also accept a route template, like `@page "{id?}"`).
+        
+- Razor Pages routing is enabled by calling:
+
+```csharp
+app.MapRazorPages();
+```
+
+- `MapControllerRoute` **does not affect Razor Pages** at all.
+
+✅ **MVC Controllers**
+
+- Routing is defined by templates like:
+
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+- This is used **only** for controllers and their actions.
+
+**In short:**
+
+|Feature|Razor Pages|MVC Controllers|
+|---|---|---|
+|Uses `MapControllerRoute`?|❌ No|✅ Yes|
+|Uses `MapRazorPages()`?|✅ Yes|❌ No|
+|Routing based on file structure?|✅ Yes|❌ No|
+|Uses `[Controller]` + `[Action]`?|❌ No|✅ Yes|
+
+So if you’re using Razor Pages and want to use custom route parameters, they must be defined directly using `@page` in the `.cshtml` file — **the MVC route map won't apply**. The **Area** is like the **Controller**, and the **Page** is like the **Action** in the MVC world.
+
+**To Recap:**
+
+- **Area** = **Controller** in MVC (group of related pages).
+    
+- **Page** = **Action** in MVC (a specific page that handles a route).
+
+This analogy helps you map out how to work with both Razor Pages and MVC within your application.
 ## Generic Type Specialization with Defaults
 In ASP.NET, `IdentityUser` uses `string` as the default key type. Since it's actually a generic class, why don't we write `IdentityUser<string>` instead of just `IdentityUser`?
 
@@ -1112,6 +1165,22 @@ After the store saves the user, `UserManager` returns:
 IdentityResult.Success
 ```
 
+**In other words:**
+
+**`UserManager`** is the primary class you work with, but it does not handle how or where the data is stored. It delegates that responsibility to **UserStore**. For example, when you create a new user, **UserManager** will say to **UserStore**, _"I have a new user that needs to be saved. I don't know where or how you’ll save it, just take care of it."_
+
+The **`UserStore`** is responsible for the actual storage operations, including where the data is saved, which database is used, and how the data is handled. The default **UserStore** implementation uses **Entity Framework** and **SQL Server**, but if you need to use a different database like **MySQL**, you would need to use a different **UserStore** implementation.
+
+This flexibility is one of the key features added in ASP.NET Core Identity, which allows it to work with different data stores. In contrast, **ASP.NET Membership** was tightly coupled to **SQL Server** and didn't provide this level of abstraction.
+
+A similar concept applies to **`RoleManager`** and **`RoleStore`**, where **`RoleManager`** works with **`RoleStore`** to handle role data storage, maintaining the same separation of concerns.
+
+he **`UserStore`** and **`RoleStore`** serve as **abstractions** that hide the complexities of how and where the data is actually stored. They act like **service layers** or **middlemen**, handling all the low-level data operations (like saving, retrieving, or deleting users and roles) without the **`UserManager`** or **`RoleManager`** needing to know the specific details about the database or data store being used.
+
+This makes it easy to switch out the underlying storage system (for example, from SQL Server to MongoDB) without having to rewrite the logic in **`UserManager`** or **`RoleManager`**. You just plug in a new **`UserStore`** or **`RoleStore`** implementation that knows how to interact with the new database.
+
+In short, they're like **service layer**: they handle the specifics, while the **`UserManager`** and **`RoleManager`** focus on the high-level logic of user and role management.
+
 💡**Summary**
 
 |Layer|Responsibility|
@@ -1154,6 +1223,64 @@ IdentityResult.Success
 |Security|Encrypted, signed, uses HTTPS-only settings by default|
 
 This is why once a user logs in, their identity is available through `User.Identity` in controllers or Razor Pages without needing to pass anything manually.
+## User Object
+The `User` object is **automatically injected** and is available by default in both **MVC controllers** and **Razor Pages** without any special configuration. This is part of the ASP.NET Core framework's built-in functionality to handle authentication and authorization.
+
+- **In MVC controllers**, the `User` property is available on every action, giving you access to the authenticated user's information (such as their identity and claims).
+
+- **In Razor Pages**, the `User` property is also available in the `PageModel` and in Razor views.
+
+In both cases, the `User` property automatically provides access to the authenticated user's information, and you don't need to inject anything manually. It's part of the `HttpContext` that ASP.NET Core provides for each request. This makes it super convenient to use user-related data across your actions, pages, and views.
+## Partial Views
+Partial views in Razor are indeed just regular Razor views, but they are used to inject reusable UI elements into other views. The key difference is that partial views are not meant to be standalone pages. Instead, they are designed to be rendered as part of a larger view.
+
+**Here's how partial views work:**
+
+1. **Reusable UI Elements**: You can think of partial views as smaller pieces of a webpage—like a header, footer, sidebar, or any other UI section that appears on multiple pages. These are components that are shared across different pages.
+    
+2. **Injected into Parent Views**: The partial view is rendered wherever you include the `<partial />` tag in the parent Razor page. The content of the partial view gets injected into the place where the `<partial />` tag is located.
+    
+3. **Rendering Mechanism**: When the page containing the `<partial />` tag is rendered, the Razor engine looks for the partial view (e.g., `_Privacy.cshtml`), and includes its content inside the parent view at the location of the tag.
+
+**Example:**
+
+Let’s break down an example:
+
+`Home.cshtml` (Main View):
+
+```html
+<h1>Welcome to Our Website</h1>
+
+<p>This is the main content of the page.</p>
+
+<!-- Including the partial view here -->
+<partial name="_Privacy" />
+```
+
+`_Privacy.cshtml` (Partial View):
+
+```html
+<div class="privacy-policy">
+    <h2>Privacy Policy</h2>
+    <p>This is our privacy policy content.</p>
+</div>
+```
+
+**What Happens:**
+
+- When the `Home.cshtml` view is rendered, it will include the content from `_Privacy.cshtml` where the `<partial name="_Privacy" />` tag is placed.
+    
+- The `_Privacy.cshtml` view will not be a standalone page but will be rendered as part of the larger `Home.cshtml` page.
+
+**Key Points:**
+
+- **Partial views** are **not full pages**; they are just fragments or reusable parts of a page.
+    
+- The `<partial />` tag is used to **render these fragments** within the parent view.
+    
+- They help you keep your views DRY (Don't Repeat Yourself) by allowing you to reuse common elements across multiple pages.
+
+In summary: partial views allow you to inject specific parts of a page into a parent Razor page, which helps with reusability and modular design.
 # Bookmarks
 [Introduction to Identity on ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio)
 
