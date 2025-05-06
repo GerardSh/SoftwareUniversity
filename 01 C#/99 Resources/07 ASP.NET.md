@@ -25,6 +25,7 @@
 | **[StringLength]**      | Validates that a string property has at most the given maximum length.            |
 | **[Url]**               | Validates that the property has a valid URL format.                               |
 # Methods
+## Redirecting and Views
 `RedirectToAction(string actionName, string controllerName = null, object routeValues = null)` – използва се за пренасочване към друг екшън метод в същия или различен контролер след успешна операция, като например изпращане на форма.
 
 `Redirect(string url)` – прави пренасочване към зададен URL (външен или вътрешен).
@@ -42,7 +43,7 @@
 `PartialView(string viewName, object model)` – връща частичен изглед (partial view), обикновено за AJAX или компоненти.
 
 `Json(object data)` – връща отговор в JSON формат – често използван за API или AJAX заявки.
-
+## Responses
 `BadRequest()` – връща HTTP 400 Bad Request, често при невалидни данни.
 
 `NotFound()` – връща HTTP 404 Not Found, ако нещо не е намерено.
@@ -68,6 +69,109 @@
 `Created(string location, object value)` – връща HTTP статус 201 (Created), когато е създаден нов ресурс, като задава URL на местоположението и стойността на създадения ресурс.
 
 `Accepted(string location, object value)` – връща HTTP статус 202 (Accepted), когато ресурсът е приет, но не е завършен.
+## Identity
+### `UserManager`
+`AddClaimAsync()` – добавя нов клейм (claim) към потребителя, например роля или специфично право.
+
+`DeleteAsync()` – изтрива потребител от базата данни.
+
+`AddPasswordAsync()` – добавя парола към потребител, който е създаден без парола (напр. чрез външна автентикация).
+
+`FindByIdAsync()` – намира потребител по неговото ID.
+
+`FindByNameAsync()` – намира потребител по потребителско име.
+
+`AddToRolesAsync()` – добавя потребителя към няколко роли едновременно.
+
+`GetClaimsAsync()` – връща списък с клеймовете, свързани с даден потребител.
+
+`ChangeEmailAsync()` – променя имейла на потребителя, обикновено със заявка за потвърждение.
+
+`GetRolesAsync()` – връща списък с ролите, в които участва потребителят.
+
+`ChangePasswordAsync()` – променя текущата парола на потребителя след проверка на старата.
+
+`GetUserAsync()` – извлича текущия потребител от контекста на заявката (например чрез `UserManager`).
+
+`CheckPasswordAsync()` – проверява дали въведената парола съответства на запазената парола на потребителя.
+
+`GetUserIdAsync()` – връща ID-то на текущия потребител от `ClaimsPrincipal`.
+
+`ConfirmEmailAsync()` – потвърждава имейл адреса на потребител чрез токен.
+
+`RemoveClaimAsync()` – премахва даден клейм от потребителя.
+
+`CreateAsync()` – създава нов потребител и го записва в базата данни.
+
+`ValidateUserAsync()` – валидира въведените данни на потребителя (обикновено при логин), като проверява име и парола.
+
+`AddToRoleAsync()` – добавя потребителя към една роля.
+
+`RemoveFromRoleAsync()` – премахва потребителя от една роля.
+
+`RemoveFromRolesAsync()` – премахва потребителя от няколко роли.
+
+`IsInRoleAsync()` – проверява дали потребителят участва в дадена роля.
+
+`GetUsersInRoleAsync()` – връща списък с потребители, принадлежащи към дадена роля.
+### `SignInManager`
+`AddClaimsAsync()` – добавя множество клеймове към потребителя.
+
+`FindByEmailAsync()` – намира потребител по имейл адрес.
+
+`GenerateChangePhoneNumberTokenAsync()` – генерира токен за смяна на телефонен номер.
+
+`FindByIdAsync()` – намира потребител по неговото ID.
+
+`GenerateEmailConfirmationTokenAsync()` – генерира токен за потвърждение на имейл.
+
+`IsInRoleAsync()` – проверява дали потребителят принадлежи към дадена роля.
+
+`GeneratePasswordResetTokenAsync()` – генерира токен за възстановяване на парола.
+
+`GetUserId()` – връща ID-то на текущия потребител от `ClaimsPrincipal`.
+
+`GetClaimsAsync()` – връща всички клеймове, свързани с потребителя.
+
+`GetAuthenticationTokenAsync()` – извлича токен, използван за външна автентикация (напр. OAuth).
+
+`ChangeEmailAsync()` – променя имейла на потребителя с потвърждение.
+
+`GetEmailAsync()` – връща текущия имейл адрес на потребителя.
+
+`IsEmailConfirmedAsync()` – проверява дали имейлът на потребителя е потвърден.
+
+`ConfirmEmailAsync()` – потвърждава имейл адреса с помощта на токен.
+
+`CreateSecurityTokenAsync()` – създава security token за потребителя (напр. за JWT или 2FA).
+
+`CreateAsync()` – създава нов потребител и го записва в базата данни.
+
+`GetUserAsync()` – връща потребителския обект от текущия контекст.
+
+`ResetPasswordAsync()` – сменя паролата с помощта на токен за възстановяване.
+
+`DeleteAsync()` – изтрива потребител от системата.
+
+`CheckPasswordAsync()` – проверява дали подадената парола е валидна за потребителя.
+
+`RemoveFromRoleAsync()` – премахва потребителя от определена роля.
+
+`Dispose()` – освобождава ресурси, използвани от `UserManager` или друг контекстен обект.
+
+`RemoveClaimsAsync()` – премахва един или повече клеймове от потребителя.
+### `RoleManager`
+`CreateAsync()` – създава нова роля.
+
+`UpdateAsync()` – редактира съществуваща роля.
+
+`DeleteAsync()` – изтрива роля от базата данни.
+
+`FindByIdAsync()` – намира роля по нейното ID.
+
+`FindByNameAsync()` – намира роля по име.
+
+`RoleExistsAsync()` – проверява дали дадена роля съществува.
 # Tag Helpers
 ## Form
 Help with creating forms and binding model properties.
