@@ -532,6 +532,64 @@ All this is done **through abstraction** — it talks to the database under the 
 - You don’t touch the `DbContext` directly for user management.
     
 - `SignInManager` is a similar service, but for **login/authentication logic.**
+## Razor Pages vs MVC Controllers
+✅ **What’s the Same:**
+
+- **Model Binding**: Both Razor Pages and Controllers use model binding to map form values to C# objects.
+    
+- **Validation**: Both support `ModelState`, data annotations, and validation errors.
+    
+- **Return Views**: Both return views (`View()` or `Page()`) that use the provided model.
+
+❗️**What’s Different:**
+
+1. **Where the Model Ends Up**
+
+- **In Razor Pages**:
+    
+- You typically define a property like:
+        
+```csharp
+[BindProperty]
+public RegisterInputModel Input { get; set; }
+```
+        
+- The framework binds the form data _directly to this property_.
+        
+- When you return `Page()`, the Razor view gets the entire `PageModel` instance — so `@model` refers to the class containing `Input`.
+        
+- **In MVC Controllers**:
+    
+- You usually pass the model as a method parameter:
+        
+```csharp
+public IActionResult Register(RegisterInputModel model)
+```
+        
+- If validation fails, you need to return the view with:
+        
+```csharp
+return View(model);
+```
+        
+- If you don’t pass it manually, the view has no way of knowing what model to use.
+
+2. **Return Value Mechanics**
+
+- `return Page();` in Razor Pages automatically gives the view access to `this` (i.e., the PageModel instance and its properties).
+    
+- `return View();` in MVC needs a model to be explicitly passed (unless you're using `ViewBag` or `ViewData`).
+
+🧠 **Summary**
+
+|Feature|Razor Pages|MVC Controllers|
+|---|---|---|
+|Where model is stored|As a property on `PageModel`|As a parameter in action method|
+|Model binding target|Bound to `[BindProperty]` field|Bound to method parameter|
+|How model reaches the view|Via `PageModel` (`@model`)|Must pass explicitly to `View()`|
+|Code + View separation|Mixed (code-behind + view)|Separated (Controller + View)|
+
+_Conceptually_ they do the same thing, but Razor Pages streamline the pattern by tightly coupling the model and view into one unit.
 ## Generic Type Specialization with Defaults
 In ASP.NET, `IdentityUser` uses `string` as the default key type. Since it's actually a generic class, why don't we write `IdentityUser<string>` instead of just `IdentityUser`?
 
@@ -1054,13 +1112,48 @@ After the store saves the user, `UserManager` returns:
 IdentityResult.Success
 ```
 
-💡** Summary**
+💡**Summary**
 
 |Layer|Responsibility|
 |---|---|
 |`UserManager`|Handles rules, validation, workflows|
 |`UserStore`|Handles database logic (Create, Find, Update, etc.)|
 |`DbContext`|The actual EF Core connection to your SQL Server|
+## Cookies
+✅ What Happens When a User Logs In:
+
+1. **User credentials are validated** (e.g., via `SignInManager.PasswordSignInAsync(...)`).
+    
+2. If the login is successful:
+    
+    - Identity **creates a cookie** that represents the authenticated user.
+        
+    - This is an **authentication cookie** and is **stored in the user's browser**.
+        
+3. On every subsequent request (GET, POST, etc.):
+    
+    - The browser **automatically sends this cookie** with the request.
+        
+    - The server **reads the cookie**, validates it, and knows which user is making the request.
+
+🔐 **What's Inside the Cookie?**
+
+- It's **not** storing the entire user object.
+    
+- It contains an **encrypted and signed ticket** with user claims (like user ID, roles, etc.).
+    
+- ASP.NET Core uses middleware to **decrypt and validate** this on every request.
+
+🧠 **Summary:**
+
+|Aspect|Details|
+|---|---|
+|Where the auth info is stored|In a **secure cookie** in the browser|
+|When it is sent|Automatically with **every request** to the same domain|
+|Who reads it|ASP.NET Core authentication middleware (before controller/page code)|
+|Security|Encrypted, signed, uses HTTPS-only settings by default|
+
+This is why once a user logs in, their identity is available through `User.Identity` in controllers or Razor Pages without needing to pass anything manually.
 # Bookmarks
 [Introduction to Identity on ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio)
 
