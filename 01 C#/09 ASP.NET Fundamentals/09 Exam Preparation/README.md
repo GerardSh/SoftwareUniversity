@@ -4,3 +4,4 @@
 
 1. Set the connection string.
 2. Scaffold the needed Identity pages.
+3. Password requirments.
