@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static GameZone.Common.ModelConstants.Game;
 
 namespace GameZone.Data
 {
@@ -12,12 +13,12 @@ namespace GameZone.Data
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(GameMaxTitleLength)]
         [Comment("Game title")]
         public string Title { get; set; } = null!;
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(GameMaxDescriptionLength)]
         [Comment("Description")]
         public string Description { get; set; } = null!;
 
@@ -26,7 +27,6 @@ namespace GameZone.Data
 
         [Required]
         [ForeignKey(nameof(Publisher))]
-        [MaxLength(50)]
         [Comment("Identifier of the game Publisher")]
         public string PublisherId { get; set; } = null!;
 

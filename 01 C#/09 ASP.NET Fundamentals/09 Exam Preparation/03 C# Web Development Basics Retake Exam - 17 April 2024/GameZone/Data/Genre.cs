@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using static GameZone.Common.ModelConstants.Genre;
 
 namespace GameZone.Data
 {
@@ -10,7 +11,7 @@ namespace GameZone.Data
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(25)]
+        [MaxLength(GenreMaxNameLength)]
         [Comment("Genre name")]
         public string Name { get; set; } = null!;
 
