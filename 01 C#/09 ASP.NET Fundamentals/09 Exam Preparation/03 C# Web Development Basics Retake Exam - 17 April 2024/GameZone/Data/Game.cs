@@ -43,7 +43,7 @@ namespace GameZone.Data
 
         public Genre Genre { get; set; } = null!;
 
-        public ICollection<GamerGame> GamersGames { get; set; }
+        public List<GamerGame> GamersGames { get; set; }
             = new List<GamerGame>();
 
         [Comment("Shows wether game is deleted or not")]

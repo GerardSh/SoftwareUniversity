@@ -8,6 +8,11 @@ namespace GameZone.Controllers
     {
         public IActionResult Index()
         {
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("All", "Game");
+            }
+
             return View();
         }
 
