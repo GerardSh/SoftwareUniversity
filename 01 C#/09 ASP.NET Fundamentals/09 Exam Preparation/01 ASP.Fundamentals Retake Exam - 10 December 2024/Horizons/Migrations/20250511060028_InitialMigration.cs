@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Horizons.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSetup : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -179,9 +179,8 @@ namespace Horizons.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    FavoritesCount = table.Column<int>(type: "int", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PublisherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PublishedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TerrainId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -190,8 +189,8 @@ namespace Horizons.Migrations
                 {
                     table.PrimaryKey("PK_Destinations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Destinations_AspNetUsers_CreatorId",
-                        column: x => x.CreatorId,
+                        name: "FK_Destinations_AspNetUsers_PublisherId",
+                        column: x => x.PublisherId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -200,7 +199,7 @@ namespace Horizons.Migrations
                         column: x => x.TerrainId,
                         principalTable: "Terrains",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,13 +217,19 @@ namespace Horizons.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UsersDestinations_Destinations_DestinationId",
                         column: x => x.DestinationId,
                         principalTable: "Destinations",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "7699db7d-964f-4782-8209-d76562e0fece", 0, "9219295e-4d84-4f9e-a011-0e60b4b174f9", "admin@horizons.com", true, false, null, "ADMIN@HORIZONS.COM", "ADMIN@HORIZONS.COM", "AQAAAAIAAYagAAAAECqVZLP6s4qBKMneVul61kzz5bRnjxHDhRHf2GxoYoguR1MtTat7toKKfLVY+cKnGw==", null, false, "34391b9b-79d5-47bd-95f0-d0bd3ad039b3", false, "admin@horizons.com" });
 
             migrationBuilder.InsertData(
                 table: "Terrains",
@@ -239,6 +244,16 @@ namespace Horizons.Migrations
                     { 6, "Village" },
                     { 7, "Cave" },
                     { 8, "Canyon" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Destinations",
+                columns: new[] { "Id", "Description", "ImageUrl", "IsDeleted", "Name", "PublishedOn", "PublisherId", "TerrainId" },
+                values: new object[,]
+                {
+                    { 1, "A stunning historical landmark nestled in the Rila Mountains.", "https://img.etimg.com/thumb/msid-112831459,width-640,height-480,imgsize-2180890,resizemode-4/rila-monastery-bulgaria.jpg", false, "Rila Monastery", new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(6945), "7699db7d-964f-4782-8209-d76562e0fece", 1 },
+                    { 2, "The sand at Durankulak Beach showcases a pristine golden color, creating a beautiful contrast against the azure waters of the Black Sea.", "https://travelplanner.ro/blog/wp-content/uploads/2023/01/durankulak-beach-1-850x550.jpg.webp", false, "Durankulak Beach", new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(7002), "7699db7d-964f-4782-8209-d76562e0fece", 2 },
+                    { 3, "A mysterious cave located in the Rhodope Mountains.", "https://detskotobnr.binar.bg/wp-content/uploads/2017/11/Diavolsko_garlo_17.jpg", false, "Devil's Throat Cave", new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(7005), "7699db7d-964f-4782-8209-d76562e0fece", 7 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -281,9 +296,9 @@ namespace Horizons.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Destinations_CreatorId",
+                name: "IX_Destinations_PublisherId",
                 table: "Destinations",
-                column: "CreatorId");
+                column: "PublisherId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Destinations_TerrainId",

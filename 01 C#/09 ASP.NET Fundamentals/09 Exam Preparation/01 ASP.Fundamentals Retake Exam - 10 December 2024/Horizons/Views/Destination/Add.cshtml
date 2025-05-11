@@ -1,8 +1,8 @@
-﻿@model Horizons.Models.DestinationAddViewModel
-
+﻿@using Horizons.Data.Models
+@model DestinationAddViewModel
 @{
     ViewData["Title"] = "Add Destination";
-    var today = DateTime.Now.ToString("yyyy-MM-dd");
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
@@ -43,7 +43,7 @@
 
             <div class="col-sm-6 mb-2">
                 <label asp-for="@Model.PublishedOn" class="form-label-add-edit">Published On</label>
-                <input asp-for="@Model.PublishedOn" class="form-control" type="date" aria-required="true" value="@(string.IsNullOrEmpty(Model.PublishedOn) ? today : Model.PublishedOn)" />
+                <input asp-for="@Model.PublishedOn" class="form-control" type="text" aria-required="true" value="@(string.IsNullOrEmpty(Model.PublishedOn) ? today : Model.PublishedOn)" />
                 <span asp-validation-for="@Model.PublishedOn" class="text-danger"></span>
             </div>
 

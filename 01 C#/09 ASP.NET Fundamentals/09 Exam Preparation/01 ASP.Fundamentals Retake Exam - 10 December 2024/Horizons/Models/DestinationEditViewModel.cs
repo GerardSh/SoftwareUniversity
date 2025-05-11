@@ -1,6 +1,5 @@
-﻿using Horizons.Common;
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
+﻿using System.ComponentModel.DataAnnotations;
+using static Horizons.Common.ValidationConstants;
 
 namespace Horizons.Models
 {
@@ -10,26 +9,28 @@ namespace Horizons.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(ValidationConstants.DestinationNameMaxLength, MinimumLength = ValidationConstants.DestinationNameMinLength)]
+        public string PublisherId { get; set; } = null!;
+
+        [Required]
+        [MinLength(DestinationNameMinLength)]
+        [MaxLength(DestinationNameMaxLength)]
         public string Name { get; set; } = null!;
 
         [Required]
-        [StringLength(ValidationConstants.DestinationDescriptionMaxLength, MinimumLength = ValidationConstants.DestinationDescriptionMinLength)]
+        [MinLength(DestinationDescriptionMinLength)]
+        [MaxLength(DestinationDescriptionMaxLength)]
         public string Description { get; set; } = null!;
 
         public string? ImageUrl { get; set; }
 
         [Required]
-        [RegexStringValidator(@"^\d{4}-\d{2}-\d{2}$")]
+        [RegularExpression(@"^\d{2}-\d{2}-\d{4}$", ErrorMessage = $"Date must be in {DestinationDateTimeFormat}.")]
         public string PublishedOn { get; set; } = null!;
 
         [Required]
-        [Range(ValidationConstants.TerrainIdMinValue, ValidationConstants.TerrainIdMaxValue)]
+        [Range(TerrainIdMinValue, TerrainIdMaxValue)]
         public int TerrainId { get; set; }
 
-        [Required]
-        public string PublisherId { get; set; } = null!;
-
-        public virtual IEnumerable<TerrainViewModel>? Terrains { get; set; }
+        public ICollection<TerrainViewModel>? Terrains { get; set; }
     }
 }

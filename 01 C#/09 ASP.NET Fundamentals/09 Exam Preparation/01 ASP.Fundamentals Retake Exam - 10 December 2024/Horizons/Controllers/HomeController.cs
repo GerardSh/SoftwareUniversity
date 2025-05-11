@@ -1,17 +1,16 @@
 ﻿using Horizons.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace Horizons.Controllers
 {
-    [AllowAnonymous]
     public class HomeController : BaseController
     {
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            if (User?.Identity?.IsAuthenticated ?? false)
+            if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Destination");
             }

@@ -1,4 +1,12 @@
-﻿@model Horizons.Models.DestinationDetailsViewModel
+﻿@* 
+    IsPublisher: A boolean property that indicates whether the currently logged-in user is the creator (publisher) of the destination. 
+    If true, the user cannot add the destination to their favorites, the "Favorites" button will not be displayed.
+
+    IsFavorite: A boolean property that indicates whether the currently logged-in user has already added this destination to their favorites.
+    If true, the "Favorites" button will not be displayed.
+*@
+
+@model DestinationDetailsViewModel
 @{
     ViewData["Title"] = "Destination Details";
 }

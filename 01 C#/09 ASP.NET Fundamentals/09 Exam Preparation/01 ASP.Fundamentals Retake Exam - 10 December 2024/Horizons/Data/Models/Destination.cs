@@ -1,25 +1,26 @@
-﻿using Horizons.Common;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-
+using static Horizons.Common.ValidationConstants;
 namespace Horizons.Data.Models
 {
     public class Destination
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(ValidationConstants.DestinationNameMaxLength)]
+        [MaxLength(DestinationNameMaxLength)]
         public string Name { get; set; } = null!;
 
         [Required]
-        [MaxLength(ValidationConstants.DestinationDescriptionMaxLength)]
+        [MaxLength(DestinationDescriptionMaxLength)]
         public string Description { get; set; } = null!;
 
         public string? ImageUrl { get; set; }
 
         [Required]
         public string PublisherId { get; set; } = null!;
+
         public virtual IdentityUser Publisher { get; set; } = null!;
 
         [Required]
@@ -27,11 +28,13 @@ namespace Horizons.Data.Models
 
         [Required]
         public int TerrainId { get; set; }
+
+        [Required]
         public virtual Terrain Terrain { get; set; } = null!;
 
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; }
 
-        public virtual ICollection<UserDestination> UsersDestinations { get; set; } = new HashSet<UserDestination>();
+        public  ICollection<UserDestination> UsersDestinations { get; set; }
+            = new HashSet<UserDestination>();
     }
-
 }

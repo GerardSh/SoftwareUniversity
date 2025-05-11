@@ -1,5 +1,5 @@
-﻿using Horizons.Common;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using static Horizons.Common.ValidationConstants;
 
 namespace Horizons.Data.Models
 {
@@ -9,9 +9,10 @@ namespace Horizons.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(ValidationConstants.TerrainNameMaxLength)]
+        [MaxLength(TerrainNameMaxLength)]
         public string Name { get; set; } = null!;
 
-        public virtual ICollection<Destination> Destinations { get; set; } = new HashSet<Destination>();
+        public virtual ICollection<Destination> Destinations { get; set; }
+            = new HashSet<Destination>();
     }
 }

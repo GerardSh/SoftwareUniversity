@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Horizons.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241202153917_Destinations_IsDeletedFilter_Added")]
-    partial class Destinations_IsDeletedFilter_Added
+    [Migration("20250511060028_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,7 +75,7 @@ namespace Horizons.Migrations
                             ImageUrl = "https://img.etimg.com/thumb/msid-112831459,width-640,height-480,imgsize-2180890,resizemode-4/rila-monastery-bulgaria.jpg",
                             IsDeleted = false,
                             Name = "Rila Monastery",
-                            PublishedOn = new DateTime(2024, 12, 2, 17, 39, 16, 506, DateTimeKind.Local).AddTicks(5460),
+                            PublishedOn = new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(6945),
                             PublisherId = "7699db7d-964f-4782-8209-d76562e0fece",
                             TerrainId = 1
                         },
@@ -86,7 +86,7 @@ namespace Horizons.Migrations
                             ImageUrl = "https://travelplanner.ro/blog/wp-content/uploads/2023/01/durankulak-beach-1-850x550.jpg.webp",
                             IsDeleted = false,
                             Name = "Durankulak Beach",
-                            PublishedOn = new DateTime(2024, 12, 2, 17, 39, 16, 506, DateTimeKind.Local).AddTicks(5508),
+                            PublishedOn = new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(7002),
                             PublisherId = "7699db7d-964f-4782-8209-d76562e0fece",
                             TerrainId = 2
                         },
@@ -97,7 +97,7 @@ namespace Horizons.Migrations
                             ImageUrl = "https://detskotobnr.binar.bg/wp-content/uploads/2017/11/Diavolsko_garlo_17.jpg",
                             IsDeleted = false,
                             Name = "Devil's Throat Cave",
-                            PublishedOn = new DateTime(2024, 12, 2, 17, 39, 16, 506, DateTimeKind.Local).AddTicks(5511),
+                            PublishedOn = new DateTime(2025, 5, 11, 9, 0, 27, 711, DateTimeKind.Local).AddTicks(7005),
                             PublisherId = "7699db7d-964f-4782-8209-d76562e0fece",
                             TerrainId = 7
                         });
@@ -299,15 +299,15 @@ namespace Horizons.Migrations
                         {
                             Id = "7699db7d-964f-4782-8209-d76562e0fece",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0ad2299c-ca2f-48b2-a2d0-3126281d111a",
+                            ConcurrencyStamp = "9219295e-4d84-4f9e-a011-0e60b4b174f9",
                             Email = "admin@horizons.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@HORIZONS.COM",
                             NormalizedUserName = "ADMIN@HORIZONS.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIcb7Egf8v+2TKNpiTQYp2keF6ht+O/iMw9ZJN/5KQqDBphrmsdgPhHnB7Wb+DJeaw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECqVZLP6s4qBKMneVul61kzz5bRnjxHDhRHf2GxoYoguR1MtTat7toKKfLVY+cKnGw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f6208567-53ce-4190-9176-5ef706154062",
+                            SecurityStamp = "34391b9b-79d5-47bd-95f0-d0bd3ad039b3",
                             TwoFactorEnabled = false,
                             UserName = "admin@horizons.com"
                         });
@@ -409,7 +409,7 @@ namespace Horizons.Migrations
                     b.HasOne("Horizons.Data.Models.Terrain", "Terrain")
                         .WithMany("Destinations")
                         .HasForeignKey("TerrainId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Publisher");
@@ -422,13 +422,13 @@ namespace Horizons.Migrations
                     b.HasOne("Horizons.Data.Models.Destination", "Destination")
                         .WithMany("UsersDestinations")
                         .HasForeignKey("DestinationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Destination");

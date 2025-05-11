@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Horizons.Data
 {
@@ -23,29 +22,32 @@ namespace Horizons.Data
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<UserDestination>()
+                .HasKey(ud => new { ud.DestinationId, ud.UserId });
+
             builder.Entity<Destination>()
                 .HasOne(d => d.Terrain)
                 .WithMany(t => t.Destinations)
                 .HasForeignKey(d => d.TerrainId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Destination>()
-                .HasQueryFilter(d => !d.IsDeleted);
+               .HasQueryFilter(d => !d.IsDeleted);
 
             builder.Entity<UserDestination>()
-                .HasKey(ud => new { ud.DestinationId, ud.UserId });
+               .HasQueryFilter(ud => !ud.Destination.IsDeleted);
 
             builder.Entity<UserDestination>()
                 .HasOne(ud => ud.Destination)
                 .WithMany(d => d.UsersDestinations)
                 .HasForeignKey(ud => ud.DestinationId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<UserDestination>()
                 .HasOne(ud => ud.User)
                 .WithMany()
                 .HasForeignKey(ud => ud.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             var defaultUser = new IdentityUser
             {

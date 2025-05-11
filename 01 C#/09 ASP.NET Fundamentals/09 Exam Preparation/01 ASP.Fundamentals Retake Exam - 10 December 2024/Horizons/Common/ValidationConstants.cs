@@ -1,14 +1,15 @@
 ﻿namespace Horizons.Common
 {
-    public class ValidationConstants
+    public static class ValidationConstants
     {
-        //Destination
+        // Destination
         public const int DestinationNameMinLength = 3;
         public const int DestinationNameMaxLength = 80;
         public const int DestinationDescriptionMinLength = 10;
         public const int DestinationDescriptionMaxLength = 250;
+        public const string DestinationDateTimeFormat = "dd-MM-yyyy";
 
-        //Terrain
+        // Terrain
         public const int TerrainNameMinLength = 3;
         public const int TerrainNameMaxLength = 20;
         public const int TerrainIdMinValue = 1;

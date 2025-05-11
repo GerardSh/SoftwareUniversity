@@ -1,6 +1,4 @@
 using Horizons.Data;
-using Horizons.Services;
-using Horizons.Services.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,14 +20,11 @@ namespace Horizons
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;                
-             })
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            builder.Services.AddScoped<IDestinationService, DestinationService>();
-
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -51,7 +46,6 @@ namespace Horizons
 
             app.UseRouting();
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
