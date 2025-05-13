@@ -37,7 +37,7 @@ namespace DeskMarket.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -110,7 +110,7 @@ namespace DeskMarket.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("DeskMarket.Data.Models.ProductClient", b =>
@@ -125,7 +125,7 @@ namespace DeskMarket.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ProductClient");
+                    b.ToTable("ProductsClients", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

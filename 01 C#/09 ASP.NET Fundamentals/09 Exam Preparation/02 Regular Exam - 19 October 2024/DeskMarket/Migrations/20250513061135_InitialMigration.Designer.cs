@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeskMarket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250512072358_InitialMigration")]
+    [Migration("20250513061135_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -40,7 +40,7 @@ namespace DeskMarket.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -113,7 +113,7 @@ namespace DeskMarket.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("DeskMarket.Data.Models.ProductClient", b =>
@@ -128,7 +128,7 @@ namespace DeskMarket.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ProductClient");
+                    b.ToTable("ProductsClients");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

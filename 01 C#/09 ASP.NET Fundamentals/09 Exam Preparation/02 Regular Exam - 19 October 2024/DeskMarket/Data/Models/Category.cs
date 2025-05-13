@@ -12,7 +12,7 @@ namespace DeskMarket.Data.Models
         [MaxLength(CategoryNameMaxLength)]
         public string Name { get; set; } = null!;
 
-        public ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
             = new HashSet<Product>();
     }
 }

@@ -27,7 +27,7 @@ namespace DeskMarket.Data.Models
         [Required]
         public string SellerId { get; set; } = null!;
 
-        public IdentityUser Seller { get; set; } = null!;
+        public virtual IdentityUser Seller { get; set; } = null!;
 
         [Required]
         public DateTime AddedOn { get; set; }
@@ -35,11 +35,11 @@ namespace DeskMarket.Data.Models
         [Required]
         public int CategoryId { get; set; }
 
-        public Category Category { get; set; } = null!;
+        public virtual Category Category { get; set; } = null!;
 
         public bool IsDeleted { get; set; } = false;
 
-        public ICollection<ProductClient> ProductsClients { get; set; } 
+        public virtual ICollection<ProductClient> ProductsClients { get; set; } 
             = new HashSet<ProductClient>();
     }
 
