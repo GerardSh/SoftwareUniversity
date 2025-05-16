@@ -722,9 +722,8 @@ public class HelloWorldViewComponent : ViewComponent
 - input полета
 
 - линкове
-    
+
 - форми
-    
 
 Въпреки това, днес се препоръчва да се избягва използването на HTML Helpers и вместо това да се използват Tag Helpers, които са по-модерни и удобни за работа.
 
@@ -744,8 +743,614 @@ public class HelloWorldViewComponent : ViewComponent
 | `@Html.Label`        | Създава етикет            |
 | `@Html.DropDownList` | Създава падащ списък      |
 | `@Html.Action`       | Рендерира действие        |
-### Tag Helper
+### Tag Helpers
+**Tag Helper-ите** позволяват на сървърния C# код да участва в **генерирането и рендерирането на HTML елементи** в Razor View-та.  
 
+Те правят кода по-четим и по-близък до стандартния HTML, в сравнение с HTML Helpers (напр. `@Html.TextBox`).  
+
+Има вградени Tag Helper-и за често срещани задачи – **формуляри**, **връзки**, **ресурси (CSS/JS)** и др.  
+
+Могат да се създават и **собствени Tag Helper-и**, или да се ползват такива от **GitHub** или чрез **NuGet пакети**, за по-специфични нужди.
+
+Атрибутите често започват с `asp-`.
+
+Изглеждат като HTML, но всъщност не е валиден HTML. Това е специален синтаксис, създаден от Razor. **Tag Helpers** са функционалности в ASP.NET Core, които позволяват на Razor да генерира динамичен HTML код чрез атрибути, добавени към HTML тагове. Те улесняват работата с форми, линкове, валидиране, частични изгледи и други често използвани компоненти. Microsoft насърчава използването на Tag Helpers, тъй като те визуално наподобяват HTML и са по-удобни за дизайнери и front-end разработчици.
+
+**Tag Helper-ите обикновено се използват чрез атрибути**, добавени към стандартни HTML елементи, **но някои от тях представляват и цели елементи**, създадени специално от Razor.
+
+**Примери:**
+
+**Като атрибут (най-често)**
+
+```html
+<input asp-for="Email" class="form-control" />
+```
+
+Тук `asp-for` е атрибутен Tag Helper, който свързва елемента с пропърти от модела.
+
+**Като цял елемент**
+
+```html
+<partial name="_LoginPartial" />
+```
+
+Това е **елементен Tag Helper** — `partial` не е стандартен HTML елемент, а специален Razor Tag Helper, който се рендерира със съдържанието на частичното view.
+### Tag Helpers vs HTML Helpers
+| HTML Helpers                         | Tag Helpers                                      |
+| ------------------------------------ | ------------------------------------------------ |
+| Извикват се като методи с `@Html.`   | Използват се като HTML елементи с Razor атрибути |
+| Включват много C# код в markup-а     | По-чист и разбираем синтаксис                    |
+| Изискват преминаване между C# и HTML | Изглеждат като стандартен HTML                   |
+| По-трудни за front-end разработчици  | По-удобни за front-end и дизайнери               |
+| Пример: `@Html.TextBox("Name")`      | Пример: `<input asp-for="Name" />`               |
+### Creating Our Own Tag Helper
+**Пример за Custom Tag Helper:**
+
+**Клас: `HelloTagHelper.cs`**
+
+```csharp
+[HtmlTargetElement("h1")]
+public class HelloTagHelper : TagHelper
+{
+    private const string MessageFormat = "Hello, {0}";
+
+    public string TargetName { get; set; }
+
+    public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        string formattedMessage = string.Format(MessageFormat, this.TargetName);
+        output.Content.SetContent(formattedMessage);
+    }
+}
+```
+
+**View (пример: `Index.cshtml`)**
+
+```html
+@using WebApplication
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper WebApplication.TagHelpers.HelloTagHelper, WebApplication
+
+<div class="tag-helper-content">
+    <h1 target-name="John"></h1>
+</div>
+```
+
+**Обяснение:**
+
+- Тагът `<h1 target-name="John"></h1>` се разпознава като обект от тип `HelloTagHelper`.
+- Razor изпълнява `Process()`, който заменя съдържанието на таг-а.
+- Ще се визуализира:
+
+```html
+<h1>Hello, John</h1>
+```
+
+**Забележки:**
+
+- Атрибутът `[HtmlTargetElement("h1")]` указва на кой HTML елемент да се прикачи този Tag Helper.
+- Името на пропъртито `TargetName` съответства на `target-name` в HTML (PascalCase ➜ kebab-case).
+## Routing
+### Route Constraints
+
+**Route Constraints** са ограничения, които се прилагат върху сегментите на URL адреса, с цел да се контролира кои заявки да достигат до даден маршрут. Те позволяват прецизно филтриране чрез регулярни изрази.
+
+**Основни характеристики:**
+
+- Позволяват проверка на форматите на стойности в URL шаблоните.
+
+- Съвместими са с .NET `Regex` класа.
+
+- Често се използват за дати, ID-та, имена и други параметри.
+
+**Пример:**
+
+```csharp
+endpoints.MapControllerRoute(
+    name: "blog",
+    pattern: "{year}/{month}/{day}",
+    defaults: new { controller = "Blog", action = "ByDate" },
+    constraints: new
+    {
+        year = @"\d{4}",      // exactly 4 digits (e.g., 2025)
+        month = @"\d{1,2}",   // 1 or 2 digits (e.g., 5 or 12)
+        day = @"\d{1,2}"      // 1 or 2 digits (e.g., 1 or 30)
+    }
+);
+```
+
+**Контролер:**
+
+```csharp
+public class BlogController : Controller
+{
+    public IActionResult ByDate(string year, string month, string day)
+    {
+        // Logic for displaying a blog post by date
+        return View();
+    }
+}
+```
+
+Така ограниченията гарантират, че само валидни дати ще преминават към действието `ByDate`.
+
+Можем да дефинираме множество маршрути по този начин, като всеки е специално създаден за конкретен контролер и действие с неговия собствен URL шаблон и ограничения. По този начин всяка заявка се насочва точно към желаното място.
+
+Например, можем да имаме:
+
+```csharp
+endpoints.MapControllerRoute(
+    name: "blogByDate",
+    pattern: "{year}/{month}/{day}",
+    defaults: new { controller = "Blog", action = "ByDate" },
+    constraints: new { year = @"\d{4}", month = @"\d{1,2}", day = @"\d{1,2}" }
+);
+
+endpoints.MapControllerRoute(
+    name: "productsByCategory",
+    pattern: "products/{category}",
+    defaults: new { controller = "Products", action = "ByCategory" }
+);
+
+endpoints.MapControllerRoute(
+    name: "homeIndex",
+    pattern: "",
+    defaults: new { controller = "Home", action = "Index" }
+);
+```
+
+Всеки маршрут обработва различен сценарий и тъй като шаблоните и ограниченията са специфични, заявките се маршрутизират точно както искаме.
+
+Важно е да имаме предвид:
+
+- Поредността на регистриране на маршрутите е важна — първият съвпадащ маршрут се избира.
+
+- Можем да комбинираме стойности по подразбиране, ограничения и шаблони, за да сме много конкретни или по-общи.
+
+- За по-динамично маршрутизиране можем да използваме catch-all или параметризирани маршрути.
+
+Този подход с дефиниране на множество ясни маршрути е често използван, когато искаме да организираме сложни приложения с ясна URL структура.
+### Attribute Routing
+Използва се набор от атрибути, които директно свързват действията с маршрутни шаблони.
+
+Имат по-голям приоритет спрямо конвенционалното маршрутизиране (conventional routing), което се дефинира в `Program.cs` с метода `MapControllerRoute`. Ако има съвпадение между атрибутно зададен маршрут и конвенционален маршрут, атрибутният маршрут ще бъде избран и изпълнен първо. Това позволява по-фина и специфична настройка на маршрутите директно върху контролерите и действията.
+
+Може да се дефинира и HTTP методът (GET, POST и т.н.) директно в атрибута.
+
+Атрибутите `HttpGet`, `HttpPost` и други често се използват в REST API-та.
+
+Attribute routing позволява да създадем няколко маршрута към едно и също действие.
+
+Позволява също комбиниране на маршрути за контролер и действия.
+
+```csharp
+public class HomeController : Controller
+{
+    [Route("/")]
+    public IActionResult Index() => View();
+}
+
+public class HomeController : Controller
+{
+    [HttpGet("/")]
+    public IActionResult Index() => View();
+}
+
+public class UsersController : Controller
+{
+    [HttpPost("Login")]
+    public IActionResult Login() => View();
+}
+```
+
+**Пример с няколко маршрута към едно действие:**
+
+```csharp
+public class HomeController : Controller
+{
+    // ...
+    [Route("/")]
+    [Route("Index")]
+    public IActionResult Index()
+    {
+        return View();
+    }
+}
+```
+
+**Комбиниране на маршрут за контролер и действие**
+
+```csharp
+[Route("Home")]
+public class HomeController : Controller
+{
+    // ...
+    [Route("/")]       // Does not combine, Route – /
+    [Route("Index")]   // Route - /Home/Index
+    [Route("")]        // Route - /Home
+    public IActionResult Index()
+    {
+        return View();
+    }
+}
+```
+
+**Обяснение:**  
+Атрибутите `[Route]` и `[HttpGet]`, `[HttpPost]` и т.н. позволяват директно да зададем URL шаблони и HTTP методи на конкретни действия или контролери. Ако в контролера има атрибут `[Route("Home")]`, той се комбинира с маршрутите на действията, освен ако маршрутът на действието започва с `/`, което означава абсолютен път и не се комбинира.
+
+**С други думи:**
+
+Ако **атрибутът на екшъна започва със `/`**, **той се приема като абсолютен маршрут** – напълно замества маршрута от контролера. В този случай **атрибутът на контролера се игнорира**.
+
+Ако **атрибутът на екшъна _не_ започва със `/`**, **той се комбинира с маршрута от контролера**. Така се образува пълният маршрут, например: `[Route("Home")]` на контролера + `[Route("Index")]` на екшъна → `/Home/Index`.
+
+Пример:
+
+```csharp
+[Route("Home")]
+public class HomeController : Controller
+{
+	[Route("Index")]     // Result: /Home/Index (combined with the controller's route)
+	[Route("/Main")]     // Result: /Main (controller's route is ignored because of the leading slash)
+    public IActionResult Index() => View();
+}
+
+```
+
+**Обобщение:**
+
+- `/` в началото → **абсолютен маршрут**
+- без `/` → **относителен маршрут**, комбинира се с този от контролера
+
+Това поведение позволява гъвкавост при дефиниране на пътищата.
+### Static Files Routing
+Можем да конфигурираме приложението да обслужва статични файлове от **друга папка, различна от `wwwroot`**, чрез `StaticFileOptions`:
+
+```csharp
+app.UseStaticFiles(
+    new StaticFileOptions()
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), "OtherFiles")),
+        RequestPath = new PathString("/files")
+    });
+```
+
+Какво прави това:
+
+- Конфигурацията позволява достъп до файлове от папка **`OtherFiles`**.
+
+- Тези файлове ще бъдат достъпни чрез URL адреси, започващи с `/files`.
+
+**Пример:**
+
+- Ако в папката `OtherFiles` има файл `style.css`, той ще бъде достъпен на адрес - `http://{my-app}/files/style.css`
+
+Тази настройка позволява да обслужваме файлове извън `wwwroot` за конкретен URL префикс.
+## Dependency Injection
+Това е **друг обект**, от който нашият клас **зависи**, за да функционира правилно. Например, нашата бизнес логика обикновено зависи от data слоя, тъй като ѝ трябват данни, за да изпълни своите задачи, а тези данни трябва да дойдат отнякъде.
+
+От своя страна, тази бизнес логика представлява зависимост за контролерите, които приемат и валидират клиентските заявки, но не знаят какво да правят с тях. Те подават входните данни към бизнес логиката, която обработва информацията, но самата тя също зависи от data слоя, за да може да достъпи нужните данни.
+
+Тези зависимости трябва да се управляват по структуриран начин. Понякога дървото на зависимостите може да стане много голямо – за да създадем един прост обект, може да се наложи да му подадем множество други. Бизнес логиката ни може да зависи и от допълнителни елементи като логери, конфигурации, HTTP клиенти и др.
+
+Ако започнем да инстанцираме всички тези зависимости ръчно, ще се сблъскаме с верига от зависимости, където всяка зависи от друга, което води до сложно и трудно управляемо приложение. Затова се използва подходът **Dependency Injection**, който автоматизира създаването и подаването на зависимости и прави кода по-гъвкав, лесен за тестове и поддръжка.
+
+Примери за зависимости:
+
+- Framework компоненти
+
+- Достъп до база данни
+
+- Файлова система
+
+- Услуги / доставчици (providers)
+
+Класове, които зависят един от друг, се наричат **coupled** (свързани).
+
+Зависимостите са **проблем**, когато са твърде директни, защото:
+
+- Намаляват **повторната употреба (reuse)**
+
+- Затрудняват **тестване и поддръжка**
+
+Ако нещо се промени в другия клас, от който нашият клас зависи, е възможно нашият код да спре да работи. Затова не бива да зависим от конкретни имплементации, а от интерфейси. Докато интерфейсът остава същият, каквото и да се променя в имплементацията, нашият код ще продължи да работи коректно.
+Целта е да сведем до минимум зависимостите към конкретни класове и вместо това да зависим от абстракции. Това прави системата по-гъвкава, по-лесна за поддръжка и по-малко чувствителна към промени.
+
+**Пример на код с твърда зависимост:**
+
+```csharp
+public class Customer
+{   // Customer class is dependent on specific service
+    private CustomerService customerService = new CustomerService("Service"); 
+}
+```
+
+**Dependency Examples:**
+
+| **Dependent** | **Dependency** |
+| ------------- | -------------- |
+| Project       | Framework      |
+| Service       | Database       |
+| Class         | Another Class  |
+### Dependency Injection Design Pattern
+Dependency Injection (DI) е популярен шаблон за проектиране.
+
+Това е техника за постигане на **инверсия на контрола (IoC)**. Когато сами създаваме конкретна имплементация в нашия клас, **контролът върху зависимостите е при нас**. При Dependency Injection обаче, **контролът се измества навън** — ние само казваме, че ни трябва нещо, което имплементира даден интерфейс, а **IoC контейнерът** решава **коя конкретна имплементация** да използва и ни я предоставя. Контейнерът знае коя е текущата (или регистрираната) имплементация за дадения интерфейс и я "инжектира" там, където е нужна.
+
+Класовете **трябва да декларират от какво имат нужда**, а не сами да си го създават.
+
+**Конструкторите трябва да получават зависимостите** (т.нар. _constructor injection_).
+
+Зависимостите (обикновено интерфейси) **се подават отвън** към класа.
+
+Класовете **не създават сами своите зависимости**.
+
+**Пример:**
+
+Ако в класа ни директно създаваме обект от тип `CustomerService`, и поради някаква причина този клас бъде обявен за остарял (deprecated) и бъде заменен с нов — `NewCustomerService`, тогава нашият клас ще спре да работи. Това се случва, защото сме силно **обвързани (coupled)** с конкретната имплементация.
+
+Ако обаче използваме **Dependency Injection** и нашият клас зависи от интерфейс — например `ICustomerService` — тогава **единственото място**, на което трябва да направим промяна, е в **IoC контейнера**. Просто му казваме: "всеки път, когато някой поиска `ICustomerService`, да получава `NewCustomerService`." Така **нашият клас продължава да работи** без никакви промени, защото той не знае и не се интересува **коя точно е имплементацията** — важното е, че тя спазва нужния интерфейс.
+
+**Без Dependency Injection (coupled code)**
+
+```csharp
+public class CustomerService
+{
+    public void HandleCustomer()
+    {
+        // Logic
+    }
+}
+
+public class MyController
+{
+    private readonly CustomerService _customerService;
+
+    public MyController()
+    {
+        // Create the concrete implementation directly
+        _customerService = new CustomerService();
+    }
+
+    public void DoSomething()
+    {
+        _customerService.HandleCustomer();
+    }
+}
+```
+
+Проблем: Ако `CustomerService` бъде заменен с `NewCustomerService`, трябва да отидем **във всеки клас**, който го използва, и да го сменим ръчно.
+
+**С Dependency Injection (decoupled code)**
+
+```csharp
+public interface ICustomerService
+{
+    void HandleCustomer();
+}
+
+public class CustomerService : ICustomerService
+{
+    public void HandleCustomer()
+    {
+        // Logic
+    }
+}
+
+public class MyController
+{
+    private readonly ICustomerService _customerService;
+
+    // Injecting the dependency via the constructor
+    public MyController(ICustomerService customerService)
+    {
+        _customerService = customerService;
+    }
+
+    public void DoSomething()
+    {
+        _customerService.HandleCustomer();
+    }
+}
+```
+
+```csharp
+// In Program.cs
+services.AddScoped<ICustomerService, CustomerService>();
+```
+
+Ако в бъдеще искаме да използваме `NewCustomerService`, просто сменяме регистрацията:
+
+```csharp
+services.AddScoped<ICustomerService, NewCustomerService>();
+```
+
+Навсякъде, където се ползва `ICustomerService`, автоматично ще се използва новата имплементация, без да пипаме никой от класовете, които я ползват.
+### Scheme
+Това е примерна схема, която показва как работи Dependency Injection:
+
+**Client** 
+
+→ `CustomerController`  
+Това е класът, който **има нужда от услуга** (зависимост).
+
+**Injector** 
+
+→ `IoC Container`  
+Той **управлява зависимостите** и решава **какво да подаде** на клиента.
+
+**Service**  
+
+→ `ICustomerService` (интерфейс)  
+→ `CustomerService` (конкретна имплементация)  
+Това е **зависимостта**, от която се нуждае контролера.
+
+**Поток на зависимостта:**
+
+1. `CustomerController` **декларира нужда от** `ICustomerService`.
+2. `IoC Container` **разпознава нуждата** и подава конкретна имплементация — например `CustomerService`.
+3. `CustomerController` **получава услуга**, без да знае как е създадена.
+
+Така **инжектираме зависимостта отвън**, вместо да я създаваме вътре в самия клас. Това осигурява **гъвкавост**, **лесна поддръжка** и **по-добро тестване**.
+### Constructor Injection
+Това е най-често използваният метод за подаване на зависимости. Ето как изглеждат предимствата и недостатъците:
+
+**Предимства (Pros):**
+
+- **Класовете ясно показват от какво зависят** - Самият конструктор изисква нужните зависимости, което ги прави видими и лесни за проследяване. Това следва принципа на **explicit dependencies principle** – винаги трябва **явно** да декларираме от какво зависи класът, за да изпълни своята логика. Така потребителят на класа знае точно какво му е необходимо и няма изненади. Ако зависимостите се инстанцират вътре в класа, ние **скриваме от външния свят** от какво реално зависи той. Това затруднява поддръжката и особено **тестването**, защото не можем лесно да подменим реалната имплементация с **mock** или **stub**. При DI обаче, тестването става лесно, тъй като подаваме абстракции (например `ICustomerService`) отвън. Също така, когато използваме конструкторна инжекция, **няма нужда да документираме отделно от какво зависи класът** – зависимостите са ясно изразени чрез параметрите на конструктора.
+
+- **Работи дори и без IoC контейнер** - Можем ръчно да създадем и подадем зависимостите без нужда от специален фреймуърк.
+
+- **Обектът винаги е във валидно състояние** - Получава всички нужни зависимости още при създаването си.
+
+**Недостатъци (Cons):**
+
+- **Твърде много параметри в конструктора** - Ако класът зависи от много услуги, конструктора може да стане тромав.
+
+- **Някои методи може да не използват всички зависимости** - Получаваме цялата услуга, дори да е нужна само в определени случаи.
+
+**Пример:**
+
+```csharp
+public class Customer
+{
+    private ICustomerService _customerService;
+
+    public Customer(ICustomerService service)
+    {
+        _customerService = service;
+    }
+}
+```
+
+Тук зависимостта (`ICustomerService`) **се подава отвън**, а не се създава вътре в класа. Това ни дава по-голяма гъвкавост и улеснява тестването и поддръжката.
+## Services
+### Service Layer
+Това е допълнителен слой в ASP.NET MVC приложение, който стои между контролерите и базата данни.
+
+Решава проблема с дублиране на код в действията на контролерите.
+
+Съдържа бизнес логиката.
+
+Действията в контролерите не трябва да съдържат логика за достъп до базата данни.
+
+Контролерите могат да получават модели от service layer-а и да ги подават към view-то.
+### Application Services Configuration
+Настройките за конфигуриране, по конвенция, се задават в `Program.cs`.  
+
+Сервизите могат да бъдат конфигурирани по различен начин за Dependency Injection.
+
+IoC контейнерът трябва да знае кой интерфейс на коя конкретна имплементация отговаря. Това се конфигурира чрез `Services` пропъртито на `HostBuilder`-а. Host-ът е този, който създава и конфигурира приложението, след което го стартира. Самото `Services` пропърти представлява Inversion of Control контейнера, който използва вградената в .NET Dependency Injection инфраструктура.
+
+Освен че IoC контейнерът трябва да знае кой интерфейс на коя имплементация отговаря, той трябва да знае и какъв да бъде **животът на тази имплементация**. В .NET имаме три основни начина за регистриране на зависимости:
+
+
+```csharp
+builder.Services.AddTransient<DataService>();
+builder.Services.AddScoped(typeof(DataService));
+builder.Services.AddSingleton<DataService>();
+```
+
+В този пример директно регистрираме конкретна имплементация (`DataService`), без да използваме интерфейс. Това означава, че клиентите ще трябва да заявяват самата имплементация, а не интерфейс – което **не е добър подход** в повечето случаи. По-добре е да регистрираме интерфейс и неговата имплементация, например:
+
+```csharp
+builder.Services.AddScoped<IDataService, DataService>();
+```
+
+Може да използваме както `<>`, така и `typeof()` синтаксис, в зависимост от контекста.
+
+**Видове живот на услугите:**
+
+- **`AddTransient`** – при всяка заявка за този сървис се създава **нова инстанция**. Подходящо е за lightweight и stateless сървиси.
+
+- **`AddScoped`** – най-често използваният вариант в ASP.NET. В рамките на един **HTTP request**, всички зависимости от този тип ще получат **една и съща инстанция**. При нова заявка – нова инстанция.
+
+- **`AddSingleton`** – създава се **само една инстанция** за цялото време на работа на приложението и се споделя между всички клиенти. Подходящо е за тежки или споделени ресурси като например Redis драйвер, който управлява собствен connection pool.
+### Service Interface + Configuration
+Сървисите обикновено се дефинират чрез интерфейси.
+
+Интерфейсите дефинират методите на сървиса.
+
+```csharp
+public interface IProductService
+{
+    List<ProductServiceModel> All();
+    
+    void CreateProduct(string name, string description);
+}
+```
+
+Конфигурират се в класа `Program.cs`.
+
+```csharp
+builder
+    .Services
+    .AddTransient<IProductService, ProductService>();
+```
+
+Позволява инжектирането на сървиси в конструкторите на контролери чрез Dependency Injection (DI).
+
+**Service**
+
+Трябва да съдържа бизнес логиката и може да взаимодейства с базата данни (контекста).
+
+```csharp
+public class ProductService : IProductService
+{
+    private readonly ApplicationDbContext _data;
+
+    public ProductService(ApplicationDbContext data)
+        => _data = data;
+
+    public void CreateProduct(string name, string description)
+    {
+        var product = new Product()
+        { 
+            Name = name, 
+            Description = description 
+        };
+
+        _data.Products.Add(product);
+        _data.SaveChanges();
+    }
+}
+```
+
+Методът съдържа бизнес логиката за създаване на продукт.
+
+**Controller**
+
+Контролерите трябва да отговарят само за заявките, отговорите и обработката на грешки.
+
+```csharp
+public class ProductsController : Controller
+{
+    private IProductService _productService; // Inject the service through the constructor
+
+    public ProductsController(IProductService service)
+        => _productService = service;
+
+    public IActionResult Create() => View();
+
+    [HttpPost]
+    public IActionResult Create(ProductFormModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        _productService.CreateProduct(model.Name, model.Description); // Invoke service methods for the business logic
+        
+        return RedirectToAction("All");
+    }
+}
+```
+
+**Service with Service Model**
+
+Можем да имаме отделен **service model**, който да е част от бизнес слоя, но в много случаи това е излишно, защото **view модела** върши достатъчно добре работа за предаване на данни към/от изгледа.
 # Misc
 # ChatGPT
 # Bookmarks
