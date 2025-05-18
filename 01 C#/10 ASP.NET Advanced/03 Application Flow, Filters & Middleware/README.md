@@ -103,24 +103,176 @@ app.UseMvcWithDefaultRoute();
 
 Всяка среда представлява компютърна система (виртуална или физическа), върху която пускаме нашия софтуер.
 
-**Средата, в която разработваме програмата или компонента.**
-
-**Средата, в която тестваме и валидираме продукта (или компонента) като разработчици.**
-
-**Средата, в която клиентът проверява дали продуктът отговаря на неговите очаквания.**
-
-**Средата, в която продуктът е официално достъпен за всички потребители.**
-
 Повечето архитектури използват следните среди:
 
-**Dev** - Тук разработваме програмата или компонента.
+**Dev / Development**  – Средата, в която разработваме програмата или компонента.
 
-**Test** - Тук тестваме и проверяваме продукта (или компонента) като разработчици.
+**Test / Testing**  – Средата, в която тестваме и валидираме продукта (или компонента) като разработчици.
 
-**Stage** - Тук клиентът тества дали продуктът отговаря на неговите очаквания.
+**Stage / Staging**  – Средата, в която клиентът проверява дали продуктът отговаря на неговите очаквания.
 
-**Production** - Тук продуктът става достъпен за всички потребители.
+**Production**  – Средата, в която продуктът е официално достъпен за всички потребители.
+
+ASP.NET Core конфигурира поведението на приложението според средата, в която се изпълнява.
+
+Поддържа три основни среди – Development, Staging и Production. Staging обединява Test и Stage средите.
+
+Чете променливата на средата с името `"ASPNETCORE_ENVIRONMENT"`.
+
+Стойността на тази променлива се съхранява в свойството `EnvironmentName` на обекта `Environment`, който е част от `WebApplication`, върнат от метода `Build()` на `WebApplicationBuilder`.
+
+Можем да зададем средата на произволна стойност. По подразбиране средата е Production.
+
+```csharp
+if(app.Environment.IsDevelopment()) // TODO: Do Development
+if(app.Environment.IsStaging()) // TODO: Do Staging
+if(app.Environment.IsProduction()) // TODO: Do Production
+if(app.Environment.IsEnvironment("some_environment")) // TODO: Do Something
+```
+
+Не сме ограничени само до средите, които Microsoft е дефинирала по подразбиране.
+Можем свободно да сменим стойността на `"ASPNETCORE_ENVIRONMENT"` с такава, каквато ни е необходима.
+След това можем да използваме метода `IsEnvironment`, за да проверим дали текущата стойност съвпада с тази, която сме задали.
+Ако съвпада, методът ще върне `true` и ще можем да вземем решения в кода в зависимост от конкретната стойност на средата.
+### Application Configuration
+Конфигурацията на приложението в ASP.NET Core е базирана на двойки ключ-стойност.
+
+Конфигурациите на приложението се задават чрез конфигурационни доставчици (configuration providers).
+
+Конфигурационните доставчици четат данни от конфигурационни източници.
+
+Тези източници могат да бъдат Azure Key Vault или аргументи от командния ред.
+
+Могат да бъдат и потребителски доставчици – инсталирани или създадени от нас.
+
+Също така се използват файлове от директории, променливи на средата и други.
+
+Един от източниците по подразбиране е файлът `appsettings.json`.
+
+Можем да ползваме няколко конфигурационни провайдъра едновременно (например `appsettings.json`, environment variables, Azure Key Vault и други). Всички те се обединяват в общ конфигурационен store, който работи като речник от тип `Dictionary<string, string>`.
+
+Може да конфигурираме някои провайдъри (като `appsettings.json`) да наблюдават за промени във файловете и **автоматично да презареждат настройките**, без нужда от рестартиране на приложението. Това става чрез `reloadOnChange: true`.
+
+Пример:
+
+```csharp
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+```
+
+Файлът `launchSettings.json` се намира в папката `Properties` и се използва за конфигуриране на начина, по който приложението се стартира по време на разработка. Той задава профили, портове, URL-и и среда (например чрез променливата `ASPNETCORE_ENVIRONMENT`), която определя текущата среда (напр. Development). Въпреки това, `launchSettings.json` **не участва в основната конфигурация (`builder.Configuration`)** и се използва само при локално стартиране, като не се чете от приложението при runtime.
+
+Конфигурацията на приложението се чете при стартиране от различни провайдъри.
+
+Всички конфигурационни стойности се съхраняват и достъпват чрез интерфейса `IConfiguration`.
+
+`IConfiguration` е регистриран в DI контейнера по подразбиране и може да се инжектира в контролери или други услуги.
+
+Например, ако имаме в `appsettings.json`:
+
+```json
+{
+  "Greeting": "Hello!",
+  "Config": {
+    "Secret": "Can’t touch this"
+  }
+}
+```
+
+в контролера можем да получим стойността така:
+
+```csharp
+public class HomeController : Controller
+{
+    private readonly IConfiguration config;
+    
+    public HomeController(IConfiguration config)
+    {
+        this.config = config;
+    }
+    
+    public IActionResult Config()
+    {
+        return Content(this.config["Greeting"] + " " + this.config["Config:Secret"]); // returns "Hello! Can’t touch this"
+    }
+}
+```
 # Misc
 # ChatGPT
+## Configuration Model
+So at the beginning of an ASP.NET application, is the configuration being built and loaded into a key-value structure, similar to a dictionary, where both keys and values are strings?
+
+**ChatGPT said:**
+
+Yes, exactly — your understanding is correct.
+
+Here’s what happens step by step:
+
+1. **`WebApplication.CreateBuilder(args)`**  
+    This initializes the **`WebApplicationBuilder`**, which:
+    
+    - Loads configuration from sources (like `appsettings.json`, environment variables, etc.).
+        
+    - Sets up the **dependency injection (DI) container**.
+        
+    - Prepares logging, environment info, and other infrastructure.
+        
+2. **`builder.Configuration.GetConnectionString("SQLServer")`**  
+    This retrieves the connection string defined in your configuration (most often from `appsettings.json`).
+    
+3. **`builder.Services`**  
+    This is where you register services (like `DbContexts`, identity, middleware-related services, custom services, etc.) into the **DI container**, so they can be injected and used throughout the app.
+
+So in short:  
+✅ The builder reads and prepares the configuration.  
+✅ Then you register the services.  
+✅ After that, you build and run the app.
+
+**You said:**
+
+All the configuration settings are available in the builder, and when we call `GetConnectionString("SQLServer")`, are we just retrieving the value associated with the "`SQLServer`" key from the configuration system?
+
+**ChatGPT said:**
+
+Yes — that's exactly how it works behind the scenes.
+
+Here's the breakdown:
+
+- When you call `WebApplication.CreateBuilder(args)`, the builder loads configuration from various sources (like `appsettings.json`, `environment variables`, `user secrets`, etc.).
+    
+- All these sources are merged into a **single configuration system**, which behaves like a **key-value dictionary** (`IConfiguration` under the hood).
+
+So when you write:
+
+```csharp
+`string connectionString = builder.Configuration.GetConnectionString("SQLServer");`
+```
+
+You're effectively doing this:
+
+- Look for a key named **"`ConnectionStrings:SQLServer`"** in the configuration data.
+    
+- If found, return its value.
+
+The `.GetConnectionString("SQLServer")` method is just a helper that looks up the key using the prefix `ConnectionStrings:`.
+
+**Example:**
+
+In `appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "SQLServer": "Server=.;Database=MyDb;Trusted_Connection=True;"
+  }
+}
+```
+
+This will be flattened into the key:
+
+```
+ConnectionStrings:SQLServer → "Server=.;Database=MyDb;Trusted_Connection=True;"
+```
+
+So yes — the `Configuration` is just a dictionary-like store, and you’re asking for a specific key when calling `.GetConnectionString()`.
 # Bookmarks
-Completion: 18.05.2025
+Completion: 19.05.2025
