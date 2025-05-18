@@ -28,7 +28,7 @@
 
 Настройват се хост, сигурност, директории, конвенции и други.
 ### MVC Request Lifecycle
-![](Pasted%20image%2020250518142916.png)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250518142916.png)
 
 Имаме заявка, която тръгва по pipeline-а. Първото нещо, през което минава, е Middleware – зеленото квадратче от схемата. Това не е един конкретен middleware, а по-скоро **placeholder за множество middlewares**, които може да сме регистрирали.
 
@@ -196,6 +196,26 @@ public class HomeController : Controller
     }
 }
 ```
+
+Можем да достъпим конфигурация по два начина: с `configuration["Key"]`, който връща винаги `string?`, и с `configuration.GetValue<T>("Key")`, който връща стойността като даден тип (напр. `int`, `bool`) и позволява задаване на стойност по подразбиране. Вторият вариант е по-гъвкав и безопасен при нужда от типизирани данни.
+
+Всички конфигурационни стойности, се обединяват във вътрешен конфигурационен речник от тип `IConfiguration`, който използва ключове от тип `string`. Когато имаме вложени обекти, достъпваме техните пропъртита с помощта на двоеточие (`:`) като разделител между нивата. Пример:
+
+```json
+{
+  "ConnectionStrings": {
+    "SQLServer": "Server=.;Database=MyDb;Trusted_Connection=True;"
+  }
+}
+```
+
+Можем да достъпим стойността със:
+
+```csharp
+config["ConnectionStrings:SQLServer"]
+```
+
+Това поведение е еднакво независимо дали стойността идва от JSON файл, XML файл, environment променлива или друг provider. Това позволява консистентен достъп до конфигурационни данни чрез ключове с двоеточие (`:`), които описват пътя до вложените стойности.
 # Misc
 # ChatGPT
 ## Configuration Model
@@ -244,7 +264,7 @@ Here's the breakdown:
 So when you write:
 
 ```csharp
-`string connectionString = builder.Configuration.GetConnectionString("SQLServer");`
+string connectionString = builder.Configuration.GetConnectionString("SQLServer");
 ```
 
 You're effectively doing this:
@@ -274,5 +294,61 @@ ConnectionStrings:SQLServer → "Server=.;Database=MyDb;Trusted_Connection=True;
 ```
 
 So yes — the `Configuration` is just a dictionary-like store, and you’re asking for a specific key when calling `.GetConnectionString()`.
+## Two main ways to access configuration values in ASP.NET Core
+✅ **Option 1: `configuration["KeyPath"]` (Indexer Access)**
+
+**Example:**
+
+```csharp
+var value = configuration["Logging:LogLevel:Default"];
+```
+
+**Characteristics:**
+
+- **Returns `string?`** (nullable string).
+    
+- Simple and direct.
+    
+- **No type conversion** – it's always a string or `null`.
+    
+- If the key doesn't exist → returns `null`.
+
+✅ **Option 2: `configuration.GetValue<T>("KeyPath")`**
+
+**Example:**
+
+```csharp
+var value = configuration.GetValue<string>("Logging:LogLevel:Default");
+```
+
+**Characteristics:**
+
+- **Strongly typed** access.
+    
+- **Performs conversion** from string to the type you request (`int`, `bool`, etc).
+    
+- If the key doesn't exist → returns `default(T)` (e.g., `null` for `string`, `0` for `int`, etc).
+    
+- You can also specify a fallback default value:
+
+```csharp
+var level = configuration.GetValue("Logging:LogLevel:Default", "Info");
+```
+
+🔍 **Which One to Use?**
+
+|Use Case|Prefer This|
+|---|---|
+|You just need a string|Either works|
+|You need to convert to a number/bool|`GetValue<T>()`|
+|You want to specify a fallback value|`GetValue<T>()`|
+|You want to bind an entire section|`GetSection()` (separate topic)|
+|You don’t care about null safety|Indexer is fine|
+
+📝 **Summary**
+
+- Use `configuration["Key"]` for **quick string access**.
+    
+- Use `configuration.GetValue<T>()` for **type-safe and fallback-friendly access**.
 # Bookmarks
 Completion: 19.05.2025
