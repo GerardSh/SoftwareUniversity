@@ -160,6 +160,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 ```
 
 Файлът `launchSettings.json` се намира в папката `Properties` и се използва за конфигуриране на начина, по който приложението се стартира по време на разработка. Той задава профили, портове, URL-и и среда (например чрез променливата `ASPNETCORE_ENVIRONMENT`), която определя текущата среда (напр. Development). Въпреки това, `launchSettings.json` **не участва в основната конфигурация (`builder.Configuration`)** и се използва само при локално стартиране, като не се чете от приложението при runtime.
+При стартиране на приложението чрез Visual Studio или `dotnet run` се избира един от профилите, дефинирани в `launchSettings.json`. Само конфигурацията на избрания профил се зарежда и прилага за текущата сесия на стартиране. Това означава, че ако изберем профила `IIS Express`, приложението ще стартира с настройките, описани само в този профил, а останалите профили ще бъдат игнорирани за тази сесия. По този начин можем да имаме различни конфигурации за различни сценарии на стартиране, като например локален IIS Express, HTTP или HTTPS, без те да се прилагат едновременно.
 
 Конфигурацията на приложението се чете при стартиране от различни провайдъри.
 
@@ -316,6 +317,7 @@ var app = builder.Build();
 
 По този начин разширяваме услугите си и използваме конфигурацията за по-гъвкаво задаване на параметри.
 ## Diagnostics & Custom Error Handlers
+### Error Handling
 В ASP.NET Core има няколко подхода за конфигуриране на обработката на грешки:
 
 - **Developer Exception Page** показва детайлна информация за грешките по време на разработка, като stack trace и източника на грешката. Трябва задължително да се изключва в продукционна среда, защото съдържа чувствителна информация, която може да бъде използвана от злонамерени потребители.
@@ -335,7 +337,32 @@ else
 }
 ```
 
-Така гарантираме, че чувствителната информация се показва само в Development среда, а в Production потребителят вижда безопасно съобщение за грешка.
+Така гарантираме, че чувствителна информация за грешки се показва само в среда за разработка (Development), докато в Production потребителят вижда безопасно, обобщено съобщение. В Production среда използваме алтернативен `ExceptionHandler`, който може да пренасочва към Razor страница или конкретен Action в контролер. По подразбиране ASP.NET Core генерира уникален `TraceIdentifier` за всяка HTTP заявка. Това `TraceId` можем да достъпим чрез `HttpContext.TraceIdentifier` и да го логнем или покажем на потребителя в Error страница.
+
+Така потребителят може да съобщи идентификатора, а ние да го използваме в логовете (напр. със `Serilog` или Application Insights), за да проследим конкретната грешка.
+Добра практика е да логваме както `TraceId`, така и самата изключение (`Exception`) чрез `_logger.LogError(ex, "...")`, за да имаме пълна информация при анализ.  
+Това ни позволява лесно да филтрираме логове по `TraceId` и да открием точната заявка и грешка, дори в натоварени среди.
+
+Пример:
+
+```csharp
+app.UseExceptionHandler("/Home/Error");
+
+public IActionResult Error()
+{
+    var traceId = HttpContext.TraceIdentifier;
+    _logger.LogError($"Unhandled error occurred. Trace ID: {traceId}");
+    return View(new ErrorViewModel { RequestId = traceId });
+}
+```
+
+```html
+<!-- Error.cshtml -->
+<p>Request ID: @Model.RequestId</p>
+```
+
+Примерно съобщение към потребителя:  
+_„Моля, изпратете този код: abc123, за да можем да проследим проблема.“_
 
 - **Exception Handler Middleware** – глобален обработчик на изключения за production среда.
 
@@ -344,7 +371,116 @@ else
 - **Exception Filters (в MVC)** – предоставят начин за улавяне на грешки на ниво контролер или действие.
 
 - **`ModelState` Validation** – автоматично проверява дали входните данни отговарят на очакванията и генерира грешки при невалидни модели.
+### Status Code Pages
+ASP.NET Core приложенията не предоставят богати страници за статус кодове.
 
+За да предоставим такива, трябва да използваме middleware компонента **Status Code Pages**.
+
+`app.UseStatusCodePages();`
+
+Middleware-ът може лесно да бъде персонализиран.
+
+Поддържа няколко разширяващи метода. Например:
+
+```csharp
+app.UseStatusCodePagesWithRedirects("/error/{0}");
+// Redirects the user to a custom error page based on the status code.
+```
+
+```csharp
+app.UseStatusCodePagesWithReExecute("/error?code={0}");
+// Re-executes the request pipeline with a modified path for the error page.
+```
+
+Важно е да направим разлика между `UseStatusCodePagesWithRedirects` и `UseStatusCodePagesWithReExecute`, защото макар и двете да водят до страница за грешка, начинът по който се случва това има значение за правилното отразяване на статус кода.
+При `UseStatusCodePagesWithRedirects`, клиентът получава HTTP статус 302 (Redirect), след което следва нова заявка, която връща статус 200. Това означава, че в **Network** таба на браузъра няма да видим оригиналния статус код на грешката, като например 404 — виждаме само 302 и 200.
+От друга страна, `UseStatusCodePagesWithReExecute` преизпълнява заявката вътрешно на сървъра, без да прави външен redirect. Така крайният отговор към клиента запазва оригиналния статус код на грешката, например 404, което е правилното поведение и по-адекватно за дебъгване, логване и SEO. Поради това е желателно винаги да ползваме `UseStatusCodePagesWithReExecute`.
+## Middleware
+Middleware е софтуерен компонент, който се сглобява във веригата на изпълнение на дадено приложение. Той отговаря на „кранчетата“ в нашия pipeline.
+
+Всеки компонент:
+
+Обработва заявки и отговори.
+
+Избира дали да предаде заявката към следващия компонент във веригата.
+
+Може да извърши работа преди или след като бъде извикан следващият компонент във веригата.
+
+В ASP.NET Core, request делегатите изграждат веригата за обработка на заявки.
+
+Когато дойде дадена заявка, тя минава през всички middleware компоненти два пъти — веднъж като **request**, преди да се обработи, и веднъж като **response**, когато отговорът се връща към клиента.
+Можем да обработим определени неща при първото минаване (например логване на заявката) и други при второто (например модифициране на отговора).
+За да не се прекъсне pipeline-ът, се вика методът `next()`, който извиква следващия middleware:
+
+```csharp
+app.Use(async (context, next) =>
+{
+    // Code before next() — runs during the request phase
+
+    await next();
+
+    // Code after next() — runs during the response phase
+});
+```
+
+Ако някой middleware не извика `next()`, тогава изпълнението на pipeline-а спира дотам и отговорът се връща директно към клиента. Това означава, че нито един от следващите middleware-и няма да бъде извикан, нито ще се изпълнят действията, които са написани _след_ `await next()` в предходните компоненти.
+### Request Delegates
+Request делегатите обработват всяка HTTP заявка и се конфигурират чрез разширяващите методи `Run()`, `Map()` и `Use()`.
+
+Request делегатите (наричани още middleware компоненти) могат да бъдат:
+
+- Определени директно като анонимни методи (inline middleware).
+
+- Дефинирани в преизползваем клас.
+
+Всеки middleware компонент трябва:
+
+- Да извика следващия компонент във веригата или да прекъсне изпълнението на pipeline-а.
+
+```csharp
+app.Use(async (context, next) =>
+{
+    // Logic before passing to the next middleware
+
+    await next();
+
+    // Logic after the next middleware has completed
+});
+```
+
+Методът `Use()` се използва, за да свържем няколко делегата последователно. Той може да прекъсне pipeline-а, ако не извика `next()`.
+
+Първият `Run()` делегат прекратява pipeline-а.
+
+- `Run()` е по-скоро конвенция — някои middleware-и предоставят методи от типа `Run{Middleware}`, които се изпълняват в края на веригата.
+
+Методът `Map()` се използва за разклоняване на pipeline-а.
+
+```csharp
+app.Map("/admin", adminApp =>
+{
+    adminApp.Run(async context =>
+    {
+        await context.Response.WriteAsync("Admin section");
+    });
+});
+```
+
+- Request pipeline-ът се разклонява според зададения път в заявката.
+
+`Use()`, `Run()` и `Map()` се използват за изграждане на т.нар. **request pipeline** – това е последователността от middleware компоненти, които обработват всяка HTTP заявка.
+
+**`Use()`**
+
+`Use()` добавя middleware, който може да извърши действия **преди и/или след** останалите компоненти в pipeline-а. Той приема делегат с параметър `next`, който да извика следващия компонент. Ако не го извика, изпълнението се прекъсва. Най-често се използва, когато искаме да добавим логика, която да се изпълнява за всички заявки – например логване, проверка за автентикация и т.н.
+
+**`Map()`**
+
+`Map()` създава **разклонение** на pipeline-а – тоест определена логика ще се изпълнява само ако заявката съвпада с даден път (URL сегмент). Така можем да изградим различни „под-pipeline-и“ за различни пътища – например `/admin`, `/api`, и т.н. Вътре в `Map()` използваме отново `Use()` или `Run()`.
+
+**`Run()`**
+
+`Run()` се използва за добавяне на **краен middleware**. Той не приема `next`, тоест **не предава заявката нататък**. Обикновено го използваме в края на pipeline-а, когато искаме да изпратим финален отговор на клиента. След `Run()` нищо друго няма да се изпълни.
 # Misc
 # ChatGPT
 ## Configuration Model
@@ -686,5 +822,126 @@ When you use async operations in ASP.NET with EF:
 - **Connection pool** is like a fleet of cars ready to drive workers around (DB calls).
 
 Both make the system faster by **reusing resources efficiently**.
+## Understanding `app.Use()` Middleware in ASP.NET Core
+
+1. **What does `app.Use()` do?**
+
+- The `Use` method lets you **add middleware components** to the ASP.NET Core HTTP request pipeline.
+    
+- Middleware are small pieces of code that can **inspect, modify, or short-circuit** HTTP requests and responses.
+    
+- Each middleware has this signature:
+
+```csharp
+Func<HttpContext, Func<Task>, Task>
+```
+
+This means:
+
+- It accepts an `HttpContext` (current HTTP request and response info).
+    
+- It accepts a `Func<Task>` called `next`, which represents the **next middleware in the pipeline**.
+    
+- It returns a `Task` because the middleware typically performs asynchronous operations.
+
+2. **What exactly is the `next` parameter (`Func<Task>`)?**
+
+- **`next` is a delegate that ASP.NET Core provides for you.**
+    
+- It represents the **next middleware in the chain**, wrapped as a `Func<Task>` delegate.
+    
+- When you call:
+
+```csharp
+await next();
+```
+
+you’re telling ASP.NET Core:
+
+> _“Run the next middleware in the pipeline now.”_
+
+- You do **not** build or supply `next` yourself. The framework constructs and passes it in for you behind the scenes.
+
+3. **How is the middleware pipeline built?**
+
+When you write multiple middleware registrations:
+
+```csharp
+app.Use(MiddlewareA);
+app.Use(MiddlewareB);
+app.Use(MiddlewareC);
+```
+
+ASP.NET Core creates a nested chain that looks like this conceptually:
+
+```csharp
+context => MiddlewareA(context, 
+    () => MiddlewareB(context, 
+        () => MiddlewareC(context, 
+            () => terminalMiddleware(context)
+        )
+    )
+)
+```
+
+- Each `next()` is a delegate that calls the next middleware in the pipeline.
+    
+- So inside `MiddlewareA`, calling `await next()` executes `MiddlewareB`, and so on.
+
+4. **What does a typical middleware look like?**
+
+Example middleware:
+
+```csharp
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Middleware A - Before");
+
+    await next(); // Pass control to Middleware B
+
+    Console.WriteLine("Middleware A - After");
+});
+```
+
+- You can run code **before** and **after** calling `await next()`.
+    
+- If you choose **not to call** `next()`, the pipeline short-circuits and no later middleware runs.
+
+5. **Visualizing the flow**
+
+```csharp
+Func<HttpContext, Func<Task>, Task> middleware = async (context, next) =>
+{
+    // Before
+    await next(); // Invokes the *next* middleware in the chain
+    // After
+};
+```
+
+- ASP.NET Core **automatically constructs and injects** `next` for you.
+    
+- Your middleware just decides **when or if** to call `await next()`.
+
+6. **Summary**
+
+- `app.Use()` builds the middleware pipeline one step at a time.
+    
+- Each middleware receives:
+    
+    - The current `HttpContext`
+        
+    - A `next` delegate representing the next middleware
+        
+- The framework wires up the chain and passes the correct `next` delegate each time.
+    
+- You control the pipeline flow by calling or skipping `await next()`.
+
+7. **Extra tips**
+
+- Middleware ordering is critical — it determines how requests and responses are handled.
+    
+- Middleware can modify requests before passing them on, or modify responses after calling `next()`.
+    
+- Short-circuiting (skipping `next()`) is useful for handling errors, returning early responses, or serving static files.
 # Bookmarks
-Completion: 19.05.2025
+Completion: 20.05.2025
