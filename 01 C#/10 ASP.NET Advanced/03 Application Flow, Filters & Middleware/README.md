@@ -481,6 +481,80 @@ app.Map("/admin", adminApp =>
 **`Run()`**
 
 `Run()` се използва за добавяне на **краен middleware**. Той не приема `next`, тоест **не предава заявката нататък**. Обикновено го използваме в края на pipeline-а, когато искаме да изпратим финален отговор на клиента. След `Run()` нищо друго няма да се изпълни.
+### Creating Your Own Middleware (Inline)
+ASP.NET Core Request Pipeline представлява последователност от _Request Delegates_, които се извикват един след друг.
+
+Ние създаваме свои собствени _Request Delegates_ чрез обекта `IApplicationBuilder`.
+
+```csharp
+app.Use(async (context, next) =>
+{
+    // Do work that doesn't write to the Response.
+    
+    await next();
+    
+    // Do logging or other work that doesn't write to the Response.
+});
+
+//Other code below...
+```
+
+Това е пример за създаване на собствен middleware inline – тоест директно в кода, без отделен клас.
+
+След този middleware може да има и друг код, който ще се изпълни, ако `await next()` бъде извикан.
+
+Не трябва да пишем по response-a защото всяка промяна ще доведе до short-circuit.
+### Creating Your Own Middleware (Class)
+Request delegates могат също да бъдат дефинирани като класове.
+
+Създаване на собствен Middleware (клас):
+
+```csharp
+public class CustomMiddleware
+{
+    // The next delegate in the pipeline
+    private readonly RequestDelegate next;
+
+    public CustomMiddleware(RequestDelegate next)
+    {
+        this.next = next;
+    }
+
+    // IMyService is injected into InvokeAsync through DI
+    public async Task InvokeAsync(HttpContext httpContext, IMyService svc) 
+    {
+        svc.MyProperty = 1000;
+        await this.next(httpContext);
+    }
+}
+```
+
+Когато създаваме middleware като клас, ние го правим по-организирано и подходящо за повторна употреба. Можем също така лесно да инжектираме зависимости директно в метода `InvokeAsync`. Това позволява да включим логика или поведение, което може да се използва в различни приложения или сценарии.
+
+За да използваме собствен Middleware клас, трябва да го включим в pipeline-а.
+
+```csharp
+public static class CustomMiddlewareExtensions
+{
+    public static IApplicationBuilder UseCustom(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<CustomMiddleware>();
+    }
+}
+```
+
+След това ние добавяме middleware-а в pipeline-а с:
+
+```csharp
+app.UseCustom();
+```
+
+Така нашият middleware се регистрира и ще бъде извикан за всяка заявка, минаваща през приложението.
+
+С този метод разширяваме интерфейса `IApplicationBuilder`, за да можем удобно да добавим нашия `CustomMiddleware` в pipeline-а с просто извикване на `app.UseCustom()`.
+
+Така правим регистрацията на middleware-а по-четлива и удобна, вместо да пишем директно `app.UseMiddleware<CustomMiddleware>()` навсякъде.
+### Built-in Middleware
 # Misc
 # ChatGPT
 ## Configuration Model
@@ -823,7 +897,6 @@ When you use async operations in ASP.NET with EF:
 
 Both make the system faster by **reusing resources efficiently**.
 ## Understanding `app.Use()` Middleware in ASP.NET Core
-
 1. **What does `app.Use()` do?**
 
 - The `Use` method lets you **add middleware components** to the ASP.NET Core HTTP request pipeline.
@@ -872,7 +945,7 @@ app.Use(MiddlewareB);
 app.Use(MiddlewareC);
 ```
 
-ASP.NET Core creates a nested chain that looks like this conceptually:
+ASP.NET Core builds a **middleware pipeline** under the hood by **nesting each middleware inside the previous one**, kind of like this conceptually:
 
 ```csharp
 context => MiddlewareA(context, 
@@ -932,7 +1005,7 @@ Func<HttpContext, Func<Task>, Task> middleware = async (context, next) =>
         
     - A `next` delegate representing the next middleware
         
-- The framework wires up the chain and passes the correct `next` delegate each time.
+- The framework wires up the chain and passes the correct `next` delegate each time behind the scenes.
     
 - You control the pipeline flow by calling or skipping `await next()`.
 
@@ -943,5 +1016,963 @@ Func<HttpContext, Func<Task>, Task> middleware = async (context, next) =>
 - Middleware can modify requests before passing them on, or modify responses after calling `next()`.
     
 - Short-circuiting (skipping `next()`) is useful for handling errors, returning early responses, or serving static files.
+### How the Framework Collects `Use(...)` Middleware into One Chain
+
+When you write:
+
+```csharp
+app.Use(MiddlewareA);
+app.Use(MiddlewareB);
+app.Use(MiddlewareC);
+app.Run(FinalHandler);
+```
+
+ASP.NET Core doesn’t execute those right away. Instead, it **stores them in order**, and only later **builds a single chain of middleware functions**.
+
+Here’s what happens under the hood:
+
+🧱 1. **`app.Use(...)` Adds Middleware to a List**
+
+Every time you call `app.Use(...)`, it adds your delegate to an internal list inside `IApplicationBuilder`.
+
+```csharp
+public class ApplicationBuilder : IApplicationBuilder
+{
+    private readonly List<Func<RequestDelegate, RequestDelegate>> _components 
+        = new List<Func<RequestDelegate, RequestDelegate>>();
+
+    public IApplicationBuilder Use(Func<HttpContext, Func<Task>, Task> middleware)
+    {
+        // Wrap your middleware into a RequestDelegate factory
+        _components.Add(next => context => middleware(context, () => next(context)));
+        return this;
+    }
+}
+```
+
+So your middleware gets wrapped in a `Func<RequestDelegate, RequestDelegate>` (we'll return to this shortly).
+
+🔨 2. **`app.Run(...)` Adds the Terminal Middleware**
+
+`Run(...)` is also middleware, but it's meant to be the **end of the chain**. It doesn’t call `next()`, so nothing executes after it.
+
+It also gets wrapped and added to the list.
+
+🧩 3. **At `app.Build()` — All Middleware Get Composed into a Chain**
+
+When the framework starts handling a request, it calls:
+
+```csharp
+var app = builder.Build(); // this triggers the actual pipeline construction
+```
+
+And this happens inside:
+
+```csharp
+public RequestDelegate Build()
+{
+    RequestDelegate app = context =>
+    {
+        // If no middleware is registered
+        return Task.CompletedTask;
+    };
+
+    // Build in reverse order — last registered gets executed last
+    foreach (var component in _components.Reverse())
+    {
+        app = component(app); // Each middleware wraps the current pipeline
+    }
+
+    return app; // Final pipeline delegate
+}
+```
+
+So now you have a **single `RequestDelegate`**, like:
+
+```csharp
+context => MiddlewareA(context, 
+    () => MiddlewareB(context, 
+        () => MiddlewareC(context, 
+            () => FinalHandler(context)
+        )
+    )
+)
+```
+
+🎯 4. **When a Request Comes In**
+
+The composed `RequestDelegate` is executed for each HTTP request. Each middleware:
+
+- Receives `HttpContext`
+    
+- Does something **before**
+    
+- Calls `await next()` (which is just the next delegate)
+    
+- Does something **after**
+
+📈 **Visual Flow**
+
+```
+Request
+   ↓
+MiddlewareA
+   ↓
+MiddlewareB
+   ↓
+MiddlewareC
+   ↓
+FinalHandler
+```
+
+Each `Use(...)` call builds a layer that wraps the one after it.
+
+✅ **Summary**
+
+- `app.Use(...)` calls are stored as delegate factories
+    
+- `app.Build()` reverses and chains them
+    
+- The result is a single delegate that ASP.NET Core invokes per request
+    
+- The `next()` parameter is created during this composition step
+    
+- This allows each middleware to control when and whether the next one runs
+
+**You said:**
+
+Lets follow the below code in detail.
+
+```csharp
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // Add routing to Identity Razor Pages
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("before");
+    await next();
+    Console.WriteLine("after");
+});
+
+app.Run();
+```
+
+**ChatGPT said:**
+
+Let's walk through **exactly what happens** in the code you posted — step by step — so you can understand how ASP.NET Core builds and executes the middleware pipeline.
+
+✅ **Full Code**
+
+```csharp
+app.UseAuthorization(); // 1. Middleware added: Who can access what?
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // 2. Adds endpoints for Razor Pages
+
+app.Use(async (context, next) => { 
+    Console.WriteLine("before"); 
+    await next(); 
+    Console.WriteLine("after"); 
+});
+
+app.Run();
+```
+
+🔄 **Step-by-Step Explanation**
+
+1. **`app.UseAuthorization();`**
+
+This is a **built-in middleware** that enforces authorization policies.
+
+- It doesn’t know which endpoint the user is requesting yet.
+    
+- It waits until **routing has been done**, so it knows what endpoint was matched, then checks if the user is allowed to access it.
+
+> ⚠️ **Important**: It depends on routing metadata, which means:
+
+- You must call `UseAuthorization()` **after `UseRouting()`**, and
+    
+- **Before `Map*()` methods like `MapControllers()` or `MapRazorPages()`** — unless you're using endpoint routing, which auto-applies middleware.
+
+In newer versions, `MapControllerRoute()` and `MapRazorPages()` call `UseRouting()` internally, so `UseAuthorization()` can be used slightly earlier.
+
+2. `app.MapControllerRoute(...)` and `app.MapRazorPages();`
+
+These are **endpoint mapping methods**. They register the actual routes/endpoints in the app.
+
+- `MapControllerRoute(...)` says: “If the URL looks like `/Home/Index`, call the `HomeController.Index()` method.”
+    
+- `MapRazorPages()` adds routes for Razor Pages (e.g., `/Account/Login`, `/Register`, etc.)
+    
+
+Under the hood, these methods call `UseEndpoints(...)` to add endpoint execution to the pipeline.
+
+**So now:**
+
+- The middleware chain has something to route to (controllers or pages).
+    
+- `UseAuthorization()` can now work with the endpoints metadata.
+
+3. `app.Use(...)` – Your custom middleware
+
+```csharp
+app.Use(async (context, next) => {
+    Console.WriteLine("before"); 
+    await next(); 
+    Console.WriteLine("after"); 
+});
+```
+
+This adds a **custom middleware** into the pipeline.
+
+- It prints `before`
+    
+- Calls `await next()` → which continues the pipeline (eventually hitting the matched controller/page)
+    
+- Then prints `after` once the response is returning back up the chain
+    
+
+> This is a very common pattern for logging, performance measurement, error catching, etc.
+
+4. `app.Run();`
+
+This ends the middleware pipeline. It’s the **terminal middleware** — nothing after this will run.
+
+> If `app.Run()` is empty, and the request has already been handled by an endpoint (like a controller), then it does nothing.
+> 
+> But if no endpoint handled the request, and no `Run()` was defined to handle fallback behavior (like 404), the request may return a default 404 response.
+
+🧠 **Internal Chain (Visual)**
+
+Let’s simulate what ASP.NET Core builds:
+
+```csharp
+context => 
+    UseAuthorization(context, 
+        () => YourCustomMiddleware(context, 
+            () => EndpointMiddleware(context)
+        )
+    )
+```
+
+Or, to visualize:
+
+```
+↓ Request comes in
+├── UseAuthorization() middleware
+│   ├── checks if user is allowed to access matched endpoint
+│   ↓
+├── Your custom middleware
+│   ├── prints "before"
+│   ├── calls next()
+│   │   ↓
+│   └── eventually the endpoint handler is called (controller or Razor Page)
+│   └── prints "after"
+↓ Response goes out
+```
+
+✅ **Final Notes**
+
+- `UseAuthorization()` expects routing metadata to already exist.
+    
+- Your `Use(...)` middleware runs _before and after_ the matched endpoint executes.
+    
+- `MapControllerRoute()` and `MapRazorPages()` register the actual endpoints.
+    
+- ASP.NET Core collects all middleware and endpoint mappings, then chains them in reverse order during app startup.
+## `app.UseRouting()`
+
+`app.UseRouting()` is a **middleware** that matches incoming HTTP requests to the **route definitions** in your app.
+
+📌 **Purpose**
+
+- It **analyzes the request URL** and **selects the matching endpoint** (e.g., controller action, Razor Page, minimal API).
+    
+- It **populates the `HttpContext` with route data** (like controller, action, parameters).
+
+⚠️ **Why It’s Important**
+
+- Without it, your app:
+    
+    - ❌ Can't find which action/controller to invoke.
+        
+    - ❌ Can’t apply attribute-based policies like `[Authorize]`, `[HttpPost]`, etc.
+        
+    - ❌ Can’t match URLs to endpoint definitions.
+
+🧩 **Where It Goes**
+
+It must come **before**:
+
+- `app.UseAuthorization()` – because authorization depends on matched route data.
+    
+- `app.UseEndpoints()` (or `MapControllerRoute()` / `MapRazorPages()`), which actually executes the matched endpoint.
+
+✅ **Correct Order Example**
+
+```csharp
+app.UseRouting();          // Matches the route
+app.UseAuthentication();   // (optional) Identity
+app.UseAuthorization();    // Uses route metadata for policies
+app.MapControllers();      // Executes the controller action
+```
+## Endpoint
+🔍 **In ASP.NET Core:**
+
+An **endpoint** is the final destination that handles a request — this can be:
+
+- A controller action method (e.g. `ProductsController.Get(int id)`)
+    
+- A Razor Page
+    
+- A minimal API handler
+    
+- A middleware endpoint (e.g. a `Run` delegate)
+
+🧭 **Example:**
+
+```csharp
+[Route("api/products")]
+public class ProductsController : ControllerBase
+{
+    [HttpGet("{id}")]
+    public IActionResult Get(int id)
+    {
+        return Ok($"Product {id}");
+    }
+}
+```
+
+When you call `/api/products/5`, the framework:
+
+1. Matches the route using `UseRouting()`
+    
+2. Authorizes access using `UseAuthorization()`
+    
+3. Finds the **endpoint**: `Get(int id)` action method
+    
+4. Executes that action
+
+In the context of MVC and Web API, **the endpoint is the matched action method that gets executed for a given route**.
+## `MapControllerRoute()`
+`MapControllerRoute()` sets up **conventional routing** for MVC controllers in ASP.NET Core.
+
+✅ **Purpose:**
+
+It defines a **pattern** that matches incoming URLs to controller actions, based on naming conventions.
+
+🧩 **Syntax:**
+
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+⚙️ **What it does:**
+
+- Matches URLs like `/Products/Details/5`
+    
+- Maps them to:
+    
+    - `ProductsController`
+        
+    - `Details` method
+        
+    - `id = 5` (optional)
+
+🗺️ **Pattern Breakdown:**
+
+- `{controller}` → Controller name (e.g., `Products`)
+    
+- `{action}` → Method name (e.g., `Details`)
+    
+- `{id?}` → Optional route parameter
+
+🛠️ **When to use it:**
+
+- You’re using traditional MVC with controllers and views.
+    
+- You want **convention-based** routing (no `[Route]` attributes needed).
+
+🚫 **If you don’t use it:**
+
+- URLs won't be routed to controllers unless you’re using **attribute routing** (`[Route]`, `[HttpGet]`, etc.).
+
+🚫 **Important Notes:**
+
+- ✅ **Not a middleware** — it's an **endpoint registration method** that configures the final routing table.
+    
+- ❌ If you skip it (and aren’t using attribute routing), the framework won’t know how to route requests to your controller actions.
+    
+- ✅ Requires `app.UseRouting()` and `app.UseEndpoints()` (or Razor/MVC maps) to be called beforehand.
+
+⚙️ **Implicit Behavior:**
+
+- ❗ **`app.UseEndpoints()` is implicitly called** behind the scenes when using **Minimal APIs** or `MapControllerRoute()` in ASP.NET Core 6.0+ (with top-level statements or simplified hosting).
+    
+- But in full hosting scenarios, you might still see it explicitly written in older templates.
+
+**You said:**
+
+In essence, `MapControllerRoute` registers route patterns used by the routing system to resolve incoming requests to controller actions. While it's possible to manually register each action with specific routes, the more efficient and maintainable approach is to define a dynamic pattern—such as `{controller}/{action}`—which allows the framework to dynamically match existing controllers and actions. If no match is found, a 404 is returned. This pattern-based routing saves the effort of explicitly listing every route.
+
+**ChatGPT said:**
+
+Yes — you're absolutely correct, and you've described the real mechanism behind `MapControllerRoute` quite well. Let's break it down clearly:
+
+🔧 **What `MapControllerRoute` Does**
+
+`MapControllerRoute` **registers a URL pattern** that the ASP.NET Core routing system uses to map incoming requests to **controller actions**.
+
+Example:
+
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+- This tells ASP.NET Core:
+    
+    > "For any URL that looks like `/SomeController/SomeAction`, try to find a matching controller and action in the app."
+
+✅ **Dynamic Pattern Matching — The Convenient Way**
+
+You're spot-on here:
+
+> We can define **a generic pattern** once, like `{controller}/{action}`, and ASP.NET Core will dynamically match existing controllers and actions.
+
+Advantages:
+
+- You **don’t have to list every action** manually.
+    
+- It scales automatically as you add new controllers and actions.
+    
+- Invalid routes (e.g., to nonexistent controllers/actions) automatically return **404**.
+
+This is the **convention-based routing** system.
+
+🧱 **Alternative: Manually Mapping Each Route**
+
+Yes, you can do this too:
+
+```csharp
+app.MapControllerRoute(
+    name: "homeIndex",
+    pattern: "home/index",
+    defaults: new { controller = "Home", action = "Index" });
+
+app.MapControllerRoute(
+    name: "about",
+    pattern: "info/about",
+    defaults: new { controller = "Info", action = "About" });
+```
+
+But this is:
+
+- Verbose
+    
+- Harder to maintain
+    
+- Prone to errors
+
+That’s why it’s usually reserved for:
+
+- Special-case URLs
+    
+- SEO-friendly custom URLs
+    
+- Legacy systems
+
+🧠 **Summary**
+
+|Approach|What It Does|When To Use|
+|---|---|---|
+|✅ Generic pattern: `{controller}/{action}/{id?}`|Automatically maps to all existing controller/action pairs|Default, scalable approach|
+|❌ Manual route mapping|You write specific routes for each action|Only when you need custom URLs or special handling|
+
+So your observation is exactly right:
+
+> ✔️ _We can register all actions one by one, but the more convenient, scalable, and idiomatic way is to use a dynamic pattern like `{controller}/{action}`._
+
+**Final Notes**
+
+`MapControllerRoute` is not middleware; instead, it **registers route patterns** with the application's endpoint routing system. These patterns define how incoming URLs should be matched to controller actions. The order in which `MapControllerRoute` is called doesn't affect the request pipeline, because it simply adds endpoints to an internal collection (`EndpointDataSource`) before the routing middleware (`UseRouting`) is executed. At runtime, the routing system uses these registered patterns to resolve requests. If a URL matches a defined pattern and corresponds to an existing controller/action, it's handled accordingly; otherwise, a 404 is returned.
+
+- These `Map*` methods run **immediately during app startup**, when the app is building its internal routing table.
+    
+- This happens **before any HTTP requests are processed**.
+    
+- So no matter if you place them before or after `app.UseRouting()`, the routes are registered in time for the routing middleware to use.
+
+**What really matters is:**
+
+- `app.UseRouting()` must be in the middleware pipeline before middlewares like `UseAuthorization()` that rely on routing data.
+    
+- `MapControllerRoute()` (and other `Map*` methods) must be called **before the app starts handling requests** (which happens naturally during startup).
+
+In practice, you almost always see this order for clarity and convention:
+
+```csharp
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(...);
+```
+
+But the key point is: **the routes get registered at startup regardless of their position relative to `UseRouting()`.**
+
+✅ **`app.Map()`
+
+- **What it does:**  
+    `app.Map()` **branches the middleware pipeline** based on the request path.  
+    It allows you to define **sub-pipelines** that only run when the request path starts with a specific prefix.
+    
+- **Syntax example:**
+    
+```csharp
+app.Map("/admin", adminApp =>
+{
+    adminApp.UseMiddleware<SomeMiddleware>();
+    adminApp.Run(async ctx => await ctx.Response.WriteAsync("Admin area"));
+});
+```
+    
+- **Behavior:**
+    
+    - Requests to `/admin` or anything starting with `/admin/...` will be handled by this sub-pipeline.
+        
+    - All other requests **skip this branch entirely**.
+        
+- **Part of the pipeline:**  
+    ✅ `Map()` **is a middleware**. It actively **alters the request pipeline** structure, unlike `MapControllerRoute()`.
+
+🔄 **`Map()` vs `MapControllerRoute()`**
+
+|Feature|`Map()`|`MapControllerRoute()`|
+|---|---|---|
+|Part of middleware pipeline|✅ Yes|❌ No – just registers routes at startup|
+|Controls path branching|✅ Yes|❌ No|
+|Used for|Custom logic for specific path roots|Routing to controller actions (MVC)|
+|Runs during request?|✅ Yes – affects request flow|❌ No – registers before requests begin|
+
+In short:
+
+- `Map()` **controls** the flow of requests at runtime.
+    
+- `MapControllerRoute()` **registers** routes during app startup and is not itself a middleware.
+
+**You said:**
+
+So the purpose of `map()` is to define an endpoint for a request, effectively routing it to the appropriate action controller or page?
+
+**ChatGPT said:**
+
+✅ **Yes, exactly — you're spot on.**
+
+The purpose of `app.MapControllerRoute(...)` and `app.MapRazorPages()` is to **create _endpoints_** — they tell ASP.NET Core:
+
+> “When the middleware pipeline finishes its work, here’s where to send the request based on the URL.”
+
+Let’s unpack this more clearly:
+
+🔧 **What `MapControllerRoute()` Does**
+
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+This **registers an endpoint route** in the system that tells the framework:
+
+> “If the URL looks like `/products/list/5`, then match:
+> 
+> - controller = `Products`
+>     
+> - action = `List`
+>     
+> - id = `5`.”
+>     
+
+So this is the **final destination** in the pipeline — it’s the part that says:  
+“Based on the URL, call the correct controller action.”
+
+🧭 **What `MapRazorPages()` Does**
+
+This registers **Razor Page routes** (like `/Account/Login`) if you're using Identity UI or Razor Pages. So it wires up paths like `/Account/Register`, `/Identity/Account/Manage`, etc.
+
+🚇 **How Middleware + Endpoints Work Together**
+
+1. You register middlewares with `app.Use(...)`.
+    
+2. You end with `Map...()` to define **what will respond** to the request.
+    
+3. Behind the scenes, the framework builds a giant chain like:
+
+```csharp
+[UseAuthentication]
+   → [UseAuthorization]
+      → [Your Logging Middleware]
+         → [Routing Middleware]
+            → [Controller or Razor Page] 👈 endpoint
+```
+
+🧠 **Think of it like a subway**
+
+- Each `Use()` is a station that can:
+    
+    - Inspect the request
+        
+    - Reject the request
+        
+    - Let it continue
+        
+- The `Map...()` at the end is your final **destination** — it dispatches the `HttpContext` to the **controller or page** that will handle it.
+
+✅ **In summary:**
+
+Yes — `MapControllerRoute()` and `MapRazorPages()` are how ASP.NET Core knows:
+
+> “Which controller/page should respond to this request based on its URL?”
+
+And all the middleware (`UseX`) runs **before the request reaches** that controller/page — like a filter tunnel.
+
+Let me know if you want to build a minimal example together — it's the best way to _see_ it.
+## Map()
+`app.Map()` is a middleware branching method that lets you create a **branch in the request pipeline** based on a specific condition, usually a URL path prefix.
+
+**Purpose**
+
+- **Branch the middleware pipeline** so that requests matching a certain path (or condition) are handled by a separate, isolated pipeline.
+    
+- This helps you organize your middleware and endpoint routing **by URL path segments**, allowing different middleware sets, routing, or authorization rules on different app sections.
+
+**How does `app.Map()` work?**
+
+- `app.Map()` takes two parameters:
+    
+    1. **Path prefix** (string) or **predicate** (a function that evaluates the request)
+        
+    2. **A branch configuration action**, which receives a new `IApplicationBuilder` representing the branch pipeline
+        
+- When a request comes in:
+    
+    - The middleware pipeline checks if the request path matches the map condition (e.g., starts with the path prefix)
+        
+    - If **yes**, the request is routed into the branch pipeline you configure inside the `Map()` call
+        
+    - If **no**, the request continues down the main pipeline, skipping the branch entirely
+
+**Signature examples**
+
+```csharp
+// Branch based on path prefix (e.g. "/admin")
+app.Map("/admin", adminApp =>
+{
+    // Configure middlewares and endpoints for /admin requests here
+});
+
+// Branch based on a custom condition
+app.Map(context => context.Request.Method == "POST", postApp =>
+{
+    // This pipeline handles POST requests only
+});
+```
+
+**What happens inside the branch pipeline?**
+
+- The branch pipeline is a **new middleware pipeline**, isolated from the main one starting at the branch point.
+    
+- Middlewares registered in the main pipeline **before** the `Map()` call **run first**.
+    
+- When the request reaches the `Map()` middleware:
+    
+    - If the request matches the branch condition, it jumps into the branch pipeline **and runs only middlewares registered inside it**.
+        
+    - The branch pipeline does **not run middleware registered in the main pipeline after the `Map()` call**.
+        
+- This means you often need to **repeat middlewares like `UseRouting()`, `UseAuthentication()`, or `UseAuthorization()` inside the branch** if those middlewares are needed for requests in that branch.
+
+**Can a middleware branch return to the root branch after it finishes?**
+
+Once the request enters a branch via `app.Map("/something", ...)`, it is **isolated** to that sub-pipeline. The root (parent) pipeline is **not revisited**.
+
+Think of it like this:
+
+```
+Root pipeline
+ ├── Map("/admin") → [ admin middleware1 → middleware2 → Run() ]
+ └── All other requests → continue in root pipeline
+```
+
+When a request enters `/admin`, it **jumps entirely into the `/admin` branch**, and **never returns** to the outer pipeline.
+
+Quick analogy:
+
+Think of `Map()` like a **toll booth split**:
+
+- Once you take the `/admin` path, you’re on a **separate road**.
+    
+- That road has **its own signs and logic** (`Use`, `Run`, `MapControllers()` etc.).
+    
+- You **won’t rejoin** the main highway unless you manually re-route requests (which is rare and complex).
+
+**Important notes**
+
+- `app.Map()` only matches requests based on **path prefixes or custom predicates**. The rest of the URL (after the prefix) is still available inside the branch.
+    
+- The middleware pipeline inside the branch **does not automatically inherit** middleware registered after the branch point in the main pipeline.
+    
+- The middleware pipeline inside the branch can have **its own routing and endpoint setup**.
+
+- When you create a new branch pipeline with `app.Map()`, it acts as a separate, isolated pipeline that handles requests matching its condition. This branch **does not merge back** into the main pipeline—once a request enters the branch, it only runs the middleware configured inside that branch and skips any middleware registered after the `Map()` call in the main pipeline. In other words, the branch pipeline is independent and does not continue or combine with the main pipeline’s middleware.
+
+**Why use `app.Map()`?**
+
+- To **separate concerns**: e.g., an admin area with different authentication or policies.
+    
+- To **isolate functionality** or middleware chains for a part of the app.
+    
+- To create **mini applications** inside your bigger app with different middleware and endpoints.
+
+**Example**
+
+```csharp
+app.UseRouting();
+
+app.Map("/admin", adminApp =>
+{
+    adminApp.UseAuthentication();
+    adminApp.UseAuthorization();
+
+    adminApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "admin",
+            pattern: "admin/{controller=Dashboard}/{action=Index}/{id?}");
+    });
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
+```
+
+- Requests to `/admin/...` go to the branch pipeline with its own routing and authorization.
+    
+- Requests to other URLs go through the main pipeline.
+### Why does the branch pipeline need to add middleware again, even if it was already added before the branching point?
+**Short answer:**  
+The branch pipeline **starts at the point of the `app.Map()` call**, and **does not continue executing middleware registered before it** again — it _starts fresh_ there.
+
+**How the middleware pipeline actually works under the hood**
+
+Imagine the middleware pipeline like a chain of handlers that process requests one after another.
+
+When you do this:
+
+```csharp
+app.UseMiddlewareA();    // #1
+app.UseMiddlewareB();    // #2
+app.Map("/branch", branchApp =>
+{
+    branchApp.UseMiddlewareC(); // #3
+});
+app.UseMiddlewareD();    // #4
+```
+
+Requests flow like this:
+
+- For non-branch requests:
+    
+    - MiddlewareA (#1) → MiddlewareB (#2) → MiddlewareD (#4)
+        
+- For branch requests (e.g., `/branch/whatever`):
+    
+    - MiddlewareA (#1) → MiddlewareB (#2) → **jump to branch pipeline starting at #3** → MiddlewareC (#3)
+        
+
+Notice that:
+
+- MiddlewareA and MiddlewareB run _before_ the branch pipeline
+    
+- But the branch pipeline starts at `MiddlewareC` (#3) and **does NOT run `MiddlewareD` (#4)**
+
+So what about middleware like routing and authentication registered before `app.Map()`?
+
+- **Those middlewares are already run before the branch pipeline.**
+    
+- So your branch **does get the effect** of those middlewares (because they were executed earlier in the main pipeline).
+
+**Then why do we have to add routing/auth _again_ in the branch?**
+
+Because:
+
+- **Routing middleware (`UseRouting`) builds the routing table for the current pipeline.**
+    
+- The routing middleware registered _before_ the branch is invoked _before_ the branch pipeline starts, but it only knows about endpoints registered in that pipeline up to that point.
+    
+- The **branch pipeline needs its own routing middleware and endpoint registrations to handle its own endpoints** because it's a separate sub-pipeline.
+    
+- Same for authorization/authentication middleware that rely on routing info and endpoint metadata — **the branch needs to re-run them to apply policies based on the branch's routes**.
+
+**Another way to see it:**
+
+- **Middleware before the branch modifies the request and sets up things for the branch.**
+    
+- **But the branch pipeline needs to build its own routing table and apply authorization logic relevant to its own endpoints.**
+    
+- So even though `UseAuthentication()` was called before `app.Map()`, **the branch pipeline still needs to call it again to enforce auth on its own endpoints** because the authorization middleware uses routing information that is only available _after_ routing middleware runs inside that branch.
+
+**To summarize:**
+
+|Middleware type|Registered before `app.Map()`|Registered inside branch pipeline?|Reason|
+|---|---|---|---|
+|`UseRouting()`|Yes|Yes|Branch needs routing table for its own endpoints|
+|`UseAuthentication()`|Yes|Yes|Authorization depends on routing metadata, so branch must apply it again|
+|`UseAuthorization()`|Yes|Yes|Authorization policies must run with branch routes|
+|Other middlewares|Yes|No or optional|Some modify request globally and run once (e.g., logging)|
+
+**Example:**
+
+```csharp
+app.UseRouting();           // Builds main routing table (without branch endpoints)
+app.UseAuthentication();    // Authenticates user for all requests before branching
+
+app.Map("/branch", branchApp =>
+{
+    branchApp.UseRouting();           // Branch builds routing table for branch endpoints
+    branchApp.UseAuthentication();   // Auth middleware re-applies for branch endpoints
+    branchApp.UseAuthorization();    // Authorization middleware re-applies policies based on branch routes
+
+    branchApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();  // Map controllers in branch
+    });
+});
+
+app.UseAuthorization();     // Runs only for main pipeline endpoints
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();      // Map controllers in main pipeline
+});
+```
+
+If you think about the routing & authorization middlewares as "building and applying policies based on routes", then **each pipeline has its own routing table and policy application**, so you must set them up _in every pipeline you create_.
+### How `app.Map()` Branches and Strips the Path in ASP.NET Core
+
+- The `app.Map("/prefix", branch => { ... })` middleware **creates a branch** in the request pipeline that is only executed when the incoming request path **starts with** the specified prefix (`/prefix`).
+    
+- When a request matches the prefix, the middleware **removes that prefix segment from the request path** (`HttpContext.Request.Path`) before executing the branch middleware.
+    
+- Inside the branch, the request path (`HttpContext.Request.Path`) is **adjusted to the remainder after the prefix**, usually starting at `/` or some sub-path, relative to the branch root.
+    
+- The removed prefix is normally stored in `HttpContext.Request.PathBase`, which represents the "base path" of the application or branch. However, depending on the middleware setup or nested branches, `PathBase` may sometimes remain empty.
+    
+- Because the branch middleware pipeline sees a modified request path (with the prefix removed), **all routing inside the branch is relative to the stripped path**, not the original full URL.
+    
+- This behavior allows you to isolate and handle different URL segments with different middleware pipelines or routing rules.
+
+**Example**
+
+Request URL:
+
+```
+/cinema/admin
+```
+
+With branch:
+
+```csharp
+app.Map("/cinema/admin", adminApp =>
+{
+    // Inside here, Request.Path = "/" (prefix "/cinema/admin" is stripped)
+    // So routing patterns and controllers should be relative to "/"
+});
+```
+
+Result inside the branch:
+
+| Property           | Value                                        | Explanation                                           |
+| ------------------ | -------------------------------------------- | ----------------------------------------------------- |
+| `Request.Path`     | `/`                                          | The part of the path **after** `/cinema/admin` prefix |
+| `Request.PathBase` | `/cinema/admin` (usually) or sometimes empty | The matched prefix (base path)                        |
+
+**Why is this useful?**
+
+- You can **compose modular request pipelines** for different URL prefixes.
+    
+- You isolate routing and middleware logic specific to a prefix without needing to handle the prefix manually.
+    
+- You write routing inside the branch **as if the prefix was the application root**.
+## `app.Run()` – The Application Start Button vs Middleware Terminator
+
+🟢 **1. `app.Run()` (no parameters)**
+
+This is like the **start button** for your application.  
+It **starts the web server** and begins listening for HTTP requests.
+
+- ✔️ Mandatory to start the app.
+    
+- ❗Without it, the app will build but **won’t start** or respond to requests.
+    
+- Placed at the **very end** of `Program.cs` or `Startup.cs`.
+
+```csharp
+var app = builder.Build();
+// ... middleware setup
+app.Run(); // Starts the app
+```
+
+🟡 **2. `app.Run(delegate)` – Final Middleware (terminating)**
+
+This version **adds a terminal middleware** to the request pipeline.
+
+- It **handles requests** and **prevents any further middleware** from executing after it.
+    
+- Used to provide **custom responses** like:
+
+```csharp
+app.Run(async context =>
+{
+    await context.Response.WriteAsync("Hello!");
+});
+```
+
+- This is **NOT the same** as the empty `app.Run()` above.
+
+⚠️ **Important Differences**
+
+|Purpose|`app.Run()` (no args)|`app.Run(delegate)`|
+|---|---|---|
+|Role|Starts the server|Ends the request pipeline|
+|Required?|✅ Yes|❌ Optional|
+|Executes middleware?|❌ No|✅ Yes (but terminates the pipeline)|
+|Placement|Last line of `Program.cs`|Anywhere in pipeline, often last logic|
+
+🔁 **Summary**
+
+- ✅ `app.Run()` (no delegate) is **mandatory** – it starts your app.
+    
+- 🚧 `app.Run(delegate)` is **a middleware** – it ends request processing and should be used carefully to not block MVC or Razor routing.
+
 # Bookmarks
 Completion: 20.05.2025
