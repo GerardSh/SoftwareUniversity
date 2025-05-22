@@ -424,6 +424,8 @@ app.Use(async (context, next) =>
 ```
 
 Ако някой middleware не извика `next()`, тогава изпълнението на pipeline-а спира дотам и отговорът се връща директно към клиента. Това означава, че нито един от следващите middleware-и няма да бъде извикан, нито ще се изпълнят действията, които са написани _след_ `await next()` в предходните компоненти.
+
+Изграждането на pipeline-a започва след извикването на `WebApplication app = builder.Build();`. До този момент конфигурираме IoC контейнера и регистрираме нужните services.
 ### Request Delegates
 Request делегатите обработват всяка HTTP заявка и се конфигурират чрез разширяващите методи `Run()`, `Map()` и `Use()`.
 
@@ -555,6 +557,343 @@ app.UseCustom();
 
 Така правим регистрацията на middleware-а по-четлива и удобна, вместо да пишем директно `app.UseMiddleware<CustomMiddleware>()` навсякъде.
 ### Built-in Middleware
+Някои от вградените middlewares в ASP.NET Core са:
+
+| **Middleware Category** | **Middleware Usage**                |
+| ----------------------- | ----------------------------------- |
+| Authentication          | `app.UseAuthentication()`           |
+| Cookie Policy           | `app.UseCookiePolicy()`             |
+| CORS                    | `app.UseCors()`                     |
+| Diagnostics             | `app.UseDevelopmentExceptionPage()` |
+|                         | `app.UseExceptionHandler(...)`      |
+|                         | `app.UseStatusCodePages()`          |
+| HTTPS Redirection       | `app.UseHttpsRedirection()`         |
+| HSTS                    | `app.UseHsts()`                     |
+| Static Files            | `app.UseStaticFiles()`              |
+| Response Caching        | `app.UseResponseCaching()`          |
+| Response Compression    | `app.UseResponseCompression()`      |
+| Request Localization    | `app.UseRequestLocalization(...)`   |
+| Routing                 | `app.UseRouter(...)`                |
+| Session                 | `app.UseSession()`                  |
+| URL Rewriting           | `app.UseRewriter(...)`              |
+| WebSockets              | `app.UseWebSockets(...)`            |
+| Others                  | `app.UseWelcomePage()`              |
+
+Много други middleware компоненти са достъпни чрез NuGet пакети.
+## Filters
+Филтрите позволяват да изпълним код преди или след определени етапи от pipeline-а за обработка на заявката.
+
+Филтрите са подобни, но не са същите като Middleware.
+
+Middleware работят на нивото на ASP.NET Core.
+
+Филтрите работят само на нивото на MVC.
+
+Когато build-нем приложението, към pipeline-а автоматично се добавя скрит компонент преди извикването на `Run()`. Това е т.нар. **MVC Action Invocation Pipeline (Filter Pipeline)**. Той е част от общия middleware pipeline, но се появява, защото предварително сме регистрирали `builder.Services.AddControllersWithViews()`.
+
+Този компонент не го виждаме директно – конфигурирането му става при самата регистрация на услугата, чрез lambda израз, където подаваме филтри през `options.Filters.Add()`. Там се добавя съответният филтър, който ще бъде закачен в подходящия етап от изпълнението на Filter Pipeline-а.
+
+Следната схема представлява **MVC Action Invocation Pipeline** – в този момент заявката вече е преминала през всички останали middleware-и, а отговорът след това се връща обратно през тях:
+
+Това е схемата MVC Action Invocation Pipeline, в която request-а вече е преминал през всичките middlewares, а отговора се връща обратно към тях:
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250522123728.png)
+
+Използвайки различните типове филтри, можем да определим точно в кой момент от изпълнението да се включим. Когато подадем филтър в `builder.Services.AddControllersWithViews()`, ASP.NET Core знае къде да го постави, като разпознае неговия тип.
+
+**Пример:**
+
+```csharp
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new MyCustomActionFilter());
+});
+
+public class MyCustomActionFilter : IActionFilter
+{
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        // Този код се изпълнява ПРЕДИ самия Action метод
+        Console.WriteLine("Before executing action");
+    }
+
+    public void OnActionExecuted(ActionExecutedContext context)
+    {
+        // Този код се изпълнява СЛЕД като се изпълни Action методът
+        Console.WriteLine("After executing action");
+    }
+}
+```
+
+- `AddControllersWithViews()` регистрира всички необходими услуги за използване на MVC контролери и Razor изгледи.
+- С `options.Filters.Add(...)` добавяме филтър, който ще се прилага глобално за всички контролери и действия.
+- `MyCustomActionFilter` е клас, който имплементира `IActionFilter`, и се вмъква автоматично в **Filter Pipeline**.
+
+Има няколко типа филтри.
+
+Всеки се изпълнява на различен етап от Filter pipeline-а.
+
+Съществуват Authorization, Resource, Action, Exception и Result филтри.
+
+| **Filter**        | **Description**                                                                                   |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| **Authorization** | Runs first. Determines if the client is authorized to access the requested functionality.         |
+| **Resource**      | Runs immediately after authorization. Can execute code before and after the rest of the pipeline. |
+| **Action**        | Runs immediately before and after an individual action method is invoked.                         |
+| **Exception**     | Used to apply global policies for unhandled errors that occur.                                    |
+| **Result**        | Runs immediately before and after the execution of individual action results.                     |
+### Implementing Custom Filters
+ASP.NET Core MVC филтрите могат да бъдат както синхронни, така и асинхронни.
+
+**Synchronous:**
+
+```csharp
+public class SampleActionFilter : IActionFilter
+{
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        // Executed BEFORE the action method
+    }
+
+    public void OnActionExecuted(ActionExecutedContext context)
+    {
+        // Executed AFTER the action method
+    }
+}
+```
+
+**Asynchronous:**
+
+```csharp
+public class SampleAsyncActionFilter : IAsyncActionFilter
+{
+    public async Task OnActionExecutionAsync(
+        ActionExecutingContext context,
+        ActionExecutionDelegate next)
+    {
+        // Executed BEFORE the action method
+        var resultContext = await next(); // Invokes the action method
+        // Executed AFTER the action method
+        // resultContext.Result contains the action result
+    }
+}
+```
+
+[Filters in ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-9.0)
+### Adding Filters to the Pipeline (Global)
+Филтрите се добавят глобално в `MvcOptions.Filters` и ще бъдат приложени към всички контролери и действия.
+
+```csharp
+builder.Services.AddMvc(options => {
+    options.Filters.Add(new SampleActionFilter());   // instant
+    options.Filters.Add(typeof(SampleActionFilter)); // by type
+});
+```
+### Filter Attributes
+ASP.NET Core поддържа **вградени филтри на базата на атрибути**, които може да използваме за добавяне на поведение към контролери и действия.
+
+Не само че можем да се включим на всяко едно място в MVC Action Invocation Pipeline-а чрез съответния тип филтър (Authorization, Resource, Action, Result, Exception), но чрез **атрибутите** можем и да контролираме **кога** и **при кои действия или контролери** това да се случи.
+
+Например, **атрибутът `[Authorize]`** е именно такъв филтър – **Authorization Filter**, който указва, че дадено действие или контролер изисква потребителят да бъде оторизиран. Ако не добавим този атрибут, филтърът не се изпълнява за съответния ресурс, дори да е регистриран глобално.
+
+Пример: Създаване на филтър чрез атрибут
+
+```csharp
+public class AddHeaderAttribute : ResultFilterAttribute
+{
+    private readonly string name;
+    private readonly string value;
+
+    public AddHeaderAttribute(string name, string value)
+    {
+        this.name = name;
+        this.value = value;
+    }
+
+    public override void OnResultExecuting(ResultExecutingContext context)
+    {
+        context.HttpContext.Response.Headers.Add(this.name, new[] { this.value });
+        base.OnResultExecuting(context);
+    }
+}
+```
+
+**Употреба:**
+
+```csharp
+[AddHeader("Author", "Steve Smith @ardalis")]
+public class SampleController : Controller
+{
+    public IActionResult Index()
+    {
+        return Content("Examine the headers using developer tools.");
+    }
+
+    public IActionResult Test()
+    {
+        return Content("Header will be present here too.");
+    }
+}
+```
+
+**Обяснение:**
+
+- Атрибутите като `AddHeaderAttribute` са специални филтри, които:
+
+    - Могат да се поставят върху контролери или методи.
+
+    - Приемат аргументи (в конструктора).
+
+    - Модифицират изпълнението — в този случай, добавят HTTP header.
+
+- В примера горе, всеки отговор от `SampleController` ще включва HTTP header:
+
+```
+Author: Steve Smith @ardalis
+```
+
+Това е особено полезно за **кеширане, сигурност, логване** и други cross-cutting функционалности на ниво контролер/екшън.
+
+Няколко от интерфейсите за филтри имат съответстващи атрибути.
+
+Можем да ги използваме като базови класове за създаване на собствени имплементации.
+
+Filter атрибути:
+
+`ActionFilterAttribute`  
+Имплементира `IActionFilter` или `IAsyncActionFilter`. Използва се за създаване на филтри, които се изпълняват преди и след дадено Action.
+
+`ExceptionFilterAttribute`  
+Имплементира `IExceptionFilter` или `IAsyncExceptionFilter`. Позволява ни да обработваме глобално изключения, възникнали по време на изпълнение на Action.
+
+`ResultFilterAttribute`  
+Имплементира `IResultFilter` или `IAsyncResultFilter`. Изпълнява се преди и след изпълнение на Action резултата (например ViewResult).
+
+`FormatFilterAttribute`  
+Имплементира `IResourceFilter`. Използва се за избор на изходен формат, базиран на данни от маршрута или заявката.
+
+`ServiceFilterAttribute`  
+Използва DI контейнера и интернално създава филтър, който имплементира съответния интерфейс (например `IActionFilter`).
+
+`TypeFilterAttribute`  
+Създава филтър по подаден тип и може да работи с всеки клас, който имплементира някой от Filter интерфейсите (например `IAuthorizationFilter`, `IResultFilter`, и т.н.).
+
+`AuthorizeAttribute`  
+Имплементира `IAuthorizationFilter`. Използва се за контрол на достъпа преди изпълнението на Action.
+### Life cycle
+| Етап                                     | Описание                                                                                                        |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Request**                              | Началото на заявката                                                                                            |
+| **Authorization Filters**                | Проверяват дали потребителят има права да достъпи ресурса (`IAuthorizationFilter`)                              |
+| **Resource Filters (OnActionExecuting)** | Стартират се преди останалите етапи. Могат да кратко-циркулират заявката (`IResourceFilter`)                    |
+| **Action Filters (OnActionExecuting)**   | Изпълняват се непосредствено преди Action метода (`IActionFilter`)                                              |
+| **Action Execution**                     | Тук се изпълнява самият Action метод                                                                            |
+| **Model Binding & Exception Filter**     | Извършва се обвързване на входните данни към модела и евентуално обработване на изключения (`IExceptionFilter`) |
+| **Result Filter**                        | Манипулират или наблюдават резултата от Action метода (`IResultFilter`)                                         |
+| **Action Filters (OnActionExecuted)**    | Изпълняват се непосредствено след Action метода (`IActionFilter`)                                               |
+| **Resource Filters (OnActionExecuted)**  | Последни стъпки от `IResourceFilter` преди отговора                                                             |
+| **Response**                             | Изпращане на отговора обратно към клиента                                                                       |
+### Filter Dependency Injection
+Не можем да използваме Dependency Injection в конструктора на филтър, който е атрибут, защото атрибутите в .NET изискват параметрите им да бъдат константи, стойности от enum или други компилаторно допустими стойности. Това е ограничение на самия .NET атрибутен механизъм, не само на ASP.NET Core. Затова не можем директно да подаваме услуги от DI контейнера като параметри в конструктора на атрибута.
+
+Филтрите, които са имплементирани като атрибути, се добавят директно към контролерите или към техните методи.
+
+Не можем да подаваме зависимости чрез Dependency Injection в техния конструктор.
+
+Ако има параметри, те трябва да бъдат зададени директно на мястото, където прилагаме атрибута.
+
+Това е ограничение, произтичащо от начина, по който работят атрибутите като филтри.
+
+Има няколко подхода, чрез които все пак можем да включим Dependency Injection във филтри, дефинирани като атрибути.
+
+`ServiceFilterAttribute` се използва, когато филтърът е регистриран като услуга в DI контейнера. При използването му се извлича инстанция на филтъра директно от DI.
+
+`TypeFilterAttribute` е подобен, но не използва DI контейнера директно. Вместо това типът се инстанцира чрез `ObjectFactory`. 
+
+Съществуват начини да контролираме повторната употреба на инстанциите, но няма гаранция, че ще бъде създадена само една.
+#### Type Filter
+```csharp
+public class FeatureAuthFilter : IAuthorizationFilter
+{
+    private readonly IFeatureService _featureAuth;
+
+    public FeatureAuthFilter(IFeatureService service)
+    {
+        _featureAuth = service;
+    }
+
+    public void OnAuthorization(AuthorizationFilterContext context)
+    {
+        // Authorization logic here
+    }
+}
+```
+
+Зависимостта `IFeatureService` се подава чрез конструктора.
+
+Този филтър не може да бъде използван като обикновен атрибут, защото атрибутите не поддържат подаване на зависимости чрез конструктора.
+
+Използваме `TypeFilterAttribute`, за да осигурим достъп до DI контейнера.
+
+**Контролер с `TypeFilter`**
+
+```csharp
+[TypeFilter(typeof(FeatureAuthFilter))]
+public IActionResult Index()
+{
+    return View();
+}
+```
+#### Service Filter
+```csharp
+public class FeatureAuthFilter : IAuthorizationFilter
+{
+    private readonly IFeatureService featureAuth;
+
+    public FeatureAuthFilter(IFeatureService service)
+    {
+        this.featureAuth = service;
+    }
+
+    public void OnAuthorization(AuthorizationFilterContext context)
+    {
+        // Authorization logic
+    }
+}
+```
+
+`FeatureAuthFilter` имплементира `IAuthorizationFilter`, като очаква `IFeatureService` чрез конструктора.
+
+ **Регистриране в DI контейнера**
+
+```csharp
+builder.Services.AddSingleton<IFeatureService, FeatureService>();
+builder.Services.AddSingleton<FeatureAuthFilter>();
+```
+
+И `FeatureService`, и `FeatureAuthFilter` се регистрират като Singleton услуги, така че DI контейнерът ще ги управлява.
+
+**Използване в контролер с `ServiceFilter`**
+
+```csharp
+[ServiceFilter(typeof(FeatureAuthFilter))]
+public IActionResult Index()
+{
+    return View();
+}
+```
+
+Това указва на ASP.NET Core да вземе инстанция на `FeatureAuthFilter` **от DI контейнера**, а не да я създава ръчно.
+
+**Какво става под капака?**
+
+- **Инстанцията се управлява от Dependency Resolver (DI контейнера)**
+
+- **`ServiceFilter` изпълнява филтъра при всяко извикване на Action-а**
+
+- **Зависимостите се инжектират правилно и lifecycle-ът се спазва**
+
+Този подход е най-препоръчителен, когато филтърът ви има зависимости, защото позволява пълен контрол върху създаването и управлението на инстанции.
 # Misc
 # ChatGPT
 ## Configuration Model
@@ -1974,5 +2313,59 @@ app.Run(async context =>
     
 - 🚧 `app.Run(delegate)` is **a middleware** – it ends request processing and should be used carefully to not block MVC or Razor routing.
 
+**You said:**
+
+When we use a request delegate with the `Use` method, and we don't invoke the `next` delegate, it behaves like the `Run` method by terminating the request pipeline.
+
+**ChatGPT said:**
+
+Yes, exactly — your understanding is correct.
+
+In ASP.NET Core middleware, when you use the `app.Use(...)` method **without calling `next()`**, it behaves **like `app.Run(...)`**, effectively **short-circuiting** the pipeline.
+
+**Quick Overview:**
+
+- `app.Use(...)` is used to **add middleware to the pipeline**. Middleware added with `Use` **can call `next()` to pass control** to the next middleware.
+    
+- `app.Run(...)` is used to **terminate** the pipeline. It’s typically the last middleware and **does not call `next()`**.
+
+**Example:**
+
+```csharp
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("Before\n");
+    await next(); // Passes to the next middleware
+    await context.Response.WriteAsync("After\n");
+});
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("Inside Second Middleware\n");
+    // next() is NOT called here, so pipeline stops here
+});
+```
+
+This behaves **as if the second `Use` is a `Run`**, because it **doesn't call `next()`**.
+
+**Equivalent to:**
+
+```csharp
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("Before\n");
+    await next();
+    await context.Response.WriteAsync("After\n");
+});
+
+app.Run(async context =>
+{
+    await context.Response.WriteAsync("Inside Second Middleware\n");
+});
+```
+
+So yes — if you don’t call `next()` in a `Use` delegate, it **acts like `Run`**, stopping further middleware from executing.
 # Bookmarks
-Completion: 20.05.2025
+[Filters in ASP.NET Core | Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-9.0)
+
+Completion: 22.05.2025
