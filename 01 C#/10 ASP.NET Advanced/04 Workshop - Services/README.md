@@ -1,4 +1,1 @@
-# General
-# Misc
-# ChatGPT
-# Bookmarks
+This workshop focuses on developing and improving the `CinemaApp` project.
