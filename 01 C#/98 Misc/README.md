@@ -904,12 +904,380 @@ You're talking about the types that **carry meaningful data**, as opposed to typ
 You're making a **deep structural observation** — when you break down objects to their most useful parts, you’re left with the **primitives and data types that actually hold values**. The rest is structure, logic, or abstraction.
 
 So yes — I agree with the principle you're expressing.
+### Asynchronous Programming
+#### What is a thread
+I'm having trouble understanding what exactly we mean by a _thread_. Is a thread just the logical or physical CPU core — like a desk where instructions are executed? Or do we also have something like a _program thread_? For example, if I write a simple C# program that only uses synchronous methods, is that considered a program thread? In general, is there a distinction between CPU threads and program threads?
+
+**ChatGPT said:**
+
+You're asking a very deep and fundamental question — and it's excellent. Let's carefully clarify what a **"thread"** means in programming and how it's different from a **CPU core**. These terms often get blurred, so you're not alone in this confusion.
+
+✅ 1. What is a **CPU core** (hardware thread)?
+
+- This is a **physical unit** inside your processor that actually **executes instructions**.
+    
+- Think of it as a **desk** where a worker can sit and do tasks.
+    
+- A typical CPU may have multiple **cores**, and each core may support **multiple hardware threads** (e.g. Intel Hyper-Threading).
+    
+
+🧠 **Key idea**: The **CPU core/hardware thread** is where instructions are actually executed — one at a time per thread.
+
+✅ 2. What is a **program thread** (software thread, OS thread)?
+
+- A **software thread** is a **sequence of instructions and state (call stack, registers)** that the operating system manages.
+    
+- It’s like a **worker** with their own "task list" (call stack), who needs a desk (CPU core) to work.
+    
+- Multiple threads can exist **waiting their turn** to use a CPU core.
+    
+
+🧠 **Key idea**: A **program thread is not a CPU core**. It is a **software entity**, and it must be **scheduled** by the OS to run on a CPU core.
+
+🔁 **So what's the relationship?**
+
+- A **program thread** runs on a **CPU thread/core** — but **only one at a time**.
+    
+- If your program has 10 threads but only 1 CPU core, they’ll be scheduled **interleaved**: each gets a little time.
+
+✅ 3. If a C# program is synchronous, does it still use a thread?
+
+**Yes!**
+
+Even the simplest C# console app:
+
+```csharp
+static void Main() {
+    Console.WriteLine("Hello, world!");
+}
+```
+
+Runs on **a single OS thread**. This is your **main thread**.
+
+- This thread is created by the .NET runtime and passed to your `Main` method.
+    
+- It's just one worker, working on one desk (CPU core).
+    
+- If the CPU has multiple cores, your program will still use just **one thread** unless you **explicitly create more**.
+
+✅ 4. Do we have both CPU threads and program threads?
+
+Yes, and they are **different things**:
+
+|Concept|Type|What it is|Example|
+|---|---|---|---|
+|**CPU thread**|Hardware|Execution unit inside a CPU core|Intel i7 has 8 cores with 16 threads|
+|**Program thread**|Software|Managed by OS, runs code|C# `Thread`, ThreadPool, Task|
+
+✅ 5. What happens when we use `async`?
+
+When you write:
+
+```csharp
+await Task.Delay(1000);
+```
+
+- The **program thread** that was running this pauses (`await`) and returns control.
+    
+- The **OS thread** (your worker) is **freed** — it goes back to the thread pool or continues with other work.
+    
+- When the delay finishes, the continuation is scheduled to resume, possibly on the same or another program thread.
+
+So **async doesn't create threads**, but it **creates logical points** (continuations) that are run on threads when needed.
+
+✅ **Official Terms**
+
+| Concept               | Common Names                               | **Official Name**                                  | Description                                                                                                                        |
+| --------------------- | ------------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 🧠 **CPU thread**     | CPU core, hardware thread, execution unit  | **Hardware thread** or **Logical processor**       | A physical (or virtual, via hyper-threading) CPU execution unit that can execute machine instructions.                             |
+| 💻 **Program thread** | Software thread, OS thread, managed thread | **Software thread** or **Operating System thread** | A sequence of instructions managed by the OS scheduler, which runs on a hardware thread. It includes its own call stack and state. |
+
+✅ **Final Summary**
+
+| Concept                    | Analogy                         | Description                                                |
+| -------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| CPU Core (Hardware Thread) | **Desk**                        | Actual physical place where code runs                      |
+| Program Thread (Software)  | **Worker**                      | Has a task list (call stack), needs a desk (CPU) to work   |
+| Task (C# async)            | **Scheduled task for a worker** | Might run later, doesn't create a new worker unless forced |
+| `Thread` class             | **Explicit worker**             | You manually create and control a new worker               |
+
+| Concept                      | Right Term                                             | Example                                               |
+| ---------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| Physical executor on the CPU | ✅ **Hardware thread** or **logical processor**         | What the OS schedules threads _onto_                  |
+| Unit of execution in an app  | ✅ **Software thread** or **OS thread**                 | What your app uses when you start a new `Thread`      |
+| Async unit of work           | ✅ **Task**, **logical operation**, or **continuation** | Not a thread; can run on a thread but doesn’t own one |
+#### Behavior of `await` with Immediate vs. Delayed Tasks
+**Example 1: Using `await Task.Delay(1)`**
+
+```csharp
+static void Main()
+{
+    DoWorkAsync(); // Not awaited
+
+    while (true)
+    {
+        Console.WriteLine($"Main continues on Thread {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+
+static async Task DoWorkAsync()
+{
+    await Task.Delay(1);
+
+    while (true)
+    {
+        Console.WriteLine($"Async method continues on Thread {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+```
+
+**What happens here:**
+
+- `await Task.Delay(1)` **asynchronously yields control**.
+    
+- `Main` continues its infinite loop on **Thread A** (likely the main thread).
+    
+- After approximately 1 millisecond, the continuation of `DoWorkAsync` resumes on a **different thread from the thread pool**, say **Thread B**.
+    
+- So now, two threads are printing concurrently — the `Main` thread and the async method’s thread pool thread.
+
+**Example 2: Using `await Task.CompletedTask`**
+
+```csharp
+static void Main()
+{
+    DoWorkAsync(); // Not awaited
+
+    while (true)
+    {
+        Console.WriteLine($"Main continues on Thread {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+
+static async Task DoWorkAsync()
+{
+    await Task.CompletedTask;
+
+    while (true)
+    {
+        Console.WriteLine($"Async method continues on Thread {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+```
+
+**What happens here:**
+
+- `await Task.CompletedTask` **does not yield control asynchronously** — it completes immediately.
+    
+- The continuation of `DoWorkAsync` runs **synchronously on the same thread** that called it (the main thread).
+    
+- Therefore, the infinite loop inside `DoWorkAsync` blocks the main thread.
+    
+- You only see output from the async method's loop — the `Main` method's loop never runs because it's blocked.
+
+**Summary Table**
+
+|Awaited Task|Thread(s) Executing|Behavior|
+|---|---|---|
+|`await Task.Delay(1)`|Main thread + Thread pool thread|Runs concurrently on two different threads|
+|`await Task.CompletedTask`|Only Main thread|Runs synchronously; blocks caller thread|
+
+**Key takeaway**
+
+- `await Task.Delay(1)` causes an **actual asynchronous yield**, letting the caller thread continue while the async method resumes on another thread.
+
+- `await Task.CompletedTask` (or similar instantly completed tasks) **does not yield asynchronously**, so the continuation runs synchronously on the caller’s thread.
+
+If you run both examples and observe the `Thread.CurrentThread.ManagedThreadId`, you’ll see these behaviors clearly.
+
+**What happens when a calling method uses `await` in front of a called async method?**
+
+```csharp
+await DoWorkAsync();
+```
+
+1. **`DoWorkAsync()` is called**:
+
+- Execution enters `DoWorkAsync()` and begins running synchronously _until it hits the first `await`_ (e.g. `await Task.Delay(100)`).
+
+2. **When it hits the first `await` inside `DoWorkAsync`**:
+
+- It checks the **awaited task's status**.
+    
+    - If the task is **incomplete** (like `Task.Delay(100)`), then:
+        
+        - `DoWorkAsync()` **returns an incomplete `Task`** to the caller.
+            
+        - The caller (because it is using `await`) **pauses** and waits for that task to finish.
+            
+        - The rest of the code **after the await** inside `DoWorkAsync()` is scheduled to run **later**, once the awaited task completes.
+
+3. **When the awaited task inside `DoWorkAsync` completes**:
+
+- The **remaining code** in `DoWorkAsync()` resumes.
+    
+- Once the whole method finishes, its `Task` is **marked as complete**.
+    
+- Now, the **caller resumes** after its `await`.
+
+**Summary:**
+
+- `await` **splits** the method into:
+    
+    - Code **before** the `await` – runs immediately.
+        
+    - Code **after** the `await` – runs **later**, once the awaited task completes.
+        
+- The **caller waits** for the **entire async method** to finish (not just up to the first `await`).
+
+**You said:**
+
+Even if we don't explicitly use `Task.Run`, in C#, when an async method encounters an `await` that results in a delay (e.g., `Task.Delay(1)`), the method yields control and its continuation may resume on a different thread — even if the caller doesn't await it. This behavior contrasts with JavaScript, where asynchronous continuations always wait for all synchronous code to finish first, and resume on the same thread using the event loop.
+
+**ChatGPT said:**
+
+Exactly — you're touching on a key difference between **C#** and **JavaScript** in how they handle asynchronous code and thread usage.
+
+✅ In **C#**:
+
+Even if you don’t explicitly use `Task.Run`, when you call an `async` method (not awaited), and it encounters an **asynchronous wait** (like `await Task.Delay(1)`), this happens:
+
+- The method **returns immediately** to the caller with an **incomplete Task**.
+    
+- The rest of the async method (after the await) is **scheduled to continue later**, potentially on:
+    
+    - A different thread from the **ThreadPool** (depending on the context and the awaited task).
+        
+- This means the continuation code may **run in parallel** with the caller, even without `Task.Run`.
+    
+
+> ✔️ This is because `await` does not block, and the continuation may be picked up by another thread automatically.
+
+❗ But in **JavaScript** (single-threaded):
+
+JavaScript runs on a **single thread** with a **message/event loop** model:
+
+- Even when you call an async function:
+    
+    - The `await` causes a pause in that function.
+        
+    - The rest of the code in the caller **continues synchronously**.
+        
+    - The continuation of the async function is **queued** to run only **after all current synchronous code finishes**.
+        
+- So, no matter what, the code **after the `await` will never preempt or run in parallel** with other synchronous code.
+
+🔍 **Example Comparison:**
+
+**C#:**
+
+```csharp
+DoWorkAsync(); // Not awaited
+Console.WriteLine("Main continues");
+// Both can run on different threads
+```
+
+**JavaScript:**
+
+```javascript
+doWorkAsync(); // Not awaited
+console.log("Main continues");
+// doWorkAsync's continuation will only run AFTER this line
+```
+
+**Note:**
+
+In C#, if an `async` method is called **without `await`**, its execution continues independently. If the calling method finishes (especially in scenarios like `Main()` or a short-lived application), the process might exit **before** the called `async` method has a chance to complete — particularly if it resumes on a thread pool thread after an `await`. This can **interrupt** or **terminate** the asynchronous method prematurely, since the application may shut down before it completes.
+
+To prevent this, you can either `await` the async method to ensure the caller waits for its completion, or explicitly wait using `Task.Wait()` or `Task.GetAwaiter().GetResult()` in non-async methods like `Main()`. This keeps the application alive until the async work finishes.
+
+✅ **Summary:**
+
+|Feature|C#|JavaScript|
+|---|---|---|
+|Multithreaded|Yes (via ThreadPool, etc.)|No (single-threaded)|
+|Async continues on|Possibly a new thread|Always same thread, after sync|
+|`await` behavior|May switch thread or context|Always defers to event loop|
+|Parallelism possible?|Yes|No (concurrency via callbacks)|
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
 [vcmi/vcmi: Open-source engine for Heroes of Might and Magic III](https://github.com/vcmi/vcmi) - open-source recreation of Heroes of Might & Magic III engine
 
 [c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
+
+# ASP.NET
+## General
+## ChatGPT
+### `ViewData[]` vs `TempData[]`
+In ASP.NET MVC (or ASP.NET Core MVC), both `TempData[]` and `ViewData[]` are used to pass data from the controller to the view, but they serve **different purposes** and behave differently in terms of **lifetime and persistence**.
+
+🔹 **`ViewData[]`**
+
+- **Purpose**: Used to pass data from **controller to view** within a **single request**.
+    
+- **Lifetime**: Exists **only during the current request**.
+    
+- **Type**: It's a `ViewDataDictionary`, accessed via `ViewData["key"]`.
+    
+- **Use case**: Suitable for passing small amounts of data (like strings or numbers) to the view or partial views.
+
+```csharp
+ViewData["Message"] = "Hello from ViewData";
+return View();
+```
+
+- In the view:
+
+```csharp
+@ViewData["Message"]
+```
+
+🔹 **`TempData[]`**
+
+- **Purpose**: Used to pass data from **one request to another**, typically **after a redirect**.
+    
+- **Lifetime**: Survives **only until it is read**, or until the **next request**, whichever comes first.
+    
+- **Type**: It's a `TempDataDictionary`, accessed via `TempData["key"]`.
+    
+- **Use case**: Useful when you need to store something temporarily between **controller actions**, e.g., after `RedirectToAction`.
+
+```csharp
+TempData["SuccessMessage"] = "Item saved successfully!";
+return RedirectToAction("Index");
+```
+
+- In the next action/view:
+
+```csharp
+@TempData["SuccessMessage"]
+```
+
+🆚 **Summary of Differences**
+
+|Feature|ViewData|TempData|
+|---|---|---|
+|Persistence|Only during current request|Survives across one redirect|
+|Storage type|ViewDataDictionary|TempDataDictionary|
+|Usage scope|Controller ➝ View|Controller ➝ Controller/View|
+|Best for|Passing data to views|Passing data after redirects|
+|Read behavior|Can be read multiple times|Removed once read (unless kept)|
+
+📝 **Bonus: Keep `TempData`**
+
+If you want to preserve `TempData` for another request (even after it's read), use:
+
+```csharp
+TempData.Keep("SuccessMessage");
+```
+
+Or to keep all:
+
+```csharp
+TempData.Keep();
+```
+## Bookmarks
 # HTML & CSS
 ## General
 ## ChatGPT
