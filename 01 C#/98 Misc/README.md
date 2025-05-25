@@ -1149,7 +1149,6 @@ Even if you don’t explicitly use `Task.Run`, when you call an `async` method (
     - A different thread from the **ThreadPool** (depending on the context and the awaited task).
         
 - This means the continuation code may **run in parallel** with the caller, even without `Task.Run`.
-    
 
 > ✔️ This is because `await` does not block, and the continuation may be picked up by another thread automatically.
 
@@ -1233,6 +1232,8 @@ return View();
 @ViewData["Message"]
 ```
 
+- ✅ **Extra Tip**: `ViewData` is essentially a wrapper around `ViewBag` (which uses dynamic typing). `ViewBag.Message` and `ViewData["Message"]` are functionally equivalent.
+
 🔹 **`TempData[]`**
 
 - **Purpose**: Used to pass data from **one request to another**, typically **after a redirect**.
@@ -1253,6 +1254,8 @@ return RedirectToAction("Index");
 ```csharp
 @TempData["SuccessMessage"]
 ```
+
+- ✅ **Extra Tip**: `TempData` internally uses session state for persistence, so make sure session is enabled in your application if you're using `TempData`.
 
 🆚 **Summary of Differences**
 
@@ -1277,6 +1280,12 @@ Or to keep all:
 ```csharp
 TempData.Keep();
 ```
+
+✅ **Quick Recap**:
+
+- Use **`ViewData`** (or `ViewBag`) when rendering a view in the same request.
+
+- Use **`TempData`** to store data **between redirects**, e.g., when using PRG (Post/Redirect/Get) pattern to avoid duplicate submissions.
 ## Bookmarks
 # HTML & CSS
 ## General
