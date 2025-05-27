@@ -454,6 +454,323 @@ JDBC – Java API, чрез който приложенията комуники
 Windows API – позволява на Windows приложения да комуникират с операционната система Windows.
 
 Web Audio API – дава възможност за възпроизвеждане на аудио в уеб браузър с JavaScript.
+### What is Web Service?
+Уеб услугите реализират комуникация между софтуерни системи или компоненти по мрежата.
+
+Ползват стандартни протоколи като HTTP, JSON и XML.
+
+Използват се за обмен на съобщения, данни и извършване на операции.
+
+Всички уеб услуги са API, но не всички API са уеб услуги.
+### Web Services and APIs
+Уеб услугите предоставят достъп до бекенд API през мрежата.
+
+Могат да ползват различни протоколи и формати за данни: HTTP, REST, GraphQL, gRPC, SOAP, JSON-RPC, JSON, BSON, XML, YML и други.
+
+Хостват се на уеб сървър (HTTP сървър).
+
+Предоставят набор от функции, които могат да бъдат извиквани през Web (Web API).
+
+RESTful API е най-популярният стандарт за уеб услуги.
+## Web API / Server-Side API
+Web API означава интерфейс за програмиране на приложения, достъпен през Интернет.
+
+Използва се от уеб браузъри (SPA), мобилни приложения, игри, настолни приложения, уеб сървъри и други.
+
+Сървърните Web API съдържат публично достъпни крайни точки (endpoints).
+
+Крайните точки съответстват на предварително дефинирана система от заявки и отговори.
+
+Комуникацията обикновено се осъществява във формат JSON или XML.
+
+Обикновено се извършва чрез интернет протокол.
+
+Най-често използваният протокол е HTTP – чрез уеб сървър, базиран на HTTP.
+### ASP.NET Core Web API
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250527173712.png)
+
+Създаването на Web API с ASP.NET Core е сравнително директно.
+
+Създават се контролери, които съдържат действия (actions).
+
+В този случай действията изпълняват ролята на крайни точки (endpoints).
+
+Основната разлика между MVC и Web API е, че при MVC може да се връща изглед (view) – тоест готов HTML. При Web API обикновено се връща JSON или XML. Все пак може да се върне каквото се прецени – просто е необходимо то да бъде създадено и върнато ръчно.
+### ASP.NET Core Web API Controller
+```csharp
+[Route("api/[controller]")]
+[ApiController]
+public class ProductsController : ControllerBase
+{
+    ...
+}
+```
+
+Класът `ControllerBase` съдържа **общите, базови функционалности**, които и MVC, и Web API споделят — например работа с HTTP отговори, моделиране на заявки, връщане на JSON, статус кодове и т.н.
+
+Класът `Controller` наследява `ControllerBase` и добавя специфичните за MVC **възможности за работа с изгледи (views)** — като връщане на `View()`, използване на `ViewBag`, `ViewData`, `TempData` и други помощни методи за манипулиране и подаване на данни към HTML страниците.
+
+- `ControllerBase` е основата за API контролерите — фокусира се върху HTTP и връщане на данни.
+
+- `Controller` разширява това с допълнителните възможности, нужни за класически уеб приложения с UI.
+
+Основната логика и обработка на заявки е в `ControllerBase`.
+
+API контролера трябва да наследява `ControllerBase` и да има атрибута `[ApiController]`. Това го прави специален контролер, който е оптимизиран за уеб API-та — автоматично обработва неща като валидация, маршрутизация и форматиране на отговори (например JSON).
+
+Web API няма default route по подразбиране, затова се използват атрибути като `[Route("api/[controller]")]`, за да се дефинира ясно пътят към отделните действия и контролери. Това позволява по-гъвкаво и изрично задаване на маршрутизацията спрямо нуждите на API-то.
+
+```csharp
+[Route("api/[controller]")]
+[ApiController]
+public class ProductController : ControllerBase
+{
+    private readonly IProductService productService;
+
+    public ProductController(IProductService productService)
+    {
+        this.productService = productService;
+    }
+}
+```
+
+Моделът и услугата могат да бъдат всякакви. Това, което е съществено, са техниките около контролера, тъй като именно те дефинират API-то.
+
+Можем да направим `BaseApiController`, който да наследява `ControllerBase` и да има атрибута `[ApiController]` и `[Route("api/[controller]")]`. След това другите ни API контролери просто наследяват този базов клас, за да не повтаряме кода и атрибутите във всеки контролер.
+
+Можем да върнем модела с `return Ok(model);` и това ще върне HTTP статус 200 OK, като по подразбиране моделът се сериализира като JSON, освен ако не сме конфигурирали друго.
+Клиентът може да реши в какъв формат иска да получи отговора, като изпрати HTTP header `Accept` със стойност, например, `application/json` или `application/xml`. Това позволява на сървъра да върне съответния формат според заявката на клиента.
+
+`[ApiController]` анотацията предоставя няколко удобни функции.
+
+Автоматично връщане на HTTP 400 отговори при грешки в състоянието на модела.
+
+Автоматично определяне на източника на данни за параметрите (binding source inference)  .
+
+Разпознаване на заявки с тип Multipart / Form-data.
+
+Задължително използване на маршрутизиране чрез атрибути.
+
+Връщане на подробна информация за проблема при статус кодове, показващи грешка.
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "traceId": "0HLHLV31KRN83:00000001"
+}
+```
+
+Автоматично връщане на HTTP 400 отговори.
+
+Грешки при валидирането на модела автоматично водят до HTTP 400 отговор.
+
+```csharp
+if (!ModelState.IsValid)
+{
+    return BadRequest(ModelState); // This is no longer necessary
+}
+```
+
+Автоматично разпознаване откъде да се вземат стойностите за параметрите (Binding Source Attributes).
+
+Атрибутите определят откъде да се извлече стойността на параметъра.
+
+```csharp
+[FromBody]
+[FromForm]
+[FromHeader]
+[FromQuery]
+[FromRoute]
+[FromServices]
+```
+
+Пример:
+
+```csharp
+[HttpPost]
+public IActionResult Create(
+    Product product, // [FromBody] is inferred
+    string name)     // [FromQuery] is inferred
+{
+}
+```
+
+Автоматично разпознаване на заявки от тип Multipart / Form-data.
+
+Постига се чрез поставяне на атрибута `[FromForm]` върху параметрите на метода.
+
+`multipart/form-data` типът съдържание на заявката се разпознава автоматично.
+
+Необходимо е използване на маршрутизиране чрез атрибути.
+
+Маршрутизирането чрез атрибути става задължително.
+
+Връщане на отговори с подробности за проблема при статус кодове, показващи грешка.
+
+От версия ASP.NET Core 2.2, MVC автоматично преобразува резултатите при грешки.
+
+Грешките се преобразуват в обекти от тип `ProblemDetails`.
+
+`ProblemDetails` е:
+
+Тип, базиран на HTTP API спецификация за представяне на грешки.
+
+Стандартизиран формат за машинно четими детайли за грешката.
+
+```csharp
+if (product == null)
+{
+    return NotFound();
+}
+```
+
+Автоматично генерираният отговор изглежда така:
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "traceId": "0HLHLV31KRN83:00000001"
+}
+```
+
+Този формат улеснява клиентските приложения при анализиране и обработка на грешки.
+
+Тези функции са вградени и активни по подразбиране.
+
+По подразбиране поведението е включено, но може да бъде променено.
+
+```csharp
+builder.Services.AddControllersWithViews()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Suppress Multipart/form-data inference
+        options.SuppressConsumesConstraintForFormFileParameters = true;
+
+        // Suppress binding source attributes
+        options.SuppressInferBindingSourcesForParameters = true;
+
+        // Suppress automatic HTTP 400 errors
+        options.SuppressModelStateInvalidFilter = true;
+
+        // Suppress problem details responses
+        options.SuppressMapClientErrors = true;
+
+        // ...
+    });
+```
+### ASP.NET Core Web API (Return Types)
+ASP.NET Core предлага няколко възможности за типовете на връщаните резултати от API методи.
+
+Конкретен тип.
+
+Най-простият вид тип за действие, при който методът винаги връща конкретен обект или колекция.
+
+Тип `IActionResult`.
+
+Подходящ е, когато в дадено действие е възможно връщане на различни типове резултати в зависимост от условието.
+
+ASP.NET Core Web API (Return Types):
+
+```csharp
+[HttpGet]
+public IEnumerable<Product> Get()
+{
+    return this.productService.GetAllProducts();
+}
+
+[HttpGet("{id}")]
+[ProducesResponseType(200, Type = typeof(Product))]
+[ProducesResponseType(404)]
+public IActionResult GetById(int id)
+{
+    var product = this.productService.GetById(id);
+    if (product == null) return NotFound();
+    return Ok(product);
+}
+```
+
+Първият метод винаги връща списък от продукти, затова е използван конкретен тип.
+
+Вторият метод може да върне обект или грешка 404, затова е използван `IActionResult`.
+
+Препоръчва се да се използва `ActionResult<T>` като тип за връщане.
+
+```csharp
+[HttpGet]
+public ActionResult<IEnumerable<Product>> Get()
+{
+    return this.productService.GetAllProducts();
+}
+```
+
+```csharp
+[HttpGet("{id}")]
+[ProducesResponseType(200)]
+[ProducesResponseType(404)]
+public ActionResult<Product> GetById(int id)
+{
+    var product = this.productService.GetById(id);
+    if (product == null) return NotFound();
+    return product;
+}
+```
+
+Използването на `ActionResult<T>` дава възможност методът да връща както конкретен тип, така и стандартни HTTP отговори, като например 404 при липса на ресурс.
+## Web API Methods
+### Angular
+Angular е фреймуърк за изграждане на сложни фронт-енд приложения.
+
+Фокусира се върху цялостен набор от инструменти и добри практики.
+
+Разработва се от екипа на Angular в Google.
+
+```typescript
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: `<h1>Hello {{name}}</h1>`
+})
+export class AppComponent {
+  name = 'Angular';
+}
+```
+
+Angular е изцяло пренаписан на езика TypeScript, разработен от Microsoft.
+
+TypeScript е типизиран надсет от JavaScript, който се компилира до обикновен JavaScript.
+
+Може да работи във всеки браузър, на всяка платформа и операционна система. Напълно с отворен код.
+
+В Angular няма концепция за "scope" или контролери.
+
+Вместо това се използва йерархия от компоненти.
+
+Това е основната разлика спрямо AngularJS (първата версия на Angular).
+
+Повечето съвременни фронт-енд фреймуърци също следват тази архитектура.
+### Angular Features
+Кросплатформена поддръжка.
+
+Едностранични приложения (SPA).
+
+Прогресивни уеб приложения.
+
+Нативни мобилни приложения (чрез Cordova, Ionic).
+
+Десктоп приложения (чрез Electron).
+
+Отличен набор от инструменти (CLI, среди за разработка, шаблони).
+
+Голяма общност.
+
+Лесно тестване, поддръжка на анимации и достъпност.
+
+Може да работи с всякакъв тип бекенд (Web API, Node.js и други).
 # Misc
 # ChatGPT
 ## MVC vs SPA
@@ -489,6 +806,138 @@ Web Audio API – дава възможност за възпроизвежда�
 - **AJAX uses HTTP**, just like regular page requests, but it runs **in the background** using JavaScript, so the page doesn’t reload.
     
 - `<Link>` (capital L) is **not an HTML tag** — it's a **helper component** from SPA frameworks (like `react-router-dom`) that enhances navigation behavior.
+## API
+An **API (Application Programming Interface)** is a set of defined rules that enable different software systems to communicate with each other. In the context of web development, the term typically refers to a **Web API**, which is a server application designed to receive and respond to HTTP requests.
+
+A Web API exposes various **endpoints** — specific URLs that correspond to particular operations or resources (such as `/api/products` or `/api/users`). Each endpoint can handle different HTTP methods like `GET`, `POST`, `PUT`, and `DELETE`, allowing clients to perform actions like retrieving data, creating new entries, updating existing ones, or deleting records.
+
+When a client application — such as a web app, mobile app, or another server — makes a request to one of these endpoints, the API processes the request and returns a response, most commonly in **JSON** format. The structure and content of this response depend on the endpoint accessed and the parameters or headers provided with the request.
+
+While many APIs provide the same data and functionality to all clients, it's also possible to tailor responses based on the type of client or its needs. For instance, a mobile app and a web dashboard might receive slightly different data from the same API, either through distinct endpoints or by including information in the request that tells the API what version or type of response is needed.
+
+In essence, a Web API acts as a structured interface between the backend logic and any number of client-facing applications, handling requests and serving data in a predictable, scalable manner.
+## `IActionResult`
+`IActionResult` is an **interface** in ASP.NET Core MVC that represents the result of an action method. It's part of the `Microsoft.AspNetCore.Mvc` namespace.
+
+🔍 **What Is `IActionResult`?**
+
+`IActionResult` is used as a **return type** for controller action methods in ASP.NET Core. It allows you to return **different types of results** (like a view, JSON, redirect, status code, etc.) from a single action method.
+
+✅ **Why Use `IActionResult`?**
+
+**1. Flexibility:**  
+You can return different result types depending on conditions.
+
+```csharp
+public IActionResult GetItem(int id)
+{
+    var item = _repository.Find(id);
+
+    if (item == null)
+        return NotFound(); // returns 404
+
+    return Ok(item); // returns 200 with data
+}
+```
+
+If you used a concrete type like `JsonResult` or `ViewResult`, you would be limited to just that type.
+
+🧱 **Common Implementations of `IActionResult`**
+
+|Return Helper|Description|
+|---|---|
+|`Ok(object)`|Returns 200 OK with data|
+|`NotFound()`|Returns 404 Not Found|
+|`BadRequest()`|Returns 400 Bad Request|
+|`Redirect(string url)`|Returns a redirect to a URL|
+|`View()`|Returns a view result (for Razor views)|
+|`Json(object)`|Returns JSON data (for legacy)|
+|`StatusCode(int)`|Custom status codes|
+
+🧪 **Example**
+
+```csharp
+public IActionResult Login(string username, string password)
+{
+    if (username == "admin" && password == "123")
+        return Redirect("/dashboard");
+
+    return Unauthorized();
+}
+```
+
+Here, `IActionResult` makes it easy to return **different responses** without changing the method signature.
+
+🔁 **Alternative: `ActionResult<T>`**
+
+In ASP.NET Core 2.1+, you can use `ActionResult<T>` for strongly typed responses, e.g.:
+
+```csharp
+public ActionResult<UserDto> GetUser(int id)
+{
+    var user = _service.GetUser(id);
+    if (user == null)
+        return NotFound();
+
+    return user; // implicitly returns Ok(user)
+}
+```
+
+This combines the **flexibility of `IActionResult`** with **strong typing**.
+
+**Summary**
+
+- `IActionResult` is an interface that allows you to return various kinds of responses from a controller method.
+    
+- It improves flexibility and separation of concerns.
+    
+- It’s commonly used in **REST APIs** and **MVC controllers**.
+## Swagger
+Swagger in ASP.NET API is a framework and set of tools that help you design, build, document, and consume RESTful web APIs easily.
+
+**More specifically:**
+
+**Swagger** provides:
+
+- **Interactive API documentation** — It generates a web page (usually at `/swagger` endpoint) where you can see all your API endpoints listed with details like HTTP methods, parameters, request bodies, and response types.
+    
+- **API specification** — Swagger uses the OpenAPI Specification (formerly called Swagger Specification), a standard format (usually JSON or YAML) that describes your API structure, routes, parameters, data models, and more.
+    
+- **Try-it-out feature** — From the generated documentation UI, you can directly test API endpoints by sending requests and seeing responses without needing external tools like Postman.
+    
+- **Code generation and client SDKs** — From the Swagger/`OpenAPI` spec, you can generate client code in many languages or even server stub code.
+
+**In ASP.NET Core, using Swagger means:**
+
+- You add **`Swashbuckle.AspNetCore`** NuGet package (most common tool for Swagger integration).
+    
+- In your Startup class, you configure Swagger generation and the Swagger UI middleware.
+    
+- When you run your API project, Swagger scans your controllers and actions, builds an `OpenAPI` description, and exposes a UI to explore and test your API.
+
+**Why is Swagger useful?**
+
+- Helps frontend and backend developers understand and collaborate on the API.
+    
+- Makes testing and debugging easier.
+    
+- Acts as live documentation that updates automatically as your API code changes.
+
+**Quick example (ASP.NET Core minimal setup):**
+
+```csharp
+// In Program.cs or Startup.cs
+
+builder.Services.AddSwaggerGen();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+```
+
+After running the app, navigate to `https://localhost:<port>/swagger` to see the interactive documentation.
+
+**Summary:**  
+Swagger is a powerful tool that automatically creates interactive, standardized documentation for your ASP.NET APIs and helps you test and share your API easily.
 # Bookmarks
 [jQuery](https://jquery.com/)
 
