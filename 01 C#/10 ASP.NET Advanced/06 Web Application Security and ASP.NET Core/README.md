@@ -50,13 +50,84 @@ Phishing и социално инженерство. Добра практика
 Съществува още по-широк набор от непознати заплахи и атаки.
 ## Cross Site Scripting (XSS)
 **Injecting Unsafe HTML Code (with Scripts)**
+
+XSS атаките позволяват на атакуващи да инжектират клиентски скриптове в уеб страници, които се разглеждат от потребителите.
+
+Примерно: 
+
+Client 1 публикува коментар, който съдържа скрипт. Макар скриптът да не се изпълнява веднага, съдържанието на коментара се записва в базата данни.
+
+По-късно, когато друг потребител (напр. Client 2) отвори страницата с коментарите, сървърът връща съдържанието от базата данни без допълнителна проверка или пречистване.
+
+В резултат, скриптът се изпълнява в браузъра на Client 2 с неговите потребителски права и в контекста на сайта.
+### Demo
+Имаме уязвимо ASP.NET Core чат приложение.
+
+Потребител добавя
+
+```html
+<script>
+alert('Hacked!')
+</script>
+```
+
+След това се появява JavaScript изскачащ прозорец.
+
+**With Image**
+
+Имаме уязвимо JavaScript приложение за изображения.
+
+Потребител добавя невалиден URL за изображение и добавя `onclick` събитие с JavaScript скрипт.
+
+След това се появява JavaScript изскачащ прозорец.
+
+Демонстрационен код има в демо папката.
+### Why is XSS a Big Security Problem
+Атакуващите могат:
+
+Да откраднат бисквитки, session storage, local storage и други.
+
+Да се представят като даден потребител, например чрез създаване на нов администраторски акаунт.
+
+Да извършват действия от името на потребителя.
+
+Да получат достъп до чувствителни данни на потребителя.
+
+И други.
 # Misc
 # ChatGPT
+## `Html.Raw()`
+In ASP.NET (particularly in Razor views), `Html.Raw()` is a method used to **output HTML markup without encoding it**. By default, Razor automatically HTML-encodes any content it outputs to protect against **cross-site scripting (XSS)**. However, sometimes you want to output HTML that **should not** be encoded — that’s when `Html.Raw()` is useful.
+
+**Example**
+
+```csharp
+@{
+    var message = "<strong>Hello, world!</strong>";
+}
+
+@message         // Outputs: &lt;strong&gt;Hello, world!&lt;/strong&gt;
+@Html.Raw(message)  // Outputs: <strong>Hello, world!</strong>
+```
+
+**When to Use `Html.Raw()`**
+
+Use it **only when you are sure** that the content is safe and **doesn't come from untrusted sources**, because you're bypassing Razor’s automatic protection against XSS.
+
+**Summary**
+
+- `Html.Raw()` tells Razor to **skip encoding** the output.
+    
+- It is useful for **injecting raw HTML**.
+    
+- **Be careful**: if used improperly with user input, it can open the door to XSS attacks.
 # Bookmarks
 [OWASP Top Ten | OWASP Foundation](https://owasp.org/www-project-top-ten/) - The industry standard list of the ten most critical web application security risks, published by the OWASP Foundation. Serves as a key framework for guiding secure coding and architectural best practices.
 
 [Exploit Database - Exploits for Penetration Testers, Researchers, and Ethical Hackers](https://www.exploit-db.com/) - Public Archive of Known Vulnerabilities and Exploits.
 
 [DotNet Security - OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html) - OWASP DotNet Security Best Practices Cheat Sheet.
+
+[Rick Strahl's Web Log](https://weblog.west-wind.com/)
 
 Completion: 29.05.2025
