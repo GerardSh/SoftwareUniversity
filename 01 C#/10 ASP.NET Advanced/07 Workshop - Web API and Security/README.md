@@ -1,75 +1,97 @@
-you want to add input fields dynamically without JavaScript on a Razor Page.
+You want to add input fields dynamically without JavaScript using MVC.
 
 Important:
 Purely without JavaScript, dynamic UI changes on the client side are not possible, because HTML and Razor run on the server and generate a static page.
 
 To add inputs dynamically without JS, you have to submit the form back to the server and render the page again with more input fields, i.e., a postback approach.
 
-How to do it in Razor Pages (without JavaScript):
-You can do this with a form submit (postback), and on each submit, you add one more input to the model, then render the form again with the increased number of inputs.
 
-Example:
-Step 1: Create a model property to hold the list of inputs
-In your Razor Page model (C#):
+✅ Step 1: Create a Controller
 
 ```csharp
-public class MyPageModel : PageModel
+using Microsoft.AspNetCore.Mvc;
+
+public class InputController : Controller
 {
-    [BindProperty]
-    public List<string> Inputs { get; set; } = new List<string>();
-
-    public void OnGet()
+    [HttpGet]
+    public IActionResult Index()
     {
-        // On first load, start with one input
-        if (Inputs.Count == 0)
-            Inputs.Add(string.Empty);
+        var model = new InputViewModel();
+
+        // Ensure at least one input exists on first load
+        if (model.Inputs.Count == 0)
+            model.Inputs.Add(string.Empty);
+
+        return View(model);
     }
 
-    public IActionResult OnPostAddInput()
+    [HttpPost]
+    public IActionResult AddInput(InputViewModel model)
     {
-        // Add a new empty input on each postback
-        Inputs.Add(string.Empty);
-        return Page();
+        model.Inputs.Add(string.Empty); // Add new empty input
+        return View("Index", model);
     }
 
-    public IActionResult OnPostSubmit()
+    [HttpPost]
+    public IActionResult Submit(InputViewModel model)
     {
-        // Handle final form submission here
-        // Inputs list contains all inputs submitted
-        return RedirectToPage("Success");
+        // Process submitted inputs (model.Inputs contains the values)
+        return RedirectToAction("Success");
+    }
+
+    public IActionResult Success()
+    {
+        return View();
     }
 }
 ```
-Step 2: In your Razor Page (.cshtml):
+
+✅ Step 2: Create the View Model
+
+```csharp
+using System.Collections.Generic;
+
+public class InputViewModel
+{
+    public List<string> Inputs { get; set; } = new List<string>();
+}
+```
+
+✅ Step 3: Create the View – Views/Input/Index.cshtml
 
 ```html
-<form method="post">
+@model InputViewModel
+
+<form asp-action="AddInput" method="post">
     @for (int i = 0; i < Model.Inputs.Count; i++)
     {
         <input type="text" name="Inputs[@i]" value="@Model.Inputs[i]" />
         <br />
     }
 
-    <button type="submit" asp-page-handler="AddInput">Add Input</button>
-    <button type="submit" asp-page-handler="Submit">Submit</button>
+    <button type="submit">Add Input</button>
+</form>
+
+<form asp-action="Submit" method="post">
+    @for (int i = 0; i < Model.Inputs.Count; i++)
+    {
+        <input type="hidden" name="Inputs[@i]" value="@Model.Inputs[i]" />
+    }
+
+    <button type="submit">Submit</button>
 </form>
 ```
 
-Explanation:
-You start with a list of inputs in the model.
+📝 Note: Two separate forms are used—one for Add Input, one for Submit. You could also merge them using asp-route or JavaScript to manage handlers.
 
-The page renders all inputs from the list.
+✅ Step 4: Create a View – Views/Input/Success.cshtml
 
-When the Add Input button is clicked, it triggers the OnPostAddInput handler.
+```html
+<h2>Submission successful!</h2>
+```
 
-That handler adds a new empty string to the list, so next render has one more input field.
-
-You re-render the form with the new inputs count.
-
-When you click Submit, the OnPostSubmit handler processes all inputs.
-
-Summary:
-With JavaScript	Without JavaScript (Postback)
-Instant client-side add	Submit form, server adds input, re-render page
-Smooth UX	Page reload after every add
-No server postbacks	Requires postbacks
+✅ Summary
+Feature	Razor Pages	MVC (Controllers + Views)
+Page lifecycle	OnGet, OnPost... handlers	Actions like Index, AddInput
+Model binding	[BindProperty]	Action parameter InputViewModel model
+Routing	Page-based (/PageName)	Controller-based (/Controller/Action)
