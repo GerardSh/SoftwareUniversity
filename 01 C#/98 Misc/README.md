@@ -1198,7 +1198,163 @@ To prevent this, you can either `await` the async method to ensure the caller wa
 |Async continues on|Possibly a new thread|Always same thread, after sync|
 |`await` behavior|May switch thread or context|Always defers to event loop|
 |Parallelism possible?|Yes|No (concurrency via callbacks)|
-## Attributes
+#### Software Thread vs. Task in .NET
+
+**What is a Software Thread?**
+
+- A **software thread** represents an independent path of execution managed by the operating system.
+    
+- Each thread has its **own call stack** (typically ~1 MB) and resources.
+    
+- Created explicitly using `new Thread(...)`, a thread runs independently from start to finish.
+    
+- Threads are **heavyweight**: lots of memory used for stacks, and too many threads cause overhead (context switching, scheduling delays).
+    
+- Suitable for **CPU-bound** or long-running parallel tasks.
+
+**What is a Task?**
+
+- A **Task** is a higher-level abstraction representing an asynchronous operation or unit of work.
+    
+- Tasks **do not necessarily create new threads**.
+    
+- Instead, tasks are typically run on threads **from the shared Thread Pool**.
+    
+- Many tasks can share a few threads, efficiently multiplexing work.
+    
+- Tasks used with `async/await` rely on a **state machine** object that stores:
+    
+    - The method’s local variables and current execution point.
+        
+    - The continuation logic to resume work later.
+        
+- When a task is waiting (e.g., I/O), it **yields the thread back** to the pool, freeing it for other work.
+    
+- When ready, the task resumes by reloading its state machine on a thread pool thread.
+
+**How Does a Task Use a Thread?**
+
+- When a task runs, it **executes on an available thread** from the thread pool.
+    
+- If the task is asynchronous and hits an `await`, it **pauses**:
+    
+    - Its current execution state is saved in a lightweight state machine in RAM.
+        
+    - The thread is **released back to the pool** to run other tasks.
+        
+- Once the awaited operation completes, the task’s state machine is loaded back on a thread pool thread to **continue execution**.
+
+**Why Are Tasks More Efficient Than Dedicated Threads?**
+
+- **Memory usage:** Threads allocate a full call stack; tasks only store a small state machine object.
+    
+- **Scalability:** Tasks can scale to thousands or millions because they share threads and don’t block threads while waiting.
+    
+- **Context switching:** Fewer threads means less overhead switching between threads.
+    
+- **Responsiveness:** Threads waiting for I/O block resources; async tasks free the thread while waiting, improving throughput.
+
+**Quick Table**
+
+|Aspect|Software Thread|Task (async/await)|
+|---|---|---|
+|Thread creation|New OS thread with own stack|Runs on shared thread pool threads|
+|Memory per unit|Large (~1 MB per thread)|Small (state machine object in RAM)|
+|Concurrency|True parallel if cores available|Concurrent via thread pool scheduling|
+|Waiting behavior|Blocks thread|Yields thread, freeing it for other tasks|
+|Use case|CPU-bound, long-running|I/O-bound, async operations, scalable work|
+
+**The core advantage of using Task:**
+
+When you use **dedicated threads**, if one thread hits a waiting operation (like a database call, file I/O, or network request), it **blocks** — meaning:
+
+- The thread **sits idle**, doing nothing until the operation finishes.
+    
+- Meanwhile, the **thread stack and memory remain allocated**.
+    
+- If many threads block, you quickly exhaust system resources, causing poor scalability.
+
+With **tasks and async/await**:
+
+- When a task hits an await on an I/O operation, it **does not block the thread**.
+    
+- Instead, it **releases the thread back to the thread pool** immediately.
+    
+- The **task state is saved in a lightweight state machine** in memory.
+    
+- When the awaited operation completes, the task is resumed on an available thread.
+    
+- This allows the CPU and threads to be **used efficiently**, running other tasks instead of waiting idle.
+
+So the key benefit is:
+
+Tasks enable better resource utilization and scalability by freeing threads during waits, whereas dedicated threads remain blocked and consume memory even when idle.
+
+This is why **async programming with tasks is highly recommended for I/O-bound applications** like web servers, database clients, or network apps. It allows handling thousands of concurrent operations with far fewer threads.
+
+A great way to think about it — a **task is like a “mini-thread”** or a lightweight unit of work that can run **on top of real threads**.
+
+Here’s why that analogy fits:
+
+- A **real thread** is heavyweight — it has its own dedicated stack and OS-level resources.
+    
+- A **task** is much lighter: it represents a chunk of work and a snapshot of where to resume next (the state machine), but it **doesn’t have its own stack or OS thread**.
+    
+- Multiple tasks can **share a single thread**, switching between them quickly, almost like cooperative multitasking.
+    
+- When a task hits an await (waiting for something), it “pauses” without blocking the thread, freeing it to run other tasks.
+    
+- So tasks are like tiny, **cooperative “threads” managed by the runtime**, but far more memory- and CPU-efficient.
+
+In short:  
+**Tasks = mini-threads (logical, lightweight), while Threads = heavyweight OS threads (physical, expensive).**
+
+If you imagine a thread as a big heavy truck, then tasks are like lots of lightweight scooters sharing the same road efficiently!
+
+- Instead of calling a **big heavy truck (a full OS thread)** for even small work,
+    
+- We send a **single scooter (a task)** that’s much lighter and more efficient.
+
+Both the truck and the scooter carry a **single load at a time** (one thread or one task running at a time), but the scooter:
+
+- Uses **far fewer resources** (less memory, less overhead),
+    
+- And **enables better scalability**, especially when combined with async operations.
+
+So the key difference is **efficiency** and **resource usage**, not necessarily parallelism for every single task.
+
+To summarize the analogy:
+
+> _A thread is a big truck that carries a load, and a task is a light scooter carrying the same load — the scooter uses fewer resources and can more easily share the road with other scooters._
+
+**If your method does not have any await or asynchronous operations inside, then:**
+
+- Whether you run it as a **Task** or on a **dedicated Thread**, it will **run synchronously on a software thread**.
+    
+- That thread will be **blocked for the entire duration** of that method execution.
+    
+- So in this scenario, using a Task doesn’t bring the usual async benefits — it’s basically just a wrapper around a thread executing the work.
+
+The real advantage of Tasks shines **when you have awaitable asynchronous operations** (like I/O calls). That’s when the thread can be freed while waiting, improving scalability.
+
+So without `await` (or asynchronous work), a Task behaves similarly to a dedicated thread and blocks a thread for the whole execution.
+
+**During the `await` period, the task essentially “hibernates”:**
+
+- When your code hits `await` on an asynchronous operation (like a file read, web request, or DB call), the **task pauses** at that point.
+    
+- The **current thread is freed immediately** to do other work — it’s not blocked waiting for the operation to complete.
+    
+- Meanwhile, the **task’s state** (where it left off, local variables, what to do next) is saved inside a **state machine** managed by the runtime.
+    
+- Once the awaited operation completes, the runtime **resumes the task**, scheduling the continuation on a thread from the thread pool (which might be the same thread or a different one).
+    
+- The task “wakes up” and continues executing from where it left off.
+
+It’s like the task goes into a lightweight **hibernation**, freeing the thread during the wait, then wakes up to finish its job once the awaited operation completes.
+
+This behavior is what makes asynchronous programming so efficient — threads are **never blocked unnecessarily**, allowing the system to scale better with many concurrent operations.
+### Attributes
 🔒 Attributes in .NET are **compile-time metadata**:
 
 - They are **defined at compile time**.
@@ -1337,6 +1493,45 @@ TempData.Keep();
 - Use **`ViewData`** (or `ViewBag`) when rendering a view in the same request.
 
 - Use **`TempData`** to store data **between redirects**, e.g., when using PRG (Post/Redirect/Get) pattern to avoid duplicate submissions.
+### POST Requests, Form Submission, and Content Types
+
+- **`multipart/form-data`** is a content type used in POST requests to send key-value pairs, especially when files are included. It emulates how browsers submit HTML forms with file uploads.
+    
+- In **Swagger or Postman**, specifying `multipart/form-data` means the request body is sent as separate parts (text fields + files) rather than raw JSON.
+    
+- When using **Postman’s form-data mode**, you manually add key-value pairs or files that simulate an HTML form submission.
+    
+- If the request body is **JSON**:
+    
+    - The client sends a single JSON object with all properties serialized.
+        
+    - You usually send `Content-Type: application/json`.
+        
+    - Forms don’t natively submit JSON without JavaScript intervention.
+        
+- **HTML forms** without JavaScript submit using either:
+    
+    - `application/x-www-form-urlencoded` by default (normal text fields), or
+        
+    - `multipart/form-data` if a file input is present.
+        
+- If no `action` attribute is specified on a form, it submits to the **current page URL** by default.
+    
+- To send **JSON from a web form**, you need to:
+    
+    - Prevent default submission with `e.preventDefault()` in JavaScript
+        
+    - Collect form data and send it as JSON via `fetch` or `XMLHttpRequest`.
+        
+- Without `e.preventDefault()`, the form will:
+    
+    - Submit normally (page reload or navigation)
+        
+    - AND run your JavaScript code (e.g., fetch), possibly causing double requests and unexpected results.
+        
+- When a form contains a **file input**, the browser automatically uses `multipart/form-data` to send the data, packaging text and files in different parts.
+    
+- Using JavaScript, you can create a `FormData` object from the form to send both text and files via fetch, letting the browser set the correct `Content-Type` with boundary.
 ## Bookmarks
 # HTML & CSS
 ## General
