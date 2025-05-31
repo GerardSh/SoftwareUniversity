@@ -1198,6 +1198,57 @@ To prevent this, you can either `await` the async method to ensure the caller wa
 |Async continues on|Possibly a new thread|Always same thread, after sync|
 |`await` behavior|May switch thread or context|Always defers to event loop|
 |Parallelism possible?|Yes|No (concurrency via callbacks)|
+## Attributes
+🔒 Attributes in .NET are **compile-time metadata**:
+
+- They are **defined at compile time**.
+    
+- They are **baked into the assembly's metadata**.
+    
+- You can **read** them at runtime using reflection.
+    
+- But you **cannot change or add them** at runtime.
+
+🔍 What you **can do at runtime**:
+
+- **Read** the attribute and its properties using reflection.
+    
+- **React to** those properties to modify behavior (e.g., custom validation, logging, authorization).
+
+```csharp
+var attr = typeof(MyClass).GetCustomAttribute<AuthorAttribute>();
+Console.WriteLine(attr?.Name); // "Gerard"
+```
+
+🔒 What you **cannot do** at runtime:
+
+- You cannot **modify** `[Author("Gerard")]` to `[Author("Anna")]`.
+    
+- You cannot **add** an attribute to a class or method after it’s compiled.
+    
+- You cannot **remove** an attribute at runtime.
+
+**Why?**
+
+Attributes are compiled into **metadata**, not regular objects that live on the heap. So they're meant to be:
+
+- Defined during **design-time**
+    
+- Accessed during **compile-time** or **runtime**
+    
+- But never changed once the app is running
+
+**If you need runtime customization**
+
+You’ll need a different mechanism:
+
+- **Configuration files** (e.g., JSON, XML)
+    
+- **Dependency injection**
+    
+- **Custom logic inside your code**
+
+But for structural metadata (like `[Required]`, `[Route]`, `[Authorize]`), attributes are ideal — and fixed at compile time.
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
