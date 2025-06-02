@@ -76,8 +76,6 @@ namespace IdentityAdvancedDemo.Controllers
 
             var model = new LoginViewModel();
 
-            model.ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             return View(model);
         }
 
@@ -103,7 +101,6 @@ namespace IdentityAdvancedDemo.Controllers
             }
 
             ModelState.AddModelError("", "Invalid login");
-
             return View(model);
         }
 
