@@ -1,5 +1,6 @@
 ﻿using IdentityAdvancedDemo.Data.IdentityModels;
 using IdentityAdvancedDemo.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -74,7 +75,14 @@ namespace IdentityAdvancedDemo.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var model = new LoginViewModel();
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            var externalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            var model = new LoginViewModel
+            {
+                ExternalLogins = externalLogins
+            };
 
             return View(model);
         }
