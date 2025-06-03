@@ -234,7 +234,345 @@ public ActionResult Admin()
 }
 ```
 ## Authentication Types
+### Cookie-Based Authentication & Authorization
+Автентикацията и авторизацията са базирани на бисквитки (Identity). Автентикацията се извършва изцяло чрез бисквитки. Principal-ът се базира на claims. Това е най-често използваният вариант. Информацията за потребителя се съхранява в бисквитка. Информацията в бисквитката е криптирана и може да бъде декриптирана само с ключовете, които се намират на сървъра.
+Не е препоръчително ключовете да се пазят на самия сървър, защото при наличие на повече от един сървър, всяка машина ще има свои ключове, които са във формат XML и няма да могат да декриптират бисквитката взаимно. Най-чистият вариант е ключовете, да се споделят чрез базата данни.
 
+Автентикацията, базирана на бисквитки, е механизмът за автентикация при ASP.NET Core приложенията. След успешна автентикация се генерира бисквитка, която се изпраща към браузъра.
+
+Автентикацията се извършва изцяло чрез бисквитки.
+
+Това е съществена разлика спрямо ASP.NET MVC (стария .NET Framework).
+
+Principal-ът се базира на claims.
+### Windows Authentication & Authorization
+Windows автентикацията и авторизацията разчитат на операционната система за автентикация на потребителите. Този метод работи само в Windows и използва Kerberos протокола. Информацията се взема от потребителя, който е влязъл в Windows. Всеки, който използва машината с този потребителски акаунт, може да влезе с неговите идентификационни данни. Този подход се използва рядко.
+
+Windows автентикацията е по-сложен механизъм за автентикация.
+
+Разчита на операционната система за идентифициране на потребителите.
+
+Удостоверенията се хешират преди да бъдат изпратени през мрежата.
+
+Подходяща е основно за вътрешни (intranet) среди.
+
+Клиентите, потребителите и сървърите трябва да принадлежат към един и същи Windows домейн (Active Directory).
+### Cloud-based Authentication & Authorization
+Облачната автентикация и авторизация използват външна платформа, която управлява функционалността за потребителите.
+
+Тя е по-съвременен подход за удостоверяване.
+
+Работата по автентикацията и авторизацията се изнася извън приложението.
+
+Външната платформа управлява функционалността, свързана с потребителите. Задачи като смяна на парола, забравена парола, двуфакторна автентикация и други подобни са изцяло отговорност на cloud базираната система.
+
+Осигурява гъвкавост и бързина.
+
+До голяма степен отделя логиката по автентикация от останалата част на системата.
+### JWT Authentication & Authorization
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250603132620.png)
+
+Автентикацията и авторизацията могат да се реализират и чрез JSON Web Tokens (JWT). Това е добър вариант и отново се използва claim-based identity, като токените са подписани. JWT е разделен на три части – в първата е алгоритъмът за подписване, във втората са самите claims (payload-а), а в третата е подписът. Подписът се създава с определения алгоритъм и предварително споделения ключ.
+
+JSON Web Tokens (JWT) са модерен механизъм за автентикация, базиран на JavaScript.
+
+Те са компактни и самостоятелни.
+
+Основният фокус е върху подписаните токени.
+
+JWT работят с claims.
+
+Данните в тях са криптирани.
+
+Използват се както за автентикация, така и за обмен на информация.
+
+Често се прилагат при разработка на REST услуги.
+
+Те са изключително лесни за разбиране.
+## Social Accounts
+Позволяването на потребителите да се вписват с вече съществуващи акаунти е удобно.
+
+Това изнася сложността по управление на процеса на вписване към външна система.
+
+Подобрява потребителското изживяване, като свежда до минимум действията им, свързани с автентикация.
+
+ASP.NET Core поддържа вградени външни доставчици на автентикация, като вградената поддръжка е налична основно за: Google, Facebook, Twitter и Microsoft.
+
+```csharp
+// Social Accounts
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions => { ... })
+    .AddFacebook(facebookOptions => { ... })
+    .AddTwitter(twitterOptions => { ... });
+```
+
+Чрез допълнителни библиотеки или чрез OpenID Connect и OAuth 2.0, могат да се интегрират и много други доставчици.
+### External Login Provider
+Всеки външен доставчик на автентикация разполага със собствен Developer API. Приложението трябва да бъде оставено в режим "development", за да може да работи с адрес като `localhost`. Това позволява тестовете и разработката да се извършват локално, преди да се премине към продукционна среда.
+
+Преди да може да се използва доставчикът, е необходимо да се конфигурира приложение в неговата платформа.
+
+Това приложение ще предостави нужните идентификационни данни.
+
+Тези данни включват Application ID и Application Secret.
+
+С тях се извършва комуникацията с външния API на доставчика.
+
+Чрез тези данни приложението се удостоверява при изпращане на заявка.
+
+Тези данни не трябва да се съхраняват на публично достъпни места.
+### Configuring Social Accounts
+От страна на сървъра конфигурацията е сравнително проста и подредена.
+
+Например: Facebook.
+
+```csharp
+// Configuring Social Accounts
+builder.Services.AddAuthentication()
+    .AddFacebook(facebookOptions =>
+    {
+        facebookOptions.AppId = configuration["Authentication:Facebook:AppId"];
+        facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+    });
+```
+
+Ако се използва стандартната login страница на ASP.NET Core, автоматично ще се добави бутон или форма за вписване чрез Facebook.
+## JSON Web Tokens (JWT)
+JWT е метод за представяне на claims между две страни.
+
+Това е отворен индустриален стандарт – RFC 7519.
+
+Лесен е за използване и в същото време осигурява високо ниво на сигурност.
+
+Когато потребителят се автентикира успешно (login) чрез своите идентификационни данни:
+
+Генерира се JSON Web Token и се връща към клиента.
+
+Този токен трябва да се съхрани (в local storage / session storage, възможно е и чрез бисквитки).
+
+Всеки път, когато се достъпва защитен маршрут, клиентът изпраща JWT.
+
+Обикновено това се случва чрез Authorization header, използвайки Bearer схема.
+
+JWT е напълно stateless, нищо не се пази на сървъра.
+
+Токенът е разделен на три части, които са разделени с точки.
+
+Първата част е Header, който съдържа алгоритъма и типа на токена.
+
+Втората част е Payload, където е записана основната информация (данните).
+
+Третата част е Подпис (Signature), който се създава с алгоритъма и секретен ключ.
+
+**Encoded:**
+
+Примерен JWT токен кодирана версия (encoded):
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI
+6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDI
+yfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6y
+JV_adQssw5c
+```
+
+Подписът се създава чрез HMACSHA256 върху първите две части, комбинирани с точка и използвайки секретния ключ.
+
+Частите на токена са винаги в този ред и форматът не се променя.
+
+Обикновено JWT токените имат срок на валидност (expiration).
+
+**Decoded:**
+
+Разкодирана част Header (algorithm, token type):
+
+```json
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Разкодирана част Payload (data):
+
+```json
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+```
+
+Verify Signature
+
+```
+HMACSHA256(base64UrlEncode(H...) + "." + base64UrlEncode(P...), key)
+```
+### JWT Configuration in ASP.NET Core
+JWT в ASP.NET Core се конфигурира в Program.cs.
+
+За целта се инсталира пакета `Microsoft.AspNetCore.Authentication.JwtBearer`.
+
+В `appsettings.json` се задават настройки като:
+
+```json
+{
+  "JWT": {
+    "ValidAudience": "http://localhost:4200",
+    "ValidIssuer": "http://localhost:61955",
+    "Secret": "super-secret-JWT-key"
+  }
+}
+```
+
+В кода се добавя автентикация и се задава по подразбиране JWT като схема:
+
+```csharp
+var auth = builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+});
+auth.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
+
+// Configure DI for application services
+builder.Services.AddScoped<IUserService, UserService>();
+```
+
+В `Program.cs` трябва да добавим:
+
+```csharp
+app.UseAuthentication();
+app.UseAuthorization();
+```
+
+Така активираме middleware-ите за автентикация и авторизация.
+
+Това настройва ASP.NET Core да използва JWT за автентикация и позволява внедряване на потребителски услуги.
+
+**JWT in ASP.NET Core Controllers:**
+
+Примерът показва как се реализира "thin" контролер в ASP.NET Core, като логиката е изнесена в услуга.
+
+Контролерът е деклариран с атрибути `[ApiController]` и `[Route("/api/[controller]")]`, което указва, че работи като Web API и автоматично настройва маршрута към името на контролера.
+
+Класът `UsersController` наследява `ControllerBase`.
+
+Инстанция на `IUserService` се подава чрез конструктора. Това позволява отделяне на логиката за удостоверяване и създаване на токени в услуга.
+
+Методът `Login` приема `LoginUserBindingModel` от тялото на HTTP заявката.
+
+Ако потребителят не е валиден, се връща отговор `BadRequest`.
+
+При успешно удостоверяване се генерира JWT токен, който се връща в отговора.
+
+```csharp
+[ApiController]
+[Route("/api/[controller]")]
+public class UsersController : ControllerBase
+{
+    private IUserService userService; // Using services
+
+    public UsersController(IUserService userService) => this.userService = userService;
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginUserBindingModel loginUser)
+    {
+        // Try to authenticate the user using the provided username and password
+        var user = this.userService.Authenticate(loginUser.Username, loginUser.Password);
+
+        // If authentication fails, return a bad request with error message
+        if (user == null)
+            return BadRequest(new { message = "Username or password is incorrect." });
+
+        // Generate a JWT token for the authenticated user
+        var tokenString = this.userService.GenerateJSONWebToken(user);
+
+        // Return the token in the response
+        return Ok(new { token = tokenString });
+    }
+}
+```
+
+**JWT in ASP.NET Core in Services:**
+
+Конфигурациите за JWT се инжектират в конструктора на клас, който представлява услуга. Това позволява достъп до стойности от конфигурационния файл, като секретен ключ, издател и аудитория.
+
+В примера `UserService` реализира интерфейса `IUserService`.
+
+В конструктора на услугата се инжектират `AppDbContext` и `IConfiguration`, което позволява работа с база данни и извличане на стойности от конфигурационния файл.
+
+Методът `Authenticate` проверява дали има потребител с дадено потребителско име и дали паролата съвпада.
+
+Методът `GenerateJSONWebToken` създава JWT токен за удостоверен потребител. Включва твърдения (claims), срок на валидност и подписване със симетричен ключ.
+
+```csharp
+public class UserService : IUserService
+{
+    private AppDbContext context;
+    private UserManager<IdentityUser> userManager;
+    private readonly IConfiguration configuration;
+
+    public UserService(AppDbContext context, IConfiguration configuration)
+    {
+        this.context = context;
+        this.configuration = configuration;
+    }
+
+    public IdentityUser Authenticate(string username, string password)
+    {
+        // Try to find the user by username
+        var user = this.userManager.FindByNameAsync(username).Result;
+
+        // Check if the user exists and the password is correct
+        if (user != null && this.userManager.CheckPasswordAsync(user, password).Result)
+            return user;
+
+        return null;
+    }
+
+    public string GenerateJSONWebToken(IdentityUser user)
+    {
+        // Create a list of claims for the token
+        var authClaims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
+
+        // Read the secret key from the configuration
+        string jwtSecret = this.configuration["JWT:Secret"];
+        byte[] jwtSecretBytes = Encoding.UTF8.GetBytes(jwtSecret);
+        var authSigningKey = new SymmetricSecurityKey(jwtSecretBytes);
+
+        // Create the token using the claims and signing credentials
+        var token = new JwtSecurityToken(
+            issuer: this.configuration["JWT:ValidIssuer"],
+            audience: this.configuration["JWT:ValidAudience"],
+            expires: DateTime.Now.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        // Return the serialized token as a string
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+}
+```
 # Misc
 ## Organizing `Program.cs`
 Може да се създаде extension клас в `Microsoft.Extensions.DependencyInjection`, тъй като това е стандартният namespace, използван за DI (dependency injection) функционалността. Понеже разширява именно тази функционалност, е добра практика extension методите да бъдат в този namespace, за да избегнем добавяне на допълнителни `using` директиви.
@@ -1139,5 +1477,402 @@ public class RoleManager : RoleManager<ApplicationRole>
 ```
 
 > ✅ In short: Defining `ApplicationRole : IdentityRole<Guid>` is a best practice for clarity and scalability — even if it's empty.
+## Cookies
+1. **Cookie Middleware in ASP.NET Core**
+
+The middleware responsible for handling authentication cookies is called **`CookieAuthenticationMiddleware`**.
+
+- It’s registered when you call something like:
+
+```csharp
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options => {
+            // cookie options here
+        });
+```
+
+- This middleware runs on **every HTTP request**.
+
+2. **What happens on each request?**
+
+- When a request comes in, the middleware looks for the **authentication cookie**.
+    
+- It reads the cookie from the **request headers**.
+    
+- Then it decrypts, validates, and deserializes the cookie data to reconstruct the user’s **ClaimsPrincipal**.
+    
+- The reconstructed `ClaimsPrincipal` is assigned to `HttpContext.User`.
+    
+- Your app code (controllers, views, services) then use `HttpContext.User` for authorization, roles, etc.
+
+3. **Where is the cookie stored in the HTTP request?**
+
+- Cookies are sent in the HTTP request in the **`Cookie` header**.
+    
+- Example header sent from browser to server:
+
+```
+Cookie: .AspNetCore.Identity.Application=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+- The HTTP request **body** does not contain cookies.
+
+**Summary:**
+
+| Concept                | Location/Role                                                   |
+| ---------------------- | --------------------------------------------------------------- |
+| Cookie in HTTP request | Inside **request headers** under the `Cookie` key               |
+| Middleware             | `CookieAuthenticationMiddleware` reads and validates the cookie |
+| User Reconstruction    | Creates `ClaimsPrincipal` from cookie claims                    |
+| Usage                  | `HttpContext.User` is available to app code                     |
+### HTTP Request / Response Headers
+- **Response headers** include a `Set-Cookie` header **only when the server wants to create or update a cookie** on the client side. This usually happens:
+    
+    - When the user logs in (authentication cookie created)
+        
+    - When you explicitly update a cookie (e.g., changing expiration)
+        
+    - When logging out (cookie cleared or expired)
+        
+- On **subsequent requests**, the browser automatically sends the cookie back in the **request headers** under the `Cookie` header.
+    
+- The server usually **does not send `Set-Cookie` again** unless the cookie needs to be modified or renewed.
+
+**So in summary:**
+
+- **At login:**  
+    Server response has `Set-Cookie` header → browser saves the cookie
+    
+- **Next requests:**  
+    Browser sends cookie in `Cookie` header → server reads it  
+    No `Set-Cookie` header sent back unless cookie changes
+
+This is why you see the cookie only once in the response headers (when it’s created or updated), but on every request you see it in the request headers.
+
+If you want to force a cookie update (renew expiration, add values), your server needs to send a new `Set-Cookie` header in the response for that request. Otherwise, the cookie just stays as is on the client.
+### Authentication Middleware - `app.UseAuthentication()`
+If you **don’t configure the cookie authentication middleware** in your ASP.NET Core app, the authentication system won’t be able to:
+
+- Read the authentication cookie from the incoming request
+    
+- Validate it
+    
+- Build the user principal (`HttpContext.User`)
+
+So as a result, **`User` will be empty (not authenticated)** on every request, even if the browser sends a cookie.
+
+**Why?**
+
+Because the cookie middleware is responsible for:
+
+- Extracting the cookie from the request header
+    
+- Decrypting and validating the cookie data
+    
+- Creating the `ClaimsPrincipal` from the claims stored in the cookie
+    
+- Setting `HttpContext.User` with that principal
+
+If it’s missing, the pipeline never knows how to interpret the cookie and your app treats the user as anonymous.
+
+**In short:**
+
+- Without cookie authentication middleware → No automatic user from cookie → `User.Identity.IsAuthenticated == false`
+    
+- With cookie middleware properly configured → Cookie is read → User is populated with claims → Your app knows who is logged in
+
+It’s mandatory to configure the cookie authentication middleware (or other authentication schemes) for authentication to work properly!
+
+You _can_ manually read and parse the cookie in your controllers, but it’s generally not recommended or practical for authentication purposes.
+
+**What you _can_ do:**
+
+- Access the cookie value manually via `Request.Cookies["cookieName"]`.
+    
+- If you know the format (e.g., encrypted JSON), you can decrypt or deserialize it yourself.
+    
+- Extract any info you want from it manually.
+
+But why it’s usually a bad idea to do this for auth:
+
+- **Security:** The built-in cookie middleware handles encryption, validation, tampering detection, expiration, etc. Doing this manually is risky.
+    
+- **Complexity:** Parsing and validating cookie data manually duplicates a lot of functionality that the framework provides out of the box.
+    
+- **Integration:** The framework automatically creates `User` (the principal with claims) so you can use built-in things like `[Authorize]`, `User.IsInRole()`, and `User.Claims`.
+    
+- **Maintenance:** Any changes in cookie format or encryption would break your manual parsing.
+
+**Typical approach:**
+
+Let the **cookie authentication middleware** do the heavy lifting, then simply use `User` in your controller to get the current user info.
+
+If you need custom data beyond claims, store it in a separate cookie or in your database/session store — not by messing with the auth cookie.
+
+**Summary:**
+
+You _can_ read cookies manually, but for authentication/authorization, always rely on the middleware that reads the cookie and populates `HttpContext.User`. This keeps your app secure, clean, and maintainable.
+
+Without the cookie authentication middleware, you’d have to manually:
+
+- Read the cookie from the request headers
+    
+- Decrypt and validate it yourself
+    
+- Parse out the claims
+    
+- Construct a `ClaimsPrincipal`
+    
+- Assign it somewhere so your controller/action code can use it
+
+And you’d need to do this in **every controller or action** where you want to know the user identity. That quickly becomes tedious, error-prone, and hard to maintain.
+
+**Middleware solves this by:**
+
+- Centralizing the logic for extracting, decrypting, and validating the cookie
+    
+- Setting `HttpContext.User` once per request
+    
+- Making the authenticated user info available everywhere downstream automatically
+### How is `HttpContext.User` Created
+1. **The Cookie Authentication Middleware runs early in the pipeline** (configured in `Startup.cs` with `app.UseAuthentication()`).
+    
+2. When a request comes in, the middleware:
+    
+    - Reads the **authentication cookie** from the **HTTP request headers** (`Cookie` header).
+        
+    - **Decrypts and validates** the cookie data (the cookie contains an encrypted authentication ticket).
+        
+    - Extracts the **claims** (like user ID, roles, etc.) from the decrypted cookie data.
+        
+3. Then, the middleware creates a **`ClaimsPrincipal` object** containing these claims.
+    
+4. This `ClaimsPrincipal` is assigned to:
+
+```csharp
+HttpContext.User
+```
+
+**Summary:**
+
+|Step|Description|
+|---|---|
+|1. Request arrives|Contains the cookie in the headers|
+|2. Cookie middleware reads|Reads, decrypts, validates cookie|
+|3. Claims extracted|Claims loaded from cookie|
+|4. ClaimsPrincipal created|Created from claims|
+|5. Assigned to HttpContext.User|So downstream components can use it|
+
+**Why is this useful?**
+
+- Once `HttpContext.User` is set, your controllers, Razor pages, filters, authorization policies — **everything** — can use it seamlessly.
+
+Without the cookie authentication middleware, you’d have to manually:
+
+- Read the cookie from the request headers
+    
+- Decrypt and validate it yourself
+    
+- Parse out the claims
+    
+- Construct a `ClaimsPrincipal`
+    
+- Assign it somewhere so your controller/action code can use it
+
+And you’d need to do this in **every controller or action** where you want to know the user identity. That quickly becomes tedious, error-prone, and hard to maintain.
+
+**Middleware solves this by:**
+
+- Centralizing the logic for extracting, decrypting, and validating the cookie
+    
+- Setting `HttpContext.User` once per request
+    
+- Making the authenticated user info available everywhere downstream automatically
+## Cloud-Based (External) Authentication Flow in ASP.NET Core
+When using external authentication (e.g., Google, Facebook, Microsoft), the authentication flow works as follows:
+
+1. **Redirect to External Provider:**  
+    The user clicks a "Login with Google" (or similar) button.  
+    The application redirects the user to the external provider's login page using a protocol like **OAuth 2.0** or **OpenID Connect**.
+    
+2. **User Logs In:**  
+    The user enters their credentials on the external provider’s secure login page.  
+    This step happens **entirely outside your application** – the provider handles the login UI and credential verification.
+    
+3. **Authorization Code or Token Returned:**  
+    If the login is successful, the provider redirects the user back to your application, typically to a predefined callback URL.  
+    Along with the redirect, the provider includes either:
+    
+    - an **authorization code** (OAuth 2.0)
+        
+    - or a **signed token** (OpenID Connect ID token)
+        
+4. **Token Exchange & Claims Retrieval:**  
+    The application (or the ASP.NET Core middleware) may use the code to **request user information** or additional tokens from the provider.  
+    Based on this, a set of **claims** (e.g., name, email, unique ID) is retrieved.
+    
+5. **`ClaimsPrincipal` & Cookie Issued:**  
+    The app creates a `ClaimsPrincipal` using the retrieved claims.  
+    Then, it issues a **local authentication cookie**, which is sent to the browser.
+
+**What Happens After That**
+
+From this point on, everything behaves like standard cookie-based authentication:
+
+- The browser sends the cookie automatically with each request.
+    
+- The application reads the cookie, reconstructs the `ClaimsPrincipal`, and authorizes the user.
+    
+- **The external provider is no longer involved** unless the user logs out or the cookie expires.
+
+This approach decouples authentication logic from the application and offloads user management to the external platform, while still allowing your app to manage session state via cookies.
+
+**You said:**
+
+Using external provider, does the application save the user in its identity database?
+
+**ChatGPT said:**
+
+It depends on how the application is designed, but most commonly:
+
+When using an external provider for authentication, **the application usually saves a local user record** in its own Identity database the first time the user logs in successfully via that provider.
+
+Here’s why and how this typically happens:
+
+- After receiving the external login info (claims, unique user ID from the provider), the app **checks if a corresponding user already exists** in its local database.
+    
+- If no user is found, the app **creates a new user record** linked to that external login (often storing provider name and provider key).
+    
+- This local user record lets the app associate additional data, roles, preferences, or permissions independent from the external provider.
+    
+- For subsequent logins via the same external provider, the app finds the local user and signs them in without creating a duplicate.
+
+**In short:**
+
+Using an external provider for authentication usually means the app maintains a local user database synced with the external identities. This enables more control over the user’s data and application-specific features. However, some lightweight apps might skip saving local users and rely solely on external claims for authentication, but that’s less common in production scenarios.
+### External Login Step by Step Example
+🔁 **Step 1: `GET /Login`**
+
+- The user navigates to the login page.
+    
+- The `LoginController` executes the `[HttpGet] Login()` action.
+    
+- It retrieves the list of external providers:
+    
+```csharp
+var externalLogins = await signInManager.GetExternalAuthenticationSchemesAsync();
+```
+    
+- These providers (like Facebook, Google, etc.) are passed to the `ViewModel`.
+    
+- The view renders HTML, including:
+    
+    - Standard login form (username/password)
+        
+    - A set of buttons for each external login provider (e.g., Facebook)
+
+> 🔸 At this stage, the HTTP response only contains HTML with embedded Razor content — no dynamic JSON or data is sent to the client, just rendered HTML.
+
+🧠 **Step 2: The Client (Browser)**
+
+- The browser displays the form.
+    
+- If the user clicks, for example, the Facebook login button, the browser sends:
+    
+```http
+POST /ExternalLogin
+Content-Type: application/x-www-form-urlencoded
+
+provider=Facebook
+```
+
+🔁 **Step 3: `[HttpPost] ExternalLogin`**
+
+- This POST action handles the external login request:
+    
+```csharp
+public IActionResult ExternalLogin(string provider, string returnUrl = null)
+{
+    var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "User", new { returnUrl });
+    var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+    return Challenge(properties, provider);
+}
+```
+    
+- It doesn’t return a view — instead, it redirects the user to the external provider (e.g., Facebook).
+
+🔁 **Step 4: Facebook Redirects Back**
+
+- After successful authentication, Facebook redirects the user back to:
+    
+```
+/ExternalLoginCallback
+```
+    
+- In that action, you retrieve the login info:
+    
+```csharp
+var info = await signInManager.GetExternalLoginInfoAsync();
+```
+    
+- Based on the info, you can:
+    
+    - Sign in the user (if already registered)
+        
+    - Register a new user automatically
+        
+    - Or show a form to let them choose a username
+
+🧩**In summary:**
+
+- `GET /Login` renders a form with external login options.
+    
+- Clicking a provider sends a `POST` with just the provider name.
+    
+- ASP.NET Core handles redirecting to the provider, then receiving the callback.
+    
+- The external info is converted into identity claims and used to log the user in.
+## JWT Authentication
+1. **Authentication**  
+    The client logs in and receives a JWT from the server (e.g. `{ name: "Anna", role: "User" }`).
+    
+2. **Token Storage**  
+    The client stores the token locally, typically in `sessionStorage` or `localStorage`.
+    
+3. **Sending Requests**  
+    For every authorized request, the frontend attaches the JWT in the `Authorization` header using the Bearer schema:
+
+```javascript
+fetch('/api/secure-endpoint', {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
+```
+
+4. **Server Validation**  
+    The server reads and verifies the token on each request to determine the user’s identity and permissions.
+    
+5. **Claim Updates**  
+    If the user’s identity or permissions change (e.g. role updated to "Admin"), the server sends back a new JWT in a response.
+    
+6. **Token Replacement**  
+    The frontend is responsible for detecting this new token and updating it in storage for future use.
+
+🔁 **Example Flow**
+
+- User logs in → receives JWT: `{ name: "Anna", role: "User" }`
+    
+- Token stored in `sessionStorage`
+    
+- User sends the token on each authorized request (e.g. to `/dashboard`)
+    
+- Server promotes user to "Admin", sends new token: `{ name: "Anna", role: "Admin" }`
+    
+- Frontend replaces old token with new one
+    
+- Future requests use updated token with updated claims
+
+This model gives flexibility, but also puts responsibility on the frontend to properly handle storage and updates of the token.
 # Bookmarks
 Completion: 03.06.2025
