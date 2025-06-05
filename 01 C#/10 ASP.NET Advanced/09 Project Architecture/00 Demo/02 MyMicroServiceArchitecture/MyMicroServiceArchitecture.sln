@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.AppHost", "MyMicroServiceArchitecture.AppHost\MyMicroServiceArchitecture.AppHost.csproj", "{ADA7D9EA-9055-4BA3-8AA4-81B8E153BF18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.ServiceDefaults", "MyMicroServiceArchitecture.ServiceDefaults\MyMicroServiceArchitecture.ServiceDefaults.csproj", "{52218CA9-987B-B37F-6B9B-153013D7FEFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.ApiService", "MyMicroServiceArchitecture.ApiService\MyMicroServiceArchitecture.ApiService.csproj", "{6E8D0A4D-862A-69EB-6FF0-CC2B735FBF61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.Web", "MyMicroServiceArchitecture.Web\MyMicroServiceArchitecture.Web.csproj", "{AD77C5BD-F01E-9573-16FD-518E41E4D518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.Catalog", "MyMicroServiceArchitecture.Catalog\MyMicroServiceArchitecture.Catalog.csproj", "{90FD8861-9469-170B-693D-D735A2EA2957}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroServiceArchitecture.Delivery", "MyMicroServiceArchitecture.Delivery\MyMicroServiceArchitecture.Delivery.csproj", "{5BF6559D-73B5-7C16-2B1B-918DEF7F96D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADA7D9EA-9055-4BA3-8AA4-81B8E153BF18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA7D9EA-9055-4BA3-8AA4-81B8E153BF18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA7D9EA-9055-4BA3-8AA4-81B8E153BF18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA7D9EA-9055-4BA3-8AA4-81B8E153BF18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52218CA9-987B-B37F-6B9B-153013D7FEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52218CA9-987B-B37F-6B9B-153013D7FEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52218CA9-987B-B37F-6B9B-153013D7FEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52218CA9-987B-B37F-6B9B-153013D7FEFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E8D0A4D-862A-69EB-6FF0-CC2B735FBF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8D0A4D-862A-69EB-6FF0-CC2B735FBF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8D0A4D-862A-69EB-6FF0-CC2B735FBF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8D0A4D-862A-69EB-6FF0-CC2B735FBF61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD77C5BD-F01E-9573-16FD-518E41E4D518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD77C5BD-F01E-9573-16FD-518E41E4D518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD77C5BD-F01E-9573-16FD-518E41E4D518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD77C5BD-F01E-9573-16FD-518E41E4D518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90FD8861-9469-170B-693D-D735A2EA2957}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90FD8861-9469-170B-693D-D735A2EA2957}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90FD8861-9469-170B-693D-D735A2EA2957}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90FD8861-9469-170B-693D-D735A2EA2957}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BF6559D-73B5-7C16-2B1B-918DEF7F96D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BF6559D-73B5-7C16-2B1B-918DEF7F96D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BF6559D-73B5-7C16-2B1B-918DEF7F96D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BF6559D-73B5-7C16-2B1B-918DEF7F96D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6F98071-419F-4941-B4F0-295F8F720DBB}
+	EndGlobalSection
+EndGlobal
