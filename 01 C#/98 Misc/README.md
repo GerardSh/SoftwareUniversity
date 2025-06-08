@@ -1643,13 +1643,48 @@ You’ll need a different mechanism:
 - **Custom logic inside your code**
 
 But for structural metadata (like `[Required]`, `[Route]`, `[Authorize]`), attributes are ideal — and fixed at compile time.
+### Legacy Application Maintenance vs Upgrade Tradeoffs
+✅ **1. Will the old application continue working as long as we don't update anything?**
+
+Yes, **as long as the runtime environment stays the same** (e.g. same .NET Framework version, same OS, same libraries), your application will continue to work just as it did—even 10 years from now.
+
+- **Example:** If you're running an ASP.NET app on .NET Framework 4.6.1 with NUnit using `Assert.AreEqual`, nothing will break just because `Assert.That` is now the newer recommendation.
+    
+- Even if `Assert.AreEqual` is marked as "legacy" or "not recommended," it still exists in the older version and will continue working.
+
+⚠️ **2. What happens if you decide to update (e.g. move to a newer .NET or NUnit version)?**
+
+Here’s where things change:
+
+- **Outdated API calls** may be removed or produce warnings/errors in newer versions. You’ll have to **refactor** these (e.g., replace `Assert.AreEqual` with `Assert.That` if the former is removed or no longer recommended).
+    
+- This may involve **non-trivial work**, especially if the outdated code is used heavily.
+
+🔒 **3. What are the risks of staying on an old version forever?**
+
+- **Security vulnerabilities**: Older .NET versions or libraries (like old NUnit) may have unpatched security holes. These won’t be fixed unless you upgrade.
+    
+- **OS support**: At some point, **new operating systems might not support older .NET runtimes**. If you're forced to upgrade your server OS, the app might break.
+    
+- **Lack of new features**: You won't be able to use newer libraries, tools (like modern C# language features), or performance improvements.
+
+✅ **4. What’s the tradeoff then?**
+
+- **Leave it as is**: Less work now, but risk of technical debt and increasing upgrade pain later.
+    
+- **Upgrade proactively**: More work up front, but better long-term maintainability and security.
+
+🛠️ **In practice, many teams follow this rule:**
+
+> **If the app is stable and not changing often, leave it alone** — but **monitor for OS/runtime end-of-support dates** and **security advisories**.
+
+If something critical changes (e.g. your server host drops support for .NET 4.x), then you’re **forced to migrate**, and that’s when all outdated code needs updating.
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
 [vcmi/vcmi: Open-source engine for Heroes of Might and Magic III](https://github.com/vcmi/vcmi) - open-source recreation of Heroes of Might & Magic III engine
 
 [c# - Cannot access protected member in base class - Stack Overflow](https://stackoverflow.com/questions/13683324/cannot-access-protected-member-in-base-class)
-
 # ASP.NET
 ## General
 ## ChatGPT
