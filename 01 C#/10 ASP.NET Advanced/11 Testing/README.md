@@ -398,7 +398,9 @@ public class CreditDecision
 }
 ```
 
-Ако искаме да сме сигурни че `CreditDesicion` класа работи, без да сме зависими от `CreditDecisionService`, трябва да инсталираме библиотеката Moq, след това да създадем тестовия клас. След това мокваме ICreditDecisionService. След като направим `new Mock<ICreditDecisionService>` единственото което знае е какви методи има вътре. Затова трябва да се Setup-не със 100, все едно ги получава и връща Declined. Самия Moq няма функционалност, но ние я имитираме като казваме че като получим 100, ще се върне Declined.
+Ако искаме да тестваме `CreditDecision` класа без да разчитаме на реалната имплементация на `CreditDecisionService`, използваме **Moq**. С помощта на Moq създаваме "мокнат" (имитиран) обект на интерфейса `ICreditDecisionService`. Този мокнат обект няма собствена логика — ние му задаваме поведение чрез метода `.Setup()`. Например казваме: "Когато получиш вход 100, върни 'Declined'". По този начин изолираме тествания клас и контролираме резултатите, за да проверим дали `CreditDecision` реагира правилно на дадената стойност. Ако подадем стойност, за която няма дефиниран `Setup` в мокнатия обект, тогава, Moq **ще върне стойност по подразбиране** за типа на метода. В примера `GetDecision` връща `string`, затова стойността по подразбиране ще бъде **null**.
+
+Мокването позволява да създадем фалшиви версии на зависимости, които да връщат контролирани и очаквани резултати, за да тестваме само логиката на нашия клас, без да се влияе от реалната външна имплементация.
 
 ```csharp
 using Moq;
@@ -427,6 +429,275 @@ public class CreditDecisionTests
         mockCreditDecisionService.VerifyAll();
     }
 }
+```
+## In-Memory Database
+**Data Storage in Memory**
+Услугите, които достъпват база данни, подлежат на тестване и това е препоръчителна практика.
+
+При тестване на такива услуги не се създава нова база данни.
+
+В противен случай това би натоварило сървъра на базата данни.
+
+При тестване на такава услуга се използва In-Memory база данни.
+
+```
+Test class             TestDb class
+Test Case 1    <=>     Test events      <=>      QA DB (in memory) // Contains only synthetic data from the TestDb class
+Test Case 2            Test users                                  // Created and dropped every time when tests are executed
+```
+
+[Eventures/Eventures.Tests.Common/TestDb.cs at main · nakov/Eventures](https://github.com/nakov/Eventures/blob/main/Eventures.Tests.Common/TestDb.cs)
+
+Файлът съдържа само синтетични данни от класа `TestDb`.
+
+Базата се създава и изтрива при всяко изпълнение на тестовете.
+### EF Core In-Memory Database
+EF Core предоставя In-Memory база данни.
+
+Предлага се чрез пакета `Microsoft.EntityFrameworkCore.InMemory`.
+
+Основното ѝ предназначение е да служи като тестова база данни.
+
+```csharp
+// Create a db context as usual
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options) {}
+
+    public DbSet<CreditDecision> CreditDecisions { get; set; }
+}
+
+public class CreditDecision
+{
+    public int Id { get; set; }
+    public int Score { get; set; }
+    public string Decision { get; set; }
+}
+```
+### Testing a Service with In-memory Database
+```csharp
+public interface ICreditDecisionService
+{
+    CreditDecision GetById(int id);
+}
+
+public class CreditDecisionService : ICreditDecisionService
+{
+    private readonly AppDbContext data;
+
+    public CreditDecisionService(AppDbContext data) // Inject the db context to the service
+        => this.data = data;
+
+    public CreditDecision GetById(int id)
+        => this.data.CreditDecisions.Find(id);
+}
+```
+
+Интерфейсът `ICreditDecisionService` дефинира абстракция за услуга, която предоставя достъп до кредитни решения.
+
+Класът `CreditDecisionService` имплементира този интерфейс и използва `AppDbContext`, за да извлича данни от базата.
+
+Методът `GetById(int id)` връща конкретно кредитно решение чрез неговото ID, като използва `Find(id)` върху `DbSet`.
+
+```csharp
+[TestFixture]
+public class CreditDecisionDbTests
+{
+    private IEnumerable<CreditDecision> decisions;
+    private AppDbContext dbContext;
+
+    [SetUp] // Method is executed before tests
+    public void TestInitialize()
+    {
+        this.decisions = new List<CreditDecision>
+        {
+            new CreditDecision { Id = 1, Score = 100, Decision = "Declined" },
+            new CreditDecision { Id = 2, Score = 600, Decision = "Maybe" },
+            new CreditDecision { Id = 3, Score = 800, Decision = "Absolutely" }
+        };
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: "CreditsInMemoryDb") // Use an in-memory DB
+            .Options;
+
+        this.dbContext = new AppDbContext(options);
+        this.dbContext.AddRange(this.decisions); // Add data to the DB
+        this.dbContext.SaveChanges();
+    }
+
+    [Test]
+    public void Test_GetAllCreditDescisions()
+    {
+        var decisionId = 1;
+
+        // Pass the in-memory db to the service
+        ICreditDecisionService service = new CreditDecisionService(this.dbContext);
+
+        // Use service methods
+        var decision = service.GetById(decisionId);
+
+        var dbDecision = this.decisions
+            .ToList()
+            .Find(d => d.Id == decisionId);
+
+        // Compare and assert returned CreditDecision from DB and from the service method
+        Assert.That(decision, Is.Not.Null);
+		Assert.That(decision.Score, Is.EqualTo(dbDecision.Score));
+		Assert.That(decision.Decision, Is.EqualTo(dbDecision.Decision));
+    }
+}
+```
+
+Класът `CreditDecisionDbTests` дефинира тестов набор за работа с кредитни решения.
+
+Методът `TestInitialize` се изпълнява преди всеки тест и подготвя средата за тестване.
+
+Създава се списък с тестови обекти `CreditDecision`, който се добавя в база данни „в паметта“ с помощта на EF Core `UseInMemoryDatabase`.
+
+Контекстът `AppDbContext` се инициализира с тази временна база, а данните се записват чрез `AddRange` и `SaveChanges`.
+
+Използва се реалният `AppDbContext`, конфигуриран с in-memory база.
+
+Създава се инстанция на `CreditDecisionService`, в която се подава този контекст.
+
+Взема се решение чрез `service.GetById(...)`.
+
+Сравнява се резултатът от услугата с оригиналните данни, добавени в паметта (`this.decisions`).
+
+Използват се `Assert.That` твърдения, за да се валидират стойностите.
+## Integration Testing
+Интеграционното тестване проверява няколко единици (компонента) заедно.
+
+Целта е да се открият грешки в начина, по който интегрираните единици взаимодействат помежду си.
+
+Пример: тества се регистрация на потребител + услуги за достъп до данни + съхранение в база данни  
+(дали новият потребител се запазва в базата данни).
+Самата регистрация на потребител не проверява дължината на имейла и това няма да доведе до грешка, защото проверка за дължина не се прави.
+При интеграционния тест обаче се опитваме да запишем потребителя в реалната база и тестът се проваля, защото имейлът надвишава разрешения брой символи.
+Поотделно, базата може да запише имейла, сървисът може да го подаде към базата, регистрацията минава успешно, защото мока на базата няма ограничение на полето.
+Тези неща работят като отделни unit тестове, но не и като интеграционен тест.
+
+Сравнение между unit testing и integration testing.
+
+Интеграционното тестване проверява взаимодействието между няколко единици.
+
+Unit тестването проверява една-единствена единица (компонент).
+
+ASP.NET Core поддържа интеграционно тестване чрез framework за единични тестове.
+
+Framework-ът разполага с вграден уеб хост и тестов сървър в паметта.
+
+Интеграционните тестове следват последователност от стъпки.
+
+Нужно е да се конфигурира уеб хостът на приложението.
+
+Създава се клиент на тестовия сървър, който изпраща заявки към приложението.
+
+`[Arrange]` - Тестовото приложение подготвя заявка.
+
+`[Act]` - Клиентът изпраща заявката и получава отговор.
+
+`[Assert]` - Реалният отговор се валидира спрямо очаквания резултат.
+
+След приключване на всички тестове се генерира отчет с резултатите.
+
+**Integration Test for the `TaskBoard` App**
+
+```csharp
+[Test]
+public async Task TestAllBoards()
+{
+    // Arrange
+    var httpClient = new HttpClient();
+
+    // Act: send a GET request
+    var response = await httpClient.GetAsync("https://google.com");
+
+    // Assert
+    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+}
+```
+## Selenium
+Selenium е преносим framework за тестване на уеб приложения.
+
+Предоставя инструмент за запис и изпълнение на тестове (Selenium IDE).
+
+Предоставя специфичен език за писане на тестове (Selenese).
+
+Поддържа директно управление на браузъри (Selenium WebDriver).
+
+„Selenium автоматизира браузъри. Това е всичко!“ — документация на Selenium.
+
+Автоматизира уеб приложения с цел тестване.
+
+Полезен е за интеграционно тестване на SPA приложения.
+### Install and Set-up Selenium
+Инсталира се последната стабилна версия на Node.js:
+[Node.js — Run JavaScript Everywhere](https://nodejs.org/en/)
+
+Инсталира се npm пакетът:
+`npm install -g selenium-standalone`
+
+Инсталира се последната версия на Java:
+[Download Java](https://www.java.com/en/download/)
+
+Изтегля се JAR файлът на Selenium Standalone Server:
+[Downloads | Selenium](https://www.selenium.dev/downloads/)
+
+Изтегля се `ChromeDriver`, съответстващ на версията на Chrome браузъра:
+[Downloads  |  ChromeDriver  |  Chrome for Developers](https://developer.chrome.com/docs/chromedriver/downloads)
+Файлът се разархивира в същата папка, където се намира Selenium Standalone Server.
+
+Стартира се Selenium сървърът:
+`java -jar .\selenium-server-standalone-3.141.59.jar`
+
+**Selenium and .NET**
+
+Подготвя се Selenium за тестване на ASP.NET Core приложение.
+
+Инсталират се необходимите NuGet пакети:
+
+`Selenium.Support`
+
+`Selenium.WebDriver`
+## `MyTested.AspNetCore.Mvc`
+`MyTested.AspNetCore.Mvc` е мощна библиотека за тестване на ASP.NET Core приложения.
+
+Осигурява автоматично разрешаване на зависимостите за тестовете.
+
+Предлага Fluent API със силно типизирани разширения.
+
+Позволява писане на unit тестове, интеграционни тестове, тестове на маршрути – всичко е покрито.
+
+Включва вградени mock обекти за всякакви ASP.NET Core сценарии.
+
+Поддържа автентикация, DbContext, HTTP, сесии, кеширане и много други.
+
+[ivaylokenov/MyTested.AspNetCore.Mvc: Fluent testing library for ASP.NET Core MVC.](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc)
+
+```csharp
+// Instantiates controller with the registered global services,
+// and mocks authenticated user,
+// and tests for valid model state,
+// and tests for added by the action view bag entry,
+// and tests for view result and model with specific assertions
+MyController<MyMvcController>
+    .Instance(instance => instance
+        .WithUser(user => user.WithUsername("MyUserName")))
+    .Calling(c => c.MyAction(myRequestModel))
+    .ShouldHave()
+    .ValidModelState()
+    .AndAlso().ShouldHave()
+    .ViewBag(viewBag => viewBag.ContainingEntry("MyViewBagProperty", "MyViewBagValue"))
+    .AndAlso().ShouldReturn()
+    .View(result => result
+        .WithModelOfType<MyResponseModel>()
+        .Passing(model =>
+        {
+            Assert.AreEqual(1, model.Id);
+            Assert.AreEqual("My property value", model.MyProperty);
+        }));
 ```
 # Misc
 # ChatGPT
@@ -540,5 +811,19 @@ The real NUnit implementation is much more complex and feature-rich (supporting 
 [aspnetcore/src/Mvc/test at main · dotnet/aspnetcore](https://github.com/dotnet/aspnetcore/tree/main/src/Mvc/test) - пример за MVC тестове.
 
 [NUnit.org](https://nunit.org/)
+
+Set-up Selenium:
+
+[Node.js — Run JavaScript Everywhere](https://nodejs.org/en/)
+
+[Download Java](https://www.java.com/en/download/)
+
+[Downloads | Selenium](https://www.selenium.dev/downloads/)
+
+[Downloads  |  ChromeDriver  |  Chrome for Developers](https://developer.chrome.com/docs/chromedriver/downloads)
+
+`MyTested.AspNetCore.Mvc`
+
+[ivaylokenov/MyTested.AspNetCore.Mvc: Fluent testing library for ASP.NET Core MVC.](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc)
 
 Completion: 09.06.2025
