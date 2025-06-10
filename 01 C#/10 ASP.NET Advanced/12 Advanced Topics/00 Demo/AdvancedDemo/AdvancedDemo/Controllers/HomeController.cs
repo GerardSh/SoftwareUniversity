@@ -4,15 +4,8 @@ using AdvancedDemo.Models;
 
 namespace AdvancedDemo.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILogger<HomeController> logger) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
     public IActionResult Index()
     {
         return View();
@@ -20,6 +13,8 @@ public class HomeController : Controller
 
     public IActionResult Privacy()
     {
+        logger.LogError("Error!");
+
         return View();
     }
 
