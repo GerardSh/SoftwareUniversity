@@ -10,6 +10,11 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
 
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("RedisCache");
+        });
+
         var app = builder.Build();
 
         app.MapDefaultEndpoints();
