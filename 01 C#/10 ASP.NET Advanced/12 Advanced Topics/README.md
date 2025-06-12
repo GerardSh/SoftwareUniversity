@@ -766,6 +766,526 @@ public IActionResult Error()
 Сесийните данни се поддържат чрез кеш и се считат за временни. В сесията се пази информация, която не е релевантна към бизнес информацията.
 
 Приложението трябва да продължи да функционира и без сесийни данни.
+### Configure Session
+Активиране на Session middleware и настройване на in-memory доставчик за сесии.
+
+Конфигуриране на Session.
+
+```csharp
+// services.AddMemoryCache();
+// Default in-memory cache – provides IMemoryCache
+// Provides IDistributedCache
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    // Set a short timeout for easy testing
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    
+    // XSS security
+    options.Cookie.HttpOnly = true;
+});
+
+builder.Services.AddControllersWithViews();
+
+// UseSession() Middleware must be called before UseMvc()
+app.UseSession();
+```
+
+Session middleware се активира, като се добави `UseSession()` преди извикването на MVC middleware.
+
+Добавянето на `AddDistributedMemoryCache()` позволява използване на in-memory доставчик, който предоставя интерфейса `IDistributedCache`.
+
+Чрез `AddSession()` се конфигурират параметрите на сесията, като например времето на неактивност и настройките на cookie-то за сигурност.
+### Set and Use Session
+След като състоянието на сесията е конфигурирано, `HttpContext.Session` става достъпен.
+
+Сесиите в ASP.NET Core съхраняват стойности под формата на масив от байтове, за да се гарантира сериализация.
+
+Може да е необходимо да се използват конкретни подходи за съхраняване на по-сложни данни.
+
+```csharp
+public IActionResult GetShoppingCart()
+{
+    if (this.HttpContext.Session.Get("Cart") == null)
+    {
+        // If no cart exists in the session, create and store a new one
+        this.HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(new Cart()));
+    }
+
+    // Retrieve the cart from the session and deserialize it
+    this.ViewData["Cart"] = this.HttpContext.Session.GetString("Cart") == null
+        ? null
+        : JsonConvert.DeserializeObject(this.HttpContext.Session.GetString("Cart"));
+
+    return View();
+}
+```
+
+Сесията се използва за съхраняване на количката, като тя първо се сериализира до низ чрез JSON. При нужда се десериализира обратно до обект.
+### Extend Session
+Могат да се имплементират разширения за сесията, за да се улесни работата.
+
+```csharp
+public static class SessionExtensions
+{
+    public static void Set<T>(this ISession session, string key, T value)
+    {
+        // Serialize the object to JSON and store it as a string in the session
+        session.SetString(key, JsonConvert.SerializeObject(value));
+    }
+
+    public static T Get<T>(this ISession session, string key)
+    {
+        // Retrieve the JSON string from the session and deserialize it to the specified type
+        var value = session.GetString(key);
+        return value == null
+            ? default(T)
+            : JsonConvert.DeserializeObject<T>(value);
+    }
+}
+```
+
+С тези методи могат по-удобно да се задават и извличат обекти от сесията, без да се пише ръчно сериализация и десериализация при всяко използване.
+## Temp Data
+**Store data until it's read**
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250612114637.png)
+
+ASP.NET Core предоставя свойството `TempData`, което служи за временен storage. Сесията също е удобна, но тя обикновено се използва за данни, свързани с конкретен потребител — като негови характеристики или собствени свойства, които могат да се съхраняват в сесията.
+
+`TempData` позволява да се прехвърлят данни **между две отделни HTTP заявки**, което означава, че може да се използва за предаване на информация между два различни контролера или действия.
+Това е полезно именно при пренасочвания (redirects), когато клиентът прави втора заявка към друг контролер или действие, и все пак трябва да се запази някаква временна информация.
+За разлика от `ViewData` или `ViewBag`, които са валидни само за една заявка, `TempData` пази данните до първото им четене, дори и през няколко заявки.
+Така `TempData` служи като временна „пощенска кутия“ между две отделни заявки.
+
+Когато искаме да съхраним временна информация, която да достъпим на по-късен етап и тя не е пряко свързана с конкретен потребител, най-удобното решение е `TempData`. Това е данни, които не са собственост на потребителя, но може да се наложи да се видят след няколко заявки. Ако искаме да запазим състояние между заявките, използваме именно `TempData`.
+
+Това свойство съхранява данните докато бъдат прочетени. Най-често в `TempData` се пазят съобщения към потребителя, защото при използване на `ViewData` или `ViewBag`, ако има пренасочване, информацията се губи. Докато `TempData`, независимо през колко пренасочвания премине, остава запазена докато някой не я прочете. В момента на прочитане тя се маркира за изтриване и при следващата заявка се премахва.
+
+`TempData` се използва основно в ситуации на пренасочване (`Redirect`). Например, когато добавим дадено entity в даден `Action` и накрая извикаме `RedirectToAction("Index")`, искаме на страницата `Index` да покажем съобщение, че записът е бил успешен.
+В този случай не можем да използваме `ViewData` или `ViewBag`, защото при `Redirect` се връща отговор към клиента с указание да направи **нова заявка** към целевия екшън (`Index`). А `ViewData` и `ViewBag` работят само в рамките на текущата заявка – те не "оцеляват" при нова заявка.
+`TempData`, от друга страна, **запазва информацията между заявките**, което я прави идеална за такива сценарии. При първата заявка записваме съобщението в `TempData`, и след `Redirect` то ще бъде налично и достъпно в следващия екшън.
+Така можем да визуализираме съобщение за успешен запис дори след пренасочване.
+
+Другата основна причина да го ползваме е, когато информацията ни трябва в няколко request-а. Примерно, ако искаме да запазим shopping cart-а, може да ползваме `TempData` и да визуализираме какво има в него с `Peek()`, а вече когато потребителят си го купи – да го изтрием.
+
+Методите `Keep()` и `Peek()` предотвратяват изтриването на данните при тяхното преглеждане. `Keep()` се използва, ако вече сме прочели данните, но искаме да ги запазим — той премахва маркировката за изтриване, която се задава след прочит.
+
+`TempData` може да се използва както в Razor Page модели, така и в MVC контролери.
+
+`TempData` се реализира чрез `TempData` доставчици.
+
+Използва се или чрез „бисквитки“, или чрез състояние на сесията.
+
+От версия ASP.NET Core 2.0 насам, доставчикът по подразбиране за `TempData` е базиран на бисквитки.
+
+```csharp
+builder.Services.AddControllersWithViews() 
+    .AddSessionStateTempDataProvider(); // Not needed when working with cookies
+
+builder.Services.AddSession(...); // Not needed when working with cookies
+
+// ...
+
+app.UseSession(); // Not needed when working with cookies
+```
+
+За да се използва `TempData` със сесии, е необходимо изрично да се добави `AddSessionStateTempDataProvider()`. Това указва, че `TempData` ще съхранява данните в състоянието на сесията вместо в бисквитки.
+
+`TempData` е **временен storage, но индивидуален за всеки потребител** и по същество е **колекция тип речник**, т.е. `IDictionary<string, object>`.
+
+Когато даден потребител направи заявка:
+
+- ASP.NET Core създава (или използва) **отделен storage** за неговата `TempData`.
+    
+- Този storage е:
+    
+    - или **в бисквитка** (ако се ползва `CookieTempDataProvider`) – тази бисквитка се изпраща и връща **само от този потребител**
+        
+    - или **в сесия** (ако се ползва `SessionStateTempDataProvider`) – сесията е обвързана със съответния клиент (по session cookie)
+
+**Важно: `TempData` ≠ Global Storage**
+
+- Това **не е общо място**, споделено между потребители.
+    
+- Ако **Потребител A** запише нещо в `TempData`, **Потребител B** няма да има достъп до него – той ще има **собствена, празна `TempData`**.
+
+**Потребител A:**
+
+```csharp
+TempData["Msg"] = "Hello, A!";
+```
+
+**Потребител B:**
+
+```csharp
+// TempData["Msg"] will be null
+```
+
+Защото:
+
+- Бисквитките са различни (ако се ползва cookie provider).
+    
+- Или сесиите са различни (ако се ползва session provider).
+
+**Обобщено:**
+
+| Характеристика          | TempData                                        |
+| ----------------------- | ----------------------------------------------- |
+| Обвързана с потребителя | ✅ Да (в сесия или бисквитка на клиента)         |
+| Видима за други?        | ❌ Не                                            |
+| Scope                   | Само за следваща заявка или редирект            |
+| Подходяща за            | Съобщения, които трябва да оцелеят при Redirect |
+
+**`TempData` with Cookies Workflow:**
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250612145923.png)
+### Enable and Access `TempData`
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250612150341.png)
+
+След активиране на `TempData`, тя може да се достъпи в:
+
+Контролера и действията му.
+
+Razor Page моделите.
+
+```csharp
+public IActionResult RedirectToTempData()
+{
+    this.TempData["Previous"] = "/Home/RedirectToTempData";
+    return this.RedirectToAction("AccessTempData");
+}
+
+public IActionResult AccessTempData()
+{
+    // Add a HttpHeader ("Previous") with the previous Action URL
+    this.HttpContext.Response.Headers.Add("Previous",
+        this.TempData["Previous"].ToString());
+
+    return this.View();
+}
+```
+
+В примера `TempData` се използва, за да се предаде URL на предишно действие при пренасочване и след това се чете и добавя като HTTP header.
+### Post-redirect-Get
+**Post-Redirect-Get (PRG)** е дизайн патърн в уеб разработката, който ни предпазва от двойно събмитване на форми – проблем, който може да доведе до многократно записване на една и съща информация в базата данни. Това се случва, когато клиентът събмитне формата, ние я обработим и върнем резултат, но след това той натисне бутона "Back" или "Refresh" което отново изпраща формата.
+
+За да избегнем това, следваме следните стъпки: 
+браузърът изпраща POST заявка → ние връщаме **redirect** → браузърът изпраща GET заявка → клиентът получава финалния отговор.  
+Така, ако клиентът натисне "Назад", последната изпълнена заявка е GET и формата не се изпраща повторно.
+
+**PRG не предотвратява напълно възможността за повторен POST при натискане на „назад“ няколко пъти**, но:
+
+- **Значително намалява риска** – защото последната заявка е `GET`.
+    
+- Браузърите **предупреждават**, ако се върнем до предишна `POST` заявка.
+
+Ако искаме 100% гаранция, че няма да има повторно записване, дори и при повторно изпращане на `POST`, трябва да добавим и **сървърна защита**, например:
+
+- Генериране на уникален **anti-forgery token** или **form submission ID**, който се маркира като „използван“ след първия запис.
+    
+- Така дори ако някой натисне „Submit“ 2 пъти, втората заявка ще бъде игнорирана.
+
+Post-redirect-Get има ключова роля в повечето приложения.
+
+Повторното подаване на формуляри може да бъде критично при магазинни приложения.
+
+То може да доведе до нежелан спам от данни.
+
+Post-redirect-Get (PRG) е патърн, който е лесен за прилагане.
+
+```csharp
+[HttpGet]
+public IActionResult Create()
+{
+    return View(new ProductModel());
+}
+
+[HttpPost]
+public IActionResult Create(ProductModel productModel)
+{
+    if (!ModelState.IsValid)
+    {
+        return View(productModel);
+    }
+
+    // Do magic with productModel
+    return RedirectToAction("Details", new { id = productModel.Id });
+}
+```
+
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250612165900.png)
+
+Първо се подава GET заявка за извеждане на формата.
+
+След това при изпращане на POST заявка се проверява дали моделът е валиден.
+
+Ако не е, същата форма се визуализира отново с валидираните данни.
+
+Ако моделът е валиден, се извършва логиката (запис, изчисление и др.), и потребителят се **пренасочва** към нова страница с GET заявка (например `Details`).
+
+Това предпазва от повторно изпращане на данните при презареждане на страницата.
+
+`TempData` върши перфектна работа в този случай, защото запазва данните **през редиректа**.
+
+Това означава, че може да се прехвърли например съобщение за успех, предупреждение или друга временна информация от POST действието към GET действието, без да се губи при пренасочването.
+
+`TempData` е специално създаден за сценарии като Post-Redirect-Get, където е важно да се предадат данни между две отделни HTTP заявки.
+## Areas
+Някои приложения могат да съдържат голям брой компоненти. Например, в новинарски сайт потребителите могат да разглеждат и четат новини, но нямат право да публикуват съдържание. В по-простите случаи това може лесно да се управлява чрез роли. 
+
+- **`Area`** в ASP.NET Core/MVC е **структурен инструмент** – тя организира проекта на логически части (напр. `Public`, `Admin`, `Store`, `Support` и т.н.). Това улеснява поддръжката на големи приложения и разделя отговорностите.
+    
+- **`Roles`** са **механизъм за достъп (authorization)** – те определят **кой има право да достъпва** даден контролер, екшън или цяла Area.
+
+**Area организира**, **ролята контролира достъпа**. Двете работят заедно, но нито едното не замества другото.
+
+Когато приложението нарасне и включва множество функционалности — както публични (като четене на новини), така и вътрешни (като качване на новини, генериране на справки, управление на съдържание и т.н.) — процесите стават по-сложни и се налага по-добра организация.
+
+Тогава на практика се оформя нуждата от **отделно администраторско приложение**. Това може да бъде реализирано като самостоятелно приложение, но в зависимост от мащаба, често не е необходимо да се създават две напълно отделни приложения. Вместо това, можем да използваме **Areas** в ASP.NET MVC, за да разделим публичната и административната част на приложението.
+
+Тази структура позволява да запазим функционална и визуална независимост между различните зони на сайта. Например, публичната част често получава повече внимание към дизайна и потребителското изживяване, докато администраторската част е по-изчистена, но силно функционална. За да не смесваме тези две среди, използваме **две отделни Areas** — например: _Public_ и _Administration_.
+
+Всяка Area има:
+
+- собствена структура с контролери, изгледи и модели;
+    
+- собствен дизайн;
+    
+- възможност за отделна защита — например с атрибута `[Authorize(Roles = "Admin")]` можем да ограничим достъпа само до администратори.
+
+Това създава усещането, че работим с две отделни приложения, докато реално всичко се управлява в рамките на едно.
+
+**Пример:**
+
+Голямо приложение за електронна търговия, което включва:
+
+- Магазин (Store)
+    
+- Потребители (Users)
+    
+- Блог (Blog)
+    
+- Форум (Forum)
+    
+- Администрация (Administration)
+
+Всички тези модули могат да бъдат организирани в отделни Areas.
+
+За да се използват Areas, трябва да се промени стандартният маршрут шаблон:
+
+```csharp
+routes.MapRoute(
+    name: "areas",
+    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+```
+
+Този маршрут позволява на приложението да разпознава заявки към различни Areas, но само ако съответната Area съществува.
+## Performance
+Производителността е важна тема в разработката на уеб приложения.
+
+Бавно зареждане създава неудобство за клиентите и ги отблъсква.
+
+Няма магическа функционалност, която автоматично да оптимизира приложението.
+
+Има обаче много насоки как да се ускори едно приложение.
+
+Принципно има софтуери които следят различните метрики и при отклонения да реагира и да прати аларми или да задейства действия. 
+
+Когато искаме да правим оптимизации, е много важно да наблюдаваме приложението, за да разберем кога се налага да променим нещо. Например, ако видим, че нещо започва да се забавя, трябва моментално да реагираме и да опитаме да оптимизираме. Поначало заявките към базата може да не са били много ефективни, но когато има малко данни, те минават достатъчно бързо.
+
+Когато системата започне да натрупва повече данни, графично можем ясно да видим деградацията в производителността. Тогава веднага трябва да вземем мерки – да прегледаме логовете, да установим коя заявка колко време е отнела, да идентифицираме бавните заявки и да ги оправим, като паралелно следим общия перформанс.
+
+Всяко приложение деградира с течение на времето, защото се трупат данни и потребителската база расте, а това неизбежно води до спад в производителността. Понякога, докато разследваме причината за деградацията, можем временно да добавим допълнителни ресурси под формата на още сървъри, които да компенсират проблема, докато го открием и отстраним. Това се прави, за да не изпитват потребителите забавяния или проблеми.
+
+Най-добрият вариант, разбира се, е да хванем проблема още преди да се е появил.
+### Tips
+#### Measure Everything
+Измерваме всичко (Application Insights, `dotTrace`). Има много безплатни инструменти, които са с отворен код, например Grafana и Prometheus.
+
+Други популярни инструменти с отворен код за мониторинг и диагностика са:
+
+- **`Elastic Stack (ELK)`** – Elasticsearch, Logstash и Kibana за лог анализ и визуализация.
+    
+- **`Jaeger`** – за разпределено проследяване (distributed tracing).
+    
+- **`Zipkin`** – друг инструмент за проследяване на заявки в разпределени системи.
+    
+- **`OpenTelemetry`** – стандарт и набор от инструменти за събиране на телеметрия от приложения.
+
+Събираме диагностична информация за приложението.
+
+Локализираме кои са бавните компоненти на приложението.
+
+Анализираме какво забавя тези компоненти.
+
+Подреждаме и приоритизираме най-опасните забавяния.
+
+Започваме с лесно постижимите подобрения.
+
+След като определим най-бавния компонент, му даваме най-висок приоритет.
+
+Първо се фокусираме върху лесните за отстраняване проблеми, след което преминаваме към по-сложните.
+#### Enable Compression
+HTTP протоколът не е особено ефективен.
+
+Може да се включи Response Compression, за да се увеличи ефективността на приложението.
+
+Ще има по-малко данни, които се прехвърлят през мрежата, и това ще ускори работата.
+
+Има допълнително натоварване (overhead) от компресирането и декомпресирането, тъй като клиентът и сървърът трябва да извършват тези операции.
+
+Обикновено обаче това натоварване е по-малко от забавянето, което се дължи на самата мрежа, затова е препоръчително да се използва, но да се следи внимателно.
+
+```csharp
+// ConfigureServices
+services.AddResponseCompression();
+
+// Configure
+app.UseResponseCompression();
+```
+#### Reduce HTTP Requests
+Комуникацията през HTTP е сравнително бавна. 
+
+Целим се да намалим броя на HTTP заявките, необходими за изпълнение на дадена функционалност.
+
+Примерно, може да се използва кеширане, което върши много добра работа в тази насока, стига да е приложимо в конкретния случай.
+
+В някои ситуации не е необходимо да се намалява броят на заявките, а вместо това може да се работи върху тяхната скорост.
+
+Например, чрез използване на Redis може значително да се намали времето за отговор.
+
+Целта не винаги е да се намали броят на заявките, а да се намали латентността – т.е. всяка заявка да се изпълнява възможно най-бързо.
+
+Използваме sprites за изображения и шрифтове вместо отделни изображения.
+#### HTTP/2 over SSL (enabled by default)
+![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250612212235.png)
+
+При HTTP/2 имаме компресия не само на самата заявка, но и на хедърите. Най-голямото предимство е, че се отваря една връзка (connection), в която се поддържа мултиплексиране на потоците (streams).
+
+При HTTP/1.1, за да намалим броя на HTTP заявките, е било необходимо да бъдат бъндълвани (обединявани) всички файлове – например всички JavaScript файлове се събират в един. Този файл се минифицира – променливите се съкращават до еднобуквени имена, премахват се интервали и нови редове, за да стане колкото може по-малък. След това се изпраща към браузъра, който може да го обработи без форматиране. Това се е правило, за да се намали броят на заявките към сървъра.
+
+Сега обаче, с HTTP/2, тази практика вече не е задължителна, защото HTTP/2 използва една връзка и изпраща всички файлове паралелно чрез мултиплексиране. Няма допълнителен overhead от отваряне и затваряне на множество връзки, затова дали файловете са бъндълнати или не, губи значение. Ако файловете не бяха бъндълнати при HTTP/1.1, щяха да се отворят няколко връзки, което забавя зареждането. При HTTP/2 пък се използва само една връзка, независимо от броя на файловете.
+
+Все пак можем да минифицираме файловете, за да намалим обема на данните, но вече няма нужда да са събрани в един общ файл.
+
+Обобщение:
+
+- HTTP/2 използва двоичен протокол и компресиране на хедърите.
+    
+- Поддържа мултиплексиране на заявки и е съвместим с HTTP 1.1.
+    
+- Добра практика е да се минифицират файловете (например с `bundleconfig.json`).
+    
+- Компресирането е ефективен инструмент за оптимизация.
+    
+- Външните (third-party) ресурси могат ненужно да забавят приложението. Също могат да се минифицират, за да се намали трафикът на данни. Те могат и да бъдат силно кеширани – когато връщаме библиотека, може да задаваме `cache-control`, за да се пази дълго време, тъй като обикновено не се променя. Още по-добре е да се зарежда от CDN, защото по този начин няма да товарим нашия сървър, а ресурсът ще се изтегля от външен доставчик. Проблемът при това е, че не е под наш контрол – ако кодът бъде подменен с malicious код, клиентът може да го изтегли и изпълни. За предпазване от това може да се използва hash, като браузърът при всяко теглене сравнява съдържанието с очаквания hash и използва ресурса само ако те съвпадат.
+#### Load CSS First
+CSS съдържанието трябва да се зарежда първо, най-добре в секцията `<head>`, защото браузърът започва да стилизира HTML директно в правилния вид, тъй като вече знае CSS-а. Ако CSS е зареден по-надолу, браузърът първо визуализира HTML без стилове, след което прилага CSS и прави нова визуализация, което води до значително забавяне.
+
+Браузърите имат склонност да изпълняват излишни действия при рендиране на страници.
+#### Load JavaScript Last
+JavaScript трябва винаги да се поставя най-отдолу, защото браузърите „не му вярват“ и спират рендирането, когато го срещнат. В момента, в който браузърът види JavaScript, той спира зареждането и рендирането на страницата и започва да парсва скриптовете. Цялото рендиране зависи от това дали JavaScript е валиден, тъй като той трябва да се изпълни върху HTML-а.
+
+За да избегнем забавянето, JavaScript се слага най-отдолу. Така браузърът първо зарежда цялата страница и след това анализира JavaScript. За потребителя това изглежда по-добре, защото страницата се визуализира бързо и може да започне да я разглежда, докато JavaScript се зарежда на заден план — който не е необходим за самото рендиране, а за допълнителна функционалност.
+
+Разбира се, това важи основно за сайтове, които не използват тежък JavaScript. При страници като тези, направени с React или Angular, където всичко се случва чрез JavaScript, този подход не е приложим.
+#### Cache the Pages
+В уеб приложенията има много статично и неизменно съдържание.
+
+Процесът на бавното му зареждане не трябва да се повтаря.
+#### Content Delivery Network (CDN)
+CDN прехвърля част от натоварването от нашето приложение.
+
+Има много CDN мрежи, разположени близо до клиентите.
+
+CDN-ите са предпочитан ресурс в продукционна среда.
+
+CDN е мрежа от сървъри, разпределени географски на различни места по света, която има за цел да доставя съдържание (като уеб страници, изображения, видео, JavaScript и CSS файлове) по-бързо и ефективно до крайните потребители.
+
+Вместо всички потребители да теглят съдържанието директно от основния сървър на уебсайта (който може да е на едно място и да се забавя при много натоварване или при голямо разстояние), CDN съхранява копия на съдържанието на множество сървъри, разположени близо до потребителите.
+
+Когато някой поиска дадена страница или файл, заявката се обслужва от най-близкия до него CDN сървър, което значително намалява времето за зареждане и натоварването на основния сървър.
+
+Ползи от CDN:
+
+- По-бързо зареждане на сайта и съдържанието.
+    
+- Намалява забавянията и латентността.
+    
+- По-малко натоварване върху основния сървър.
+    
+- По-добра устойчивост при голям трафик и DDoS атаки.
+    
+- Подобрява глобалното потребителско изживяване, особено при сайтове с международна аудитория.
+
+CDN е като мрежа от дубликати или копия на съдържанието на нашия основен сървър, но тези копия са разпределени на много места по света.
+
+Вместо потребителят да тегли файла директно от нашия централен сървър, той го взима от най-близкия до него CDN сървър.
+
+Това намалява времето за зареждане, защото пътят на данните е по-кратък и натоварването на основния сървър намалява.
+
+Така CDN работи като "разпръснати складове" с копия на съдържанието, които доставят по-бързо и по-ефективно до потребителите.
+
+Накратко, CDN прави уеб сайтовете по-бързи и по-надеждни за потребителите, като „разпределя“ съдържанието по-близо до тях.
+## SEO
+**Search Engine Optimization (SEO)**
+
+Search Engine Optimization (SEO) е много важен за уеб приложенията
+
+Повечето потребители използват търсачки като **Google** или **Bing**, за да намират услуги и сайтове.
+
+Има начини да подобрим позицията си в резултатите на търсачките (Search Engines).
+
+Алгоритмите, използвани от търсачките, се променят често и SEO специалистите трябва непрекъснато да се адаптират към тях. Въпреки динамичните промени, съществуват утвърдени практики, които остават относително стабилни във времето.
+
+Някои основни и ефективни насоки включват:
+
+- Създаване на **уникално и стойностно съдържание** – копираното съдържание от други източници може да се отрази негативно на позиционирането в търсачките.
+    
+- Получаване на **външни връзки (backlinks)** от **надеждни и авторитетни сайтове** – двустранните линкове (където двата сайта си препращат трафик) обикновено се разглеждат като манипулация и могат да бъдат санкционирани. Връзките от сайтове с висок авторитет имат по-голяма стойност, докато такива от непознати или слабо оценени източници са с минимален или никакъв ефект.
+    
+- Осигуряване на **възможност за индексиране (crawlability)** на съдържанието от търсачките – сайтът трябва да бъде структуриран така, че да може лесно да бъде обходен от т.нар. "паяци".
+    
+- Оптимизиране на **времето за зареждане на страниците** – съдържанието трябва да се визуализира възможно най-бързо. Търсачките не чакат дълго, защото трябва да обходят публичната част от интернет и може да пропуснат части от сайта, особено ако зареждането е бавно или се изисква много JavaScript. Въпреки че съвременните "crawler-и" вече могат да интерпретират JavaScript, е препоръчително да се избягва прекомерно забавяне. Предоставянето на **sitemap** улеснява процеса на индексиране, като насочва търсачките към всички важни страници, вместо те да ги откриват на случаен принцип.
+    
+- Използване на **смислени и четими URL адреси** – адреси със съдържателни думи се класират по-добре от такива, които съдържат безсмислени символи или ID номера.
+    
+- Добавяне на **уникални и релевантни заглавия (title)** и **мета описания (meta description)** с подходящи ключови думи – макар и някои мета елементи вече да не се използват директно за класиране, те все още играят роля за разпознаване на темата на страницата и повишават нейната семантична стойност.
+## GDPR
+**General Data Protection Regulation (GDPR)** е регламент в правото на Европейския съюз, който:
+
+- Регулира защитата на личните данни и поверителността на физическите лица в рамките на ЕС
+    
+- Обхваща също така и **трансфера на лични данни извън ЕС**. Понякога това може да представлява проблем, ако деплойваме приложението в дата център, който се намира извън Европейския съюз или извън България. Например, ако използваме Azure, но дата центърът е в Китай или САЩ, там няма същата регулация, която изисква защита на личните данни, затова нямаме право да изнасяме лични данни без съответните мерки. За някои категории данни има изключения, но е важно да сме внимателни и да спазваме регулациите.
+
+Целите на GDPR включват:
+
+- Предоставяне на **повече контрол на потребителите** върху техните лични данни
+    
+- **Улесняване на регулаторната рамка** за международни бизнеси, работещи с лични данни
+
+**ASP.NET Core** предлага API-интерфейси, които подпомагат спазването на някои изисквания на GDPR.  
+Има и **примерно приложение**, публикувано в GitHub - [AspNetCore.Docs/aspnetcore/security/gdpr/sample at live · dotnet/AspNetCore.Docs](https://github.com/dotnet/AspNetCore.Docs/tree/live/aspnetcore/security/gdpr/sample)
+
+Съгласно **GDPR**, има няколко индивидуални права, които трябва да бъдат осигурени на клиентите:
+
+- **Право на информираност** – клиентите трябва да бъдат уведомени как се използват техните лични данни
+    
+- **Право на достъп** – при запитване клиентът трябва да получи достъп до личните си данни, които са събрани за него. В ASP.NET има вграден механизъм за това, но често е необходимо да го разширим, за да включва всички данни, които обработваме
+    
+- **Право на коригиране** – трябва да се предостави възможност за коригиране на неточни или непълни лични данни
+    
+- **Право на изтриване** („правото да бъдеш забравен“) – клиентите трябва да могат да поискат изтриване на своите лични данни. При това изтриваме данните на потребителя, но не и всички негови действия или записи, които са необходими за работата на системата. Обикновено, когато клиент поиска изтриване на личните си данни, ние изтриваме чувствителната информация, но запазваме някои данни като неговото ID или други анонимизирани записи. Причината е, че тези данни могат да са необходими за отчетност, логове, статистика или други бизнес / правни цели
+    
+- **Право на ограничаване на обработката** – клиентите могат да поискат временно блокиране на обработката на техните данни
+    
+- **Право на преносимост на данните** – клиентите трябва да могат да получат и използват повторно своите лични данни в структуриран и машинно четим формат
+    
+- **Право на възражение** – клиентите могат да възразят срещу обработката на техните лични данни, включително за маркетингови цели
+    
+- **Права, свързани с автоматизирано вземане на решения**, включително профилиране – клиентите имат право да не бъдат обект на решения, взети изцяло автоматизирано, ако те имат съществено въздействие върху тях
 # Misc
 # ChatGPT
 ## Nested Extension Methods
@@ -1240,5 +1760,276 @@ Great question! When you’re using a **cookie-based session**—meaning all the
 |Cookie contents|Only Session ID|All session data|
 |Updating session|Update server store|Send updated cookie back to client|
 |Server state|Stateful|Stateless|
+## Redirect
+✅ **What `RedirectToAction("Index")` does:**
+
+When you call:
+
+```csharp
+return RedirectToAction("Index");
+```
+
+ASP.NET Core returns a **302 Found** (or **303 See Other**) HTTP response to the browser. This response says:
+
+> “Hey browser, I’m not giving you the final result here. Please go make a new GET request to `/Index` instead.”
+
+📦 **Step-by-step flow:**
+
+1. **User makes a request** to `/Privacy`.
+    
+2. The `Privacy` action executes and calls `RedirectToAction("Index")`.
+    
+3. ASP.NET Core returns an HTTP 302 response with the **Location header** pointing to `/Index`.
+    
+4. The browser receives this response and says:
+    
+    > “Okay, I’ll go to `/Index` now.”
+    
+5. The browser automatically makes a **new HTTP GET request** to `/Index`.
+    
+6. The `Index` action runs and returns its view.
+
+🧠 **Important details:**
+
+- This is a **round trip** — it involves **two separate HTTP requests**:
+    
+    - First: to `/Privacy`
+        
+    - Second: to `/Index` (triggered by the redirect response)
+        
+- This is exactly why `TempData` is helpful — it **preserves data between these two separate requests**.
+## Roles and Areas
+**When to Use Only Roles (Without Areas):**
+
+Use **roles alone** when:
+
+- Your application is **small or medium-sized**.
+    
+- You have a **limited number of controllers and views**.
+    
+- You don’t need to separate the UI or logic into distinct sections.
+    
+- You simply want to control **who can access what** using `[Authorize(Roles = "RoleName")]`.
+    
+
+✅ This is simple, effective, and works well for apps with basic role-based permissions.
+
+**When to Use Areas (Along with Roles):**
+
+Use **Areas + Roles** when:
+
+- Your application is **large or growing**.
+    
+- You need to **logically separate parts of the app**, e.g., `Public`, `Admin`, `Blog`, `Store`, etc.
+    
+- You want each section to have its **own layout, views, controllers, and routes**.
+    
+- You aim to keep the project **organized and scalable**.
+    
+- You still control access using roles, but within each Area.
+
+✅ This provides better structure, maintainability, and flexibility, especially for complex apps.
+
+**Summary Table:**
+
+|Situation|Use Roles Only|Use Areas + Roles|
+|---|---|---|
+|Small/simple app|✅|❌|
+|Few user roles|✅|❌|
+|Large/complex app|❌|✅|
+|Need UI separation (admin/public)|❌|✅|
+|Maintain clean code organization|❌|✅|
+
+In short:
+
+**Roles = Access control**  
+**Areas = Logical structure**  
+
+They serve different purposes and often work best when combined in larger apps.
+## How Browsers Load Resources After an Initial GET Request
+When you make a **GET request** to a website (e.g., typing `https://example.com` into your browser), here's what happens regarding the **HTML and CSS**:
+
+📦 1. **Initial GET request**
+
+The browser sends a GET request to the server:
+
+```
+GET / HTTP/1.1
+Host: example.com
+```
+
+📄 2. **Server response with HTML**
+
+The server responds with an **HTML file** (usually `index.html`) in the **body** of the response:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>
+```
+
+✅ The **HTML** is right there in the response **body**.  
+❌ The **CSS file** (`styles.css`) is _not_ included in the HTML response. It’s just referenced.
+
+🧾 3. **Browser parses HTML and triggers more GET requests**
+
+When the browser sees:
+
+```html
+<link rel="stylesheet" href="styles.css">
+```
+
+It sends another **GET request**:
+
+```
+GET /styles.css HTTP/1.1
+Host: example.com
+```
+
+The server replies with:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/css
+
+body {
+  background-color: lightblue;
+}
+```
+
+The **CSS code is now in the response body** of this second request.
+
+🧠 In short:
+
+- The **HTML file** is loaded in the **response body of the first GET request**.
+    
+- **CSS files** (and JS, images, etc.) are requested **separately**, each with their **own GET request**, and their content is in the **response bodies** of those respective requests. 
+    
+- **The browser** parses the HTML and decides what else it needs.
+
+👨‍🏫 **Analogy**
+
+Think of HTML as a recipe:
+
+- It says: “you’ll need 2 cups of CSS and 1 spoon of JavaScript.”
+    
+- The **browser is the cook** who reads the recipe and says, “Okay, I need to go fetch these ingredients.”
+
+HTTP is just the delivery vehicle — it brings each item when the cook asks for it.
+## HTTP/1.1 vs HTTP/2: Request Multiplexing and Connection Management
+**HTTP/1.1 and JavaScript requests**
+
+- In **HTTP/1.1**, browsers usually open **multiple parallel TCP connections** (often 6 per domain) to download resources like JS files.
+    
+- Bundling JS files into **one big file** is a common optimization because it reduces the number of HTTP requests, and since each connection can only download one file at a time, fewer requests means faster loading.
+    
+- So if you have 10 JS files unbundled, your browser may open multiple HTTP connections and request those files separately, causing more overhead (TCP handshake, TLS negotiation, etc.).
+
+**HTTP/2 and multiple JS files**
+
+- **HTTP/2** allows **multiplexing** over a **single TCP connection**. This means many files can be requested **simultaneously over one connection**, without waiting for previous downloads to finish.
+    
+- So with HTTP/2, bundling is less critical because the browser and server can handle many parallel requests efficiently over the same connection.
+    
+- Each JS file is still a separate HTTP request, but these requests share one connection (the same TCP socket).
+
+**What happens in the browser Network tab?**
+
+- In both HTTP/1.1 and HTTP/2, you’ll see **multiple separate resource entries** for each JS file (since they are different files).
+    
+- But the **“Protocol” column** or “Connection ID” (depending on the browser dev tools) tells you about the connection:
+    
+    - In **HTTP/1.1**, you’ll see multiple different connections (like `h1`, or different connection IDs).
+        
+    - In **HTTP/2**, you will usually see the same connection ID or protocol (`h2`), meaning all files are fetched over the same HTTP/2 connection.
+
+**How to tell if multiple JS files were sent over one or several HTTP connections?**
+
+1. **Look at the Protocol or Connection column** in the browser’s Network tab:
+    
+    - Chrome DevTools for example shows “Protocol” like `h1` (HTTP/1.1) or `h2` (HTTP/2).
+        
+    - You’ll also see a **Connection ID** or something similar.
+        
+    - If many JS files have the same connection ID and show `h2`, then they were downloaded over one HTTP/2 connection.
+        
+    - If files have different connection IDs and `h1`, then multiple HTTP/1.1 connections were used.
+        
+2. **Inspect the Timing details**:
+    
+    - In HTTP/1.1, requests often block or wait for a connection slot.
+        
+    - In HTTP/2, requests can run concurrently on the same connection.
+
+**Summary**
+
+|Aspect|HTTP/1.1|HTTP/2|
+|---|---|---|
+|Number of connections|Multiple TCP connections per domain|Single TCP connection with multiplexing|
+|JS files requests|Multiple, each often over different connections|Multiple, multiplexed over one connection|
+|Bundling necessity|Bundling reduces requests and overhead|Bundling less critical due to multiplexing|
+|Browser Network tab|Multiple connections, Protocol = `h1`|One connection, Protocol = `h2`|
+
+**You said:**
+
+So, we will still see the same number of HTTP requests and responses, but the key point is whether they were made over one HTTP connection or several?
+
+**ChatGPT said:**
+
+Exactly! You nailed it:
+
+- **Number of HTTP requests and responses stays the same** because each JS file is still a separate resource requested individually.
+    
+- The big difference with HTTP/2 is that **all those requests can be multiplexed over a single HTTP connection**, instead of opening many separate connections like in HTTP/1.1.
+    
+- So yes, the key part you look for is **whether those multiple requests happen over one single HTTP/2 connection or spread across multiple HTTP/1.1 connections**.
+
+This multiplexing reduces overhead and latency, making loading multiple files faster **without needing to bundle them into one big file**.
+
+If you open your browser Network tab:
+
+- You’ll see the same number of JS files requested (same number of rows).
+    
+- But the **protocol column or connection ID** tells you if it was one HTTP/2 connection (`h2`) or multiple HTTP/1.1 connections (`h1`).
+
+**So the connection lifecycle looks like this:**
+
+1. Establish connection (TCP handshake)
+    
+2. Send one or more HTTP requests (depending on HTTP version)
+    
+3. Wait for corresponding responses
+    
+4. Keep connection open for reuse or close it (either gracefully or by timeout)
+
+The response **must always come back on the same connection** where the request was sent.
+
+Here’s why:
+
+- HTTP is a request-response protocol bound to a TCP connection.
+    
+- When the client sends a request over a TCP connection, the server replies on **that same TCP connection**.
+    
+- You cannot send a request on one connection and receive the response on another — the protocol requires matching pairs on the same connection.
+
+Even with HTTP/2 multiplexing (many requests on one connection), **all responses come back through that same single connection**, just interleaved.
+
+If a connection closes or drops, the client usually needs to open a new connection and resend the request.
+
+So in short:
+
+**Request and response always travel on the same connection.**
 # Bookmarks
+[AspNetCore.Docs/aspnetcore/security/gdpr/sample at live · dotnet/AspNetCore.Docs](https://github.com/dotnet/AspNetCore.Docs/tree/live/aspnetcore/security/gdpr/sample) - GDPR sample app.
+
 Completion: 12.06.2025
