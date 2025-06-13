@@ -1,0 +1,140 @@
+.welcome-section {
+    background-color: #eaf4fc;
+    padding: 20px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .welcome-section .btn {
+        padding: 8px 16px;
+        font-size: 1rem;
+    }
+
+.explore-section {
+    background-color: #f4fbe5;
+    padding: 20px 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+    .explore-section .section-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .explore-section img {
+        max-width: 90%;
+        max-height: 150px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .explore-section h5 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+
+    .explore-section p {
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+#footer-quote {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #e6e6e6;
+}
+
+@media (max-height: 800px) {
+    .welcome-section {
+        padding: 15px;
+    }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+        }
+
+        .welcome-section p {
+            font-size: 1rem;
+        }
+
+    .explore-section {
+        padding: 15px;
+    }
+
+        .explore-section .section-title {
+            font-size: 1.5rem;
+        }
+
+        .explore-section img {
+            max-height: 120px;
+        }
+
+        .explore-section h5 {
+            font-size: 1rem;
+        }
+
+        .explore-section p {
+            font-size: 0.9rem;
+        }
+}
+
+.navbar .nav-link {
+    color: #ffffff !important;
+}
+
+.navbar-brand {
+    color: #ffffff !important;
+}
+
+#new-quote-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.form-control {
+    background-color: #f9f9f9;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.form-label-add-edit {
+    font-weight: bold;
+    color: #495057;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+#new-quote-btn {
+    transition: all 0.3s ease;
+    color: #ffffff;
+    background-color: transparent;
+    border: 2px solid #ffffff;
+}
+
+    #new-quote-btn:hover {
+        color: #000000;
+        background-color: #ffffff;
+        border-color: #000000;
+        transform: scale(1.1);
+    }
+

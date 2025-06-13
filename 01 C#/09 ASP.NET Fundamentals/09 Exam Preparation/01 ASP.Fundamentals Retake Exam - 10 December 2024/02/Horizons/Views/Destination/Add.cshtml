@@ -1,0 +1,56 @@
+﻿@* @{
+    ViewData["Title"] = "Add Destination";
+    var today = DateTime.Now.ToString("dd-MM-yyyy");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form asp-action="Add" method="post">
+            <div class="row">
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="@Model.Name" class="form-label-add-edit">Destination Name</label>
+                    <input asp-for="@Model.Name" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="@Model.TerrainId" class="form-label-add-edit">Select Terrain</label>
+                    <select asp-for="@Model.TerrainId" class="form-control" aria-required="true" asp-items="@(new SelectList(Model.Terrains, "Id", "Name"))">
+                        <option value="">...</option>
+                    </select>
+                    <span asp-validation-for="@Model.TerrainId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="@Model.Description" class="form-label-add-edit">Description</label>
+                <textarea asp-for="@Model.Description" class="form-control" aria-required="true" rows="2"></textarea>
+                <span asp-validation-for="@Model.Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="@Model.ImageUrl" class="form-label-add-edit">Image URL</label>
+                <input asp-for="@Model.ImageUrl" class="form-control" aria-required="false" placeholder="Enter image URL (optional)" />
+                <span asp-validation-for="@Model.ImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6 mb-2">
+                <label asp-for="@Model.PublishedOn" class="form-label-add-edit">Published On</label>
+                <input asp-for="@Model.PublishedOn" class="form-control" type="text" aria-required="true" value="@(string.IsNullOrEmpty(Model.PublishedOn) ? today : Model.PublishedOn)" />
+                <span asp-validation-for="@Model.PublishedOn" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <button class="btn btn-warning btn-dark-text w-100 py-2 fw-bold rounded" type="submit">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+ *@
