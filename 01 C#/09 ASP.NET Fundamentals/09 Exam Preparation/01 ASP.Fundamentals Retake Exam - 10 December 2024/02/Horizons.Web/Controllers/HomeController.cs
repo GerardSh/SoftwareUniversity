@@ -1,10 +1,10 @@
-﻿using Horizons.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
-namespace Horizons.Controllers
+﻿namespace Horizons.Web.Controllers
 {
+    using System.Diagnostics;
+
+    using ViewModels;
+
+    using Microsoft.AspNetCore.Mvc;
     public class HomeController : Controller
     {
         public IActionResult Index()
