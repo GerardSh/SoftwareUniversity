@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.AspNetCore.Identity;
-using static Horizons.GCommon.ValidationConstants;
+using static Horizons.GCommon.ValidationConstants.Destination;
 
 namespace Horizons.Data.Configuration
 {
@@ -16,12 +16,12 @@ namespace Horizons.Data.Configuration
             entity
                 .Property(d => d.Name)
                 .IsRequired()
-                .HasMaxLength(NameMaxLength);
+                .HasMaxLength(DestinationNameMaxLength);
 
             entity
                 .Property(d => d.Description)
                 .IsRequired()
-                .HasMaxLength(DescriptionMaxLength);
+                .HasMaxLength(DestinationDescriptionMaxLength);
 
             entity
                 .Property(d => d.ImageUrl)

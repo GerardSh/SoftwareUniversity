@@ -2,12 +2,21 @@
 {
     public static class ValidationConstants
     {
-        public const int NameMinLength = 3;
-        public const int NameMaxLength = 80;
+        public static class Destination
+        {
+            public const int DestinationNameMinLength = 3;
+            public const int DestinationNameMaxLength = 80;
 
-        public const int DescriptionMinLength = 10;
-        public const int DescriptionMaxLength = 250;
+            public const int DestinationDescriptionMinLength = 10;
+            public const int DestinationDescriptionMaxLength = 250;
 
-        public const string PublishedOnFormat = "dd-MM-yyyy";
+            public const string DestinationPublishedOnFormat = "dd-MM-yyyy";
+        }
+
+        public static class Terrain
+        {
+            public const int TerrainNameMinLength = 3;
+            public const int TerrainNameMaxLength = 20;
+        }
     }
 }
