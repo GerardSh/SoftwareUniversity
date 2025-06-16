@@ -1,8 +1,10 @@
 # In this folder, you will find solutions to some of the previous exams.
 ## Steps
-1. Set the connection string.
-2. Scaffold the needed Identity pages.
-3. Password requirments.
+1. Set the connection string in the appsettings.json
+2. Create the entity classes. Avoid using magic numbers - constants should be defined in a separate static class to ensure code quality.
+3. Create a Configuration folder within the Data project and move all entity configuration classes there. This will help organize the code better and keep the OnModelCreating() method in the DbContext clean and maintainable — which may also earn bonus points.
+4. Add initial migration and then the seed migrations.
+5. Password requirments.
 
 ```csharp
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -15,9 +17,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 ```
 
-4. Create the entity classes. Avoid using magic numbers - constants should be defined in a separate static class to ensure code quality.
-5. Add initial migration.
-6. Add Controllers and Models
+6. Scaffold the needed Identity pages.
+7. Add Controllers and ViewModels. Copy the relevant entity properties into the ViewModel and adjust them based on what is required in the Razor view.
+8. Add Services and their interfaces.
+9. Register the services in the Program.cs - `builder.Services.AddScoped<IMyService, MyService>();`
 ## Select
 In ASP.NET Core MVC, when posting a form that includes a dropdown (like Genres), the list of items (Model.Genres) is not automatically preserved after a POST. If model validation fails, you must manually reload the dropdown data in the [HttpPost] action before returning the view again — otherwise, the dropdown will be empty or broken.
 
