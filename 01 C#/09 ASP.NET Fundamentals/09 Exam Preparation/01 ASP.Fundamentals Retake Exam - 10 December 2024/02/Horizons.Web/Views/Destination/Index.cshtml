@@ -5,8 +5,10 @@
     IsFavorite: A boolean property that indicates whether the currently logged-in user has already added this destination to their favorites.
     If true, the "Favorites" button will not be displayed.
 *@
+@using Horizons.Web.ViewModels.Destination
+@model IEnumerable<DestinationIndexViewModel>
 
-@* @{
+@{
     ViewData["Title"] = "All Destinations";
 }
 
@@ -60,4 +62,3 @@
         </div>
     }
 </div>
- *@
