@@ -20,11 +20,46 @@ namespace Horizons.Services.Core
                     Terrain = d.Terrain.Name,
                     FavoritesCount = d.UsersDestinations.Count,
                     IsPublisher = userId != null && d.PublisherId == userId,
-                    IsFavorite = userId != null && d.UsersDestinations.Any(ud => ud.UserId == userId)
+                    IsFavorite = userId != null && d.UsersDestinations.Any(ud => ud.UserId.ToLower() == userId.ToLower())
                 })
                 .ToListAsync();
 
             return allDestinations;
+        }
+
+        public async Task<DestinationDetailsViewModel?> GetDestinationDetailsAsync(int? id, string? userId)
+        {
+            DestinationDetailsViewModel? detailsVm = null;
+            Destination? destinationModel = null;
+
+            if (id.HasValue)
+            {
+                destinationModel = await dbContext
+                    .Destinations
+                    .Include(d => d.Terrain)
+                    .Include(d => d.Publisher)
+                    .Include(d => d.UsersDestinations)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(d => d.Id == id.Value);
+            }
+
+            if (destinationModel != null)
+            {
+                detailsVm = new DestinationDetailsViewModel()
+                {
+                    Id = destinationModel.Id,
+                    Name = destinationModel.Name,
+                    ImageUrl = destinationModel.ImageUrl,
+                    Terrain = destinationModel.Terrain.Name,
+                    Description = destinationModel.Description,
+                    PublishedOn = destinationModel.PublishedOn,
+                    Publisher = destinationModel.Publisher.UserName!,
+                    IsPublisher = userId != null && destinationModel.PublisherId.ToLower() == userId.ToLower(),
+                    IsFavorite = userId != null && destinationModel.UsersDestinations.Any(f => f.UserId == userId)
+                };
+            }
+
+            return detailsVm;
         }
     }
 }
