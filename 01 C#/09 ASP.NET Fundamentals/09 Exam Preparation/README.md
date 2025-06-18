@@ -19,7 +19,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 6. Scaffold the needed Identity pages.
 7. Copy the necessary entity properties into the appropriate ViewModel and adjust them to match the needs of the Razor view. Use a base ViewModel class to hold shared properties across multiple ViewModels, if applicable.
-8. Add Services and their interfaces.
+8. Add Services and their interfaces. Use entity-based services for simple or isolated logic, and use-case services when operations span across entities.
 9. Register the services in the Program.cs - `builder.Services.AddScoped<IMyService, MyService>();`
 ## Select
 In ASP.NET Core MVC, when posting a form that includes a dropdown (like Genres), the list of items (Model.Genres) is not automatically preserved after a POST. If model validation fails, you must manually reload the dropdown data in the [HttpPost] action before returning the view again — otherwise, the dropdown will be empty or broken.
