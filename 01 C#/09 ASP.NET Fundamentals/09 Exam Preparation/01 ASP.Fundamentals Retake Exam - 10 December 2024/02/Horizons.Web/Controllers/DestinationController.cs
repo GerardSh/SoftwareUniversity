@@ -1,6 +1,7 @@
 ﻿using Horizons.Services.Core.Contracts;
 using Horizons.Web.ViewModels.Destination;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using static Horizons.GCommon.ValidationConstants.Destination;
@@ -12,18 +13,6 @@ namespace Horizons.Web.Controllers
         ITerrainService terrainService)
         : BaseController
     {
-        [HttpGet]
-        public async Task<IActionResult> Add()
-        {
-            DestinationAddInputModel inputModel = new DestinationAddInputModel()
-            {
-                PublishedOn = DateTime.UtcNow.ToString(DestinationPublishedOnFormat),
-                Terrains = await terrainService.GetTerrainsDropdownAsync()
-            };
-
-            return View(inputModel);
-        }// 
-
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Index()
@@ -46,11 +35,63 @@ namespace Horizons.Web.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            try
+            {
+                DestinationAddInputModel inputModel = new DestinationAddInputModel()
+                {
+                    PublishedOn = DateTime.UtcNow.ToString(DestinationPublishedOnFormat),
+                    Terrains = await terrainService.GetTerrainsDropdownAsync()
+                };
+
+                return View(inputModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(DestinationAddInputModel model)
+        {
+            try
+            {
+                model.Terrains = await terrainService.GetTerrainsDropdownAsync();
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                string userId = GetUserId()!;
+
+                bool addResult = await destinationService.AddDestinationAsync(userId, model);
+
+                if (!addResult)
+                {
+                    ModelState.AddModelError(string.Empty, "Fatal error occured while adding a destination!");
+                    return View(model);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             try
             {
-                string? userId = GetUserId();
+                string userId = GetUserId()!;
 
                 DestinationDetailsViewModel? destinationDetails = await destinationService
                     .GetDestinationDetailsAsync(id, userId);
@@ -66,5 +107,93 @@ namespace Horizons.Web.Controllers
                 return RedirectToAction(nameof(Index), "Home");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                string userId = GetUserId()!;
+
+                DestinationEditInputModel editInputModel = await destinationService
+                    .GetDestinationForEditingAsync(userId!, id);
+
+                if (editInputModel == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                editInputModel.Terrains = await terrainService.GetTerrainsDropdownAsync();
+
+                return View(editInputModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(DestinationEditInputModel model)
+        {
+            try
+            {
+                model.Terrains = await terrainService.GetTerrainsDropdownAsync();
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                string userId = GetUserId()!;
+
+                bool editResult = await destinationService.PersistUpdatedDestinationAsync(userId, model);
+
+                if (!editResult)
+                {
+                    ModelState.AddModelError(string.Empty, "Fatal error occured while updating the destination!");
+                    return View(model);
+                }
+
+                return RedirectToAction(nameof(Details), new { model.Id });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                string userId = GetUserId()!;
+
+                DestinationDeleteInputModel? deleteInputModel = await destinationService
+                    .GetDestinationForDeletingAsync(userId!, id);
+
+                if (deleteInputModel == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(deleteInputModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Delete(DestinationDeleteInputModel model)
+        //{
+
+        //}
     }
 }

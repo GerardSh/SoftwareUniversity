@@ -4,17 +4,18 @@ using static Horizons.GCommon.ValidationConstants.Destination;
 
 namespace Horizons.Web.ViewModels.Destination
 {
-    public class DestinationAddInputModel
+    public class DestinationEditInputModel
     {
+        public int Id { get; set; }
+
         [Required]
         [MinLength(DestinationNameMinLength)]
         [MaxLength(DestinationNameMaxLength)]
         public string Name { get; set; } = null!;
 
         [Required]
-        public int TerrainId { get; set; }
-
-        public IEnumerable<DestinationAddTerrainDropdownModel>? Terrains { get; set; }
+        [Display(Name = DestinationPublishedOn)]
+        public string PublishedOn { get; set; } = null!;
 
         [Required]
         [MinLength(DestinationDescriptionMinLength)]
@@ -25,7 +26,11 @@ namespace Horizons.Web.ViewModels.Destination
         public string? ImageUrl { get; set; }
 
         [Required]
-        [Display(Name = DestinationPublishedOn)]
-        public string PublishedOn { get; set; } = null!;
+        public int TerrainId { get; set; }
+
+        public IEnumerable<DestinationAddTerrainDropdownModel>? Terrains { get; set; }
+
+        [Required]
+        public string PublisherId { get; set; } = null!;
     }
 }

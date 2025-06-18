@@ -10,6 +10,9 @@
             public const int DestinationDescriptionMinLength = 10;
             public const int DestinationDescriptionMaxLength = 250;
 
+            public const string DestinationImageUrl = "Image URL";
+            public const string DestinationPublishedOn = "Published On";
+
             public const string DestinationPublishedOnFormat = "dd-MM-yyyy";
         }
 

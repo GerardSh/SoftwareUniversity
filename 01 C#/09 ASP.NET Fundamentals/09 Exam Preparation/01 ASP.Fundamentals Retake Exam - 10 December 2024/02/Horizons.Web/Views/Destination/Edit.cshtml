@@ -1,4 +1,7 @@
-﻿@* @{
+﻿@using Horizons.Web.ViewModels.Destination
+@model DestinationEditInputModel
+
+@{
     ViewData["Title"] = "Edit Destination";
 }
 
@@ -55,4 +58,7 @@
         </form>
     </div>
 </div>
- *@
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

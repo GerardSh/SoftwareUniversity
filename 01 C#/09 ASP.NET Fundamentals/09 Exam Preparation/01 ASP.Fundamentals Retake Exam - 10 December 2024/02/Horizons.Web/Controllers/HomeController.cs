@@ -5,10 +5,26 @@
     using ViewModels;
 
     using Microsoft.AspNetCore.Mvc;
-    public class HomeController : Controller
+    using Microsoft.AspNetCore.Authorization;
+
+    public class HomeController : BaseController
     {
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction(nameof(Index), "Destination");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return RedirectToAction(nameof(Index));
+            }
             return View();
         }
 
