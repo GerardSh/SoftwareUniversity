@@ -190,10 +190,96 @@ namespace Horizons.Web.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Delete(DestinationDeleteInputModel model)
-        //{
+        [HttpPost]
+        public async Task<IActionResult> Delete(DestinationDeleteInputModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Please do not modify the page!");
+                    return View(model);
+                }
 
-        //}
+                string userId = GetUserId()!;
+
+                bool deleteResult = await destinationService.SoftDeleteDestinationAsync(userId, model);
+
+                if (!deleteResult)
+                {
+                    ModelState.AddModelError(string.Empty, "Fatal error occured while deleting the destination!");
+                    return View(model);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Favorites(int id)
+        {
+            try
+            {
+                string? userId = GetUserId();
+
+                IEnumerable<DestinationIndexViewModel> allDestinations = await
+                     destinationService.GetAllDestinationAsync(userId);
+
+                return View(allDestinations);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index), "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Favorites()
+        {
+            try
+            {
+                string userId = GetUserId()!;
+
+                IEnumerable<FavoriteDestinationViewModel>? favDestinations = await destinationService
+                    .GetUserFavoriteDestinationsAsync(userId);
+
+                if (favDestinations == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(favDestinations);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavorites(int? id)
+        {
+            try
+            {
+                string userId = GetUserId()!;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

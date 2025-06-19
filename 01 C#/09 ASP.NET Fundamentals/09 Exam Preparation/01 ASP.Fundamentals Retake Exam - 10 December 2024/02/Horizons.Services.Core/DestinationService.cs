@@ -9,7 +9,7 @@ using static Horizons.GCommon.ValidationConstants.Destination;
 namespace Horizons.Services.Core
 {
     public class DestinationService(
-        HorizonDbContext dbContext, 
+        HorizonDbContext dbContext,
         UserManager<IdentityUser> userManager) : IDestinationService
     {
         public async Task<IEnumerable<DestinationIndexViewModel>> GetAllDestinationAsync(string? userId)
@@ -79,16 +79,16 @@ namespace Horizons.Services.Core
                 .FindAsync(inputModel.TerrainId);
 
             bool isPublishedDateValid = DateTime
-                .TryParseExact(inputModel.PublishedOn, DestinationPublishedOnFormat, CultureInfo.InvariantCulture, 
+                .TryParseExact(inputModel.PublishedOn, DestinationPublishedOnFormat, CultureInfo.InvariantCulture,
                                DateTimeStyles.None, out DateTime publishedOnDate);
 
-            if (user != null && terrainRef != null &&isPublishedDateValid)
+            if (user != null && terrainRef != null && isPublishedDateValid)
             {
                 Destination destination = new Destination()
                 {
                     Name = inputModel.Name,
-                    Description= inputModel.Description,
-                    ImageUrl= inputModel.ImageUrl,
+                    Description = inputModel.Description,
+                    ImageUrl = inputModel.ImageUrl,
                     PublishedOn = publishedOnDate,
                     PublisherId = userId,
                     TerrainId = inputModel.TerrainId
@@ -156,7 +156,7 @@ namespace Horizons.Services.Core
                 && terrainRef != null
                 && isPublishedDateValid
                 && updatedDestination != null
-                && updatedDestination.PublisherId == userId)
+                && updatedDestination.PublisherId.ToLower() == userId.ToLower())
             {
                 updatedDestination.Name = inputModel.Name;
                 updatedDestination.Description = inputModel.Description;
@@ -164,7 +164,7 @@ namespace Horizons.Services.Core
                 updatedDestination.PublishedOn = publishedOnDate;
                 updatedDestination.TerrainId = inputModel.TerrainId;
 
-               await  dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 operationResult = true;
             }
@@ -200,9 +200,56 @@ namespace Horizons.Services.Core
             return deleteModel;
         }
 
-        Task<DestinationDeleteInputModel?> IDestinationService.GetDestinationForDeletingAsync(string userId, int? destId)
+        public async Task<bool> SoftDeleteDestinationAsync(string userId, DestinationDeleteInputModel inputModel)
         {
-            throw new NotImplementedException();
+            bool operationResult = false;
+
+            IdentityUser? user = await userManager
+                .FindByIdAsync(userId);
+
+            Destination? deletedDestination = await dbContext
+                .Destinations
+                .FindAsync(inputModel.Id);
+
+            if (user != null
+                && deletedDestination != null
+                && deletedDestination.PublisherId.ToLower() == userId.ToLower())
+            {
+                deletedDestination.IsDeleted = true;
+
+                await dbContext.SaveChangesAsync();
+
+                operationResult = true;
+            }
+
+            return operationResult;
+        }
+
+        public async Task<IEnumerable<FavoriteDestinationViewModel>?> GetUserFavoriteDestinationAsync(string userId, DestinationDeleteInputModel inputModel)
+        {
+            IEnumerable<FavoriteDestinationViewModel>? favDestinations = null;
+
+            IdentityUser? user = await userManager
+                .FindByIdAsync(userId);
+
+            if (user != null)
+            {
+                favDestinations = await dbContext
+                    .UsersDestinations
+                    .Include(ud => ud.Destination)
+                    .ThenInclude(d => d.Terrain)
+                    .Where(ud => ud.UserId.ToLower() == userId.ToLower())
+                    .Select(ud => new FavoriteDestinationViewModel()
+                    {
+                        Id = ud.DestinationId,
+                        Name = ud.Destination.Name,
+                        ImageUrl = ud.Destination.ImageUrl,
+                        Terrain = ud.Destination.Terrain.Name
+                    })
+                    .ToArrayAsync();
+            }
+
+            return favDestinations;
         }
     }
 }
