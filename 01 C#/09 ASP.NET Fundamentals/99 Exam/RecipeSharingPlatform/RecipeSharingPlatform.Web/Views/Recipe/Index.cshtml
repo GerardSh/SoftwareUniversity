@@ -1,0 +1,61 @@
+﻿@using RecipeSharingPlatform.ViewModels.Recipe
+@model IEnumerable<RecipeIndexViewModel>
+
+@{
+    ViewData["Title"] = "All Recipes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+    @if (User?.Identity?.IsAuthenticated == true)
+    {
+        <a asp-controller="Recipe" asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Recipe
+        </a>
+    }
+</div>
+<hr />
+
+<div class="row text-center">
+    @foreach (var recipe in Model)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card h-100" style="width: 100%;">
+                @if (!string.IsNullOrEmpty(recipe.ImageUrl))
+                {
+                    <img src="@recipe.ImageUrl" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="@recipe.Title">
+                }
+                else
+                {
+                    <img src="~/images/default-image.jpg" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="No Image Available">
+                }
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@recipe.Title</h5>
+                    <p class="card-text">Category: @recipe.Category</p>
+                    <p class="card-text"><small>Favorites: @recipe.SavedCount</small></p>
+                    <div class="d-flex justify-content-between mt-auto">
+                        @if (User?.Identity?.IsAuthenticated == true && !recipe.IsAuthor && !recipe.IsSaved)
+                        {
+                            <a asp-controller="Recipe" asp-action="Details" asp-route-id="@recipe.Id" class="btn btn-info me-2 w-50">
+                                <i class="fas fa-info-circle"></i> Details
+                            </a>
+                            <form asp-controller="Recipe" asp-action="Save" method="post" class="w-50">
+                                <input type="hidden" name="id" value="@recipe.Id" />
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-heart"></i> Favorites
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Recipe" asp-action="Details" asp-route-id="@recipe.Id" class="btn btn-info w-100">
+                                <i class="fas fa-info-circle"></i> Details
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,61 @@
+﻿@using RecipeSharingPlatform.ViewModels.Recipe
+@model RecipeCreateInputModel
+@{
+    ViewData["Title"] = "Create Recipe";
+    var today = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form asp-controller="Recipe" asp-action="Create" method="post">
+            <div class="row">
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="@Model.Title" class="form-label-add-edit">Recipe Title</label>
+                    <input asp-for="@Model.Title" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="@Model.CategoryId" class="form-label-add-edit">Select Category</label>
+                    <select asp-for="@Model.CategoryId" class="form-control" aria-required="true" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                        <option value="">...</option>
+                    </select>
+                    <span asp-validation-for="@Model.CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="@Model.Instructions" class="form-label-add-edit">Instructions</label>
+                <textarea asp-for="@Model.Instructions" class="form-control" aria-required="true" rows="2"></textarea>
+                <span asp-validation-for="@Model.Instructions" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="@Model.ImageUrl" class="form-label-add-edit">Image URL</label>
+                <input asp-for="@Model.ImageUrl" class="form-control" aria-required="false" placeholder="Enter image URL (optional)" />
+                <span asp-validation-for="@Model.ImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6 mb-2">
+                <label asp-for="@Model.CreatedOn" class="form-label-add-edit">Created On</label>
+                <input asp-for="@Model.CreatedOn" class="form-control" type="date" aria-required="true" value="@(string.IsNullOrEmpty(Model.CreatedOn) ? today : Model.CreatedOn)" />
+                <span asp-validation-for="@Model.CreatedOn" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <button class="btn btn-warning btn-dark-text w-100 py-2 fw-bold rounded" type="submit">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

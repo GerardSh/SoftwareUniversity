@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RecipeSharingPlatform.Data.Models\RecipeSharingPlatform.Data.Models.csproj" />
+    <ProjectReference Include="..\RecipeSharingPlatform.Data\RecipeSharingPlatform.Data.csproj" />
+    <ProjectReference Include="..\RecipeSharingPlatform.ViewModels\RecipeSharingPlatform.ViewModels.csproj" />
+  </ItemGroup>
+
+</Project>

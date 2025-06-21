@@ -1,0 +1,66 @@
+﻿@using RecipeSharingPlatform.ViewModels.Recipe
+@model RecipeEditInputModel
+
+@{
+    ViewData["Title"] = "Edit Recipe";
+}
+
+<div class="dInputx justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form asp-controller="Recipe" asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row">
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="Title" class="form-label-add-edit">Recipe Title</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="CategoryId" class="form-label-add-edit">Select Category</label>
+                    <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                        <option value="">...</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="Instructions" class="form-label-add-edit">Instructions</label>
+                <textarea asp-for="Instructions" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Instructions" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="ImageUrl" class="form-label-add-edit">Image URL</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL (optional)" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6 mb-2">
+                <label asp-for="CreatedOn" class="form-label-add-edit">Created On</label>
+                <input asp-for="CreatedOn" class="form-control" type="date" />
+                <span asp-validation-for="CreatedOn" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 d-flex gap-2">
+                <button class="btn btn-primary w-100 fw-bold rounded" type="submit">
+                    <i class="fas fa-save"></i> Update
+                </button>
+                <a asp-controller="Recipe" asp-action="Index" class="btn btn-secondary w-100 fw-bold rounded">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
