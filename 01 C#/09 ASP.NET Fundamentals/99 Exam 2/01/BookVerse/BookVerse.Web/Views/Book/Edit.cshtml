@@ -1,0 +1,67 @@
+﻿@using BookVerse.ViewModels.Book
+@model BookEditInputModel
+
+@{
+    ViewData["Title"] = "Edit Book";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form asp-controller="Book" asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row">
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="Title" class="form-label-add-edit">Book Title</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <label asp-for="GenreId" class="form-label-add-edit">Select Genre</label>
+                    <select asp-for="GenreId" class="form-control"
+                            asp-items="@(new SelectList(Model.Genres, "Id", "Name"))">
+                        <option value="">...</option>
+                    </select>
+                    <span asp-validation-for="GenreId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="Description" class="form-label-add-edit">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="CoverImageUrl" class="form-label-add-edit">Cover Image URL</label>
+                <input asp-for="CoverImageUrl" class="form-control" placeholder="Enter image URL (optional)" />
+                <span asp-validation-for="CoverImageUrl" class="text-danger"></span>
+            </div>
+
+            <div class="col-sm-6 mb-2">
+                <label asp-for="PublishedOn" class="form-label-add-edit">Published On</label>
+                <input asp-for="PublishedOn" class="form-control" type="date" />
+                <span asp-validation-for="PublishedOn" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 d-flex gap-2">
+                <button class="btn btn-primary w-100 fw-bold rounded" type="submit">
+                    <i class="fas fa-save"></i> Update
+                </button>
+                <a asp-controller="Book" asp-action="Index" class="btn btn-secondary w-100 fw-bold rounded">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

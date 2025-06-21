@@ -1,0 +1,49 @@
+﻿@using BookVerse.ViewModels.Book
+@model BookDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Book";
+}
+
+<div class="container py-4">
+    <h2 class="mb-3">@ViewData["Title"]</h2>
+    <hr />
+
+    <div class="mx-auto" style="max-width: 860px;">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            
+            <div class="card-header bg-dark text-white py-4">
+                <h3 class="h3 mb-1">@Model.Title</h3>
+                <div class="small text-white-50">
+                    <span class="fw-semibold">Published By:</span> @Model.Publisher
+                </div>
+            </div>
+
+            <div class="card-body p-4 bg-dark-subtle">
+                <div class="alert alert-danger rounded-3 d-flex align-items-start gap-3 mb-0 border-0">
+                    <i class="fas fa-exclamation-triangle fs-4"></i>
+                    <div>
+                        <div class="fw-semibold">
+                            Are you sure you want to delete <span class="fw-bold">@Model.Title</span>?
+                        </div>
+                        <div class="small opacity-75">This action can’t be undone from the UI.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-center gap-2">
+                <form asp-controller="Book" asp-action="ConfirmDelete" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Confirm Delete
+                    </button>
+                </form>
+                <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.Id"
+                   class="btn btn-warning btn-sm">
+                    <i class="fas fa-times-circle"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

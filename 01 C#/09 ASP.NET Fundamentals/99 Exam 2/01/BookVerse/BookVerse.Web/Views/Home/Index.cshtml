@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5">
+    <section class="hero welcome-section shadow-card text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <h1 class="display-4 hero-title">
+                    Welcome to <span class="brand-gradient">BookVerse</span>
+                </h1>
+                <p class="lead hero-subtitle">
+                    Discover, collect, and share your favorite reads across every genre
+                </p>
+
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-hero btn-lg mt-3">
+                    <i class="fa-solid fa-user-plus me-2"></i> Start Sharing Books
+                </a>
+
+                <a asp-controller="Book" asp-action="Index" class="btn btn-outline-info btn-lg mt-3 ms-2">
+                    <i class="fa-solid fa-book-open me-2"></i> Browse Books
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="container mt-4">
+    <section class="explore-section shadow-card">
+        <h2 class="text-center section-title">Explore Genres</h2>
+
+        <div class="row mt-4 g-4">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <article class="explore-card h-100 text-center p-3">
+                    <div class="explore-image-wrap">
+                        <img src="~/images/genres/fantasy.jpg" asp-append-version="true"
+                             class="img-fluid rounded hover-zoom tile-img" alt="Fantasy">
+                    </div>
+                    <h5 class="mt-3">Epic Fantasy</h5>
+                    <p class="mb-0">Worlds of magic, legends, and unforgettable quests.</p>
+                </article>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <article class="explore-card h-100 text-center p-3">
+                    <div class="explore-image-wrap">
+                        <img src="~/images/genres/mystery.jpg" asp-append-version="true"
+                             class="img-fluid rounded hover-zoom tile-img" alt="Mystery & Thriller">
+                    </div>
+                    <h5 class="mt-3">Mystery & Thriller</h5>
+                    <p class="mb-0">Twists, clues, and page‑turning suspense.</p>
+                </article>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <article class="explore-card h-100 text-center p-3">
+                    <div class="explore-image-wrap">
+                        <img src="~/images/genres/nonfiction.jpg" asp-append-version="true"
+                             class="img-fluid rounded hover-zoom tile-img" alt="Non‑Fiction">
+                    </div>
+                    <h5 class="mt-3">Non‑Fiction</h5>
+                    <p class="mb-0">Insights, biographies, and ideas that shape the world.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+</div>
