@@ -1805,6 +1805,56 @@ TempData.Keep();
 - When a form contains a **file input**, the browser automatically uses `multipart/form-data` to send the data, packaging text and files in different parts.
     
 - Using JavaScript, you can create a `FormData` object from the form to send both text and files via fetch, letting the browser set the correct `Content-Type` with boundary.
+### How Dependency Injection works in ASP.NET Core
+1. When an **HTTP request** arrives, ASP.NET Core uses routing to determine:
+    
+    - which **controller** to invoke;
+        
+    - which **action method** inside that controller to execute.
+        
+2. To call the action, the framework first needs to **create an instance of the controller**. This is done using **reflection**.
+
+**Reflection** here means:
+
+- ASP.NET Core doesn’t know beforehand the exact types or constructors of your controllers and services.
+    
+- So it uses **reflection**, a runtime mechanism in .NET, to:
+    
+    - Inspect the controller class,
+        
+    - Find its constructor,
+        
+    - See what parameters it requires (its dependencies),
+        
+    - And dynamically create instances of these dependencies (services, `DbContext`, etc.).
+        
+- Reflection allows the framework to **examine types and create objects at runtime**, without hardcoding types.
+    
+3. When creating the controller, ASP.NET Core sees that the controller’s constructor requires a **service** (for example, `IMyService`).
+    
+4. The framework then checks the **service collection** (`IServiceCollection`) to see if there is a registered implementation of that service. If yes — it creates an instance of the service. If ASP.NET Core tries to create an instance of a controller (or any service), and **one of its constructor parameters is not registered**, you’ll get a **runtime exception** like:
+
+```
+InvalidOperationException: Unable to resolve service for type 'YourType' while attempting to activate 'YourControllerOrService'.
+```
+    
+5. While creating the service (`MyService`), ASP.NET Core notices that the service itself requires something — for example, a `DbContext`. It:
+    
+    - looks for a registered `DbContext` in the service collection;
+        
+    - creates a new instance of the `DbContext`;
+        
+    - passes it to the service. Inside the service class, that `DbContext` is usually assigned to a **private/internal property or field** for later use.
+        
+6. Then:
+    
+    - the **service instance is passed to the controller**;
+        
+    - the controller uses the service instance to access the database or perform other tasks.
+
+**In short:**
+
+ASP.NET Core **automatically resolves dependencies** by finding and creating the required objects in a chain — from the controller, through the service, down to the `DbContext`. This process is handled by the built-in **dependency injection container**.
 ## Bookmarks
 # HTML & CSS
 ## General
