@@ -1679,6 +1679,93 @@ Here’s where things change:
 > **If the app is stable and not changing often, leave it alone** — but **monitor for OS/runtime end-of-support dates** and **security advisories**.
 
 If something critical changes (e.g. your server host drops support for .NET 4.x), then you’re **forced to migrate**, and that’s when all outdated code needs updating.
+### Using Statement
+The `using` statement in C# is a general-purpose pattern for managing **any resource that implements `IDisposable`**. It ensures those resources get cleaned up properly once you're done with them.
+
+**What does `using` do in general?**
+
+- Automatically calls `.Dispose()` on the object at the end of the block.
+    
+- `.Dispose()` usually **releases unmanaged resources** like:
+    
+    - File handles (e.g. `FileStream`)
+        
+    - Network sockets (e.g. `TcpClient`)
+        
+    - Database connections (`DbContext`, `SqlConnection`)
+        
+    - Graphics handles (e.g. `Bitmap`, `Graphics`)
+        
+    - Other system handles
+
+**Why is it important?**
+
+If you don’t dispose such resources, you risk:
+
+- Resource leaks (open files, connections, handles)
+    
+- Memory pressure and performance degradation
+    
+- Application errors due to resource exhaustion
+
+**Examples of `IDisposable` resources commonly used with `using`**
+
+```csharp
+using (var file = new FileStream("path.txt", FileMode.Open))
+{
+    // Read or write file
+} // file.Dispose() called automatically here
+
+using (var connection = new SqlConnection(connectionString))
+{
+    connection.Open();
+    // Use the connection
+} // connection.Dispose() closes connection and releases it back to pool
+
+using (var graphics = Graphics.FromImage(image))
+{
+    // Draw on image
+} // graphics.Dispose() frees GDI+ resources
+```
+
+**Summary**
+
+- `using` is **the standard way** in C# to ensure **deterministic cleanup** of resources.
+    
+- It works for **any object implementing `IDisposable`**, not just database connections.
+    
+- It’s a critical part of writing robust, resource-efficient applications.
+
+**You said:**
+
+When we use `using` to manage database connections and the connection pool, it’s similar to how `await` manages threads in the thread pool, right?
+
+**ChatGPT said:**
+
+That’s a neat way to think about it! Let me put it like this:
+
+**Using `using` is like managing the database connection lifetime**
+
+- **`using` ensures that the `DbContext` (and its underlying connection) is properly closed and returned to the connection pool as soon as you're done with it.**
+    
+- If you don’t use `using` (or explicitly call `.Dispose()`), the connection can stay open longer than necessary, hogging resources.
+    
+- So, **`using` helps "release" the connection back to the pool promptly**, preventing connection leaks.
+
+**Just like `await` is for asynchronous thread/task management**
+
+- **`await` lets the runtime manage thread resources efficiently by releasing the current thread while waiting for the async operation to complete.**
+    
+- It prevents blocking threads unnecessarily and allows other work to proceed.
+
+**Summary analogy:**
+
+|Concept|Purpose|Analogy|
+|---|---|---|
+|`using`|Cleanly disposes `DbContext` and frees DB connections|Releases connection to the pool immediately after use|
+|`await`|Efficiently manages threads/tasks during async operations|Frees up threads to do other work while waiting for I/O|
+
+So yes, both `using` and `await` are about **responsible resource management** — just applied to different resources (DB connections vs threads).
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
@@ -1855,6 +1942,41 @@ InvalidOperationException: Unable to resolve service for type 'YourType' while a
 **In short:**
 
 ASP.NET Core **automatically resolves dependencies** by finding and creating the required objects in a chain — from the controller, through the service, down to the `DbContext`. This process is handled by the built-in **dependency injection container**.
+### Seeding the Database in EF Core – Two Main Approaches
+When seeding a database using EF Core, there are two main approaches:
+
+**1. Using the `HasData` Method**
+
+- This method is part of the EF Core model configuration.
+    
+- It allows you to define seed data directly in the `OnModelCreating` method.
+    
+- The data is inserted during a migration and applied when you run `Update-Database`.
+    
+- Best used for **static or reference data** (e.g., countries, roles, categories).
+
+**2. Using a Custom Seeding Method**
+
+- You create a method that manually inserts data into the database.
+    
+- This method typically clears existing data (e.g., deletes all movies) and then adds fresh data.
+    
+- It gives you more flexibility for **dynamic or test-specific data**.
+
+**Environment-Based Seeding on Application Startup**
+
+- You can invoke your custom seeding method during application startup.
+    
+- A common pattern is to check if the app is running in **Development** mode and seed test data accordingly:
+
+```csharp
+if (app.Environment.IsDevelopment())
+{
+    SeedDatabase(app.Services);
+}
+```
+
+This ensures development environments always have consistent data without affecting production.
 ## Bookmarks
 # HTML & CSS
 ## General
