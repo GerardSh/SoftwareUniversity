@@ -1,0 +1,173 @@
+﻿@using CinemaApp.Services.Data.Interfaces
+@using CinemaApp.Web.Infrastructure.Extensions
+@using CinemaApp.Web.ViewModels.Movie
+@using static CinemaApp.Common.ErrorMessages.Watchlist
+
+@model AllMoviesSearchFilterViewModel
+@inject IManagerService managerService
+
+@if (TempData[nameof(AddToWatchListNotSuccessfullMessage)] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData[nameof(AddToWatchListNotSuccessfullMessage)]
+    </div>
+}
+<h2>All Movies</h2>
+
+<form method="get" asp-action="Index" class="mb-4">
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="SearchQuery">Search by keyword</label>
+                <input asp-for="SearchQuery" class="form-control" placeholder="Search by title..."/>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="GenreFilter">Filter by genre</label>
+                <select asp-for="GenreFilter" class="form-control">
+                    @if (Model.AllGenres != null)
+                    {
+                        <option value="">Reset genre filter</option>
+                        foreach (string genre in Model.AllGenres)
+                        {
+                            <option value="@genre">@genre</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="YearFilter">Filter by year or year range</label>
+                <input asp-for="YearFilter" class="form-control" placeholder="Filter by year..."/>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="EntitiesPerPage">Show Movies per page</label>
+                <select asp-for="EntitiesPerPage" class="form-control">
+                    @for (int i = 5; i <= 30; i += 5)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col col d-flex align-items-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Release Date</th>
+            <th>Duration</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Movies != null)
+        {
+            @foreach (AllMoviesIndexViewModel movie in Model.Movies)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(movie.ImageUrl))
+                        {
+                            <img src="@movie.ImageUrl" alt="@movie.Title" style="width: 100px; height: auto;"/>
+                        }
+                        else
+                        {
+                            <span>No Image Available</span>
+                        }
+                    </td>
+                    <td>@movie.Title</td>
+                    <td>@movie.Genre</td>
+                    <td>@movie.ReleaseDate</td>
+                    <td>@movie.Duration minutes</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-info">Details</a>
+
+                        @if (User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <form asp-controller="Watchlist" asp-action="AddToWatchlist" method="post" class="d-inline">
+                                <input type="hidden" name="movieId" value="@movie.Id"/>
+                                <button type="submit" class="btn btn-warning">+Watchlist</button>
+                            </form>
+
+                            @if (await this.managerService.IsUserManagerAsync(this.User.GetUserId()))
+                            {
+                                <a asp-action="AddToProgram" asp-route-id="@movie.Id" class="btn btn-info">Add to Program</a>
+                                <a asp-action="Edit" asp-route-id="@movie.Id" class="btn btn-primary">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@movie.Id" class="btn btn-danger">Delete</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@if (User?.Identity?.IsAuthenticated ?? false)
+{
+    @if (await this.managerService.IsUserManagerAsync(this.User.GetUserId()))
+    {
+        <a asp-action="Create" class="btn btn-primary">Add New Movie</a>
+    }
+}
+
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination">
+        @if (Model.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-currentPage="@(Model.CurrentPage - 1)"
+                   asp-route-searchQuery="@Model.SearchQuery"
+                   asp-route-genreFilter="@Model.GenreFilter"
+                   asp-route-yearFilter="@Model.YearFilter"
+                   asp-route-entitiesPerPage="@Model.EntitiesPerPage">
+                    Previous
+                </a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-currentPage="@i"
+                   asp-route-searchQuery="@Model.SearchQuery"
+                   asp-route-genreFilter="@Model.GenreFilter"
+                   asp-route-yearFilter="@Model.YearFilter"
+                   asp-route-entitiesPerPage="@Model.EntitiesPerPage">
+                    @i
+                </a>
+            </li>
+        }
+
+        @if (Model.CurrentPage < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-currentPage="@(Model.CurrentPage + 1)"
+                   asp-route-searchQuery="@Model.SearchQuery"
+                   asp-route-genreFilter="@Model.GenreFilter"
+                   asp-route-yearFilter="@Model.YearFilter"
+                   asp-route-entitiesPerPage="@Model.EntitiesPerPage">
+                    Next
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
+
