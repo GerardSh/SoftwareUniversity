@@ -1,6 +1,8 @@
 namespace CinemaApp.Web.Controllers
 {
+    using CinemaApp.Web.ViewModels;
     using Microsoft.AspNetCore.Mvc;
+    using System.Diagnostics;
 
     public class HomeController : Controller
     {
@@ -16,10 +18,15 @@ namespace CinemaApp.Web.Controllers
 
         public IActionResult Error(int? statusCode = null)
         {
+            var model = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            };
+
             // TODO: Add other pages
             if (!statusCode.HasValue)
             {
-                return this.View();
+                return this.View(model);
             }
 
             if (statusCode == 404)
