@@ -256,6 +256,7 @@ Long Polling.
 `MessagePack` обикновено създава по-малки съобщения, сравнено с JSON формата.
 #### `MessagePack`
 ![](https://github.com/GerardSh/SoftwareUniversity/blob/main/99%20Attachments/Pasted%20image%2020250626182112.png)
+
 `MessagePack` е ефективен бинарен формат за сериализация.
 
 Подобен е на JSON, но е по-бърз и по-компактен.
