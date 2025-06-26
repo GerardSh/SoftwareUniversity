@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="d-flex justify-content-center mt-4">
+    <div class="d-flex gap-3 align-items-end">
+        <div style="flex: 1; max-width: 200px;">
+            <label for="user">User</label>
+            <input type="text" class="form-control" id="user" placeholder="Username">
+        </div>
+        <div style="flex: 3;">
+            <label for="message">Message</label>
+            <input type="text" class="form-control" id="message" rows="3" placeholder="Message">
+        </div>
+        <div>
+            <a href="#" id="sendButton" class="btn btn-primary">Send Message</a>
+        </div>
+    </div>
+</div>
+<div class="row g-3">
+    <div class="col-md-12">
+        <label for="messageHistory" class="form-label">Message History</label>
+        <ul id="messageHistory">
+            @foreach (var item in MessageHistory.Messages)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/site.js"></script>
+}
+
+
