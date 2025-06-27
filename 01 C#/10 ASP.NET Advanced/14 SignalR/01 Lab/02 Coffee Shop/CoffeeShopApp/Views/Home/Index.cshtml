@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <div class="containter">
+        <header class="row">
+            <div class="row">
+                <div class="text-center">
+                    <img height="200" max-width="20%" src="https://static.vecteezy.com/system/resources/previews/000/565/744/large_2x/vector-coffee-cup-logo-template.jpg"
+                         alt="logo" />
+                </div>
+            </div>
+            <div class="row text-center">
+                <h3>
+                    Thank you for using our coffee delivery services!
+                </h3>
+            </div>
+        </header>
+        <form onsubmit="return false;">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="product">What's your coffee?</label>
+                    <input type="text" id="product" class="form-control"
+                           placeholder="Coffee..." />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="size">Size</label>
+                    <input type="text" id="size" class="form-control"
+                           placeholder="Size..." />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-md-6">
+                    <div id="status"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/coffee.js"></script>
