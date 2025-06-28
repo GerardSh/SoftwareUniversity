@@ -999,8 +999,7 @@ Hotmail (launched in 1996) is a **classic example of early SaaS** — long befor
 > **Hotmail was SaaS before the term even existed.**
 
 And today’s Outlook.com is still SaaS — just part of Microsoft’s broader Microsoft 365 offering.
-### The end goal of IaaS or PaaS is to produce and deliver SaaS.
-
+### The end goal of IaaS or PaaS is to produce and deliver SaaS
 - **IaaS** provides the basic building blocks — virtual machines, storage, and networking — so developers can install and run anything they want.
     
 - **PaaS** adds more abstraction — it gives developers ready-to-use platforms (like app hosting, databases, runtimes) so they can focus on writing code without managing infrastructure.
