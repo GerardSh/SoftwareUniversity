@@ -1766,6 +1766,41 @@ That’s a neat way to think about it! Let me put it like this:
 |`await`|Efficiently manages threads/tasks during async operations|Frees up threads to do other work while waiting for I/O|
 
 So yes, both `using` and `await` are about **responsible resource management** — just applied to different resources (DB connections vs threads).
+### HTTP/1.1 vs HTTP/2
+Here’s a concise summary of the difference between **HTTP/1.1** and **HTTP/2**, focused on how requests and responses behave:
+
+🔸 **HTTP/1.1**
+
+- **Request-response** model: one request = one response.
+    
+- Supports **persistent connections**, but:
+    
+    - Requests are handled **one at a time** (sequentially).
+        
+    - New requests must **wait for previous responses** (head-of-line blocking).
+        
+- No built-in support for pushing additional data.
+    
+- Widely supported, but less efficient for modern apps.
+
+🔹 **HTTP/2**
+
+- Still **request-response**: one request = one response.
+    
+- Adds **multiplexing**: many requests and responses can be handled **in parallel** over a single connection.
+    
+- Supports **Server Push**:
+    
+    - Server can **fake requests** on behalf of the client to send additional responses (e.g., for CSS or JS).
+        
+    - Still fits into the request-response model, just **with synthetic requests**.
+        
+- More efficient, especially for loading many resources (like web assets).
+
+🧠 **Key Difference:**
+
+> **HTTP/1.1** handles requests one-by-one (even on the same connection).  
+> **HTTP/2** can handle **multiple simultaneous requests/responses** and even **push extra responses** by simulating client requests.
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
@@ -2209,6 +2244,99 @@ Here:
 - Both **start fresh** if restarted.
 
 You're spot-on with the parallel.
+### Middlewares vs Filters
+1. **Middlewares**
+
+- Middlewares are part of the **ASP.NET Core HTTP pipeline** at a **low level**.
+    
+- They see **every HTTP request and response**.
+    
+- They run **in order** as configured in `Startup.Configure` (or `Program.cs` in minimal hosting).
+    
+- Middlewares handle cross-cutting concerns like:
+    
+    - Authentication
+        
+    - Logging
+        
+    - Exception handling
+        
+    - Static files serving
+        
+    - Routing
+        
+- Middlewares don’t know about MVC concepts like controllers, actions, or model binding.
+
+2. **Filters**
+
+- Filters are part of the **MVC framework pipeline**, which is higher level and specific to **controller actions**.
+    
+- They run **only when the request is routed to an MVC controller/action**.
+    
+- Filters work **around the execution of controller actions**:
+    
+    - Before and after the action runs
+        
+    - Before and after model binding
+        
+    - When exceptions happen in actions
+        
+    - Before and after the action result (view, JSON, etc.) is generated
+        
+- Filters let you **inject behavior at precise moments during the MVC action processing**.
+
+**Why do we need filters if we have middlewares?**
+
+- Middlewares **are too general** to handle MVC-specific concerns like:
+    
+    - Validating antiforgery tokens only on POST controller actions
+        
+    - Authorizing users specifically for a controller or action
+        
+    - Logging action execution time
+        
+    - Modifying the result (e.g., wrapping JSON responses)
+        
+- Filters let you **hook into MVC’s request processing pipeline** and interact with:
+    
+    - Authorization
+        
+    - Model binding
+        
+    - Action execution
+        
+    - Result execution
+        
+    - Exception handling
+
+**When to use which?**
+
+|Scenario|Use Middleware|Use Filter|
+|---|---|---|
+|Handle every HTTP request/response globally (e.g., logging, compression, CORS)|✅ Middleware|❌ Filter|
+|Require logic specific to MVC actions or Razor Pages (e.g., authorize an action, validate antiforgery tokens)|❌ Middleware|✅ Filter|
+|Modify response for static files or endpoints outside MVC|✅ Middleware|❌ Filter|
+|Run code just before or after a controller action|❌ Middleware|✅ Filter|
+|Handle exceptions globally|Usually middleware (e.g., Exception Handling Middleware)|Sometimes filters (exception filters)|
+
+**Summary**
+
+- **Middleware** is the backbone of the entire HTTP request pipeline — low-level, generic, runs for every request.
+    
+- **Filters** are MVC-specific, running only when you hit MVC endpoints, allowing fine-grained control over controller/action behavior.
+
+**Example: Antiforgery validation**
+
+- Could you write antiforgery validation in middleware?  
+    Yes, but it would be **complicated and imprecise**, because the middleware runs on every request and doesn’t “know” which controller/action is handling the request or the MVC conventions.
+    
+- Instead, antiforgery validation is a **filter**, because it needs to:
+    
+    - Run only on unsafe MVC HTTP methods
+        
+    - Run before the controller action starts
+        
+    - Easily plug into MVC authorization flow
 ## Bookmarks
 # HTML & CSS
 ## General
