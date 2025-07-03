@@ -2337,6 +2337,121 @@ You're spot-on with the parallel.
     - Run before the controller action starts
         
     - Easily plug into MVC authorization flow
+### Developer Exception Page vs Exception Handler
+🔍 **Developer Exception Page (`UseDeveloperExceptionPage`)**
+
+- **Purpose:**  
+    Displays detailed error information (stack trace, source code, etc.) for unhandled exceptions during development.
+    
+- **Usage:**  
+    Only used in **Development** environment.
+    
+- **Behavior:**  
+    Automatically enabled by ASP.NET Core in development **if you don't explicitly configure exception handling**.
+    
+- **Why Use It:**  
+    Helps developers debug issues easily by showing full error details.
+    
+- **Middleware:**
+
+```csharp
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+```
+
+🛡️ **Exception Handler (`UseExceptionHandler`)**
+
+- **Purpose:**  
+    Catches unhandled exceptions and redirects the request to a custom error page (e.g. `/Home/Error`) without exposing sensitive details.
+    
+- **Usage:**  
+    Designed for **Production** environments.
+    
+- **Behavior:**  
+    Re-executes the pipeline for a specified path when an exception occurs.
+    
+- **Why Use It:**  
+    Prevents users from seeing internal exception details and allows you to present a user-friendly error message.
+    
+- **Middleware:**
+
+```csharp
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+}
+```
+
+✅ **Summary Table**
+
+|Feature|Development|Production|
+|---|---|---|
+|Developer Exception Page|✔️ Shows full error info|❌ Should not be used|
+|Exception Handler|❌ Not needed|✔️ Routes to error view|
+|Default Behavior|Developer page is default|No handler unless configured|
+
+So in short:
+
+> **The Developer Exception Page is enabled by default in development.**  
+> **The Exception Handler should be explicitly added for production to show user-friendly error pages.**
+### Status Code Pages Middleware
+- **Purpose:**  
+    Handles HTTP status codes like `404`, `403`, `401`, etc., **that are not caused by exceptions** (e.g., a missing route or unauthorized access), and allows you to display a friendly error page instead of a blank response.
+
+🔧 **Middleware Options**
+
+ASP.NET Core provides multiple ways to configure how status codes are handled:
+
+ 1. ✅ **`UseStatusCodePages()`**
+
+- Shows a **plain text** message with the status code.
+    
+- For development or quick debugging.
+    
+
+2. 🔁 **`UseStatusCodePagesWithRedirects("/Home/Error/{0}")`**
+
+- Sends an **HTTP redirect** (302) to the specified path.
+    
+- The client receives a 302 → then a 200 for the error page.
+    
+- Can be misleading (makes it look like the request succeeded).
+
+3. 🔄 **`UseStatusCodePagesWithReExecute("/Home/Error/{0}")`**
+
+- **Re-executes** the pipeline internally without redirecting the client.
+    
+- Preserves the original status code (e.g., `404`).
+    
+- Recommended for production.
+
+**⚠️ What It Does Not Handle**
+
+- It **does not catch unhandled exceptions**.  
+    That's the job of `UseExceptionHandler`.
+
+✅ **When to Use It**
+
+|Middleware|Use Case|
+|---|---|
+|`UseStatusCodePages()`|Simple, text-based error messages (dev)|
+|`UseStatusCodePagesWithRedirects(...)`|Redirects to a path (can mislead client)|
+|`UseStatusCodePagesWithReExecute(...)`|Re-routes to error path without redirect|
+
+🧠 **Summary**
+
+> The Status Code Pages Middleware catches **non-exception errors** (like 404) and displays a friendly error response.  
+> It complements `UseExceptionHandler`, which deals with **exceptions**, and is usually added at the end of the middleware pipeline.
+
+💡 **Example:**
+
+```csharp
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
+```
+
+This will reroute a 404 to `/Home/Error/404` while keeping the status code intact — a clean and user-friendly approach.
 ## Bookmarks
 # HTML & CSS
 ## General
