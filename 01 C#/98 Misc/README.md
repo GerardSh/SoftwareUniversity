@@ -1801,6 +1801,61 @@ Here’s a concise summary of the difference between **HTTP/1.1** and **HTTP/2**
 
 > **HTTP/1.1** handles requests one-by-one (even on the same connection).  
 > **HTTP/2** can handle **multiple simultaneous requests/responses** and even **push extra responses** by simulating client requests.
+### Why Flags Enums Use Powers of 2
+Flags enums in C# (and most languages) use **powers of 2** like `1, 2, 4, 8, 16...` because each of these values sets **exactly one bit** in binary. This ensures that:
+
+- Each flag is **uniquely identifiable**
+    
+- You can **combine multiple flags** without overlap
+    
+- You can efficiently **check if a flag is present** using bitwise operations
+
+🧠 **How Bitwise Flags Work**
+
+Each value corresponds to one bit:
+
+|Enum Value|Decimal|Binary|
+|---|---|---|
+|`None`|0|`0000 0000`|
+|`Error`|1|`0000 0001`|
+|`Warning`|2|`0000 0010`|
+|`Information`|4|`0000 0100`|
+|`SuccessAudit`|8|`0000 1000`|
+|`FailureAudit`|16|`0001 0000`|
+
+✔️ **Combining flags:**
+
+```csharp
+var flags = EventLogEntryType.Warning | EventLogEntryType.Information;
+```
+
+You get:
+
+```yaml
+   0000 0010   (Warning)
+|  0000 0100   (Information)
+-------------
+   0000 0110   (Combined value = 6)
+```
+
+🔍 **Checking for a flag:**
+
+```csharp
+bool hasWarning = (flags & EventLogEntryType.Warning) != 0;   // true
+bool hasError   = (flags & EventLogEntryType.Error) != 0;     // false
+```
+
+✅ **Why It Matters**
+
+- ✅ **No overlapping bits** → Safe to combine multiple values
+    
+- ✅ **Efficient storage** → All flags stored in one integer
+    
+- ✅ **Fast checks** → Bitwise AND (`&`) is very performant
+    
+- ✅ **Cleaner code** when working with sets of options or states
+
+💡 Even though enums like `EventLogEntryType` follow this pattern, they aren't always marked with `[Flags]`. But when they are, you also get nicer string representations (e.g., `Warning, Information` instead of just a number).
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
