@@ -2591,6 +2591,51 @@ app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 ```
 
 This will reroute a 404 to `/Home/Error/404` while keeping the status code intact — a clean and user-friendly approach.
+### 4xx vs 5xx Errors
+🔵 **4xx Client Errors**
+
+These indicate that **the client (browser or API consumer) did something wrong**, such as:
+
+- **404 Not Found** — The URL doesn't match any route or file.
+    
+- **403 Forbidden** — The user is not allowed to access the resource.
+    
+- **401 Unauthorized** — Authentication is required, or the credentials were invalid.
+    
+- **400 Bad Request** — The request is malformed (e.g., bad syntax or invalid parameters).
+
+These are not exceptions — they're just responses from the app saying, “What you asked for isn’t allowed or doesn’t exist.”
+
+✅ **`app.UseStatusCodePagesWithRedirects("/Home/Error/{0}")`**
+
+This middleware intercepts these **4xx responses** (like 404 or 403), and instead of returning the raw status code, it:
+
+1. **Redirects** the user to `/Home/Error/404` (or 403, etc.).
+    
+2. **Lets you show a friendly error page** based on the code.
+
+This is useful for user experience — so people don't see a generic “404 - Not Found” message, but a styled and branded error page.
+
+🔴 **5xx Server Errors**
+
+These mean the **server encountered a problem while trying to fulfill a valid request**, such as:
+
+- **500 Internal Server Error** — A generic error, usually due to an unhandled exception.
+    
+- **502 Bad Gateway**, **503 Service Unavailable**, etc. — Infrastructure or hosting issues.
+
+✅ **`app.UseExceptionHandler("/Home/Error")`**
+
+**Handles:**  
+✔️ 5xx errors — like unhandled exceptions, null reference errors, etc.  
+It catches exceptions thrown during request processing and **redirects to** `/Home/Error`.
+
+**So in short:**
+
+| Middleware                        | Handles      | Example Error Code | Triggers When...                         |
+| --------------------------------- | ------------ | ------------------ | ---------------------------------------- |
+| `UseStatusCodePagesWithRedirects` | 4xx (client) | 404, 403           | App returns a status code (no exception) |
+| `UseExceptionHandler`             | 5xx (server) | 500+               | App throws an unhandled exception        |
 ## Bookmarks
 # HTML & CSS
 ## General
