@@ -1831,7 +1831,7 @@ var flags = EventLogEntryType.Warning | EventLogEntryType.Information;
 
 You get:
 
-```yaml
+```
    0000 0010   (Warning)
 |  0000 0100   (Information)
 -------------
@@ -2759,6 +2759,31 @@ It catches exceptions thrown during request processing and **redirects to** `/Ho
 | --------------------------------- | ------------ | ------------------ | ---------------------------------------- |
 | `UseStatusCodePagesWithRedirects` | 4xx (client) | 404, 403           | App returns a status code (no exception) |
 | `UseExceptionHandler`             | 5xx (server) | 500+               | App throws an unhandled exception        |
+### Response Flushing in ASP.NET Core Middleware Pipeline
+- **When is the response flushed?**  
+    The response is flushed (sent) to the client when the server writes data to the response stream and explicitly or implicitly calls a flush operation. This usually happens during or immediately after the controller action writes the response body.
+    
+- **What does flushing mean?**  
+    Flushing sends the currently buffered response headers and body data from the server to the client over the network.
+    
+- **Can response be flushed earlier?**  
+    Yes. The response can start flushing anytime a middleware or the controller writes directly to the response and flushes it. This can happen:
+    
+    - During the "before" part of middleware (before calling `next()`) if the middleware short-circuits and writes a response early.
+        
+    - During the controller action execution when returning views, JSON, or streamed data.
+        
+- **What happens after flushing?**  
+    Once flushed:
+    
+    - The response headers and status code are sent and cannot be modified anymore.
+        
+    - The remaining middlewares still execute their “after” logic (code after `await next()`), but cannot change the response. They can perform logging, cleanup, or other side effects.
+        
+- **How to check if the response has been flushed?**  
+    In ASP.NET Core, you can check `HttpResponse.HasStarted` property to determine if the response has already started sending to the client (flushed). If `HasStarted` is `true`, headers and some body might already be sent.
+
+This understanding helps you reason about when the response is finalized and what middleware can or cannot do afterward.
 ## Bookmarks
 # HTML & CSS
 ## General
