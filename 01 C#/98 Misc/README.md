@@ -3280,6 +3280,76 @@ The `WebApplication` class in ASP.NET Core exposes the `ServiceProvider` through
 The `IServiceProvider` **is the DI container**. It holds all the registered services and is responsible for resolving them when requested, based on their configured lifetimes (singleton, scoped, or transient). So when you call methods like `serviceProvider.GetService<T>()`, you're using the DI container to fetch an instance of `T`.
 
 When ASP.NET Core processes an incoming HTTP request, it automatically creates a new **scope** from the root `IServiceProvider`. This scope ensures that any services registered with a **scoped lifetime** are created once and shared throughout the duration of that request. Behind the scenes, it’s essentially doing what we do manually with `CreateScope()` — establishing a boundary within which scoped services can be resolved and managed correctly.
+### Why do we configure Identity Options on Each Application Start
+Because:
+
+> **They are application-level behaviors**, not user-level or database-persisted settings.
+
+These options affect how **the app behaves**, not what the users do or store. Examples:
+
+- Password requirements (length, symbols, etc.)
+    
+- Lockout settings
+    
+- Sign-in options (email confirmation required, etc.)
+    
+- Token lifetimes
+    
+- Cookie settings
+
+These things **must be set at startup**, because the app needs them to:
+
+- Validate passwords when a user logs in
+    
+- Decide whether to lock an account
+    
+- Decide whether email confirmation is required before signing in
+
+They’re part of the app's **runtime behavior**, not its **data**.
+
+🤔 **Why aren't they stored in the database?**
+
+There are a few good reasons:
+
+1. **Security**
+
+If the password rules or token expiration settings were stored in the database, someone with DB access could weaken them (e.g., remove password complexity). Keeping them in code makes them safer and under developer control.
+
+2. **Startup-only logic**
+
+ASP.NET Identity reads these settings once, during app startup. It does **not check them dynamically per user request**, so reading them from a DB every time would add unnecessary complexity.
+
+3. **Deployment consistency**
+
+By keeping these rules in code (and optionally in `appsettings.json`), you guarantee consistent behavior across environments:
+
+- Dev
+    
+- Staging
+    
+- Production
+
+If they were in the database, you’d have to sync settings manually across environments.
+
+📁 **What _is_ saved in the database?**
+
+ASP.NET Identity does store a lot of things:
+
+- Users, roles, claims
+    
+- Password hashes
+    
+- Security stamps
+    
+- User lockout state, 2FA state, etc.
+
+But these are all **per-user** or **identity data**, not **policy or configuration**.
+
+💡 **Analogy**
+
+Think of Identity settings like **traffic rules** (e.g., red = stop, speed limits) — they're decided by the system designer (you, the developer), not stored in every driver's car.
+
+The driver's car (the database) stores the license and points, but not the laws themselves.
 ## Bookmarks
 # HTML & CSS
 ## General
