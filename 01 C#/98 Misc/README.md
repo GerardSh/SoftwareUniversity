@@ -3257,9 +3257,12 @@ Console.WriteLine(object.ReferenceEquals(singleton1, singleton2)); // true ✅
 📌 **Summary:**
 
 > The **root provider** should only be used to resolve services that are **not scope-dependent** — like singletons. 
+> 
 > If you need to resolve scoped services (e.g., `DbContext`), you must do so from a **scoped `IServiceProvider`**, which is why we create a scope.
 > This is especially important in extension methods that run once during application startup and are executed outside of any HTTP request context. 
+> 
 > If you inject `IServiceProvider` directly into a controller, you’re already **inside a scoped context** (because each HTTP request creates a scope). So you can safely resolve scoped services from that injected provider **without manually creating a new scope**. In other words, the framework handles the scope creation for you during the request, so no extra scope is needed in your controller. 
+> 
 > The `IServiceProvider` injected into your controller during an HTTP request is effectively the **scoped service provider** — just like `serviceProvider2` in your example (`serviceScope.ServiceProvider`).
 
 - **Singletons live in the root container.**
