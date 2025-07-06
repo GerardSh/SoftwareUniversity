@@ -1801,6 +1801,51 @@ Here’s a concise summary of the difference between **HTTP/1.1** and **HTTP/2**
 
 > **HTTP/1.1** handles requests one-by-one (even on the same connection).  
 > **HTTP/2** can handle **multiple simultaneous requests/responses** and even **push extra responses** by simulating client requests.
+### Failed HTTP Resource Request Triggered Automatically by the Browser
+When the browser makes a request for a **resource** (like a CSS file, JS script, or image), and that request **fails** (e.g. 404), it **does not render or display the HTML returned** by the server for that failed request.
+
+🧩 **Why?**
+
+Because the **context** of the request is:
+
+- Not a navigation/document load
+    
+- It's a **sub-resource request**
+    
+- The browser just needs the file (CSS, JS, image, etc.)
+
+If the server sends back an HTML error view instead of the CSS file, the browser:
+
+- **Ignores the body** (because it can’t use HTML in place of CSS)
+    
+- **Logs the failure** in the **Network tab**
+    
+- **Continues rendering the main document** (even if it looks broken without styles)
+
+📊 **Example:**
+
+```csharp
+<link rel="stylesheet" href="/css/errorPages.css" />
+```
+
+- If this path 404s and your `StatusCodePagesWithReExecute()` returns an HTML error page:
+    
+    - The browser **logs 404**
+        
+    - But **does not render the error page**
+        
+    - And **does not apply any styles**, since the CSS never arrived
+
+✅ **Main document vs resources:**
+
+|Request Type|Failed?|Browser Action|
+|---|---|---|
+|Main HTML Document|Yes|Shows error page (e.g. `Error.cshtml`)|
+|CSS/JS/Image|Yes|Logs error, ignores response body, doesn't show error page|
+
+If you want a **cleaner experience**:
+
+- Exclude static resources (`/css`, `/js`, `/images`) from being handled by `UseStatusCodePagesWithReExecute()` — otherwise you might generate unnecessary server load and confusing logs.
 ### Why Flags Enums Use Powers of 2
 Flags enums in C# (and most languages) use **powers of 2** like `1, 2, 4, 8, 16...` because each of these values sets **exactly one bit** in binary. This ensures that:
 
