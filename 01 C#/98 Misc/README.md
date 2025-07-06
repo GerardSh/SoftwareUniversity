@@ -3584,6 +3584,83 @@ During app startup, ASP.NET Core aggregates all these sources into one big looku
 | `RouteEndpoint`             | Implementation of `Endpoint` | Represents a single endpoint (action, page) |
 | `IReadOnlyList<Endpoint>`   | Collection type              | Efficient read-only collection              |
 | `HttpContext.GetEndpoint()` | Lookup result                | The selected endpoint for a request         |
+#### How the routing templates affect the endpoint creation
+**Routing templates directly affect endpoint creation** in ASP.NET Core. ✅
+
+They are **the foundation** on which **actions are discovered and registered as endpoints** in the **endpoint routing system**.
+
+🔧 **Here's how it works under the hood:**
+
+1. **During startup**, when you call something like:
+    
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+    
+2. ASP.NET Core:
+    
+    - Scans your controllers and actions.
+        
+    - Matches them to that **route template**.
+        
+    - Registers endpoints based on that template + metadata (like constraints, defaults, attributes).
+
+✅ **Example: What routing affects**
+
+Suppose you have:
+
+```csharp
+public class HomeController : Controller
+{
+    public IActionResult Error(int? statusCode) => View();
+}
+```
+
+And this route:
+
+```csharp
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+- When a request like `/Home/Error/404` comes in:
+    
+    - It matches the pattern.
+        
+    - Binds `404` to `id`, not `statusCode`.
+        
+    - Result: `statusCode == null` unless your action uses `id` or you add a better route.
+
+📌 **So yes — routes control endpoint creation**.
+
+If you:
+
+- Change the route template
+    
+- Add a `[Route]` attribute
+    
+- Use `app.MapControllerRoute` or `MapGet`, `MapPost`, etc.
+
+…then you're controlling how and where that action appears in the **endpoint collection**.
+
+🧠 **Endpoint routing system:**
+
+- It builds a collection of all endpoints at app startup.
+    
+- Each endpoint has:
+    
+    - Route pattern
+        
+    - Metadata (e.g., attributes like `[HttpGet]`, `[Authorize]`)
+        
+    - Parameter binding info
+        
+    - Controller/action mapping
+
+So yes — the routing templates are **essential** in defining how requests are matched and routed to your controller actions.
 #### Razor Pages and Controllers (MVC) Routing Mechanisms
 **Razor Pages** and **Controllers** (MVC) have different routing mechanisms in ASP.NET Core, and both ultimately register endpoints via the endpoint routing system. Let's break this down:
 
