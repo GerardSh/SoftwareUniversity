@@ -2671,7 +2671,6 @@ ASP.NET Core provides multiple ways to configure how status codes are handled:
 - Shows a **plain text** message with the status code.
     
 - For development or quick debugging.
-    
 
 2. 🔁 **`UseStatusCodePagesWithRedirects("/Home/Error/{0}")`**
 
@@ -3350,6 +3349,364 @@ But these are all **per-user** or **identity data**, not **policy or configurati
 Think of Identity settings like **traffic rules** (e.g., red = stop, speed limits) — they're decided by the system designer (you, the developer), not stored in every driver's car.
 
 The driver's car (the database) stores the license and points, but not the laws themselves.
+### Routing
+Yes — the **core idea of routing** is:
+
+> **Match an incoming URL to a specific endpoint** (like an action method or a Razor Page), so the correct code runs and returns a response.
+
+To do that, ASP.NET Core uses a system called **Endpoint Routing**, which creates a map of **URL patterns** to **handlers (like controller actions or Razor Pages)**.
+
+🧭 **Step-by-Step: What Happens When a Request Comes In**
+
+Let’s go step by step:
+
+1. 🧩 **Application Starts**
+
+In `Startup.cs` or `Program.cs`, you configure the middleware and endpoint routing:
+
+```csharp
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    endpoints.MapRazorPages();
+});
+```
+
+👉 This is where **all known endpoints are registered once when the app starts** (not per request).  
+ASP.NET Core **builds an internal list of endpoints** and stores it in memory.
+
+2. 🌍 **A User Makes a Request (e.g. `/Products/Details/5`)**
+
+The request hits the web server (Kestrel or IIS), and then ASP.NET Core's pipeline begins.
+
+3. 🛣 **Middleware Pipeline Kicks In**
+
+Middleware like `UseRouting()` is executed:
+
+```csharp
+app.UseRouting();
+```
+
+➡ This looks at the incoming URL and **tries to match it to one of the registered endpoints** from earlier.
+
+4. ✅ **URL Matches an Endpoint**
+
+If the request is `/Products/Details/5`, and your route pattern is:
+
+```csharp
+"{controller=Home}/{action=Index}/{id?}"
+```
+
+ASP.NET Core parses it and says:
+
+|Route Token|Value|
+|---|---|
+|controller|Products|
+|action|Details|
+|id|5|
+
+So it matches:
+
+```csharp
+public class ProductsController : Controller
+{
+    public IActionResult Details(int id) { ... }
+}
+```
+
+This is the **endpoint** that gets selected.
+
+5. ⚙️ **Endpoint Executes**
+
+Now that the route is matched:
+
+- ASP.NET Core sets `RouteData`
+    
+- The selected controller action (or Razor Page) is invoked
+    
+- A response is generated and returned to the browser
+
+🔁 **Does endpoint registration happen for every request?**
+
+**No** — and that’s important:
+
+- **Endpoints are registered once at app startup**
+    
+- Then stored in memory as a **lookup table**
+    
+- When each request comes in, ASP.NET Core does a **match** against this in-memory endpoint list
+    
+
+So the **endpoint matching** happens **per request**, but **endpoint creation/registration** happens **once**.
+
+⚒️ **How are endpoints created?**
+
+You create them using:
+
+1. **Controller actions**
+
+Via `MapControllerRoute(...)` or `[Route(...)]` attributes
+
+2. **Razor Pages**
+
+Via `MapRazorPages()` which looks at `.cshtml` file structure
+
+Each of these is turned into a **Route Endpoint** behind the scenes (in `EndpointDataSource`).
+
+🧠 **Analogy**
+
+Think of it like a GPS map:
+
+- At startup, the app builds a **map of all valid roads** (endpoints)
+    
+- Every time a user (browser) makes a request, the app looks at the map and says:
+    
+    > "Ah, `/Products/Details/5` means go to this controller and action."
+
+🧭 **ASP.NET Core Routing Components: Type, Timing, and Purpose**
+
+| Item                      | Type             | When It Runs      | Purpose                             |
+| ------------------------- | ---------------- | ----------------- | ----------------------------------- |
+| `MapControllerRoute(...)` | ❌ Not middleware | ✅ Once at startup | Registers controller endpoints      |
+| `MapRazorPages()`         | ❌ Not middleware | ✅ Once at startup | Registers Razor Page endpoints      |
+| `UseRouting()`            | ✅ Middleware     | 🔁 Every request  | Matches URL to registered endpoints |
+| `UseEndpoints(...)`       | ✅ Middleware     | 🔁 Every request  | Executes the matched endpoint       |
+
+✅ **Summary**
+
+|Step|Description|
+|---|---|
+|App starts|All endpoints are created and registered once|
+|User requests URL|ASP.NET Core matches it against registered endpoints|
+|Matching|Based on pattern matching (e.g. `{controller}/{action}`)|
+|Execution|The matched endpoint is executed|
+|Registration frequency|**Once** per app start|
+|Matching frequency|**Every** request|
+#### How Are Endpoints Stored and Collected Internally
+🔒 **Internally, endpoints are stored in:**
+
+```csharp
+EndpointDataSource
+```
+
+This is an abstraction that holds a **read-only list of endpoints** (`IEnumerable<Endpoint>`) and is used by the routing system to match requests.
+
+🧱 **What kind of objects are the endpoints?**
+
+All endpoints implement the base type:
+
+```csharp
+Microsoft.AspNetCore.Http.Endpoint
+```
+
+Each entry contains:
+
+- A route pattern
+    
+- A delegate (what to execute)
+    
+- Metadata (attributes, controller info, page info, etc.)
+
+📦 **Where does the data go?**
+
+When you call `MapControllerRoute(...)` or `MapRazorPages()`, these methods internally register endpoints to an instance of:
+
+```csharp
+RouteEndpoint
+```
+
+All of these are added to the central `EndpointDataSource`, which is available via DI (Dependency Injection).
+
+You can actually inspect them like this (in dev tools or middleware):
+
+```csharp
+public class MyEndpointInspectorMiddleware
+{
+    private readonly EndpointDataSource _dataSource;
+
+    public MyEndpointInspectorMiddleware(EndpointDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        foreach (var endpoint in _dataSource.Endpoints)
+        {
+            Console.WriteLine($"Endpoint: {endpoint.DisplayName}");
+        }
+
+        await next(context);
+    }
+}
+```
+
+🗃 **Collection Type?**
+
+The endpoints are stored in a `List<Endpoint>` or more specifically:
+
+```csharp
+IReadOnlyList<Endpoint> Endpoints
+```
+
+...inside each registered `EndpointDataSource`.
+
+There may be multiple `EndpointDataSource` objects — one for MVC controllers, one for Razor Pages, etc.
+
+During app startup, ASP.NET Core aggregates all these sources into one big lookup table for efficient request matching.
+
+⚙️ **Matching Process**
+
+1. At startup:
+    
+    - `MapControllerRoute()` and `MapRazorPages()` register endpoints via `EndpointDataSource`
+        
+    - Each route becomes a `RouteEndpoint`
+        
+2. At request time:
+    
+    - `UseRouting()` looks at all registered `EndpointDataSource` objects
+        
+    - The system checks the request path against the route patterns
+        
+    - If one matches, it stores the matched `Endpoint` into `HttpContext.GetEndpoint()`
+
+🧠 **Summary of Internal Storage**
+
+| Element                     | Type                         | Description                                 |
+| --------------------------- | ---------------------------- | ------------------------------------------- |
+| `EndpointDataSource`        | Abstract base                | Holds endpoint collections                  |
+| `RouteEndpoint`             | Implementation of `Endpoint` | Represents a single endpoint (action, page) |
+| `IReadOnlyList<Endpoint>`   | Collection type              | Efficient read-only collection              |
+| `HttpContext.GetEndpoint()` | Lookup result                | The selected endpoint for a request         |
+#### Razor Pages and Controllers (MVC) Routing Mechanisms
+**Razor Pages** and **Controllers** (MVC) have different routing mechanisms in ASP.NET Core, and both ultimately register endpoints via the endpoint routing system. Let's break this down:
+
+🧭 **High-Level Summary**
+
+|Feature|Razor Pages|MVC Controllers|
+|---|---|---|
+|**Routing style**|**Convention-based** via folder structure|**Attribute or convention-based**|
+|**File location**|`/Pages` or `/Areas/X/Pages`|`/Controllers` or `/Areas/X/Controllers`|
+|**Routing setup**|`MapRazorPages()`|`MapControllerRoute()` or `MapAreaControllerRoute()`|
+|**URL to page**|Based on physical path|Based on route templates|
+|**Needs [Route]?**|No (unless customized)|Often yes (unless using default routes)|
+
+🧠 **Internals: Endpoint Routing**
+
+Since ASP.NET Core 3.0+, **both MVC and Razor Pages** use **endpoint routing**, which is unified via the middleware called `UseRouting()` and `UseEndpoints(...)` in `Startup.cs`.
+
+```csharp
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();         // Registers endpoints for Razor Pages
+    endpoints.MapControllerRoute(...); // Registers endpoints for MVC Controllers
+});
+```
+
+So yes — **both register endpoints**, but how they define them differs.
+
+🗂 **Razor Pages Routing**
+
+✅ **Works by folder and filename convention**
+
+Given a page at:
+
+```swift
+/Pages/About.cshtml
+```
+
+You can reach it via:
+
+```
+/About
+```
+
+If it's inside an area:
+
+```swift
+/Areas/Admin/Pages/Users/List.cshtml
+```
+
+Route becomes:
+
+```swift
+/Admin/Users/List
+```
+
+> **No need for [Route] attributes.**
+
+🧭 **MVC Controller Routing**
+
+✅ **Uses route templates**
+
+Example controller:
+
+```csharp
+[Area("Admin")]
+public class UsersController : Controller
+{
+    public IActionResult List() => View();
+}
+```
+
+If your route is defined like:
+
+```csharp
+endpoints.MapAreaControllerRoute(
+    name: "admin",
+    areaName: "Admin",
+    pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+```
+
+Then this maps to:
+
+```swift
+/Admin/Users/List
+```
+
+You can also use `[Route]` attributes to define custom routes.
+
+⚖️ **Side-by-side Example**
+
+Let's say you have both a Razor Page and a Controller handling users:
+
+**Razor Page**
+
+```swift
+/Areas/Admin/Pages/Users/List.cshtml
+→ Accessible via /Admin/Users/List
+```
+
+**Controller**
+
+```csharp
+[Area("Admin")]
+public class UsersController : Controller
+{
+    public IActionResult List() => View();
+}
+// → Also accessible via /Admin/Users/List (depending on route config)
+```
+
+The routing system can resolve both, but you **must avoid route collisions** if you define both types at the same path.
+
+🚨 **Key Differences Recap**
+
+| Topic             | Razor Pages                               | MVC Controllers                         |
+| ----------------- | ----------------------------------------- | --------------------------------------- |
+| Routing mechanism | Convention (file path)                    | Convention or attribute-based           |
+| Route declaration | In file structure                         | In `MapControllerRoute`, `[Route]`      |
+| Extensibility     | You can override with `[@page "{route}"]` | You can override with `[Route]`         |
+| Area support      | Built-in via folders                      | Requires `[Area]` attribute             |
+| Purpose           | Page-focused UI (e.g. Login.cshtml)       | Controller logic (e.g. REST APIs, CRUD) |
 ## Bookmarks
 # HTML & CSS
 ## General
