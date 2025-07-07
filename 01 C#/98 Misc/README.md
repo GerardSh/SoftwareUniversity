@@ -1988,8 +1988,28 @@ TempData.Keep();
 - Use **`ViewData`** (or `ViewBag`) when rendering a view in the same request.
 
 - Use **`TempData`** to store data **between redirects**, e.g., when using PRG (Post/Redirect/Get) pattern to avoid duplicate submissions.
-### POST Requests, Form Submission, and Content Types
+#### `TempData` vs `Items` vs `ViewBag`/`ViewData`
 
+|Feature|`TempData`|`HttpContext.Items`|`ViewBag` / `ViewData`|
+|---|---|---|---|
+|**Scope / Lifetime**|Persists across **redirects** (one additional request)|Only for **current request**|Only for **current request** (controller → view)|
+|**Storage backend**|Cookies (default) or Session (optional)|In-memory dictionary (per request)|In-memory dictionary (per request)|
+|**Purpose**|Pass data between requests, e.g. after redirect (flash messages)|Store data during current request lifecycle (middleware, controller, view)|Pass data from controller to view (UI-related data)|
+|**Access locations**|Controllers, Views|Middleware, Controllers, Views|Controllers, Views|
+|**Data persistence**|Data is **read once** and removed unless preserved|Only lives during the request|Only lives during the request|
+|**Type safety**|Object-based dictionary|Object-based dictionary|Dynamic (ViewBag) or dictionary (ViewData)|
+|**Use case example**|Show success message after redirect|Share data within a request pipeline|Pass page titles, messages, lists to the view|
+|**Requires setup?**|Requires cookie or session enabled|No setup needed|No setup needed|
+|**Limitations**|Size limited (cookie), session overhead (if session used)|Only valid during request|Only valid during request|
+
+**Quick notes:**
+
+- **`TempData`** is your go-to for temporary data that survives a redirect.
+    
+- **`HttpContext.Items`** is a general-purpose per-request storage, useful especially in middleware.
+    
+- **`ViewBag`/`ViewData`** are convenience wrappers mainly to pass data from controller to view in a clean, readable way.
+### POST Requests, Form Submission, and Content Types
 - **`multipart/form-data`** is a content type used in POST requests to send key-value pairs, especially when files are included. It emulates how browsers submit HTML forms with file uploads.
     
 - In **Swagger or Postman**, specifying `multipart/form-data` means the request body is sent as separate parts (text fields + files) rather than raw JSON.
@@ -3984,6 +4004,130 @@ The routing system can resolve both, but you **must avoid route collisions** if 
 | Extensibility     | You can override with `[@page "{route}"]` | You can override with `[Route]`         |
 | Area support      | Built-in via folders                      | Requires `[Area]` attribute             |
 | Purpose           | Page-focused UI (e.g. Login.cshtml)       | Controller logic (e.g. REST APIs, CRUD) |
+### `HttpContext`
+The **`HttpContext`** is  **available throughout the handling of an HTTP request**, but with some important clarifications:
+
+**What is `HttpContext`?**
+
+- It's an object that **represents the current HTTP request and response**.
+    
+- It contains info like request headers, user identity, session, items, response data, etc.
+    
+- **It exists only during the lifetime of a single HTTP request.**
+
+**Is it available _everywhere_ in the app?**
+
+|Location|Access to `HttpContext`?|
+|---|---|
+|**Middleware**|✅ Yes — it’s passed in pipeline methods|
+|**Controllers**|✅ Yes — available as `Controller.HttpContext`|
+|**Razor Views**|✅ Yes — accessible via `@Context` or `ViewContext.HttpContext`|
+|**Background services/threads**|❌ No — no current HTTP context exists|
+|**Dependency Injection services (by default)**|❌ Not automatically — you need `IHttpContextAccessor`|
+
+**How to access `HttpContext` outside controller/middleware?**
+
+If you want to use it in services or other classes, you inject:
+
+```csharp
+public class MyService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public MyService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public void DoSomething()
+    {
+        var context = _httpContextAccessor.HttpContext;
+        // Use context here if not null
+    }
+}
+```
+
+And register `IHttpContextAccessor` in `Startup.cs`:
+
+```csharp
+services.AddHttpContextAccessor();
+```
+
+**Summary:**
+
+- **`HttpContext` is available during a request's lifetime** and accessible in middleware, controllers, and views.
+    
+- It’s **not globally available everywhere by default**, but can be accessed via `IHttpContextAccessor` where needed.
+    
+- Each request gets its **own `HttpContext` instance**, so it’s per-request, not application-wide.
+#### Inject `IHttpContextAccessor` Into a Service
+There are two common ways to get `HttpContext` info in your service layer:
+
+1. **Inject `IHttpContextAccessor` into your service**
+
+- This lets your service **access the current `HttpContext` directly** anywhere.
+    
+- Useful if your service needs things like user claims, request info, or session.
+    
+- Just be careful—`HttpContext` can be `null` if your service is used outside of an HTTP request (e.g., background jobs).
+
+Example:
+
+```csharp
+public class MyService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public MyService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public void DoWork()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        // Use user info or other context details here
+    }
+}
+```
+
+2. **Pass needed info explicitly from the controller**
+
+- Controller extracts only the data needed (like user ID, claims, headers).
+    
+- Passes that data as method parameters to the service.
+    
+- Keeps your service **clean and independent from HTTP concerns**, which is good for testability and separation of concerns.
+
+Example:
+
+```csharp
+public IActionResult MyAction()
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    _myService.DoWork(userId);
+    return View();
+}
+```
+
+The controller has a **`User` property** — shorthand for `HttpContext.User`.
+ So, when you write:
+
+```csharp
+var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+```
+
+it’s really just a shortcut for:
+
+```csharp
+var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+```
+
+**Which to choose?**
+
+- **Inject `IHttpContextAccessor` if your service really needs HTTP details often.**
+    
+- **Pass data explicitly if you want to keep services decoupled from ASP.NET Core specifics.**
 ## Bookmarks
 # HTML & CSS
 ## General
