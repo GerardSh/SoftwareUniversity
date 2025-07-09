@@ -3198,7 +3198,6 @@ Essentially, `serviceScope` is a **wrapper** that:
     - Resolved within this context
         
     - Disposed of properly when the scope ends
-        
 
 So think of it like this:
 
@@ -3338,6 +3337,249 @@ Console.WriteLine(object.ReferenceEquals(singleton1, singleton2)); // true ✅
 So:
 
 > Resolving a singleton from a scope **does not create a new instance**. It still uses the same singleton that was registered at startup.
+##### `RootContainer` and `ScopeContainer` Example
+The **root container** and the **scoped container** are **not instances of the exact same class**, but they both implement the same core interfaces (`IServiceProvider` and `IServiceScopeFactory`), so you interact with them similarly.
+
+**More details:**
+
+- The **root container** is created once when the application starts. It’s the **main, top-level service provider** that holds singleton instances.
+    
+- When you call `CreateScope()` on the root container, it creates a **new scope container** — an **internal child service provider** that tracks scoped and transient services for that scope.
+    
+- **Implementation-wise**, under the hood they are different objects:
+    
+    - The root container is a full DI container instance.
+        
+    - The scoped container is a "child" container that delegates some service resolution to the root but manages scoped services separately.
+
+**In code terms:**
+
+```csharp
+IServiceProvider rootProvider = app.Services;    // Root container
+IServiceScope scope = rootProvider.CreateScope(); // Scoped container (child scope)
+IServiceProvider scopedProvider = scope.ServiceProvider;
+```
+
+They both implement `IServiceProvider`, but scopedProvider is a different instance created from the rootProvider.
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        // Create the root container (app lifetime)
+        var rootContainer = new RootContainer();
+
+        // Register a singleton service (created once)
+        rootContainer.RegisterSingleton(new MyService("Singleton Service"));
+
+        // Simulate 3 "requests" each with its own scope container
+        for (int i = 1; i <= 3; i++)
+        {
+            using (var scope = rootContainer.CreateScope())
+            {
+                Console.WriteLine($"-- Start of scope #{i} --");
+
+                // Resolve singleton (same instance every time)
+                var singleton = scope.ResolveSingleton<MyService>();
+                singleton.ShowMessage();
+
+                // Resolve scoped service (new instance every scope)
+                var scoped = scope.ResolveScoped(() => new MyService($"Scoped Service #{i}"));
+                scoped.ShowMessage();
+
+                // Resolve transient service (new instance every resolve)
+                var transient1 = scope.ResolveTransient(() => new MyService($"Transient Service #{i}.1"));
+                transient1.ShowMessage();
+
+                var transient2 = scope.ResolveTransient(() => new MyService($"Transient Service #{i}.2"));
+                transient2.ShowMessage();
+
+                Console.WriteLine($"-- End of scope #{i} --\n");
+            }
+        }
+
+        // Also resolve transient from root container directly
+        var transientRoot = rootContainer.ResolveTransient(() => new MyService("Transient from Root"));
+        transientRoot.ShowMessage();
+
+        // Dispose transient from root manually since no scope to dispose it
+        transientRoot.Dispose();
+    }
+}
+
+// Simulate a service
+class MyService : IDisposable
+{
+    private string _name;
+
+    public MyService(string name)
+    {
+        _name = name;
+        Console.WriteLine($"{_name} created.");
+    }
+
+    public void ShowMessage()
+    {
+        Console.WriteLine($"Hello from {_name}");
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine($"{_name} disposed.");
+    }
+}
+
+// Root container — manages singletons, creates scopes, and creates transients
+class RootContainer
+{
+    private Dictionary<Type, object> _singletons = new();
+
+    public void RegisterSingleton(object instance)
+    {
+        _singletons[instance.GetType()] = instance;
+    }
+
+    public T ResolveSingleton<T>()
+    {
+        return (T)_singletons[typeof(T)];
+    }
+
+    public T ResolveTransient<T>(Func<T> factory)
+    {
+        // Always create new instance, no caching
+        return factory();
+    }
+
+    public ScopeContainer CreateScope()
+    {
+        return new ScopeContainer(this);
+    }
+}
+
+// Scoped container — created per scope/request, manages scoped and transient services
+class ScopeContainer : IDisposable
+{
+    private RootContainer _root;
+    private Dictionary<Type, object> _scopedInstances = new();
+
+    public ScopeContainer(RootContainer root)
+    {
+        _root = root;
+    }
+
+    public T ResolveSingleton<T>()
+    {
+        // Delegate singleton resolution to root container
+        return _root.ResolveSingleton<T>();
+    }
+
+    public T ResolveScoped<T>(Func<T> factory) where T : IDisposable
+    {
+        var type = typeof(T);
+        if (!_scopedInstances.ContainsKey(type))
+        {
+            _scopedInstances[type] = factory();
+        }
+
+        return (T)_scopedInstances[type];
+    }
+
+    public T ResolveTransient<T>(Func<T> factory)
+    {
+        // Create new instance every time
+        return factory();
+    }
+
+    public void Dispose()
+    {
+        foreach (var scoped in _scopedInstances.Values)
+        {
+            (scoped as IDisposable)?.Dispose();
+        }
+        Console.WriteLine("Scope disposed.");
+    }
+}
+```
+
+**Overview**
+
+This example simulates how ASP.NET Core’s Dependency Injection container manages **singleton**, **scoped**, and **transient** service lifetimes through two container classes:
+
+- `RootContainer`: Represents the **root DI container** that lives for the entire app lifetime.
+    
+- `ScopeContainer`: Represents a **scoped DI container**, created per scope (like per HTTP request), managing scoped services and transients within its lifetime.
+
+**`RootContainer`**
+
+- Holds a dictionary `_singletons` to store singleton service instances.
+    
+- Allows **registering a singleton** once and resolving it many times.
+    
+- Can create **new scopes** (`ScopeContainer`) representing request scopes.
+    
+- Can create **transient services** on demand with no caching (a new instance every time).
+
+This mimics the **root service provider** in ASP.NET Core, which manages singleton lifetimes and spawns scoped containers.
+
+**`ScopeContainer`**
+
+- Created from `RootContainer.CreateScope()` for each simulated request.
+    
+- Delegates singleton resolution back to the root container, ensuring **singleton instances are shared across all scopes**.
+    
+- Manages a dictionary `_scopedInstances` that caches **scoped services**, ensuring one instance per scope.
+    
+- Creates **transient instances** anew every time (no caching).
+    
+- Implements `IDisposable` to clean up scoped services when the scope ends (simulating request end).
+
+This mimics the **scoped service provider** created per HTTP request in ASP.NET Core, managing scoped and transient lifetimes for that request.
+
+**Main Program Flow**
+
+- A singleton service is registered once in the root container.
+    
+- The program simulates 3 requests (scopes) using a loop.
+    
+- For each scope:
+    
+    - The singleton service is resolved (same instance reused).
+        
+    - A scoped service is resolved (new instance per scope, cached within that scope).
+        
+    - Two transient services are resolved (brand new instances each time).
+        
+- After each scope completes, the `Dispose()` method disposes all scoped instances.
+    
+- Finally, a transient service is resolved directly from the root container and disposed manually because no scope is tracking it.
+
+**Key Concepts Demonstrated**
+
+- **Singleton lifetime**: Only one instance exists application-wide, resolved from root.
+    
+- **Scoped lifetime**: One instance per scope/request, tracked and disposed by `ScopeContainer`.
+    
+- **Transient lifetime**: New instance created every resolve, no caching.
+    
+- **Scope disposal**: Scoped services implement `IDisposable` and get disposed automatically at scope end.
+    
+- **Scope creation**: Mimics per-request scope creation in real web apps.
+    
+- **Service resolution delegation**: Scoped container delegates singleton resolution to root container.
+
+**Why This Example is Useful**
+
+- It clearly shows **how different lifetimes behave in relation to containers and scopes**.
+    
+- It helps visualize the **hierarchy of containers**: root container spawns scoped containers.
+    
+- It illustrates **the role of disposal** for scoped services.
+    
+- It highlights the **stateless nature of transient services** (no caching anywhere).
 ### `WebApplication`
 The `WebApplication` class in ASP.NET Core exposes the `ServiceProvider` through its `Services` property, which gives you access to the app’s dependency injection container. Alongside `Services`, `WebApplication` includes other properties related to the web app’s configuration and lifecycle — such as `Environment`, `Configuration`, `Logger`, `Urls`, and `Lifetime`. These properties provide access to core services and settings that control how the application runs.
 
