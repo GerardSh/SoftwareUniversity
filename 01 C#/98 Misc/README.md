@@ -6261,7 +6261,6 @@ The key `"07f260f4-466c-4607-9a33-f7273b24f1b4"` is used to locate the object in
 
 - The key of the container being the same as the `_id` field inside the object is a design choice for consistency, clarity, and to facilitate easy access and management of the objects.
 - The server and the system rely on this structure to ensure each object can be uniquely identified and updated without confusion.
-
 ## Bookmarks
 https://jsisweird.com/
 
@@ -6583,4 +6582,58 @@ Using a backend to mediate between the frontend and the database is essential fo
     
     - **Constraints** validate or restrict data.
     - **Properties** define behavior but do not enforce rules.
+## Bookmarks
+# Entity Framework Core
+## General
+## ChatGPT
+### `HasQueryFilter()`
+**What `HasQueryFilter` does:**
+
+- When you configure a query filter on an entity with `.HasQueryFilter(...)`, EF Core **automatically injects the specified filter condition into every LINQ query** targeting that entity.
+    
+- This means every query EF Core generates will include a **WHERE clause with that filter**, unless you explicitly tell EF Core to ignore query filters.
+
+**How it works under the hood (conceptually):**
+
+1. **Model-level filter expression:**  
+    The lambda you pass into `.HasQueryFilter()` (e.g., `w => !w.IsDeleted`) becomes part of the entity’s metadata model.
+    
+2. **Query translation:**  
+    When you write a LINQ query like `context.Warehouses.ToList()`, EF Core's query pipeline will **combine your query’s expression tree with the filter expression** from the model.
+    
+3. **SQL generation:**  
+    This combined expression tree gets translated into SQL, which includes the WHERE clause representing the filter. For example, something like:
+    
+```sql
+SELECT * FROM Warehouses WHERE IsDeleted = 0
+```
+    
+4. **Execution:**  
+    The database only returns rows matching the filter.
+
+**So yes, `HasQueryFilter`:**
+
+- Acts like a **global filter automatically appended to queries** involving that entity.
+    
+- Works by **modifying the LINQ expression tree** before EF Core translates it to SQL.
+    
+- Is not just a client-side filter — it is part of the SQL query generated, so it works efficiently in the database.
+
+**Can you bypass it?**
+
+Yes, with:
+
+```csharp
+context.Warehouses.IgnoreQueryFilters().ToList();
+```
+
+This disables the filter for that particular query.
+
+**Summary in simple terms:**
+
+- `.HasQueryFilter` defines a global condition for an entity.
+    
+- Every EF Core query automatically includes this condition.
+    
+- EF Core’s query pipeline **modifies the SQL to include your filter** so that the database only returns rows matching it.
 ## Bookmarks
