@@ -6681,4 +6681,91 @@ This disables the filter for that particular query.
 - Every EF Core query automatically includes this condition.
     
 - EF Core’s query pipeline **modifies the SQL to include your filter** so that the database only returns rows matching it.
+### `IQueryable`
+✅ **When You Build the Query**
+
+```csharp
+var query = dbContext.UsersWarehouses
+    .Where(uw => uw.ApplicationUserId == userId)
+    .Select(uw => new WarehouseCardViewModel
+    {
+        Id = uw.Warehouse.Id.ToString(),
+        Name = uw.Warehouse.Name,
+        Address = uw.Warehouse.Address,
+        CreatedDate = uw.Warehouse.CreatedDate.ToString(DateFormat),
+        Size = uw.Warehouse.Size.ToString(),
+    });
+```
+
+What you're building here is **not a result** — it’s an `IQueryable<WarehouseCardViewModel>`. This holds an **expression tree** representing what to fetch from the database and how to **shape** the data.
+
+This expression tree includes:
+
+- The source: `UsersWarehouses`
+    
+- The filter: `Where(uw => uw.ApplicationUserId == userId)`
+    
+- The projection: `Select(uw => new WarehouseCardViewModel { ... })`
+
+> EF Core doesn’t execute anything yet — it just stores this "plan".
+
+🧠 **How EF Core Remembers What to Build**
+
+Yes — the `Select(...)` projection into `WarehouseCardViewModel` is stored **as metadata** in the expression tree. That metadata includes:
+
+- The _types_ of objects to create (`WarehouseCardViewModel`)
+    
+- The _members to read_ from the database (`uw.Warehouse.Id`, etc.)
+    
+- The _methods to use_ (like `.ToString()` — if supported)
+
+EF Core can walk through the tree and say:
+
+- “OK, I need to write SQL that pulls `uw.Warehouse.Id`, `uw.Warehouse.Name`, etc.”
+    
+- “When I get those values back, I will construct a `WarehouseCardViewModel` using the mapped members.”
+
+✅ **What Happens When You Call `.ToListAsync()`**
+
+Now in another method:
+
+```csharp
+var list = await query.ToListAsync();
+```
+
+This triggers the whole process:
+
+1. **EF Core reads the expression tree**
+    
+2. **Translates it into SQL**
+    
+3. **Sends the SQL to the database**
+    
+4. **Gets the result rows**
+    
+5. **For each row, it uses the projection to create a new `WarehouseCardViewModel` instance**
+    
+6. Returns a `List<WarehouseCardViewModel>` to you
+
+🧪 **Quick Test**
+
+You can verify this by checking the type:
+
+```csharp
+Console.WriteLine(query.GetType()); // IQueryable<WarehouseCardViewModel>
+
+var result = await query.ToListAsync();
+Console.WriteLine(result.GetType()); // List<WarehouseCardViewModel>
+```
+
+💡 **Final Summary**
+
+|Step|What Happens|
+|---|---|
+|Building the query|Creates an expression tree (`IQueryable<WarehouseCardViewModel>`)|
+|`Select(...)`|Describes how to **project** each row into a view model|
+|`.ToListAsync()`|Executes SQL, reads rows, and **constructs the C# objects** using the expression|
+|SQL sees only raw data|It has no idea about `WarehouseCardViewModel` – just the fields it must return|
+
+You're absolutely right: **the structure and type of the view model are encoded in the expression tree**, and EF Core uses that information after SQL execution to materialize actual `WarehouseCardViewModel` objects.
 ## Bookmarks
