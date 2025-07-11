@@ -4370,6 +4370,51 @@ var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 - **Inject `IHttpContextAccessor` if your service really needs HTTP details often.**
     
 - **Pass data explicitly if you want to keep services decoupled from ASP.NET Core specifics.**
+### Using `string.Empty` key in `ModelState` with `ValidationSummary(true)`
+- **`ModelState.AddModelError(string.Empty, "Some general error")`** adds a **model-level error** — meaning the error is _not_ tied to any specific form field.
+    
+- **`@Html.ValidationSummary(true, "Name", ...)`** shows **only model-level errors** (errors with empty string key) in a summary block — typically placed at the top or above the form.
+    
+- The `"Name"` argument is the _message_ header that appears above the validation summary (can be a title or label for the errors).
+    
+- Field-specific errors (e.g. `ModelState.AddModelError("Name", "Must be unique")`) **will NOT** be shown in this summary if the first argument to `ValidationSummary` is `true`.
+
+**Why is this good for general issues?**
+
+- Some validation errors do not belong to a single input field, but to the whole form or business logic:
+    
+    - Example: _"A warehouse with this name already exists."_  
+        This is not just a "Name" field length error but a higher-level validation about the whole entity.
+        
+- By using `string.Empty` as the key, you separate these general errors from field-level errors.
+    
+- These errors appear clearly and prominently at the top of the form via the validation summary, **catching the user's attention**.
+    
+- Meanwhile, field-specific errors can be shown near the related input fields using `asp-validation-for` or `@Html.ValidationMessageFor`.
+
+**How it works together in a form:**
+
+- General errors (like duplicate or business rule violations) → `ModelState.AddModelError(string.Empty, "...")` → displayed via
+    
+```
+@Html.ValidationSummary(true, "Please fix the following errors:", new { @class = "text-danger" })
+```
+    
+- Field-specific errors (like `[Required]` or `[StringLength]`) → added automatically by model binding or explicitly with key → displayed next to fields with
+    
+```
+<span asp-validation-for="Name" class="text-danger"></span>
+```
+
+**Important notes**
+
+- If you want to show **all errors in one place**, use
+    
+```
+@Html.ValidationSummary(false)
+```
+    
+- Using `ValidationSummary(true)` helps keep UI clean by **separating general errors from field errors**.
 ## Bookmarks
 # HTML & CSS
 ## General
