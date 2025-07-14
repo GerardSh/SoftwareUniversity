@@ -4246,6 +4246,97 @@ The routing system can resolve both, but you **must avoid route collisions** if 
 | Extensibility     | You can override with `[@page "{route}"]` | You can override with `[Route]`         |
 | Area support      | Built-in via folders                      | Requires `[Area]` attribute             |
 | Purpose           | Page-focused UI (e.g. Login.cshtml)       | Controller logic (e.g. REST APIs, CRUD) |
+#### Routing Summary – Action Endpoints & `asp-*` Helpers
+In ASP.NET Core MVC:
+
+📌 1. **Actions Become Endpoints at Startup**
+
+- Every controller action becomes an **endpoint** when the application starts.
+    
+- The endpoint's **permanent address** is determined by the controller-level and action-level `[Route]` attributes.
+    
+- This resolution happens **once**, during app startup, when the routing table is built.
+
+📌 2. **Multiple URLs Can Reach One Action**
+
+If your controller uses a route template like:
+
+```csharp
+[Route("Warehouse/{warehouseId:guid}/{controller}/{action}/{id?}")]
+```
+
+Then **all actions in the controller** (e.g., `Index`, `Edit`) receive **two valid URLs**:
+
+- One **with `id`**:
+    
+```csharp
+/Warehouse/{warehouseId}/ImportInvoice/Edit/{id}
+```
+    
+- One **without `id`**:
+    
+```csharp
+/Warehouse/{warehouseId}/ImportInvoice/Edit
+```
+
+> This is because `{id?}` is optional. Even if the action doesn’t take `id` as a parameter, the endpoint will still match both forms.
+
+📌 3. **Razor Tag Helpers Use Routing Info**
+
+When using anchor tag helpers in Razor, like this:
+
+```html
+<a asp-controller="ImportInvoice"
+   asp-action="Edit"
+   asp-route-warehouseId="b689e5b1-8c23-462d-b931-97a7d2b40470"
+   asp-route-id="D9784351-B2F6-44E5-AE5C-45615DF7A102">
+```
+
+Or:
+
+```html
+<a asp-controller="ImportInvoice"
+   asp-action="Edit"
+   asp-route-warehouseId="b689e5b1-8c23-462d-b931-97a7d2b40470">
+```
+
+Both will correctly generate valid URLs to hit the `Edit` action, because:
+
+- The routing engine uses the known endpoint template.
+    
+- If `asp-controller` is omitted, the system assumes the current controller (the one serving the view).
+    
+- If `asp-action` is omitted, it assumes the current action.
+
+📌 4. **Default routing configuration**
+
+If a controller does **not use any `[Route]` attributes**, its actions fall back to the **default routing configuration** defined in `Program.cs` (or previously in `Startup.cs`). This is usually set via `MapControllerRoute()` and follows a template like:
+
+```csharp
+"{controller=Home}/{action=Index}/{id?}"
+```
+
+This means the routing engine will resolve action URLs based on the **controller name**, **action name**, and optionally an `id`, using this pattern. If no attribute-based routes are defined at all, this fallback ensures the application can still generate correct endpoint URLs.
+
+📌 5. **Placeholders**
+
+When the application starts, **endpoint routing is configured**, and for each controller and action, the route templates (including placeholders like `{controller}`, `{action}`, etc.) are **resolved into concrete patterns** based on the controller and action names. These become the **registered endpoints**.
+
+Later, when you use tag helpers like `<a asp-controller="..." asp-action="..." ...>`, the framework **tries to find a matching route template** by substituting the provided `asp-` values into the placeholders. If it finds a route where all required placeholders can be filled, it generates the final URL based on that match.
+
+So yes — the placeholders in the route templates act like **dynamic slots**, filled during both:
+
+- **Startup (endpoint registration)** — based on action/controller.
+    
+- **Runtime (link generation)** — based on `asp-` tag inputs.
+
+✅ **Final Thoughts**
+
+- ✅ Actions can be hit by multiple routes when optional route parameters (`{id?}`) exist.
+    
+- ✅ The actual method parameters **don’t limit** which URLs can reach an action — routing is determined by the URL **structure**, not method signature.
+    
+- ✅ Tag helpers generate valid links by plugging into the endpoint route definitions resolved **at app startup**.
 ### `HttpContext`
 The **`HttpContext`** is  **available throughout the handling of an HTTP request**, but with some important clarifications:
 
