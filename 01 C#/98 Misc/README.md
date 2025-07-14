@@ -2009,6 +2009,94 @@ TempData.Keep();
 - **`HttpContext.Items`** is a general-purpose per-request storage, useful especially in middleware.
     
 - **`ViewBag`/`ViewData`** are convenience wrappers mainly to pass data from controller to view in a clean, readable way.
+#### Passing Information Between Actions
+In **ASP.NET MVC**—passing information between actions either through:
+
+- **Hidden inputs in views**
+    
+- **Query strings**
+    
+- **Route values**
+    
+- **`TempData` / `ViewData` / Session**
+    
+- Or by **redirecting to an action and passing parameters (like IDs)**
+
+Let me break this down clearly:
+
+✅ 1. **Passing Info with Hidden Inputs in Views**
+
+When returning a view, you can preserve part of the view model by embedding it into the form as `<input type="hidden" />`. This is helpful for values you don’t want users to edit, but need on postbacks.
+
+```html
+<input type="hidden" name="CustomerId" value="@Model.CustomerId" />
+```
+
+When the form is submitted, this value will be sent back to the controller.
+
+✅ 2. **Query Strings in Links**
+
+You can generate links that preserve the information by appending query strings:
+
+```html
+@Html.ActionLink("Details", "Details", new { id = Model.CustomerId })
+```
+
+In this case, the `id` will be passed to the next action via the URL.
+
+✅ 3. **Redirection after Action with Route Values**
+
+If an action creates something (e.g., `Create()`), you can redirect to another action (e.g., `Details()`) with necessary parameters:
+
+```csharp
+public IActionResult Create(MyObject model)
+{
+    var newId = _service.Create(model);
+    return RedirectToAction("Details", new { id = newId });
+}
+```
+
+This follows the **PRG (Post-Redirect-Get)** pattern – good for avoiding form resubmission and clean navigation.
+
+✅ 4. **`TempData` for Short-Term Storage Between Actions**
+
+If you need to pass data from one action to the next (without using the URL), `TempData` works:
+
+```csharp
+TempData["SuccessMessage"] = "Created successfully!";
+return RedirectToAction("Details", new { id = newId });
+```
+
+In the `Details` action or view:
+
+```csharp
+@if (TempData["SuccessMessage"] != null) {
+    <div>@TempData["SuccessMessage"]</div>
+}
+```
+
+✅ 5. **Session for Longer-Lived Data**
+
+Use this if data needs to be preserved across multiple requests (but not recommended for temporary values):
+
+```csharp
+HttpContext.Session.SetString("UserFilter", "active");
+```
+
+**Summary Analogy:**
+
+You can think of the MVC controller as a **train station**, and your data as **passengers**.  
+You decide **how** they continue to the next station (action):
+
+- **Hidden inputs** = passengers stay quietly on the train.
+    
+- **Query strings** = passengers are tagged with visible IDs.
+    
+- **Redirects with route values** = you tell the next station who’s arriving.
+    
+- **`TempData`** = luggage passed between stations.
+    
+- **Session** = long-term storage in the baggage room.
 ### POST Requests, Form Submission, and Content Types
 - **`multipart/form-data`** is a content type used in POST requests to send key-value pairs, especially when files are included. It emulates how browsers submit HTML forms with file uploads.
     
@@ -4246,6 +4334,16 @@ The routing system can resolve both, but you **must avoid route collisions** if 
 | Extensibility     | You can override with `[@page "{route}"]` | You can override with `[Route]`         |
 | Area support      | Built-in via folders                      | Requires `[Area]` attribute             |
 | Purpose           | Page-focused UI (e.g. Login.cshtml)       | Controller logic (e.g. REST APIs, CRUD) |
+#### Place Holders
+At runtime, when generating URLs—whether through tag helpers like `<a asp-controller="..." asp-action="..." />` or via methods such as `RedirectToAction`—the ASP.NET Core framework **does not perform a fresh substitution of placeholders** in the route templates. Instead, it relies on the **endpoint metadata that was constructed and registered during application startup**. This metadata contains fully resolved route templates associated with specific controller and action pairs.
+
+In this URL generation process, the **controller and action names are treated as fixed, constant values**. These values are used to look up the correct endpoint from the registered metadata. Once the correct endpoint is identified, the framework examines the route pattern tied to that endpoint, which still contains placeholders for dynamic segments such as `id`, `warehouseId`, or other parameters.
+
+These placeholders represent **dynamic route parameters** that must be provided with actual values at runtime to successfully generate a URL. Supplying these values fills in the placeholders, producing a complete and valid URL that matches the endpoint’s pattern.
+
+It’s important to note that the **entire sequence or chain of placeholders defined in the route template must be respected and fulfilled** when generating URLs. Even if some parameters are marked as optional (e.g., `id?`), omitting them in a way that breaks the expected pattern will cause URL generation to fail. This happens because the routing system requires a consistent set of route values to correctly identify and construct the URL for the intended endpoint.
+
+In other words, skipping or leaving out certain parameters can disrupt the mapping between the provided route values and the registered route pattern, making it impossible for the framework to produce a valid URL for that action.
 #### Routing Summary – Action Endpoints & `asp-*` Helpers
 In ASP.NET Core MVC:
 
@@ -4317,18 +4415,6 @@ If a controller does **not use any `[Route]` attributes**, its actions fall back
 ```
 
 This means the routing engine will resolve action URLs based on the **controller name**, **action name**, and optionally an `id`, using this pattern. If no attribute-based routes are defined at all, this fallback ensures the application can still generate correct endpoint URLs.
-
-📌 5. **Placeholders**
-
-When the application starts, **endpoint routing is configured**, and for each controller and action, the route templates (including placeholders like `{controller}`, `{action}`, etc.) are **resolved into concrete patterns** based on the controller and action names. These become the **registered endpoints**.
-
-Later, when you use tag helpers like `<a asp-controller="..." asp-action="..." ...>`, the framework **tries to find a matching route template** by substituting the provided `asp-` values into the placeholders. If it finds a route where all required placeholders can be filled, it generates the final URL based on that match.
-
-So yes — the placeholders in the route templates act like **dynamic slots**, filled during both:
-
-- **Startup (endpoint registration)** — based on action/controller.
-    
-- **Runtime (link generation)** — based on `asp-` tag inputs.
 
 ✅ **Final Thoughts**
 
