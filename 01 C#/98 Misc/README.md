@@ -4592,6 +4592,211 @@ var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 ```
     
 - Using `ValidationSummary(true)` helps keep UI clean by **separating general errors from field errors**.
+### Edit Input Models
+Yes, exactly — when implementing the **editing** functionality, your _edit input models_ should:
+
+1. **Inherit everything from the create models** (fields and validation),
+    
+2. **Add `Id` fields** for tracking the entities being edited (like the invoice itself or each product detail).
+
+For example:
+
+✅ **`EditExportInvoiceDetailInputModel`**
+
+Inherits from `CreateExportInvoiceDetailInputModel` and adds:
+
+```csharp
+`public Guid? Id { get; set; }`
+```
+
+Perfect — the `Id` here corresponds to the specific export detail record you're editing.
+
+✅ **`EditExportInvoiceInputModel`**
+
+Includes:
+
+- All fields from the create model (copied over),
+    
+- The export invoice `Id`,
+    
+- A `List<EditExportInvoiceDetailInputModel>`.
+
+Also perfect. You're accounting for:
+
+- The main invoice `Id`,
+    
+- The child detail `Ids`,
+    
+- All other form data, with validation.
+
+💡 **Optional Suggestion**
+
+If you're worried about clarity or ensuring symmetry between create and edit actions, you might also want to ensure the **view names** and **form bindings** reflect that editing mode.
+
+For example:
+
+- Add hidden fields in the form to include the invoice and product IDs.
+    
+- In the controller, bind to `EditExportInvoiceInputModel` for `[HttpPost] Edit`.
+
+**Final Thought**
+
+So yes — your thinking is correct: the **edit input models** are like the create models **plus the `Id` fields**, and you're already implementing that cleanly. Let me know if you want to go through the `[HttpPost]` action or the view markup next.
+### Unit Testing
+**Fewer `if` checks → Easier Unit Testing:**
+
+Here’s why:
+
+✅ **1. Simpler Control Flow**
+
+Each `if` introduces a _branch_, and the more branches you have, the more test cases you need to cover:
+
+```csharp
+if (A)
+{
+    if (B)
+    {
+        // Do something
+    }
+}
+```
+
+Now you need test cases for:
+
+- A false
+    
+- A true + B false
+    
+- A true + B true
+
+Removing unnecessary branches reduces the number of scenarios you must write and maintain tests for.
+
+✅ **2. Less State to Mock**
+
+If you rely on one method that encapsulates checks and logic, you mock fewer things:
+
+Bad:
+
+```csharp
+if (!string.IsNullOrWhiteSpace(clientName))
+{
+    if (clientName.Length < 50)
+    {
+        var result = await clientService.FindAsync(clientName);
+    }
+}
+```
+
+Better:
+
+```csharp
+var clientResult = await clientService.TryFindClientAsync(clientName);
+```
+
+This way, your test only mocks the `TryFindClientAsync` response — not internal `if`s.
+
+✅ **3. More Focused Failures**
+
+With fewer branches, when a test fails, it’s more obvious why. Less logic = fewer places where bugs can hide.
+
+🧠 **Caveat:**
+
+This doesn’t mean avoiding validation or skipping necessary checks — just _consolidating_ them. You can extract them into helper methods or services, so your main logic stays clean:
+
+```csharp
+if (!stockResult.Success)
+    return OperationResult.Failure(stockResult.ErrorMessage);
+```
+
+can be avoided if:
+
+- You already guaranteed the success path
+    
+- The method only fails for already-handled reasons
+
+✅ **Summary:**
+
+Yes — fewer and more intentional `if` checks result in:
+
+- Easier unit test writing
+    
+- Clearer test scenarios
+    
+- More maintainable code
+
+You're thinking like a good architect 👏
+### Service Layer
+When you **organize your application using a clean service layer**, switching from a traditional **MVC (View-based)** ASP.NET Core application to an **API-based** one becomes very easy. Here's why:
+
+✅ **Why the service layer makes switching easy:**
+
+1. **Decoupling of logic**  
+    Your controller doesn't directly work with the database. Instead, it uses a service that handles the business logic. This means you can plug in a new controller (e.g., API controller) without rewriting core functionality.
+    
+2. **Reusable logic**  
+    The same method:
+
+```csharp
+exportInvoiceService.GetExportInvoiceDetailsAsync(...)
+```
+
+can be called from:
+
+- A **`ViewController`** for rendering HTML
+
+- Or an **`ApiController`** returning JSON
+
+3. **Stable view models (DTOs)**  
+    If your view models are already shaped as DTOs, you don't need to create new ones for the API — just return the same model as JSON.
+    
+4. **Cleaner testability**  
+    Testing your API controllers becomes easy, since the service returns consistent results — you’re just testing the input/output, not internal business rules.
+
+🔄 **How you switch:**
+
+**Your current MVC controller:**
+
+```csharp
+public async Task<IActionResult> Details(Guid warehouseId, Guid id)
+{
+    var result = await exportInvoiceService.GetExportInvoiceDetailsAsync(warehouseId, id, userGuid);
+
+    if (!result.Success)
+        TempData["ErrorMessage"] = NoPermissionOrExportInvoiceNotFound;
+        return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+    return View(result.Data);
+}
+```
+
+**Equivalent API controller:**
+
+```csharp
+[HttpGet("{warehouseId}/{id}")]
+public async Task<IActionResult> GetDetails(Guid warehouseId, Guid id)
+{
+    var result = await exportInvoiceService.GetExportInvoiceDetailsAsync(warehouseId, id, userGuid);
+
+    if (!result.Success)
+        return NotFound(result.Message);
+
+    return Ok(result.Data);
+}
+```
+
+🧠 **Final Tip**
+
+To make the transition smoother:
+
+- Stick to **DTOs** and don’t expose EF Core entities.
+    
+- Ensure your services are **async** and return a unified result type like `OperationResult<T>`.
+    
+- Return **appropriate HTTP codes** in the API controller (`404`, `200`, `403`, etc.).
+
+**Summary:**
+
+The primary role of the service layer is to handle the business logic — this is where we validate business-specific data, apply domain rules, and decide what actions to take. While basic validation (like required fields or data formats) is typically done in the controller using model state checks, the service layer is responsible for the more complex and contextual validations that depend on the business domain.
 ## Bookmarks
 # HTML & CSS
 ## General
