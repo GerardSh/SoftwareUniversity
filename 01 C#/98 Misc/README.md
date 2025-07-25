@@ -1901,6 +1901,82 @@ bool hasError   = (flags & EventLogEntryType.Error) != 0;     // false
 - ✅ **Cleaner code** when working with sets of options or states
 
 💡 Even though enums like `EventLogEntryType` follow this pattern, they aren't always marked with `[Flags]`. But when they are, you also get nicer string representations (e.g., `Warning, Information` instead of just a number).
+### Mocking
+For the mock to work correctly, the method and its arguments in the service must match what the mock is set up to expect. The mock returns a result based on the input it's configured to respond to.
+
+**ChatGPT said:**
+
+Exactly — you nailed it. ✅
+
+Think of **mocking** like a contract:
+
+> “If you call **this method** on the mock, and you pass **these arguments**, I’ll give you **this response**.”
+
+So yes — **both must match**:
+
+|Component|What must match|Why it matters|
+|---|---|---|
+|**Method name**|`FindByIdAsync`, `All`, etc.|It's how the mock knows _what_ is being called.|
+|**Method arguments**|Exact value or a pattern (`It.IsAny`)|If the service calls with a different argument, your `Setup()` won’t match, and you'll get `null` or default.|
+|**Return type**|Must match expected return|Otherwise compilation fails or logic breaks.|
+
+🔁 **Real-world analogy:**
+
+Imagine you're training a receptionist to respond to specific calls:
+
+- You say:  
+    “If someone calls asking **‘Where is Gerard?’**, say: **‘He’s in the office.’**”
+    
+- But the real call is:  
+    “Where is George?”
+
+➡️ The receptionist (mock) won’t respond because it doesn’t match exactly. It just says nothing (`null`), and your service might break if it expects a real response.
+
+The mock can’t read your service method’s logic or understand what parameters it will call with. All it knows is:  
+“If _someone_ calls `FindByIdAsync("C994999B-...")`, what should I return?”
+
+So in your test, you are saying:
+
+> “When `FindByIdAsync()` is called **with this specific string**, return this fake user.”
+
+This means that if the service passes a different `userId`, your mock won't respond unless you either:
+
+- Match that new argument
+    
+- Or use a wildcard (`It.IsAny<string>()`)
+
+🧠 **Tip**
+
+If your test doesn’t care about the exact argument, and you're just testing behavior, use:
+
+```csharp
+`Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(validUser);`
+```
+
+That makes the mock accept any input and still return the result you need.
+
+**You said:**
+
+Mocking works by implementing a concrete fake class of the given interface, right? But if we don’t have an interface, we can’t mock it.
+
+**ChatGPT said:**
+
+Almost! Let me clarify a bit:
+
+Mocking _typically_ works by creating a fake or “mock” implementation of an interface or a virtual/abstract class. This fake version lets you control and verify how dependencies behave during tests without using the real implementations.
+
+So:
+
+- If you have an **interface**, mocking frameworks (like Moq) can easily create a mock implementation of it.
+    
+- If you don’t have an interface but have a **class**, you can mock it **only if** its methods are **virtual** or **abstract** (because the mock needs to override them).
+    
+- If the class methods are **not virtual** and there’s no interface, most mocking frameworks can’t mock it directly.
+    
+
+In other words:
+
+> Mocking works by creating a fake implementation of an interface or a class with virtual/abstract members. If you don’t have an interface or virtual methods, you usually cannot mock the class directly.
 ## Bookmarks
 [Безграничният потенциал | Джим Куик | Цена | Ozone.bg](https://www.ozone.bg/product/bezgranichniyat-potentsial/) - препоръчана от Николай Костов
 
